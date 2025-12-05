@@ -7,7 +7,15 @@ Console.WriteLine("--- AI Text Editor Prototype ---");
 // 1. Setup Services
 IDocumentRepository repository = new MarkdownDocumentRepository();
 IChunkBuilder chunkBuilder = new ChunkBuilder();
-ILlmEditor llmEditor = new MockLlmEditor();
+// Configure Ollama endpoint/model (defaults to local daemon)
+var ollamaEndpoint = Environment.GetEnvironmentVariable("OLLAMA_ENDPOINT") ?? "http://localhost:11434";
+var ollamaModel = Environment.GetEnvironmentVariable("OLLAMA_MODEL") ?? "qwen3:latest";
+
+ILlmClient llmClient = SemanticKernelLlmClient.CreateOllamaClient(
+    modelId: ollamaModel,
+    endpoint: new Uri(ollamaEndpoint));
+
+ILlmEditor llmEditor = new FunctionCallingLlmEditor(llmClient);
 IDocumentEditor docEditor = new DocumentEditor();
 
 string inputPath = "sample.md";

@@ -482,3 +482,6 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# Test HTTP cassettes
+tests/AiTextEditor.Tests/Cassettes/

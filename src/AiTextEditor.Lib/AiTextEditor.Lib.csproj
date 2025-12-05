@@ -8,6 +8,8 @@
 
   <ItemGroup>
     <PackageReference Include="Markdig" Version="0.44.0" />
+    <PackageReference Include="Microsoft.SemanticKernel" Version="1.27.0" />
+    <PackageReference Include="Microsoft.SemanticKernel.Connectors.Ollama" Version="1.27.0-alpha" />
   </ItemGroup>
 
 </Project>
