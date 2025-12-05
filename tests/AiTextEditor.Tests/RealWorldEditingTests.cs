@@ -6,37 +6,30 @@ namespace AiTextEditor.Tests;
 
 public class RealWorldEditingTests
 {
-    private Document CreateSampleDocument()
+    private const string ExplanationText = "Here is what the snippet does before we dive into the code.";
+    private readonly MarkdownBlockFactory blockFactory;
+    private readonly MarkdownDocumentRepository repository;
+
+    public RealWorldEditingTests()
+        : this(new MarkdownDocumentRepository())
     {
-        return new Document
-        {
-            Blocks = new List<Block>
-            {
-                new Block { Id = "title", Type = BlockType.Heading, Level = 1, PlainText = "The Lost City", Markdown = "# The Lost City" },
-                new Block { Id = "p1", Type = BlockType.Paragraph, PlainText = "It was a dark and stormy night.", Markdown = "It was a dark and stormy night." },
-                new Block { Id = "p2", Type = BlockType.Paragraph, PlainText = "The detective looked at the map.", Markdown = "The detective looked at the map." },
-                new Block { Id = "code1", Type = BlockType.Code, PlainText = "print('Hello')", Markdown = "```\nprint('Hello')\n```" },
-                new Block { Id = "note1", Type = BlockType.Quote, PlainText = "TODO: Fix this chapter", Markdown = "> TODO: Fix this chapter" }
-            }
-        };
+    }
+
+    private RealWorldEditingTests(MarkdownDocumentRepository repository)
+    {
+        this.repository = repository;
+        blockFactory = new MarkdownBlockFactory(repository);
     }
 
     [Fact]
-    public void Scenario_RewriteIntroduction_ChangesTone()
+    public void RewriteIntroduction_ReplacesFirstParagraphAndKeepsOrder()
     {
-        // User Request: "Make the first paragraph more dramatic"
-        // LLM Decision: Replace block 'p1' with new text.
-        
-        var doc = CreateSampleDocument();
+        var doc = CreateAdventureDocument();
         var editor = new DocumentEditor();
 
-        var newBlock = new Block 
-        { 
-            Id = "p1_v2", 
-            Type = BlockType.Paragraph, 
-            PlainText = "Thunder crashed overhead as the rain lashed against the windowpane.", 
-            Markdown = "Thunder crashed overhead as the rain lashed against the windowpane." 
-        };
+        var newBlock = blockFactory.CreateBlock(
+            "p1_v2",
+            "Thunder crashed overhead as the rain lashed against the windowpane.");
 
         var op = new EditOperation
         {
@@ -47,28 +40,18 @@ public class RealWorldEditingTests
 
         editor.ApplyEdits(doc, new[] { op });
 
-        var p1 = doc.Blocks.First(b => b.Type == BlockType.Paragraph);
+        var p1 = doc.Blocks.First(b => b.Id == "p1_v2");
         Assert.Equal("Thunder crashed overhead as the rain lashed against the windowpane.", p1.PlainText);
-        // Verify position didn't change (it's still after title)
         Assert.Equal(1, doc.Blocks.IndexOf(p1));
     }
 
     [Fact]
-    public void Scenario_AddExplanationBeforeCode()
+    public void InsertExplanationBeforeCode_PlacesParagraphBeforeTarget()
     {
-        // User Request: "Explain what the code does before showing it"
-        // LLM Decision: Insert paragraph before 'code1'
-        
-        var doc = CreateSampleDocument();
+        var doc = CreateAdventureDocument();
         var editor = new DocumentEditor();
 
-        var explanation = new Block 
-        { 
-            Id = "expl1", 
-            Type = BlockType.Paragraph, 
-            PlainText = "Here is the greeting script:", 
-            Markdown = "Here is the greeting script:" 
-        };
+        var explanation = blockFactory.CreateBlock("expl1", "Here is the greeting script:");
 
         var op = new EditOperation
         {
@@ -87,12 +70,9 @@ public class RealWorldEditingTests
     }
 
     [Fact]
-    public void Scenario_RemoveDraftNotes()
+    public void RemoveDraftNote_RemovesQuoteBlock()
     {
-        // User Request: "Delete the TODO note at the end"
-        // LLM Decision: Remove block 'note1'
-        
-        var doc = CreateSampleDocument();
+        var doc = CreateAdventureDocument();
         var editor = new DocumentEditor();
 
         var op = new EditOperation
@@ -108,21 +88,18 @@ public class RealWorldEditingTests
     }
 
     [Fact]
-    public void Scenario_ComplexEdit_RefactorChapter()
+    public void ReplaceParagraphWithTwo_NewBlocksStaySequential()
     {
-        // User Request: "Replace the second paragraph with two new ones describing the map and the room."
-        // LLM Decision: Replace 'p2' with 'p2_a', then InsertAfter 'p2_a' with 'p2_b'.
-        
-        var doc = CreateSampleDocument();
+        var doc = CreateAdventureDocument();
         var editor = new DocumentEditor();
 
-        var p2_part1 = new Block { Id = "p2_a", Type = BlockType.Paragraph, PlainText = "The map was old and crumbling.", Markdown = "The map was old and crumbling." };
-        var p2_part2 = new Block { Id = "p2_b", Type = BlockType.Paragraph, PlainText = "The room was silent.", Markdown = "The room was silent." };
+        var first = blockFactory.CreateBlock("p2_a", "The map was old and crumbling.");
+        var second = blockFactory.CreateBlock("p2_b", "The room was silent.");
 
         var ops = new List<EditOperation>
         {
-            new EditOperation { Action = EditActionType.Replace, TargetBlockId = "p2", NewBlock = p2_part1 },
-            new EditOperation { Action = EditActionType.InsertAfter, TargetBlockId = "p2_a", NewBlock = p2_part2 }
+            new() { Action = EditActionType.Replace, TargetBlockId = "p2", NewBlock = first },
+            new() { Action = EditActionType.InsertAfter, TargetBlockId = "p2_a", NewBlock = second }
         };
 
         editor.ApplyEdits(doc, ops);
@@ -130,10 +107,172 @@ public class RealWorldEditingTests
         Assert.Contains(doc.Blocks, b => b.Id == "p2_a");
         Assert.Contains(doc.Blocks, b => b.Id == "p2_b");
         Assert.DoesNotContain(doc.Blocks, b => b.Id == "p2");
-        
+
         var indexA = doc.Blocks.FindIndex(b => b.Id == "p2_a");
         var indexB = doc.Blocks.FindIndex(b => b.Id == "p2_b");
-        
+
         Assert.Equal(indexA + 1, indexB);
     }
+
+    [Theory]
+    [MemberData(nameof(AddExplanationBeforeCodeCases))]
+    public void AddExplanationBeforeCode_ProducesExpectedMarkdown(MarkdownEditCase scenario)
+    {
+        var document = repository.LoadFromMarkdown(scenario.InputMarkdown);
+        var editor = new DocumentEditor();
+        var codeBlock = document.Blocks.First(b => b.Type == BlockType.Code);
+        var explanation = blockFactory.CreateBlock("explanation", ExplanationText);
+
+        var op = new EditOperation
+        {
+            Action = EditActionType.InsertBefore,
+            TargetBlockId = codeBlock.Id,
+            NewBlock = explanation
+        };
+
+        editor.ApplyEdits(document, new[] { op });
+
+        var actual = repository.SaveToMarkdown(document);
+        var expected = repository.SaveToMarkdown(repository.LoadFromMarkdown(scenario.ExpectedMarkdown));
+        Assert.Equal(expected, actual);
+    }
+
+    public static TheoryData<MarkdownEditCase> AddExplanationBeforeCodeCases => new()
+    {
+        new MarkdownEditCase(
+            "CodeInMiddle",
+            """
+            # Minimal API demo
+
+            The paragraph before code.
+
+            ```csharp
+            var builder = WebApplication.CreateBuilder(args);
+            var app = builder.Build();
+            app.MapGet("/ping", () => "pong");
+            app.Run();
+            ```
+
+            After code we mention health checks.
+            """,
+            """
+            # Minimal API demo
+
+            The paragraph before code.
+
+            Here is what the snippet does before we dive into the code.
+
+            ```
+            var builder = WebApplication.CreateBuilder(args);
+            var app = builder.Build();
+            app.MapGet("/ping", () => "pong");
+            app.Run();
+            ```
+
+            After code we mention health checks.
+            """
+        ),
+        new MarkdownEditCase(
+            "CodeAtStart",
+            """
+            ```csharp
+            Console.WriteLine("Hello, world!");
+            ```
+
+            This sample prints to the console.
+            """,
+            """
+            Here is what the snippet does before we dive into the code.
+
+            ```
+            Console.WriteLine("Hello, world!");
+            ```
+
+            This sample prints to the console.
+            """
+        ),
+        new MarkdownEditCase(
+            "CodeAtEnd",
+            """
+            ## Setup
+
+            Configure services before building the app.
+
+            ```csharp
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
+            ```
+            """,
+            """
+            ## Setup
+
+            Configure services before building the app.
+
+            Here is what the snippet does before we dive into the code.
+
+            ```
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
+            ```
+            """
+        )
+    };
+
+    private Document CreateAdventureDocument()
+    {
+        return new Document
+        {
+            Blocks =
+            [
+                blockFactory.CreateBlock("title", "# The Lost City"),
+                blockFactory.CreateBlock("p1", "It was a dark and stormy night."),
+                blockFactory.CreateBlock("p2", "The detective looked at the map."),
+                blockFactory.CreateBlock("code1", "```\nprint('Hello')\n```"),
+                blockFactory.CreateBlock("note1", "> TODO: Fix this chapter")
+            ]
+        };
+    }
+
+    private sealed class MarkdownBlockFactory
+    {
+        private readonly MarkdownDocumentRepository repository;
+
+        public MarkdownBlockFactory(MarkdownDocumentRepository repository)
+        {
+            this.repository = repository;
+        }
+
+        public Block CreateBlock(string blockId, string markdown, string? parentId = null)
+        {
+            var document = repository.LoadFromMarkdown(markdown);
+            if (document.Blocks.Count == 0)
+            {
+                throw new InvalidOperationException($"No blocks were parsed for '{blockId}'.");
+            }
+
+            var parsed = document.Blocks[0];
+            if (document.Blocks.Count > 1)
+            {
+                var combinedPlainText = string.Join("\n", document.Blocks
+                    .Select(b => b.PlainText)
+                    .Where(text => !string.IsNullOrWhiteSpace(text)));
+
+                if (!string.IsNullOrWhiteSpace(combinedPlainText))
+                {
+                    parsed.PlainText = combinedPlainText;
+                }
+            }
+
+            return new Block
+            {
+                Id = blockId,
+                Type = parsed.Type,
+                Level = parsed.Level,
+                Markdown = parsed.Markdown,
+                PlainText = parsed.PlainText,
+                ParentId = parentId
+            };
+        }
+    }
+
 }

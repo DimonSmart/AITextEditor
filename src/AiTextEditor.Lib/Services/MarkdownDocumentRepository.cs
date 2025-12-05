@@ -12,17 +12,19 @@ public class MarkdownDocumentRepository : IDocumentRepository
     public Document LoadFromMarkdownFile(string path)
     {
         var markdown = File.ReadAllText(path);
-        // Normalize line endings to avoid index issues if mixed
-        markdown = markdown.Replace("\r\n", "\n").Replace("\r", "\n");
-        
-        var pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
-        var mdDocument = Markdig.Markdown.Parse(markdown, pipeline);
+        return LoadFromMarkdown(markdown);
+    }
 
+    public Document LoadFromMarkdown(string markdown)
+    {
+        var normalized = NormalizeMarkdownContent(markdown);
+        var pipeline = BuildPipeline();
+        var mdDocument = Markdig.Markdown.Parse(normalized, pipeline);
         var document = new Document();
         
         foreach (var mdBlock in mdDocument)
         {
-            ProcessMdBlock(mdBlock, document.Blocks, null, markdown);
+            ProcessMdBlock(mdBlock, document.Blocks, null, normalized);
         }
 
         return document;
@@ -158,16 +160,20 @@ public class MarkdownDocumentRepository : IDocumentRepository
 
     public void SaveToMarkdownFile(Document document, string path)
     {
+        var markdown = SaveToMarkdown(document);
+        File.WriteAllText(path, NormalizeForPlatform(markdown));
+    }
+
+    public string SaveToMarkdown(Document document)
+    {
         var sb = new StringBuilder();
-        
-        // Build hierarchy maps
+
         var blockMap = document.Blocks.ToDictionary(b => b.Id);
         var childrenMap = document.Blocks
             .Where(b => !string.IsNullOrEmpty(b.ParentId))
             .GroupBy(b => b.ParentId!)
             .ToDictionary(g => g.Key, g => g.OrderBy(b => document.Blocks.IndexOf(b)).ToList());
 
-        // Identify roots: blocks with no parent, or parent not in the list (like ListBlock items)
         var roots = document.Blocks
             .Where(b => string.IsNullOrEmpty(b.ParentId) || !blockMap.ContainsKey(b.ParentId))
             .ToList();
@@ -175,13 +181,11 @@ public class MarkdownDocumentRepository : IDocumentRepository
         foreach (var block in roots)
         {
             sb.Append(GenerateMarkdown(block, childrenMap));
-            
-            // Ensure separation between blocks
             sb.AppendLine();
-            sb.AppendLine(); 
+            sb.AppendLine();
         }
 
-        File.WriteAllText(path, sb.ToString().TrimEnd() + Environment.NewLine);
+        return sb.ToString().TrimEnd('\r', '\n') + "\n";
     }
 
     private string GenerateMarkdown(AiTextEditor.Lib.Model.Block block, Dictionary<string, List<AiTextEditor.Lib.Model.Block>> childrenMap)
@@ -248,4 +252,14 @@ public class MarkdownDocumentRepository : IDocumentRepository
 
         return sb.ToString();
     }
+
+    private static MarkdownPipeline BuildPipeline() => new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
+
+    private static string NormalizeMarkdownContent(string text)
+    {
+        var normalized = text.Replace("\r\n", "\n").Replace("\r", "\n");
+        return normalized.EndsWith("\n", StringComparison.Ordinal) ? normalized : normalized + "\n";
+    }
+
+    private static string NormalizeForPlatform(string markdown) => markdown.Replace("\n", Environment.NewLine);
 }
