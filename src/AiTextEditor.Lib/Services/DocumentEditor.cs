@@ -12,7 +12,7 @@ public class DocumentEditor : IDocumentEditor
         // However, operations are usually based on Block IDs.
         // If we process them sequentially, we should look up by ID each time.
         // This is O(N*M) where N is blocks and M is ops. For a prototype, it's fine.
-        
+
         var blocks = document.Blocks; // Reference to the list
 
         foreach (var op in operations)

@@ -46,7 +46,7 @@ public class MarkdownParsingTests
         Assert.Equal(2, document.Blocks.Count);
         Assert.Equal(BlockType.ListItem, document.Blocks[0].Type);
         Assert.Equal(BlockType.ListItem, document.Blocks[1].Type);
-        
+
         // Check parent ID (should be same for both items if they are in same list)
         // Note: Our implementation generates a virtual ID for the list container and assigns it as parent.
         Assert.NotNull(document.Blocks[0].ParentId);

@@ -11,7 +11,7 @@ public class ChunkBuilder : IChunkBuilder
         var chunks = new List<Chunk>();
         var currentChunkBlocks = new List<Block>();
         var currentChunkText = new StringBuilder();
-        
+
         // Stack to track headings: Level -> Text
         // We need to maintain the path. 
         // A simple way is to store the current active heading for each level.

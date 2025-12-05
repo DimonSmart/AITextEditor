@@ -32,6 +32,17 @@ Console.WriteLine($"Loading {inputPath}...");
 Document document = repository.LoadFromMarkdownFile(inputPath);
 Console.WriteLine($"Loaded {document.Blocks.Count} blocks.");
 
+// 2a. Build indexes (text + structural + vector)
+var indexBuilder = new DocumentIndexBuilder();
+var indexes = indexBuilder.Build(document);
+Console.WriteLine($"Text index entries: {indexes.TextIndex.Entries.Count}. Headings: {indexes.StructuralIndex.Headings.Count}.");
+
+IEmbeddingGenerator embeddingGenerator = new SimpleEmbeddingGenerator();
+IVectorIndex vectorIndex = new InMemoryVectorIndex();
+var vectorIndexing = new VectorIndexingService(embeddingGenerator, vectorIndex);
+await vectorIndexing.IndexAsync(document, indexes.TextIndex);
+Console.WriteLine("Vector index populated.");
+
 // 3. Build Chunks
 Console.WriteLine("Building chunks...");
 var chunks = chunkBuilder.BuildChunks(document, maxTokensApprox: 50); // Small maxTokens to see chunks
