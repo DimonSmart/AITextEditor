@@ -32,39 +32,31 @@ public class FunctionCallingLlmEditor : ILlmEditor
     private static string BuildPrompt(List<Block> contextBlocks, string userRequest, string instruction)
     {
         var sb = new StringBuilder();
-        sb.AppendLine("Ты — редактор markdown документов. Пользователь описывает правки, а ты возвращаешь JSON-массив команд редактирования.");
-        sb.AppendLine("Используй только следующие действия:");
-        sb.AppendLine(" - replace: заменить содержимое блока.");
-        sb.AppendLine(" - insert_after: вставить новый блок сразу после указанного.");
-        sb.AppendLine(" - insert_before: вставить новый блок сразу перед указанным.");
-        sb.AppendLine(" - remove: удалить указанный блок.");
-        sb.AppendLine("Форма ответа:");
-        sb.AppendLine(@"[
-  {
-    ""action"": ""replace | insert_after | insert_before | remove"",
-    ""targetBlockId"": ""existing block id"",
-    ""blockType"": ""paragraph | heading | code | quote | listitem"",
-    ""level"": 2, // только для заголовков
-    ""markdown"": ""новый markdown"",
-    ""plainText"": ""тот же текст без разметки"",
-    ""parentId"": ""если нужно сохранить иерархию""
-  }
-]");
-        sb.AppendLine("Никакого текста вне JSON.");
+        sb.AppendLine("You are a Markdown editor. Produce JSON edit operations to apply the user request to the provided blocks.");
+        sb.AppendLine("Allowed actions: replace | insert_after | insert_before | remove.");
+        sb.AppendLine("Each operation format:");
+        sb.AppendLine(@"{
+  ""action"": ""replace | insert_after | insert_before | remove"",
+  ""targetBlockId"": ""existing block id"",
+  ""blockType"": ""paragraph | heading | code | quote | listitem | thematicbreak | html"",
+  ""level"": 0,
+  ""markdown"": ""new markdown"",
+  ""plainText"": ""new plain text"",
+  ""parentId"": ""optional parent block id""
+}");
+        sb.AppendLine("Return ONLY JSON (array or {\"operations\": [...]}) with no explanations.");
         sb.AppendLine();
-        sb.AppendLine("Контекст (blockId | type | level | markdown):");
+        sb.AppendLine("User request:");
+        sb.AppendLine(userRequest);
+        sb.AppendLine("Instruction/context:");
+        sb.AppendLine(instruction);
+        sb.AppendLine("Context blocks (id | type | level | text):");
 
         foreach (var block in contextBlocks)
         {
-            var compact = block.Markdown.Replace("\n", "\\n").Replace("\r", string.Empty);
+            var compact = block.PlainText.Replace("\n", "\\n").Replace("\r", string.Empty);
             sb.AppendLine($"- {block.Id} | {block.Type} | L{block.Level} | {compact}");
         }
-
-        sb.AppendLine();
-        sb.AppendLine($"Запрос пользователя: {userRequest}");
-        sb.AppendLine("Цель правки/ограничения: ");
-        sb.AppendLine(instruction);
-        sb.AppendLine("Ответь строго JSON массивом без пояснений.");
 
         return sb.ToString();
     }

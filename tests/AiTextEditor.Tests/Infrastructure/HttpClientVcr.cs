@@ -20,20 +20,31 @@ public class HttpClientVcr : DelegatingHandler
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         var body = await ReadContentAsync(request, cancellationToken);
-        var cassettePath = Path.Combine(cassetteDirectory, BuildCassetteName(request, body));
+        var modelName = ExtractModelName(body);
+        var cassettePath = Path.Combine(cassetteDirectory, BuildCassetteName(request, body, modelName));
 
         if (File.Exists(cassettePath))
         {
             var recordedJson = await File.ReadAllTextAsync(cassettePath, cancellationToken);
             var recorded = JsonSerializer.Deserialize<RecordedResponse>(recordedJson) ?? new RecordedResponse();
+
+            if (IsServerError(recorded.StatusCode))
+            {
+                // Ignore previously recorded server errors; reissue live request.
+                return await base.SendAsync(request, cancellationToken);
+            }
+
             return ToHttpResponse(recorded);
         }
 
         var liveResponse = await base.SendAsync(request, cancellationToken);
         var payload = await RecordedResponse.FromHttpResponseAsync(liveResponse, cancellationToken);
 
-        var serialized = JsonSerializer.Serialize(payload, new JsonSerializerOptions { WriteIndented = true });
-        await File.WriteAllTextAsync(cassettePath, serialized, cancellationToken);
+        if (!IsServerError(payload.StatusCode))
+        {
+            var serialized = JsonSerializer.Serialize(payload, new JsonSerializerOptions { WriteIndented = true });
+            await File.WriteAllTextAsync(cassettePath, serialized, cancellationToken);
+        }
 
         // Rewind response content for caller
         if (liveResponse.Content != null)
@@ -84,17 +95,18 @@ public class HttpClientVcr : DelegatingHandler
         }
     }
 
-    private static string BuildCassetteName(HttpRequestMessage request, string body)
+    private static string BuildCassetteName(HttpRequestMessage request, string body, string modelName)
     {
         var target = request.RequestUri?.ToString() ?? "unknown";
-        var rawKey = $"{request.Method}:{target}:{body}";
+        var rawKey = $"{request.Method}:{target}:{modelName}:{body}";
 
         using var sha = SHA256.Create();
         var hash = Convert.ToHexString(sha.ComputeHash(Encoding.UTF8.GetBytes(rawKey))).ToLowerInvariant();
         var shortHash = hash[..16];
 
         var safeName = SanitizeFileName(target);
-        return $"{request.Method.Method}_{safeName}_{shortHash}.json";
+        var safeModel = string.IsNullOrWhiteSpace(modelName) ? "model" : SanitizeFileName(modelName);
+        return $"{request.Method.Method}_{safeModel}_{safeName}_{shortHash}.json";
     }
 
     private static string SanitizeFileName(string name)
@@ -108,6 +120,37 @@ public class HttpClientVcr : DelegatingHandler
         }
 
         return builder.ToString();
+    }
+
+    private static string ExtractModelName(string body)
+    {
+        if (string.IsNullOrWhiteSpace(body))
+        {
+            return string.Empty;
+        }
+
+        try
+        {
+            using var doc = JsonDocument.Parse(body);
+            if (doc.RootElement.ValueKind == JsonValueKind.Object &&
+                doc.RootElement.TryGetProperty("model", out var modelProp) &&
+                modelProp.ValueKind == JsonValueKind.String)
+            {
+                return modelProp.GetString() ?? string.Empty;
+            }
+        }
+        catch (JsonException)
+        {
+            // ignore
+        }
+
+        return string.Empty;
+    }
+
+    private static bool IsServerError(HttpStatusCode statusCode)
+    {
+        var code = (int)statusCode;
+        return code >= 500;
     }
 
     private sealed class RecordedResponse

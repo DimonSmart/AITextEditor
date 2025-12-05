@@ -1,31 +1,33 @@
 using System.Text;
-using System.Text.RegularExpressions;
+using System.Linq;
 using AiTextEditor.Lib.Interfaces;
 using AiTextEditor.Lib.Model;
+using AiTextEditor.Lib.Model.Indexing;
+using AiTextEditor.Lib.Model.Intent;
 
 namespace AiTextEditor.Lib.Services;
 
 /// <summary>
-/// Turns a user request into edit operations by selecting context
-/// and delegating the actual operation synthesis to an ILlmEditor.
+/// Transforms a raw user request into an Intent, selects target blocks using indexes,
+/// and delegates edit operation synthesis to an ILlmEditor.
 /// </summary>
 public class AiCommandPlanner
 {
-    private readonly IChunkBuilder chunkBuilder;
-    private readonly IVectorStore vectorStore;
+    private readonly DocumentIndexBuilder indexBuilder;
+    private readonly VectorIndexingService vectorIndexing;
+    private readonly IntentParser intentParser;
     private readonly ILlmEditor llmEditor;
-    private readonly int maxTokensPerChunk;
 
     public AiCommandPlanner(
-        IChunkBuilder chunkBuilder,
-        IVectorStore vectorStore,
-        ILlmEditor llmEditor,
-        int maxTokensPerChunk = 800)
+        DocumentIndexBuilder indexBuilder,
+        VectorIndexingService vectorIndexing,
+        IntentParser intentParser,
+        ILlmEditor llmEditor)
     {
-        this.chunkBuilder = chunkBuilder;
-        this.vectorStore = vectorStore;
-        this.llmEditor = llmEditor;
-        this.maxTokensPerChunk = maxTokensPerChunk;
+        this.indexBuilder = indexBuilder ?? throw new ArgumentNullException(nameof(indexBuilder));
+        this.vectorIndexing = vectorIndexing ?? throw new ArgumentNullException(nameof(vectorIndexing));
+        this.intentParser = intentParser ?? throw new ArgumentNullException(nameof(intentParser));
+        this.llmEditor = llmEditor ?? throw new ArgumentNullException(nameof(llmEditor));
     }
 
     public async Task<IReadOnlyList<EditOperation>> PlanAsync(
@@ -40,14 +42,25 @@ public class AiCommandPlanner
             return Array.Empty<EditOperation>();
         }
 
-        var chunks = chunkBuilder.BuildChunks(document, maxTokensPerChunk);
-        await vectorStore.IndexAsync(document.Id, chunks, ct);
+        var intentResult = await intentParser.ParseAsync(userRequest, ct);
+        if (!intentResult.Success || intentResult.Intent == null)
+        {
+            return Array.Empty<EditOperation>();
+        }
 
-        var contextBlocks = ResolveContext(document, chunks, userRequest);
-        var instruction = BuildInstruction(userRequest, contextBlocks);
+        var indexes = indexBuilder.Build(document);
+        await vectorIndexing.IndexAsync(document, indexes.TextIndex, ct);
+
+        var targetBlocks = await ResolveTargetsAsync(document, indexes, intentResult.Intent, userRequest, ct);
+        if (targetBlocks.Count == 0)
+        {
+            targetBlocks.AddRange(document.Blocks.Take(Math.Min(3, document.Blocks.Count)));
+        }
+
+        var instruction = BuildInstruction(intentResult.Intent, targetBlocks);
 
         var operations = await llmEditor.GetEditOperationsAsync(
-            contextBlocks,
+            targetBlocks,
             rawUserText: userRequest,
             instruction: instruction,
             ct);
@@ -55,63 +68,110 @@ public class AiCommandPlanner
         return operations;
     }
 
-    private List<Block> ResolveContext(Document document, List<Chunk> chunks, string userRequest)
+    private async Task<List<Block>> ResolveTargetsAsync(
+        Document document,
+        DocumentIndexes indexes,
+        IntentDto intent,
+        string userRequest,
+        CancellationToken ct)
     {
-        var context = new List<Block>();
-        var headingMatch = FindHeadingMatch(document, userRequest);
+        var result = new List<Block>();
+        var blocksById = document.Blocks.ToDictionary(b => b.Id);
 
-        if (headingMatch != null)
+        switch (intent.ScopeType)
         {
-            context.AddRange(GetBlocksUnderHeading(document, headingMatch));
+            case IntentScopeType.Structural:
+                result.AddRange(SelectStructuralTargets(document, indexes.StructuralIndex, intent, userRequest, blocksById));
+                break;
+
+            case IntentScopeType.SemanticLocal:
+                result.AddRange(await SelectSemanticTargetsAsync(document, intent, blocksById, ct));
+                break;
+
+            case IntentScopeType.Global:
+                result.AddRange(SelectGlobalTargets(document));
+                break;
+
+            default:
+                break;
         }
 
-        var quotedFragments = ExtractQuotedFragments(userRequest);
-        foreach (var fragment in quotedFragments)
-        {
-            var block = document.Blocks.FirstOrDefault(b =>
-                (!string.IsNullOrEmpty(b.Markdown) && b.Markdown.Contains(fragment, StringComparison.OrdinalIgnoreCase)) ||
-                (!string.IsNullOrEmpty(b.PlainText) && b.PlainText.Contains(fragment, StringComparison.OrdinalIgnoreCase)));
-
-            if (block != null && !context.Contains(block))
-            {
-                context.Add(block);
-            }
-        }
-
-        if (context.Count == 0 && chunks.Count > 0)
-        {
-            var firstChunk = chunks[0];
-            foreach (var blockId in firstChunk.BlockIds)
-            {
-                var block = document.Blocks.FirstOrDefault(b => b.Id == blockId);
-                if (block != null)
-                {
-                    context.Add(block);
-                }
-            }
-        }
-
-        if (context.Count == 0)
-        {
-            context.AddRange(document.Blocks.Take(Math.Min(3, document.Blocks.Count)));
-        }
-
-        return context;
+        return result;
     }
 
-    private static Block? FindHeadingMatch(Document document, string userRequest)
+    private static IEnumerable<Block> SelectStructuralTargets(
+        Document document,
+        StructuralIndex structuralIndex,
+        IntentDto intent,
+        string userRequest,
+        Dictionary<string, Block> blocksById)
     {
-        var request = userRequest.ToLowerInvariant();
-        foreach (var heading in document.Blocks.Where(b => b.Type == BlockType.Heading))
+        var targets = new List<Block>();
+        var scope = intent.ScopeDescriptor;
+
+        StructuralIndexEntry? headingEntry = null;
+
+        if (!string.IsNullOrWhiteSpace(scope.StructuralPath))
         {
-            if (!string.IsNullOrWhiteSpace(heading.PlainText) &&
-                request.Contains(heading.PlainText.ToLowerInvariant(), StringComparison.Ordinal))
+            headingEntry = structuralIndex.Headings.FirstOrDefault(h =>
+                string.Equals(h.StructuralPath, scope.StructuralPath, StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (headingEntry == null && scope.ChapterNumber.HasValue)
+        {
+            var expectedNumbering = scope.SectionNumber.HasValue
+                ? $"{scope.ChapterNumber.Value}.{scope.SectionNumber.Value}"
+                : scope.ChapterNumber.Value.ToString();
+
+            headingEntry = structuralIndex.Headings.FirstOrDefault(h =>
+                h.Numbering.StartsWith(expectedNumbering, StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (headingEntry == null && !string.IsNullOrWhiteSpace(userRequest))
+        {
+            headingEntry = structuralIndex.Headings.FirstOrDefault(h =>
+                userRequest.Contains(h.Title, StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (headingEntry != null && blocksById.TryGetValue(headingEntry.BlockId, out var headingBlock))
+        {
+            targets.AddRange(GetBlocksUnderHeading(document, headingBlock));
+        }
+
+        return targets;
+    }
+
+    private async Task<IEnumerable<Block>> SelectSemanticTargetsAsync(
+        Document document,
+        IntentDto intent,
+        Dictionary<string, Block> blocksById,
+        CancellationToken ct)
+    {
+        var targets = new List<Block>();
+        var query = intent.ScopeDescriptor.SemanticQuery;
+
+        if (string.IsNullOrWhiteSpace(query))
+        {
+            return targets;
+        }
+
+        var results = await vectorIndexing.QueryAsync(document.Id, query, maxResults: 5, ct);
+        foreach (var record in results)
+        {
+            if (blocksById.TryGetValue(record.BlockId, out var block) && !targets.Contains(block))
             {
-                return heading;
+                targets.Add(block);
             }
         }
 
-        return null;
+        return targets;
+    }
+
+    private static IEnumerable<Block> SelectGlobalTargets(Document document)
+    {
+        return document.Blocks
+            .Where(b => b.Type is BlockType.Paragraph or BlockType.ListItem or BlockType.Code or BlockType.Quote)
+            .ToList();
     }
 
     private static List<Block> GetBlocksUnderHeading(Document document, Block heading)
@@ -133,31 +193,30 @@ public class AiCommandPlanner
         return blocks;
     }
 
-    private static IEnumerable<string> ExtractQuotedFragments(string userRequest)
-    {
-        var matches = Regex.Matches(userRequest, "[\"“”']([^\"“”']+)[\"“”']");
-        foreach (Match match in matches)
-        {
-            yield return match.Groups[1].Value;
-        }
-    }
-
-    private static string BuildInstruction(string userRequest, List<Block> contextBlocks)
+    private static string BuildInstruction(IntentDto intent, List<Block> targetBlocks)
     {
         var sb = new StringBuilder();
-        sb.AppendLine("Преобразуй запрос пользователя в точные операции редактирования с привязкой к blockId.");
-        sb.AppendLine("Если пользователь упоминает главу, работай только внутри неё. Если называет конкретный фрагмент, используй блок с этим текстом как точку привязки.");
-        sb.AppendLine("Допустимые действия: replace, insert_after, insert_before, remove. Не добавляй других полей.");
-        sb.AppendLine("Учитывай ParentId, чтобы сохранять вложенные структуры списков и цитат.");
-        sb.AppendLine("Запрос: ");
-        sb.AppendLine(userRequest);
-        sb.AppendLine("Контекст для поиска (blockId -> plainText):");
-
-        foreach (var block in contextBlocks)
+        sb.AppendLine("You are an editor for a Markdown document. Apply the given intent to the provided blocks.");
+        sb.AppendLine($"ScopeType: {intent.ScopeType}");
+        sb.AppendLine("ScopeDescriptor:");
+        sb.AppendLine($"  chapterNumber: {intent.ScopeDescriptor.ChapterNumber}");
+        sb.AppendLine($"  sectionNumber: {intent.ScopeDescriptor.SectionNumber}");
+        sb.AppendLine($"  structuralPath: {intent.ScopeDescriptor.StructuralPath}");
+        sb.AppendLine($"  semanticQuery: {intent.ScopeDescriptor.SemanticQuery}");
+        sb.AppendLine("Payload:");
+        foreach (var kvp in intent.Payload.Fields)
         {
-            sb.AppendLine($"{block.Id}: {block.PlainText}");
+            sb.AppendLine($"  {kvp.Key}: {kvp.Value}");
         }
 
+        sb.AppendLine("Target blocks (id | type | numbering | path | text):");
+        foreach (var block in targetBlocks)
+        {
+            var plain = block.PlainText.Replace("\n", "\\n").Replace("\r", string.Empty);
+            sb.AppendLine($"- {block.Id} | {block.Type} | {block.Numbering} | {block.StructuralPath} | {plain}");
+        }
+
+        sb.AppendLine("Return JSON edit operations.");
         return sb.ToString();
     }
 }

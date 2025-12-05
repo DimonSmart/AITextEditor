@@ -1,104 +1,163 @@
+using AiTextEditor.Lib.Interfaces;
 using AiTextEditor.Lib.Model;
+using AiTextEditor.Lib.Model.Indexing;
 using AiTextEditor.Lib.Services;
 using AiTextEditor.Tests.Fakes;
 using Xunit;
+using System.Linq;
 
 namespace AiTextEditor.Tests;
 
 public class AiCommandPlannerTests
 {
     [Fact]
-    public async Task PlanAsync_RespectsHeadingContextWhenBuildingOperations()
+    public async Task PlanAsync_SelectsStructuralScopeBlocks()
     {
         var document = new Document
         {
             Blocks =
             [
-                new Block { Id = "h_intro", Type = BlockType.Heading, Level = 1, Markdown = "# Intro", PlainText = "Intro" },
-                new Block { Id = "p_intro", Type = BlockType.Paragraph, Markdown = "Intro text", PlainText = "Intro text" },
-                new Block { Id = "h_setup", Type = BlockType.Heading, Level = 2, Markdown = "## Setup", PlainText = "Setup" },
-                new Block { Id = "p_setup", Type = BlockType.Paragraph, Markdown = "Old setup text", PlainText = "Old setup text" },
-                new Block { Id = "h_usage", Type = BlockType.Heading, Level = 2, Markdown = "## Usage", PlainText = "Usage" },
-                new Block { Id = "p_usage", Type = BlockType.Paragraph, Markdown = "Usage text", PlainText = "Usage text" },
+                new Block { Id = "h1", Type = BlockType.Heading, Level = 1, Numbering = "1", Markdown = "# Chapter 1", PlainText = "Chapter 1" },
+                new Block { Id = "p1", Type = BlockType.Paragraph, Markdown = "Intro text", PlainText = "Intro text" },
+                new Block { Id = "h2", Type = BlockType.Heading, Level = 1, Numbering = "2", Markdown = "# Chapter 2", PlainText = "Chapter 2" },
+                new Block { Id = "p2", Type = BlockType.Paragraph, Markdown = "Second chapter text", PlainText = "Second chapter text" },
+                new Block { Id = "p3", Type = BlockType.Paragraph, Markdown = "More text", PlainText = "More text" },
             ]
         };
 
-        var llm = new InspectableLlmClient(prompt =>
+        var intentLlm = new InspectableLlmClient(_ =>
         {
-            Assert.Contains("h_setup", prompt);
-            Assert.Contains("p_setup", prompt);
-            Assert.Contains("Setup", prompt);
+            return """
+            {
+              "scopeType": "Structural",
+              "scopeDescriptor": { "chapterNumber": 2 },
+              "payload": { "todoText": "Check examples" }
+            }
+            """;
+        });
+
+        var opsLlm = new InspectableLlmClient(prompt =>
+        {
+            Assert.Contains("p2", prompt);
+            Assert.DoesNotContain("p1", prompt);
 
             return """
             [
               {
-                "action": "replace",
-                "targetBlockId": "p_setup",
+                "action": "insert_after",
+                "targetBlockId": "p2",
                 "blockType": "paragraph",
-                "markdown": "Настроено",
-                "plainText": "Настроено"
+                "markdown": "TODO: check examples.",
+                "plainText": "TODO: check examples."
               }
             ]
             """;
         });
 
-        var planner = new AiCommandPlanner(
-            new ChunkBuilder(),
-            new InMemoryVectorStore(),
-            new FunctionCallingLlmEditor(llm));
+        var planner = CreatePlanner(intentLlm, opsLlm);
 
-        var ops = await planner.PlanAsync(document, "В разделе Setup перепиши описание на \"Настроено\".");
+        var ops = await planner.PlanAsync(document, "Добавь TODO во вторую главу");
 
         var op = Assert.Single(ops);
-        Assert.Equal(EditActionType.Replace, op.Action);
-        Assert.Equal("p_setup", op.TargetBlockId);
-        Assert.Equal("Настроено", op.NewBlock?.PlainText);
+        Assert.Equal(EditActionType.InsertAfter, op.Action);
+        Assert.Equal("p2", op.TargetBlockId);
+        Assert.Equal("TODO: check examples.", op.NewBlock?.PlainText);
     }
 
     [Fact]
-    public async Task PlanAsync_UsesQuotedFragmentAsAnchorForInsert()
+    public async Task PlanAsync_UsesSemanticScopeForTargets()
     {
         var document = new Document
         {
             Blocks =
             [
-                new Block { Id = "h_ch1", Type = BlockType.Heading, Level = 1, Markdown = "# Chapter 1", PlainText = "Chapter 1" },
-                new Block { Id = "p1", Type = BlockType.Paragraph, Markdown = "Intro paragraph", PlainText = "Intro paragraph" },
-                new Block { Id = "code1", Type = BlockType.Code, Markdown = "```csharp\n// TODO: rewrite\n```", PlainText = "// TODO: rewrite" },
-                new Block { Id = "p2", Type = BlockType.Paragraph, Markdown = "After code", PlainText = "After code" }
+                new Block { Id = "h_ch1", Type = BlockType.Heading, Level = 1, Numbering = "1", Markdown = "# Chapter 1", PlainText = "Chapter 1" },
+                new Block { Id = "p1", Type = BlockType.Paragraph, Markdown = "Intro paragraph about monolith vs microservices", PlainText = "Intro paragraph about monolith vs microservices" },
+                new Block { Id = "p2", Type = BlockType.Paragraph, Markdown = "Another paragraph", PlainText = "Another paragraph" }
             ]
         };
 
-        var llm = new InspectableLlmClient(prompt =>
+        var intentLlm = new InspectableLlmClient(_ =>
         {
-            Assert.Contains("code1", prompt);
-            Assert.Contains("TODO: rewrite", prompt);
-
             return """
             {
-              "operations": [
-                {
-                  "action": "insert_after",
-                  "targetBlockId": "code1",
-                  "blockType": "paragraph",
-                  "markdown": "Пояснение для читателя.",
-                  "plainText": "Пояснение для читателя."
-                }
-              ]
+              "scopeType": "SemanticLocal",
+              "scopeDescriptor": { "semanticQuery": "monolith microservices" },
+              "payload": { "style": "simpler" }
             }
             """;
         });
 
-        var planner = new AiCommandPlanner(
-            new ChunkBuilder(),
-            new InMemoryVectorStore(),
-            new FunctionCallingLlmEditor(llm));
+        var opsLlm = new InspectableLlmClient(prompt =>
+        {
+            Assert.Contains("p1", prompt);
 
-        var ops = await planner.PlanAsync(document, "После блока 'TODO: rewrite' вставь пояснение для читателя.");
+            return """
+            [
+              {
+                "action": "replace",
+                "targetBlockId": "p1",
+                "blockType": "paragraph",
+                "markdown": "Simpler text",
+                "plainText": "Simpler text"
+              }
+            ]
+            """;
+        });
+
+        var planner = CreatePlanner(intentLlm, opsLlm, new KeywordVectorIndex());
+
+        var ops = await planner.PlanAsync(document, "Найди монолит и микросервисы и упростись");
 
         var op = Assert.Single(ops);
-        Assert.Equal(EditActionType.InsertAfter, op.Action);
-        Assert.Equal("code1", op.TargetBlockId);
-        Assert.Equal("Пояснение для читателя.", op.NewBlock?.PlainText);
+        Assert.Equal(EditActionType.Replace, op.Action);
+        Assert.Equal("p1", op.TargetBlockId);
+        Assert.Equal("Simpler text", op.NewBlock?.PlainText);
+    }
+
+    private static AiCommandPlanner CreatePlanner(ILlmClient intentLlm, ILlmClient opsLlm, IVectorIndex? vectorIndex = null)
+    {
+        var vector = vectorIndex ?? new InMemoryVectorIndex();
+        var vectorService = new VectorIndexingService(new SimpleEmbeddingGenerator(), vector);
+        var intentParser = new IntentParser(intentLlm);
+        var llmEditor = new FunctionCallingLlmEditor(opsLlm);
+
+        return new AiCommandPlanner(
+            new DocumentIndexBuilder(),
+            vectorService,
+            intentParser,
+            llmEditor);
+    }
+
+    private sealed class KeywordVectorIndex : IVectorIndex
+    {
+        private readonly Dictionary<string, List<VectorRecord>> store = new(StringComparer.OrdinalIgnoreCase);
+
+        public Task IndexAsync(string documentId, IEnumerable<VectorRecord> records, CancellationToken ct = default)
+        {
+            store[documentId] = records.ToList();
+            return Task.CompletedTask;
+        }
+
+        public Task<IReadOnlyList<VectorRecord>> QueryAsync(string documentId, float[] queryEmbedding, int maxResults = 5, CancellationToken ct = default)
+        {
+            if (!store.TryGetValue(documentId, out var records))
+            {
+                return Task.FromResult<IReadOnlyList<VectorRecord>>(Array.Empty<VectorRecord>());
+            }
+
+            var preferred = records.Where(r =>
+                r.Text.Contains("monolith", StringComparison.OrdinalIgnoreCase) ||
+                r.Text.Contains("microservices", StringComparison.OrdinalIgnoreCase))
+                .Take(maxResults)
+                .ToList();
+
+            if (preferred.Count == 0)
+            {
+                preferred = records.Take(maxResults).ToList();
+            }
+
+            return Task.FromResult<IReadOnlyList<VectorRecord>>(preferred);
+        }
     }
 }

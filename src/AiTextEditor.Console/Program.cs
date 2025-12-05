@@ -1,4 +1,4 @@
-﻿using AiTextEditor.Lib.Interfaces;
+using AiTextEditor.Lib.Interfaces;
 using AiTextEditor.Lib.Model;
 using AiTextEditor.Lib.Services;
 
@@ -6,8 +6,6 @@ Console.WriteLine("--- AI Text Editor Prototype ---");
 
 // 1. Setup Services
 IDocumentRepository repository = new MarkdownDocumentRepository();
-IChunkBuilder chunkBuilder = new ChunkBuilder();
-// Configure Ollama endpoint/model (defaults to local daemon)
 var ollamaEndpoint = Environment.GetEnvironmentVariable("OLLAMA_ENDPOINT") ?? "http://localhost:11434";
 var ollamaModel = Environment.GetEnvironmentVariable("OLLAMA_MODEL") ?? "qwen3:latest";
 
@@ -17,6 +15,12 @@ ILlmClient llmClient = SemanticKernelLlmClient.CreateOllamaClient(
 
 ILlmEditor llmEditor = new FunctionCallingLlmEditor(llmClient);
 IDocumentEditor docEditor = new DocumentEditor();
+var indexBuilder = new DocumentIndexBuilder();
+IEmbeddingGenerator embeddingGenerator = new SimpleEmbeddingGenerator();
+IVectorIndex vectorIndex = new InMemoryVectorIndex();
+var vectorIndexing = new VectorIndexingService(embeddingGenerator, vectorIndex);
+var intentParser = new IntentParser(llmClient);
+var planner = new AiCommandPlanner(indexBuilder, vectorIndexing, intentParser, llmEditor);
 
 string inputPath = "sample.md";
 string outputPath = "sample_edited.md";
@@ -32,64 +36,28 @@ Console.WriteLine($"Loading {inputPath}...");
 Document document = repository.LoadFromMarkdownFile(inputPath);
 Console.WriteLine($"Loaded {document.Blocks.Count} blocks.");
 
-// 2a. Build indexes (text + structural + vector)
-var indexBuilder = new DocumentIndexBuilder();
-var indexes = indexBuilder.Build(document);
-Console.WriteLine($"Text index entries: {indexes.TextIndex.Entries.Count}. Headings: {indexes.StructuralIndex.Headings.Count}.");
+// 3. Get user command (demo)
+string userCommand = "Добавь TODO во вторую главу: проверить, что все примеры компилируются.";
+Console.WriteLine($"User command: {userCommand}");
 
-IEmbeddingGenerator embeddingGenerator = new SimpleEmbeddingGenerator();
-IVectorIndex vectorIndex = new InMemoryVectorIndex();
-var vectorIndexing = new VectorIndexingService(embeddingGenerator, vectorIndex);
-await vectorIndexing.IndexAsync(document, indexes.TextIndex);
-Console.WriteLine("Vector index populated.");
-
-// 3. Build Chunks
-Console.WriteLine("Building chunks...");
-var chunks = chunkBuilder.BuildChunks(document, maxTokensApprox: 50); // Small maxTokens to see chunks
-foreach (var chunk in chunks)
+// 4. Plan edits via AiCommandPlanner (Intent + indexes)
+var operations = await planner.PlanAsync(document, userCommand);
+Console.WriteLine($"Planned {operations.Count} operations.");
+foreach (var op in operations)
 {
-    Console.WriteLine($"Chunk {chunk.Id.Substring(0, 8)}: {chunk.BlockIds.Count} blocks. Path: {chunk.HeadingPath}");
+    Console.WriteLine($"Op: {op.Action} on {op.TargetBlockId}");
 }
 
-// 4. Select a block to edit (First paragraph after first heading)
-// In sample.md:
-// Block 0: Heading (# Chapter 1...)
-// Block 1: Paragraph (This is the first paragraph...)
-var targetBlock = document.Blocks.FirstOrDefault(b => b.Type == BlockType.Paragraph);
+// 5. Apply edits
+Console.WriteLine("Applying edits...");
+docEditor.ApplyEdits(document, operations);
 
-if (targetBlock != null)
-{
-    Console.WriteLine($"\nSelected target block: {targetBlock.Id} - {targetBlock.PlainText.Substring(0, Math.Min(20, targetBlock.PlainText.Length))}...");
+// 6. Save result
+Console.WriteLine($"Saving to {outputPath}...");
+repository.SaveToMarkdownFile(document, outputPath);
+Console.WriteLine("Done.");
 
-    // 5. Call LLM Editor
-    Console.WriteLine("Calling LLM Editor...");
-    var context = new List<Block> { targetBlock }; // Minimal context
-    string userText = "This is a NEW paragraph inserted by the AI.";
-    string instruction = "Insert new paragraph after the selected one.";
-
-    var operations = await llmEditor.GetEditOperationsAsync(context, userText, instruction);
-
-    Console.WriteLine($"Received {operations.Count} operations.");
-    foreach (var op in operations)
-    {
-        Console.WriteLine($"Op: {op.Action} on {op.TargetBlockId}");
-    }
-
-    // 6. Apply Edits
-    Console.WriteLine("Applying edits...");
-    docEditor.ApplyEdits(document, operations);
-
-    // 7. Save Result
-    Console.WriteLine($"Saving to {outputPath}...");
-    repository.SaveToMarkdownFile(document, outputPath);
-    Console.WriteLine("Done.");
-
-    // Show result preview
-    Console.WriteLine("\n--- Result Preview ---");
-    var savedText = File.ReadAllText(outputPath);
-    Console.WriteLine(savedText);
-}
-else
-{
-    Console.WriteLine("No paragraph found to edit.");
-}
+// Show result preview
+Console.WriteLine("\n--- Result Preview ---");
+var savedText = File.ReadAllText(outputPath);
+Console.WriteLine(savedText);
