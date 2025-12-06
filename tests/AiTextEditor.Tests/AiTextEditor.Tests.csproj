@@ -26,4 +26,10 @@
     <ProjectReference Include="..\..\src\AiTextEditor.Lib\AiTextEditor.Lib.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="DotNet.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

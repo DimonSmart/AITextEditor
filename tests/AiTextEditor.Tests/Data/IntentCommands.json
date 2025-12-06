@@ -1,0 +1,22 @@
+[
+  "Add a TODO note to chapter two: verify all examples compile.",
+  "Rewrite the intro about monoliths vs microservices to be clearer for juniors.",
+  "In chapter one, tighten the opening paragraph so it grabs attention in the first two sentences.",
+  "After the section 'Why scaling is hard', insert a short real-world story about the 2019 billing outage.",
+  "Rename chapter three to 'Designing boundaries' and update any internal cross-references.",
+  "Drop the entire subsection titled 'Historical note' from chapter four; it's too distracting.",
+  "In the dependency injection chapter, rewrite the first code sample to use minimal APIs instead of old startup classes.",
+  "Wherever I rant about ORMs being evil, tone it down and make it sound more balanced and nuanced.",
+  "Before the summary of chapter six, add a checklist of five bullet points the reader should be able to do.",
+  "Take the paragraph that begins 'In a perfect world...' and move it up right after the first diagram in that chapter.",
+  "Replace the term 'junior developer' with 'early-career developer' across the whole book.",
+  "In the testing chapter, add a short example showing how to mock HttpClient properly.",
+  "Split the long list of cloud patterns into two separate tables: one for resiliency, one for cost optimization.",
+  "At the end of the CQRS section, add a warning box about overengineering for small teams.",
+  "Shorten the explanation of Big-O notation so it fits into a single concise paragraph.",
+  "In chapter eight, add a side note comparing Azure Functions and AWS Lambda, but keep it vendor-neutral in tone.",
+  "Change the heading 'Real story' to 'Case study' everywhere it appears.",
+  "Rewrite the conclusion to sound more like a friendly pep talk and less like release notes.",
+  "Add a one-page appendix with recommended learning paths for backend developers coming from Java.",
+  "In the 'Common pitfalls' chapter, turn the numbered list into a table with columns for symptom, cause, and fix."
+]

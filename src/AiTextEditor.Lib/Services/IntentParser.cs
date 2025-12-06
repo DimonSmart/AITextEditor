@@ -8,7 +8,7 @@ namespace AiTextEditor.Lib.Services;
 /// <summary>
 /// Uses an LLM to translate a raw user command into a structured Intent DTO.
 /// </summary>
-public class IntentParser
+public class IntentParser : IIntentParser
 {
     private readonly ILlmClient llmClient;
     private readonly JsonSerializerOptions jsonOptions = new()

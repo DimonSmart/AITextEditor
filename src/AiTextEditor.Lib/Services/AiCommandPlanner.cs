@@ -15,13 +15,13 @@ public class AiCommandPlanner
 {
     private readonly DocumentIndexBuilder indexBuilder;
     private readonly VectorIndexingService vectorIndexing;
-    private readonly IntentParser intentParser;
+    private readonly IIntentParser intentParser;
     private readonly ILlmEditor llmEditor;
 
     public AiCommandPlanner(
         DocumentIndexBuilder indexBuilder,
         VectorIndexingService vectorIndexing,
-        IntentParser intentParser,
+        IIntentParser intentParser,
         ILlmEditor llmEditor)
     {
         this.indexBuilder = indexBuilder ?? throw new ArgumentNullException(nameof(indexBuilder));

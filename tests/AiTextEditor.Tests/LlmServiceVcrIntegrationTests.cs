@@ -16,34 +16,8 @@ public class LlmServiceVcrIntegrationTests
         this.output = output;
     }
 
-    public static IEnumerable<object[]> IntentCommands => new[]
-    {
-    new object[] { "Add a TODO note to chapter two: verify all examples compile." },
-    ["Rewrite the intro about monoliths vs microservices to be clearer for juniors."],
-
-    ["In chapter one, tighten the opening paragraph so it grabs attention in the first two sentences."],
-    ["After the section 'Why scaling is hard', insert a short real-world story about the 2019 billing outage."],
-    ["Rename chapter three to 'Designing boundaries' and update any internal cross-references."],
-    ["Drop the entire subsection titled 'Historical note' from chapter four; it's too distracting."],
-    ["In the dependency injection chapter, rewrite the first code sample to use minimal APIs instead of old startup classes."],
-    ["Wherever I rant about ORMs being evil, tone it down and make it sound more balanced and nuanced."],
-    ["Before the summary of chapter six, add a checklist of five bullet points the reader should be able to do."],
-    ["Take the paragraph that begins 'In a perfect world...' and move it up right after the first diagram in that chapter."],
-    ["Replace the term 'junior developer' with 'early-career developer' across the whole book."],
-    ["In the testing chapter, add a short example showing how to mock HttpClient properly."],
-    ["Split the long list of cloud patterns into two separate tables: one for resiliency, one for cost optimization."],
-    ["At the end of the CQRS section, add a warning box about overengineering for small teams."],
-    ["Shorten the explanation of Big-O notation so it fits into a single concise paragraph."],
-    ["In chapter eight, add a side note comparing Azure Functions and AWS Lambda, but keep it vendor-neutral in tone."],
-    ["Change the heading 'Real story' to 'Case study' everywhere it appears."],
-    ["Rewrite the conclusion to sound more like a friendly pep talk and less like release notes."],
-    ["Add a one-page appendix with recommended learning paths for backend developers coming from Java."],
-    ["In the 'Common pitfalls' chapter, turn the numbered list into a table with columns for symptom, cause, and fix."]
-    };
-
-
     [Theory]
-    [MemberData(nameof(IntentCommands))]
+    [MemberData(nameof(TestScenarios.IntentCommands), MemberType = typeof(TestScenarios))]
     public async Task IntentParser_WithRealLlm_ProducesStructuredIntent(string userCommand)
     {
         using var context = LlmTestHelper.CreateClient("intent-parser");
@@ -62,6 +36,42 @@ public class LlmServiceVcrIntegrationTests
         Assert.True(result.Success, "LLM should return parsable intent.");
         Assert.NotNull(result.Intent);
         Assert.NotEqual(IntentScopeType.Unknown, result.Intent!.ScopeType);
+    }
+
+    [Theory]
+    [MemberData(nameof(TestScenarios.IntentCommands), MemberType = typeof(TestScenarios))]
+    public async Task AiCommandPlanner_RunAllCommands_OnDotNetMd(string userCommand)
+    {
+        // 1. Load the document
+        var repo = new MarkdownDocumentRepository();
+        var documentPath = Path.Combine(AppContext.BaseDirectory, "DotNet.md");
+        Assert.True(File.Exists(documentPath), $"Document not found at {documentPath}");
+        var document = repo.LoadFromMarkdownFile(documentPath);
+
+        // 2. Setup services
+        using var intentContext = LlmTestHelper.CreateClient("intent-parser");
+        // We don't need editorContext because we use FakeLlmEditor
+
+        var intentParser = new IntentParser(intentContext.LlmClient);
+        var llmEditor = new FakeLlmEditor(output); // Use Fake
+
+        var vectorIndex = new InMemoryVectorIndex();
+        var vectorService = new VectorIndexingService(new SimpleEmbeddingGenerator(), vectorIndex);
+        var indexBuilder = new DocumentIndexBuilder();
+
+        var planner = new AiCommandPlanner(indexBuilder, vectorService, intentParser, llmEditor);
+
+        // 3. Execute command
+        output.WriteLine($"Executing command: {userCommand}");
+        var operations = await planner.PlanAsync(document, userCommand);
+
+        // 4. Verify results
+        output.WriteLine("Generated operations:");
+        output.WriteLine(JsonSerializer.Serialize(operations, new JsonSerializerOptions { WriteIndented = true }));
+
+        // We don't assert specific content because the commands are generic and might not match DotNet.md content.
+        // But we assert that the planner runs without exception and returns a list (empty or not).
+        Assert.NotNull(operations);
     }
 
     [Fact]
@@ -91,5 +101,52 @@ public class LlmServiceVcrIntegrationTests
         Assert.Contains(ops, op => op.TargetBlockId != null && knownIds.Contains(op.TargetBlockId));
         Assert.True(ops.Any(op => op.NewBlock != null && !string.IsNullOrWhiteSpace(op.NewBlock.Markdown)),
             "Expected at least one operation to include new markdown content.");
+    }
+
+    [Fact]
+    public async Task AiCommandPlanner_WithRealLlm_ExecutesFullPipeline()
+    {
+        // 1. Load the document
+        var repo = new MarkdownDocumentRepository();
+        var documentPath = Path.Combine(AppContext.BaseDirectory, "DotNet.md");
+        Assert.True(File.Exists(documentPath), $"Document not found at {documentPath}");
+        var document = repo.LoadFromMarkdownFile(documentPath);
+
+        // 2. Setup services
+        using var intentContext = LlmTestHelper.CreateClient("intent-parser");
+        using var editorContext = LlmTestHelper.CreateClient("llm-editor");
+
+        var intentParser = new IntentParser(intentContext.LlmClient);
+        var llmEditor = new FunctionCallingLlmEditor(editorContext.LlmClient);
+        
+        var vectorIndex = new InMemoryVectorIndex();
+        var vectorService = new VectorIndexingService(new SimpleEmbeddingGenerator(), vectorIndex);
+        var indexBuilder = new DocumentIndexBuilder();
+
+        var planner = new AiCommandPlanner(indexBuilder, vectorService, intentParser, llmEditor);
+
+        // 3. Execute command
+        // "In the 'Strategy' section, add a checklist item: 'Practice writing code on a whiteboard'."
+        var command = "В разделе 'Стратегия подготовки' добавь пункт чек-листа: 'Потренироваться писать код на доске'.";
+        
+        var operations = await planner.PlanAsync(document, command);
+
+        // 4. Verify results
+        output.WriteLine("Generated operations:");
+        output.WriteLine(JsonSerializer.Serialize(operations, new JsonSerializerOptions { WriteIndented = true }));
+
+        Assert.NotEmpty(operations);
+        
+        // We expect an insertion or replacement in the "Стратегия подготовки" section
+        // Let's find the block for that section to verify target ID
+        var strategyHeader = document.Blocks.FirstOrDefault(b => b.PlainText.Contains("Стратегия подготовки") && b.Type == BlockType.Heading);
+        Assert.NotNull(strategyHeader);
+
+        // The operation should target something in that section (either the header or the list below it)
+        var op = operations.First();
+        Assert.NotNull(op.TargetBlockId);
+        
+        // Verify the content contains the new item
+        Assert.Contains("Потренироваться писать код на доске", op.NewBlock?.Markdown ?? op.NewBlock?.PlainText ?? "");
     }
 }
