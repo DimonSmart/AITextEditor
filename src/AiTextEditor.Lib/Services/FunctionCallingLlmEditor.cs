@@ -19,17 +19,18 @@ public class FunctionCallingLlmEditor : ILlmEditor
     }
 
     public async Task<List<EditOperation>> GetEditOperationsAsync(
-        List<Block> contextBlocks,
+        string targetSetId,
+        List<LinearItem> contextItems,
         string rawUserText,
         string instruction,
         CancellationToken ct = default)
     {
-        var prompt = BuildPrompt(contextBlocks, rawUserText, instruction);
+        var prompt = BuildPrompt(targetSetId, contextItems, rawUserText, instruction);
         var response = await llmClient.CompleteAsync(prompt, ct);
         return ParseOperations(response);
     }
 
-    private static string BuildPrompt(List<Block> contextBlocks, string userRequest, string instruction)
+    private static string BuildPrompt(string targetSetId, List<LinearItem> contextItems, string userRequest, string instruction)
     {
         var sb = new StringBuilder();
         sb.AppendLine("You are a Markdown editor. Produce JSON edit operations to apply the user request to the provided blocks.");
@@ -46,16 +47,17 @@ public class FunctionCallingLlmEditor : ILlmEditor
 }");
         sb.AppendLine("Return ONLY JSON (array or {\"operations\": [...]}) with no explanations.");
         sb.AppendLine();
+        sb.AppendLine($"TargetSetId: {targetSetId}");
         sb.AppendLine("User request:");
         sb.AppendLine(userRequest);
         sb.AppendLine("Instruction/context:");
         sb.AppendLine(instruction);
-        sb.AppendLine("Context blocks (id | type | level | text):");
+        sb.AppendLine("Context items (index | pointer | type | text):");
 
-        foreach (var block in contextBlocks)
+        foreach (var item in contextItems)
         {
-            var compact = block.PlainText.Replace("\n", "\\n").Replace("\r", string.Empty);
-            sb.AppendLine($"- {block.Id} | {block.Type} | L{block.Level} | {compact}");
+            var compact = item.Text.Replace("\n", "\\n").Replace("\r", string.Empty);
+            sb.AppendLine($"- {item.Index} | {item.Pointer.SemanticNumber} | {item.Type} | {compact}");
         }
 
         return sb.ToString();

@@ -1,4 +1,3 @@
-using System.Text;
 using System.Linq;
 using AiTextEditor.Lib.Interfaces;
 using AiTextEditor.Lib.Model;
@@ -8,29 +7,28 @@ using AiTextEditor.Lib.Model.Intent;
 namespace AiTextEditor.Lib.Services;
 
 /// <summary>
-/// Transforms a raw user request into an Intent, selects target blocks using indexes,
-/// and delegates edit operation synthesis to an ILlmEditor.
+/// Transforms a raw user request into an Intent and builds target sets using document indexes.
 /// </summary>
 public class AiCommandPlanner
 {
     private readonly DocumentIndexBuilder indexBuilder;
     private readonly VectorIndexingService vectorIndexing;
     private readonly IIntentParser intentParser;
-    private readonly ILlmEditor llmEditor;
+    private readonly ITargetSetService targetSetService;
 
     public AiCommandPlanner(
         DocumentIndexBuilder indexBuilder,
         VectorIndexingService vectorIndexing,
         IIntentParser intentParser,
-        ILlmEditor llmEditor)
+        ITargetSetService targetSetService)
     {
         this.indexBuilder = indexBuilder ?? throw new ArgumentNullException(nameof(indexBuilder));
         this.vectorIndexing = vectorIndexing ?? throw new ArgumentNullException(nameof(vectorIndexing));
         this.intentParser = intentParser ?? throw new ArgumentNullException(nameof(intentParser));
-        this.llmEditor = llmEditor ?? throw new ArgumentNullException(nameof(llmEditor));
+        this.targetSetService = targetSetService ?? throw new ArgumentNullException(nameof(targetSetService));
     }
 
-    public async Task<IReadOnlyList<EditOperation>> PlanAsync(
+    public async Task<PlanningResult> PlanAsync(
         Document document,
         string userRequest,
         CancellationToken ct = default)
@@ -39,49 +37,52 @@ public class AiCommandPlanner
 
         if (string.IsNullOrWhiteSpace(userRequest))
         {
-            return Array.Empty<EditOperation>();
+            return new PlanningResult();
         }
 
         var intentResult = await intentParser.ParseAsync(userRequest, ct);
         if (!intentResult.Success || intentResult.Intent == null)
         {
-            return Array.Empty<EditOperation>();
+            return new PlanningResult();
         }
 
         var indexes = indexBuilder.Build(document);
         await vectorIndexing.IndexAsync(document, indexes.TextIndex, ct);
 
-        var targetBlocks = await ResolveTargetsAsync(document, indexes, intentResult.Intent, userRequest, ct);
-        if (targetBlocks.Count == 0)
+        var targetItems = await ResolveTargetsAsync(document, indexes, intentResult.Intent, userRequest, ct);
+        if (targetItems.Count == 0)
         {
-            targetBlocks.AddRange(document.Blocks.Take(Math.Min(3, document.Blocks.Count)));
+            targetItems.AddRange(document.LinearDocument.Items.Take(Math.Min(3, document.LinearDocument.Items.Count)));
         }
 
-        var instruction = BuildInstruction(intentResult.Intent, targetBlocks);
+        var targetSet = targetSetService.Create(
+            document.Id,
+            targetItems,
+            intentResult.Intent.RawJson,
+            label: intentResult.Intent.ScopeDescriptor.StructuralPath,
+            blockIdResolver: item => ResolveBlockId(document, item));
 
-        var operations = await llmEditor.GetEditOperationsAsync(
-            targetBlocks,
-            rawUserText: userRequest,
-            instruction: instruction,
-            ct);
-
-        return operations;
+        return new PlanningResult
+        {
+            Intent = intentResult.Intent,
+            TargetSet = targetSet
+        };
     }
 
-    private async Task<List<Block>> ResolveTargetsAsync(
+    private async Task<List<LinearItem>> ResolveTargetsAsync(
         Document document,
         DocumentIndexes indexes,
         IntentDto intent,
         string userRequest,
         CancellationToken ct)
     {
-        var result = new List<Block>();
+        var result = new List<LinearItem>();
         var blocksById = document.Blocks.ToDictionary(b => b.Id);
 
         switch (intent.ScopeType)
         {
             case IntentScopeType.Structural:
-                result.AddRange(SelectStructuralTargets(document, indexes.StructuralIndex, intent, userRequest, blocksById));
+                result.AddRange(SelectStructuralTargets(document, indexes.StructuralIndex, intent, userRequest));
                 break;
 
             case IntentScopeType.SemanticLocal:
@@ -99,14 +100,13 @@ public class AiCommandPlanner
         return result;
     }
 
-    private static IEnumerable<Block> SelectStructuralTargets(
+    private static IEnumerable<LinearItem> SelectStructuralTargets(
         Document document,
         StructuralIndex structuralIndex,
         IntentDto intent,
-        string userRequest,
-        Dictionary<string, Block> blocksById)
+        string userRequest)
     {
-        var targets = new List<Block>();
+        var targets = new List<LinearItem>();
         var scope = intent.ScopeDescriptor;
 
         StructuralIndexEntry? headingEntry = null;
@@ -133,21 +133,22 @@ public class AiCommandPlanner
                 userRequest.Contains(h.Title, StringComparison.OrdinalIgnoreCase));
         }
 
-        if (headingEntry != null && blocksById.TryGetValue(headingEntry.BlockId, out var headingBlock))
+        var headingNumbering = headingEntry?.StructuralPath ?? headingEntry?.Numbering;
+        if (!string.IsNullOrWhiteSpace(headingNumbering))
         {
-            targets.AddRange(GetBlocksUnderHeading(document, headingBlock));
+            targets.AddRange(GetItemsUnderHeading(document.LinearDocument, headingNumbering!));
         }
 
         return targets;
     }
 
-    private async Task<IEnumerable<Block>> SelectSemanticTargetsAsync(
+    private async Task<IEnumerable<LinearItem>> SelectSemanticTargetsAsync(
         Document document,
         IntentDto intent,
         Dictionary<string, Block> blocksById,
         CancellationToken ct)
     {
-        var targets = new List<Block>();
+        var targets = new List<LinearItem>();
         var query = intent.ScopeDescriptor.SemanticQuery;
 
         if (string.IsNullOrWhiteSpace(query))
@@ -158,65 +159,63 @@ public class AiCommandPlanner
         var results = await vectorIndexing.QueryAsync(document.Id, query, maxResults: 5, ct);
         foreach (var record in results)
         {
-            if (blocksById.TryGetValue(record.BlockId, out var block) && !targets.Contains(block))
+            if (blocksById.TryGetValue(record.BlockId, out var block))
             {
-                targets.Add(block);
+                targets.AddRange(FindMatchingLinearItems(document.LinearDocument, block.StructuralPath));
             }
         }
 
         return targets;
     }
 
-    private static IEnumerable<Block> SelectGlobalTargets(Document document)
+    private static IEnumerable<LinearItem> SelectGlobalTargets(Document document)
     {
-        return document.Blocks
-            .Where(b => b.Type is BlockType.Paragraph or BlockType.ListItem or BlockType.Code or BlockType.Quote)
+        return document.LinearDocument.Items
+            .Where(b => b.Type is LinearItemType.Paragraph or LinearItemType.ListItem or LinearItemType.Code)
             .ToList();
     }
 
-    private static List<Block> GetBlocksUnderHeading(Document document, Block heading)
+    private static IEnumerable<LinearItem> GetItemsUnderHeading(LinearDocument document, string headingNumbering)
     {
-        var blocks = new List<Block> { heading };
-        var startIndex = document.Blocks.IndexOf(heading);
-
-        for (int i = startIndex + 1; i < document.Blocks.Count; i++)
-        {
-            var block = document.Blocks[i];
-            if (block.Type == BlockType.Heading && block.Level <= heading.Level)
-            {
-                break;
-            }
-
-            blocks.Add(block);
-        }
-
-        return blocks;
+        var prefix = headingNumbering + ".";
+        return document.Items
+            .Where(i => IsUnderHeading(i.Pointer.SemanticNumber, headingNumbering, prefix))
+            .ToList();
     }
 
-    private static string BuildInstruction(IntentDto intent, List<Block> targetBlocks)
+    private static bool IsUnderHeading(string semanticNumber, string headingNumbering, string prefix)
     {
-        var sb = new StringBuilder();
-        sb.AppendLine("You are an editor for a Markdown document. Apply the given intent to the provided blocks.");
-        sb.AppendLine($"ScopeType: {intent.ScopeType}");
-        sb.AppendLine("ScopeDescriptor:");
-        sb.AppendLine($"  chapterNumber: {intent.ScopeDescriptor.ChapterNumber}");
-        sb.AppendLine($"  sectionNumber: {intent.ScopeDescriptor.SectionNumber}");
-        sb.AppendLine($"  structuralPath: {intent.ScopeDescriptor.StructuralPath}");
-        sb.AppendLine($"  semanticQuery: {intent.ScopeDescriptor.SemanticQuery}");
-        sb.AppendLine("Payload:");
-        foreach (var kvp in intent.Payload.Fields)
+        if (semanticNumber.Equals(headingNumbering, StringComparison.OrdinalIgnoreCase))
         {
-            sb.AppendLine($"  {kvp.Key}: {kvp.Value}");
+            return true;
         }
 
-        sb.AppendLine("Target blocks (id | type | numbering | path | text):");
-        foreach (var block in targetBlocks)
+        if (!semanticNumber.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
         {
-            var plain = block.PlainText.Replace("\n", "\\n").Replace("\r", string.Empty);
-            sb.AppendLine($"- {block.Id} | {block.Type} | {block.Numbering} | {block.StructuralPath} | {plain}");
+            return false;
         }
 
-        sb.AppendLine("Return JSON edit operations.");
-        return sb.ToString();
+        if (semanticNumber.Length == prefix.Length)
+        {
+            return true;
+        }
+
+        var nextSegment = semanticNumber[prefix.Length..];
+        return char.IsDigit(nextSegment.FirstOrDefault()) || nextSegment.StartsWith("p", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static IEnumerable<LinearItem> FindMatchingLinearItems(LinearDocument linearDocument, string structuralPath)
+    {
+        return linearDocument.Items
+            .Where(i => string.Equals(i.Pointer.SemanticNumber, structuralPath, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+    }
+
+    private static string? ResolveBlockId(Document document, LinearItem item)
+    {
+        var block = document.Blocks.FirstOrDefault(b =>
+            string.Equals(b.StructuralPath, item.Pointer.SemanticNumber, StringComparison.OrdinalIgnoreCase));
+
+        return block?.Id;
     }
 }

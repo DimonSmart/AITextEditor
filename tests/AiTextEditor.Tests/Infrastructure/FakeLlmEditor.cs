@@ -14,7 +14,8 @@ public class FakeLlmEditor : ILlmEditor
     }
 
     public Task<List<EditOperation>> GetEditOperationsAsync(
-        List<Block> contextBlocks,
+        string targetSetId,
+        List<LinearItem> contextItems,
         string rawUserText,
         string instruction,
         CancellationToken ct = default)
@@ -22,10 +23,11 @@ public class FakeLlmEditor : ILlmEditor
         _output.WriteLine("FakeLlmEditor called.");
         _output.WriteLine($"User Request: {rawUserText}");
         _output.WriteLine($"Instruction: {instruction}");
-        _output.WriteLine($"Context Blocks Count: {contextBlocks.Count}");
-        foreach (var block in contextBlocks.Take(5))
+        _output.WriteLine($"TargetSet: {targetSetId}");
+        _output.WriteLine($"Context Items Count: {contextItems.Count}");
+        foreach (var item in contextItems.Take(5))
         {
-            _output.WriteLine($" - Block {block.Id} ({block.Type}): {block.PlainText.Substring(0, Math.Min(50, block.PlainText.Length))}...");
+            _output.WriteLine($" - Item {item.Index} ({item.Type} {item.Pointer.SemanticNumber}): {item.Text.Substring(0, Math.Min(50, item.Text.Length))}...");
         }
 
         // Return a dummy operation to satisfy the planner
@@ -34,7 +36,7 @@ public class FakeLlmEditor : ILlmEditor
             new EditOperation
             {
                 Action = EditActionType.Keep,
-                TargetBlockId = contextBlocks.FirstOrDefault()?.Id,
+                TargetBlockId = targetSetId,
                 NewBlock = null
             }
         };
