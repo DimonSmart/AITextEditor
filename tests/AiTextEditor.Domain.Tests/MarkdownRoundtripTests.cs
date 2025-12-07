@@ -7,12 +7,13 @@ public class MarkdownRoundtripTests
 {
     public static IEnumerable<object[]> BookExamples => Directory
         .EnumerateFiles(Path.Combine(AppContext.BaseDirectory, "Fixtures", "MarkdownBooks"), "*.md")
-        .Select(path => new object[] { path });
+        .Select(path => new object[] { Path.GetFileName(path) });
 
     [Theory]
     [MemberData(nameof(BookExamples))]
-    public void ReadThenWrite_DoesNotAlterMarkdown(string path)
+    public void ReadThenWrite_DoesNotAlterMarkdown(string fileName)
     {
+        var path = Path.Combine(AppContext.BaseDirectory, "Fixtures", "MarkdownBooks", fileName);
         var repository = new MarkdownDocumentRepository();
         var originalContent = File.ReadAllText(path);
 
