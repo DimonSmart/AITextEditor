@@ -7,7 +7,7 @@ public interface ITargetSetService
     TargetSet Create(
         string documentId,
         IEnumerable<LinearItem> items,
-        string? intentJson = null,
+        string? userCommand = null,
         string? label = null,
         Func<LinearItem, string?>? blockIdResolver = null);
 

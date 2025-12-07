@@ -11,7 +11,7 @@ public class InMemoryTargetSetService : ITargetSetService
     public TargetSet Create(
         string documentId,
         IEnumerable<LinearItem> items,
-        string? intentJson = null,
+        string? userCommand = null,
         string? label = null,
         Func<LinearItem, string?>? blockIdResolver = null)
     {
@@ -20,7 +20,7 @@ public class InMemoryTargetSetService : ITargetSetService
         var targetSet = new TargetSet
         {
             DocumentId = documentId,
-            IntentJson = intentJson,
+            UserCommand = userCommand,
             Label = label
         };
 

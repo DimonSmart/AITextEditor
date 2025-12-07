@@ -8,7 +8,7 @@ public class TargetSet
 
     public string? Label { get; set; }
 
-    public string? IntentJson { get; set; }
+    public string? UserCommand { get; set; }
 
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 
