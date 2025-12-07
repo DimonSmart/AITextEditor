@@ -24,6 +24,7 @@ public class MarkdownDocumentRepository
 
     public LinearDocument LoadFromMarkdownFile(string path)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(path);
         var markdown = File.ReadAllText(path);
         return LoadFromMarkdown(markdown);
     }
