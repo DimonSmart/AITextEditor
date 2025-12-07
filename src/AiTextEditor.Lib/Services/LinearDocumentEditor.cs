@@ -13,11 +13,13 @@ public class LinearDocumentEditor
 
         foreach (var operation in operations)
         {
-            var targetIndex = ResolveIndex(items, operation);
-            if (targetIndex < 0)
+            ArgumentNullException.ThrowIfNull(operation);
+            if (operation.Items == null)
             {
-                continue;
+                throw new InvalidOperationException("Edit operation items cannot be null.");
             }
+
+            var targetIndex = ResolveIndex(items, operation);
 
             switch (operation.Action)
             {
@@ -44,10 +46,7 @@ public class LinearDocumentEditor
                     break;
 
                 case LinearEditAction.Remove:
-                    if (targetIndex < items.Count)
-                    {
-                        items.RemoveAt(targetIndex);
-                    }
+                    items.RemoveAt(targetIndex);
                     break;
 
                 case LinearEditAction.MergeWithNext:
@@ -70,7 +69,7 @@ public class LinearDocumentEditor
         var neighborIndex = targetIndex + neighborOffset;
         if (neighborIndex < 0 || neighborIndex >= items.Count)
         {
-            return;
+            throw new InvalidOperationException($"Cannot merge item at {targetIndex} with neighbor {neighborIndex} because the neighbor is out of range.");
         }
 
         var mergedItem = replacements.FirstOrDefault() ?? Merge(items[targetIndex], items[neighborIndex]);
@@ -92,7 +91,13 @@ public class LinearDocumentEditor
         if (operation.TargetPointer != null)
         {
             var semantic = operation.TargetPointer.SemanticNumber;
-            return items.FindIndex(i => string.Equals(i.Pointer.SemanticNumber, semantic, StringComparison.OrdinalIgnoreCase));
+            var index = items.FindIndex(i => string.Equals(i.Pointer.SemanticNumber, semantic, StringComparison.OrdinalIgnoreCase));
+            if (index < 0)
+            {
+                throw new InvalidOperationException($"Target pointer '{semantic}' does not exist in the current document.");
+            }
+
+            return index;
         }
 
         if (operation.TargetIndex.HasValue && operation.TargetIndex.Value >= 0 && operation.TargetIndex.Value < items.Count)
@@ -100,14 +105,19 @@ public class LinearDocumentEditor
             return operation.TargetIndex.Value;
         }
 
-        return -1;
+        if (operation.TargetIndex.HasValue)
+        {
+            throw new InvalidOperationException($"Target index {operation.TargetIndex.Value} is out of range.");
+        }
+
+        throw new InvalidOperationException("Linear edit operation must define a target pointer or index.");
     }
 
     private static void ReplaceRange(List<LinearItem> items, int startIndex, int removeCount, IEnumerable<LinearItem> replacements)
     {
         if (startIndex < 0 || startIndex > items.Count)
         {
-            return;
+            throw new InvalidOperationException($"Replacement start index {startIndex} is out of range.");
         }
 
         if (removeCount > 0 && startIndex < items.Count)

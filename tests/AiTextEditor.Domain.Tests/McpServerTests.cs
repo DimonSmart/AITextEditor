@@ -105,6 +105,27 @@ public class McpServerTests
     }
 
     [Fact]
+    public void LoadDefaultDocument_EnablesParameterlessOperations()
+    {
+        var server = new McpServer();
+
+        var document = server.LoadDefaultDocument("# Title\n\nParagraph one");
+        var items = server.GetItems();
+
+        Assert.Equal(document.Id, server.GetDefaultDocument().Id);
+        Assert.Equal(2, items.Count);
+
+        var replacement = items[0] with { Markdown = "# Updated", Text = "Updated" };
+
+        var updated = server.ApplyOperations(new[]
+        {
+            new LinearEditOperation(LinearEditAction.Replace, items[0].Pointer, null, new[] { replacement })
+        });
+
+        Assert.Equal("# Updated\n\nParagraph one", updated.SourceText);
+    }
+
+    [Fact]
     public void TargetSetLifecycle_AllowsQueryingAndDeletion()
     {
         var server = new McpServer();
@@ -114,7 +135,7 @@ public class McpServerTests
         var firstSet = server.CreateTargetSet(firstDocument.Id, new[] { 1 }, label: "first");
         var secondSet = server.CreateTargetSet(secondDocument.Id, new[] { 1 }, label: "second");
 
-        var allSets = server.ListTargetSets();
+        var allSets = server.ListTargetSets(null);
         Assert.Equal(2, allSets.Count);
 
         var filteredSets = server.ListTargetSets(firstDocument.Id);
@@ -130,7 +151,7 @@ public class McpServerTests
         Assert.True(deleted);
         Assert.Null(server.GetTargetSet(firstSet.Id));
 
-        var remainingSets = server.ListTargetSets();
+        var remainingSets = server.ListTargetSets(null);
         Assert.Single(remainingSets);
         Assert.Equal(secondSet.Id, remainingSets[0].Id);
     }
@@ -141,6 +162,21 @@ public class McpServerTests
         var server = new McpServer();
 
         Assert.False(server.DeleteTargetSet("missing"));
+    }
+
+    [Fact]
+    public void ApplyOperations_ThrowsForUnknownTargetPointer()
+    {
+        var server = new McpServer();
+        var document = server.LoadDocument("# Title\n\nParagraph");
+
+        var invalidPointer = new LinearPointer(10, new SemanticPointer(new[] { 9 }, 1));
+        var replacement = document.Items[0];
+
+        Assert.Throws<InvalidOperationException>(() => server.ApplyOperations(document.Id, new[]
+        {
+            new LinearEditOperation(LinearEditAction.Replace, invalidPointer, null, new[] { replacement })
+        }));
     }
 
     [Fact]

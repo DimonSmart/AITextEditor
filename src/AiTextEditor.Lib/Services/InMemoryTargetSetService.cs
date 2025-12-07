@@ -8,7 +8,16 @@ public class InMemoryTargetSetService
 
     public TargetSet Create(string documentId, IEnumerable<LinearItem> items, string? userCommand = null, string? label = null)
     {
-        var targets = items
+        ArgumentException.ThrowIfNullOrWhiteSpace(documentId);
+        ArgumentNullException.ThrowIfNull(items);
+
+        var itemList = items.ToList();
+        if (itemList.Any(item => item == null))
+        {
+            throw new InvalidOperationException("Target set items cannot contain null entries.");
+        }
+
+        var targets = itemList
             .Select(item => new TargetRef(
                 Guid.NewGuid().ToString(),
                 documentId,
@@ -25,30 +34,26 @@ public class InMemoryTargetSetService
 
     public TargetSet? Get(string targetSetId)
     {
-        if (string.IsNullOrWhiteSpace(targetSetId))
-        {
-            return null;
-        }
+        ArgumentException.ThrowIfNullOrWhiteSpace(targetSetId);
 
         return store.TryGetValue(targetSetId, out var targetSet) ? targetSet : null;
     }
 
     public IReadOnlyList<TargetSet> List(string? documentId = null)
     {
-        if (string.IsNullOrWhiteSpace(documentId))
+        if (documentId == null)
         {
             return store.Values.ToList();
         }
+
+        ArgumentException.ThrowIfNullOrWhiteSpace(documentId);
 
         return store.Values.Where(t => string.Equals(t.DocumentId, documentId, StringComparison.OrdinalIgnoreCase)).ToList();
     }
 
     public bool Delete(string targetSetId)
     {
-        if (string.IsNullOrWhiteSpace(targetSetId))
-        {
-            return false;
-        }
+        ArgumentException.ThrowIfNullOrWhiteSpace(targetSetId);
 
         return store.Remove(targetSetId);
     }
