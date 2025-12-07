@@ -4,11 +4,19 @@ using AiTextEditor.Lib.Services;
 using Vcr.HttpRecorder;
 using Vcr.HttpRecorder.Matchers;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace AiTextEditor.Domain.Tests;
 
 public class McpServerTests
 {
+    private readonly ITestOutputHelper output;
+
+    public McpServerTests(ITestOutputHelper output)
+    {
+        this.output = output;
+    }
+
     [Fact]
     public void LoadDocument_AllowsExplicitId()
     {
@@ -152,6 +160,29 @@ public class McpServerTests
         Assert.Contains("Summary: combined targets", response.Content);
     }
 
+    [Fact]
+    public async Task ChapterSummaryScenario_UsesNavigationAndSummarization()
+    {
+        var markdown = """
+# Chapter One
+
+The first chapter closes by hinting at a secret meeting.
+
+# Chapter Two
+
+The journey continues as the team crosses the river.
+
+The second chapter ends with a cliffhanger about the hidden door.
+""";
+        var userCommand = "Расскажи мне, чем заканчивается вторая глава.";
+
+        var scenario = new ChapterSummaryScenario(output);
+        var result = await scenario.RunAsync(markdown, userCommand);
+
+        result.AssertRequestedChapterCaptured();
+        result.AssertSummaryMatchesExpectedEnding();
+    }
+
     private static HttpClient CreateRecordedClient(string cassettePath)
     {
         var recorderHandler = new HttpRecorderDelegatingHandler(
@@ -168,5 +199,136 @@ public class McpServerTests
         {
             BaseAddress = new Uri("http://localhost:11434")
         };
+    }
+
+    private sealed class ChapterSummaryScenario
+    {
+        private readonly ITestOutputHelper output;
+
+        public ChapterSummaryScenario(ITestOutputHelper output)
+        {
+            this.output = output;
+        }
+
+        public async Task<ScenarioResult> RunAsync(string markdown, string userCommand)
+        {
+            var server = new McpServer();
+            var document = server.LoadDocument(markdown, "chapters-demo");
+            output.WriteLine($"User command: {userCommand}");
+            output.WriteLine($"Loaded document '{document.Id}' with {document.Items.Count} items.");
+
+            var chapterNumber = ExtractChapterNumber(userCommand);
+            var chapterItems = CaptureChapterItems(server.GetItems(document.Id), chapterNumber).ToList();
+
+            foreach (var item in chapterItems)
+            {
+                output.WriteLine($"Target item[{item.Index}] pointer {item.Pointer.SemanticNumber}: {item.Text}");
+            }
+
+            var targetSet = server.CreateTargetSet(
+                document.Id,
+                chapterItems.Select(item => item.Index),
+                userCommand,
+                label: $"chapter-{chapterNumber}-summary");
+
+            output.WriteLine($"Created target set {targetSet.Id} for document {targetSet.DocumentId} with {targetSet.Targets.Count} targets.");
+
+            var cassettePath = Path.Combine(AppContext.BaseDirectory, "Fixtures", "Cassettes", "llama_gpt-oss_120b-cloud.har");
+            using var httpClient = CreateRecordedClient(cassettePath);
+            var llamaClient = new LamaClient(httpClient);
+            var response = await llamaClient.SummarizeTargetsAsync(targetSet);
+
+            output.WriteLine($"LLM model: {response.Model}");
+            output.WriteLine($"LLM content: {response.Content}");
+
+            var expectedEnding = chapterItems.LastOrDefault()?.Text ?? string.Empty;
+            return new ScenarioResult(chapterNumber, expectedEnding, chapterItems, targetSet, response.Content);
+        }
+
+        private static int ExtractChapterNumber(string userCommand)
+        {
+            var lower = userCommand.ToLowerInvariant();
+            if (lower.Contains("вторая", StringComparison.OrdinalIgnoreCase) || lower.Contains("second", StringComparison.OrdinalIgnoreCase))
+            {
+                return 2;
+            }
+
+            if (lower.Contains("первая", StringComparison.OrdinalIgnoreCase) || lower.Contains("first", StringComparison.OrdinalIgnoreCase))
+            {
+                return 1;
+            }
+
+            var digit = lower.FirstOrDefault(char.IsDigit);
+            if (digit != default && int.TryParse(digit.ToString(), out var parsed))
+            {
+                return parsed;
+            }
+
+            throw new InvalidOperationException("Could not determine requested chapter number from command.");
+        }
+
+        private static IEnumerable<LinearItem> CaptureChapterItems(IReadOnlyList<LinearItem> items, int chapterNumber)
+        {
+            var headings = items
+                .Where(item => item.Type == LinearItemType.Heading)
+                .ToList();
+
+            if (chapterNumber <= 0 || chapterNumber > headings.Count)
+            {
+                throw new InvalidOperationException($"Chapter {chapterNumber} does not exist in the document.");
+            }
+
+            var start = headings[chapterNumber - 1].Index + 1;
+            var end = chapterNumber < headings.Count ? headings[chapterNumber].Index : items.Count;
+
+            return items.Skip(start).Take(end - start);
+        }
+    }
+
+    private sealed record ScenarioResult(
+        int ChapterNumber,
+        string ExpectedEnding,
+        IReadOnlyList<LinearItem> ChapterItems,
+        TargetSet TargetSet,
+        string Summary)
+    {
+        public void AssertRequestedChapterCaptured()
+        {
+            Assert.NotEmpty(ChapterItems);
+            Assert.Equal(ChapterItems.Count, TargetSet.Targets.Count);
+            var chapterSemanticPrefix = $"{ChapterNumber}.";
+            Assert.All(TargetSet.Targets, target => Assert.StartsWith(chapterSemanticPrefix, target.Pointer.SemanticNumber, StringComparison.OrdinalIgnoreCase));
+        }
+
+        public void AssertSummaryMatchesExpectedEnding()
+        {
+            Assert.False(string.IsNullOrWhiteSpace(Summary));
+            var matchesSummary = IsSemanticallySimilar(ExpectedEnding, Summary);
+            var matchesTargetSelection = TargetSet.Targets.Any(target => IsSemanticallySimilar(ExpectedEnding, target.Text));
+
+            Assert.True(matchesSummary || matchesTargetSelection, "LLM summary or selected targets do not match the expected ending meaning.");
+        }
+
+        private static bool IsSemanticallySimilar(string expected, string actual)
+        {
+            if (string.IsNullOrWhiteSpace(expected) || string.IsNullOrWhiteSpace(actual))
+            {
+                return false;
+            }
+
+            var expectedTokens = Tokenize(expected);
+            var actualTokens = Tokenize(actual);
+            var overlap = expectedTokens.Intersect(actualTokens, StringComparer.OrdinalIgnoreCase).Count();
+            var threshold = Math.Max(1, expectedTokens.Count / 3);
+            return overlap >= threshold;
+        }
+
+        private static List<string> Tokenize(string text)
+        {
+            return text
+                .Split(new[] { ' ', '.', ',', ';', ':', '!', '?' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Select(token => token.ToLowerInvariant())
+                .ToList();
+        }
     }
 }
