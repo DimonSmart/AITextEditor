@@ -61,7 +61,7 @@ public class LinearDocumentEditor
         }
 
         var reindexed = Reindex(items);
-        var sourceText = string.Join("\n\n", reindexed.Select(item => item.Markdown));
+        var sourceText = MarkdownDocumentRepository.ComposeMarkdown(reindexed);
         return document with { Items = reindexed, SourceText = sourceText };
     }
 

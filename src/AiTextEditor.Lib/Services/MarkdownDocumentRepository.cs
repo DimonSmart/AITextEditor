@@ -8,6 +8,20 @@ namespace AiTextEditor.Lib.Services;
 
 public class MarkdownDocumentRepository
 {
+    public string WriteToMarkdown(LinearDocument document)
+    {
+        ArgumentNullException.ThrowIfNull(document);
+
+        return NormalizeMarkdownContent(document.SourceText);
+    }
+
+    public static string ComposeMarkdown(IEnumerable<LinearItem> items)
+    {
+        ArgumentNullException.ThrowIfNull(items);
+
+        return NormalizeMarkdownContent(string.Join("\n\n", items.Select(item => item.Markdown)));
+    }
+
     public LinearDocument LoadFromMarkdownFile(string path)
     {
         var markdown = File.ReadAllText(path);
