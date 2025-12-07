@@ -34,7 +34,200 @@ public class MarkdownDocumentRepository : IDocumentRepository
             ProcessMdBlock(mdBlock, document.Blocks, null, normalized, lineStarts, parsingState);
         }
 
+        document.LinearDocument = BuildLinearDocument(mdDocument, normalized);
+
         return document;
+    }
+
+    private LinearDocument BuildLinearDocument(MarkdownDocument mdDocument, string source)
+    {
+        var linearDocument = new LinearDocument
+        {
+            SourceText = source
+        };
+
+        var parsingState = new LinearParsingState();
+        var index = 0;
+
+        foreach (var mdBlock in mdDocument)
+        {
+            AppendLinearItems(mdBlock, linearDocument.Items, source, parsingState, ref index);
+        }
+
+        return linearDocument;
+    }
+
+    private void AppendLinearItems(
+        Markdig.Syntax.Block mdBlock,
+        List<LinearItem> items,
+        string source,
+        LinearParsingState parsingState,
+        ref int index)
+    {
+        switch (mdBlock)
+        {
+            case HeadingBlock heading:
+                AddLinearItem(
+                    items,
+                    new LinearItem
+                    {
+                        Type = LinearItemType.Heading,
+                        Level = heading.Level,
+                        Markdown = GetSourceText(mdBlock, source),
+                        Text = GetPlainText(heading.Inline)
+                    },
+                    parsingState.EnterHeading(heading.Level),
+                    ref index);
+                break;
+
+            case ParagraphBlock paragraph:
+                AddLinearItem(
+                    items,
+                    new LinearItem
+                    {
+                        Type = LinearItemType.Paragraph,
+                        Markdown = GetSourceText(mdBlock, source),
+                        Text = GetPlainText(paragraph.Inline)
+                    },
+                    parsingState.NextParagraph(),
+                    ref index);
+                break;
+
+            case ListBlock list:
+                foreach (var child in list)
+                {
+                    AppendLinearItems(child, items, source, parsingState, ref index);
+                }
+                break;
+
+            case ListItemBlock listItem:
+                AddLinearItem(
+                    items,
+                    new LinearItem
+                    {
+                        Type = LinearItemType.ListItem,
+                        Markdown = GetSourceText(mdBlock, source),
+                        Text = GetListItemPlainText(listItem)
+                    },
+                    parsingState.NextParagraph(),
+                    ref index);
+                break;
+
+            case QuoteBlock quote:
+                foreach (var child in quote)
+                {
+                    AppendLinearItems(child, items, source, parsingState, ref index);
+                }
+                break;
+
+            case CodeBlock code:
+                AddLinearItem(
+                    items,
+                    new LinearItem
+                    {
+                        Type = LinearItemType.Code,
+                        Markdown = GetSourceText(mdBlock, source),
+                        Text = code.Lines.ToString()
+                    },
+                    parsingState.NextParagraph(),
+                    ref index);
+                break;
+
+            case ThematicBreakBlock:
+                AddLinearItem(
+                    items,
+                    new LinearItem
+                    {
+                        Type = LinearItemType.ThematicBreak,
+                        Markdown = GetSourceText(mdBlock, source),
+                        Text = string.Empty
+                    },
+                    parsingState.NextParagraph(),
+                    ref index);
+                break;
+
+            default:
+                if (mdBlock is ContainerBlock container)
+                {
+                    foreach (var child in container)
+                    {
+                        AppendLinearItems(child, items, source, parsingState, ref index);
+                    }
+                }
+                else
+                {
+                    AddLinearItem(
+                        items,
+                        new LinearItem
+                        {
+                            Type = LinearItemType.Paragraph,
+                            Markdown = GetSourceText(mdBlock, source),
+                            Text = GetSourceText(mdBlock, source)
+                        },
+                        parsingState.NextParagraph(),
+                        ref index);
+                }
+                break;
+        }
+    }
+
+    private void AddLinearItem(List<LinearItem> items, LinearItem item, SemanticPointer semanticPointer, ref int index)
+    {
+        item.Index = index;
+        item.Pointer = new LinearPointer(index, semanticPointer);
+        items.Add(item);
+        index++;
+    }
+
+    private sealed class LinearParsingState
+    {
+        private readonly List<int> headingNumbers = new();
+        private int paragraphCounter;
+
+        public SemanticPointer EnterHeading(int level)
+        {
+            if (level <= 0)
+            {
+                level = 1;
+            }
+
+            while (headingNumbers.Count < level)
+            {
+                headingNumbers.Add(0);
+            }
+
+            if (headingNumbers.Count > level)
+            {
+                headingNumbers.RemoveRange(level, headingNumbers.Count - level);
+            }
+
+            headingNumbers[level - 1]++;
+
+            for (int i = level; i < headingNumbers.Count; i++)
+            {
+                headingNumbers[i] = 0;
+            }
+
+            paragraphCounter = 0;
+            return new SemanticPointer(GetHeadingPath(), null);
+        }
+
+        public SemanticPointer NextParagraph()
+        {
+            paragraphCounter++;
+            return new SemanticPointer(GetHeadingPath(), paragraphCounter);
+        }
+
+        private IEnumerable<int> GetHeadingPath()
+        {
+            var lastNonZero = headingNumbers.FindLastIndex(n => n > 0);
+            if (lastNonZero < 0)
+            {
+                return Array.Empty<int>();
+            }
+
+            return headingNumbers.Take(lastNonZero + 1).ToArray();
+        }
     }
 
     private void ProcessMdBlock(
@@ -192,6 +385,31 @@ public class MarkdownDocumentRepository : IDocumentRepository
                 sb.Append(GetPlainText(container));
             }
         }
+        return sb.ToString();
+    }
+
+    private string GetListItemPlainText(ListItemBlock listItem)
+    {
+        var paragraph = listItem.OfType<ParagraphBlock>().FirstOrDefault();
+        if (paragraph != null)
+        {
+            return GetPlainText(paragraph.Inline);
+        }
+
+        var sb = new StringBuilder();
+        foreach (var child in listItem)
+        {
+            if (child is ParagraphBlock childParagraph)
+            {
+                if (sb.Length > 0)
+                {
+                    sb.Append(' ');
+                }
+
+                sb.Append(GetPlainText(childParagraph.Inline));
+            }
+        }
+
         return sb.ToString();
     }
 
