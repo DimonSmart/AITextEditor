@@ -20,8 +20,7 @@ var indexBuilder = new DocumentIndexBuilder();
 IEmbeddingGenerator embeddingGenerator = new SimpleEmbeddingGenerator();
 IVectorIndex vectorIndex = new InMemoryVectorIndex();
 var vectorIndexing = new VectorIndexingService(embeddingGenerator, vectorIndex);
-var intentParser = new IntentParser(llmClient);
-var planner = new AiCommandPlanner(indexBuilder, vectorIndexing, intentParser, targetSetService);
+var planner = new AiCommandPlanner(indexBuilder, vectorIndexing, targetSetService);
 var editGenerator = new EditOperationGenerator(targetSetService, llmEditor);
 
 string inputPath = "sample.md";
@@ -42,7 +41,7 @@ Console.WriteLine($"Loaded {document.Blocks.Count} blocks.");
 string userCommand = "Добавь TODO во вторую главу: проверить, что все примеры компилируются.";
 Console.WriteLine($"User command: {userCommand}");
 
-// 4. Plan edits via AiCommandPlanner (Intent + indexes)
+// 4. Plan edits via AiCommandPlanner (indexes + raw command)
 var plan = await planner.PlanAsync(document, userCommand);
 Console.WriteLine(plan.Success
     ? $"Target set {plan.TargetSet!.Id} with {plan.TargetSet!.Targets.Count} items created."
@@ -51,7 +50,7 @@ Console.WriteLine(plan.Success
 if (plan.Success)
 {
     Console.WriteLine("Generating operations...");
-    var operations = await editGenerator.GenerateAsync(document, plan.TargetSet!.Id, plan.Intent!, userCommand);
+    var operations = await editGenerator.GenerateAsync(document, plan.TargetSet!.Id, userCommand);
     Console.WriteLine($"Planned {operations.Count} operations.");
     foreach (var op in operations)
     {

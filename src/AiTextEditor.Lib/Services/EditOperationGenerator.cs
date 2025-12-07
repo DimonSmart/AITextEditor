@@ -18,12 +18,10 @@ public class EditOperationGenerator
     public async Task<List<EditOperation>> GenerateAsync(
         Document document,
         string targetSetId,
-        IntentDto intent,
         string rawUserText,
         CancellationToken ct = default)
     {
         ArgumentNullException.ThrowIfNull(document);
-        ArgumentNullException.ThrowIfNull(intent);
 
         var targetSet = targetSetService.Get(targetSetId) ?? throw new InvalidOperationException($"Target set {targetSetId} not found.");
         if (!string.Equals(targetSet.DocumentId, document.Id, StringComparison.Ordinal))
@@ -37,7 +35,7 @@ public class EditOperationGenerator
             return new List<EditOperation>();
         }
 
-        var instruction = BuildInstruction(intent, targetSet, items);
+        var instruction = BuildInstruction(rawUserText, targetSet, items);
         return await llmEditor.GetEditOperationsAsync(targetSet.Id, items, rawUserText, instruction, ct);
     }
 
@@ -67,22 +65,13 @@ public class EditOperationGenerator
         return items;
     }
 
-    private static string BuildInstruction(IntentDto intent, TargetSet targetSet, List<LinearItem> targetItems)
+    private static string BuildInstruction(string userCommand, TargetSet targetSet, List<LinearItem> targetItems)
     {
         var sb = new System.Text.StringBuilder();
-        sb.AppendLine("You are an editor for a Markdown document. Apply the given intent to the provided targets.");
+        sb.AppendLine("You are an editor for a Markdown document. Follow the user's command when transforming the targets.");
         sb.AppendLine($"TargetSetId: {targetSet.Id}");
-        sb.AppendLine($"ScopeType: {intent.ScopeType}");
-        sb.AppendLine("ScopeDescriptor:");
-        sb.AppendLine($"  chapterNumber: {intent.ScopeDescriptor.ChapterNumber}");
-        sb.AppendLine($"  sectionNumber: {intent.ScopeDescriptor.SectionNumber}");
-        sb.AppendLine($"  structuralPath: {intent.ScopeDescriptor.StructuralPath}");
-        sb.AppendLine($"  semanticQuery: {intent.ScopeDescriptor.SemanticQuery}");
-        sb.AppendLine("Payload:");
-        foreach (var kvp in intent.Payload.Fields)
-        {
-            sb.AppendLine($"  {kvp.Key}: {kvp.Value}");
-        }
+        sb.AppendLine("User command:");
+        sb.AppendLine(userCommand);
 
         sb.AppendLine("Target items (index | pointer | type | text):");
         foreach (var item in targetItems)
