@@ -14,13 +14,15 @@ ILlmClient llmClient = SemanticKernelLlmClient.CreateOllamaClient(
     endpoint: new Uri(ollamaEndpoint));
 
 ILlmEditor llmEditor = new FunctionCallingLlmEditor(llmClient);
+ITargetSetService targetSetService = new InMemoryTargetSetService();
 IDocumentEditor docEditor = new DocumentEditor();
 var indexBuilder = new DocumentIndexBuilder();
 IEmbeddingGenerator embeddingGenerator = new SimpleEmbeddingGenerator();
 IVectorIndex vectorIndex = new InMemoryVectorIndex();
 var vectorIndexing = new VectorIndexingService(embeddingGenerator, vectorIndex);
 var intentParser = new IntentParser(llmClient);
-var planner = new AiCommandPlanner(indexBuilder, vectorIndexing, intentParser, llmEditor);
+var planner = new AiCommandPlanner(indexBuilder, vectorIndexing, intentParser, targetSetService);
+var editGenerator = new EditOperationGenerator(targetSetService, llmEditor);
 
 string inputPath = "sample.md";
 string outputPath = "sample_edited.md";
@@ -41,23 +43,29 @@ string userCommand = "Добавь TODO во вторую главу: прове
 Console.WriteLine($"User command: {userCommand}");
 
 // 4. Plan edits via AiCommandPlanner (Intent + indexes)
-var operations = await planner.PlanAsync(document, userCommand);
-Console.WriteLine($"Planned {operations.Count} operations.");
-foreach (var op in operations)
+var plan = await planner.PlanAsync(document, userCommand);
+Console.WriteLine(plan.Success
+    ? $"Target set {plan.TargetSet!.Id} with {plan.TargetSet!.Targets.Count} items created."
+    : "Planning failed.");
+
+if (plan.Success)
 {
-    Console.WriteLine($"Op: {op.Action} on {op.TargetBlockId}");
+    Console.WriteLine("Generating operations...");
+    var operations = await editGenerator.GenerateAsync(document, plan.TargetSet!.Id, plan.Intent!, userCommand);
+    Console.WriteLine($"Planned {operations.Count} operations.");
+    foreach (var op in operations)
+    {
+        Console.WriteLine($"Op: {op.Action} on {op.TargetBlockId}");
+    }
+
+    Console.WriteLine("Applying edits...");
+    docEditor.ApplyEdits(document, operations);
+
+    Console.WriteLine($"Saving to {outputPath}...");
+    repository.SaveToMarkdownFile(document, outputPath);
+    Console.WriteLine("Done.");
+
+    Console.WriteLine("\n--- Result Preview ---");
+    var savedText = File.ReadAllText(outputPath);
+    Console.WriteLine(savedText);
 }
-
-// 5. Apply edits
-Console.WriteLine("Applying edits...");
-docEditor.ApplyEdits(document, operations);
-
-// 6. Save result
-Console.WriteLine($"Saving to {outputPath}...");
-repository.SaveToMarkdownFile(document, outputPath);
-Console.WriteLine("Done.");
-
-// Show result preview
-Console.WriteLine("\n--- Result Preview ---");
-var savedText = File.ReadAllText(outputPath);
-Console.WriteLine(savedText);
