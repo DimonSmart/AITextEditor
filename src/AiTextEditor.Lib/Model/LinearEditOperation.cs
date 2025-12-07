@@ -11,13 +11,14 @@ public enum LinearEditAction
     MergeWithPrevious
 }
 
-public class LinearEditOperation
+public record LinearEditOperation(
+    LinearEditAction Action,
+    LinearPointer? TargetPointer,
+    int? TargetIndex,
+    IReadOnlyList<LinearItem> Items)
 {
-    public LinearEditAction Action { get; set; }
-
-    public LinearPointer? TargetPointer { get; set; }
-
-    public int? TargetIndex { get; set; }
-
-    public List<LinearItem> Items { get; set; } = new();
+    public static LinearEditOperation ForIndex(LinearEditAction action, int targetIndex, params LinearItem[] items)
+    {
+        return new LinearEditOperation(action, null, targetIndex, items);
+    }
 }

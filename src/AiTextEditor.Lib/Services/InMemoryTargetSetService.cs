@@ -1,34 +1,24 @@
-using AiTextEditor.Lib.Interfaces;
 using AiTextEditor.Lib.Model;
-using System.Linq;
 
 namespace AiTextEditor.Lib.Services;
 
-public class InMemoryTargetSetService : ITargetSetService
+public class InMemoryTargetSetService
 {
     private readonly Dictionary<string, TargetSet> store = new(StringComparer.OrdinalIgnoreCase);
 
-    public TargetSet Create(
-        string documentId,
-        IEnumerable<LinearItem> items,
-        string? userCommand = null,
-        string? label = null,
-        Func<LinearItem, string?>? blockIdResolver = null)
+    public TargetSet Create(string documentId, IEnumerable<LinearItem> items, string? userCommand = null, string? label = null)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(documentId);
+        var targets = items
+            .Select(item => new TargetRef(
+                Guid.NewGuid().ToString(),
+                documentId,
+                new LinearPointer(item.Pointer.Index, new SemanticPointer(item.Pointer.HeadingNumbers, item.Pointer.ParagraphNumber)),
+                item.Type,
+                item.Markdown,
+                item.Text))
+            .ToList();
 
-        var targetSet = new TargetSet
-        {
-            DocumentId = documentId,
-            UserCommand = userCommand,
-            Label = label
-        };
-
-        foreach (var item in items)
-        {
-            targetSet.Targets.Add(ToTargetRef(item, blockIdResolver));
-        }
-
+        var targetSet = TargetSet.Create(documentId, targets, userCommand, label);
         store[targetSet.Id] = targetSet;
         return targetSet;
     }
@@ -61,20 +51,5 @@ public class InMemoryTargetSetService : ITargetSetService
         }
 
         return store.Remove(targetSetId);
-    }
-
-    private static TargetRef ToTargetRef(LinearItem item, Func<LinearItem, string?>? blockIdResolver)
-    {
-        var blockId = blockIdResolver?.Invoke(item);
-
-        return new TargetRef
-        {
-            BlockId = blockId,
-            LinearIndex = item.Index,
-            Pointer = new LinearPointer(item.Pointer.Index, new SemanticPointer(item.Pointer.HeadingNumbers, item.Pointer.ParagraphNumber)),
-            Type = item.Type,
-            Markdown = item.Markdown,
-            Text = item.Text
-        };
     }
 }

@@ -15,7 +15,7 @@ public class MarkdownLinearizationTests
         var document = repository.LoadFromMarkdown(markdown);
 
         Assert.Collection(
-            document.LinearDocument.Items,
+            document.Items,
             item =>
             {
                 Assert.Equal(0, item.Index);
@@ -61,11 +61,11 @@ public class MarkdownLinearizationTests
 
         var document = repository.LoadFromMarkdown(markdown);
 
-        Assert.Equal(3, document.LinearDocument.Items.Count);
-        Assert.Equal("1", document.LinearDocument.Items[0].Pointer.SemanticNumber);
-        Assert.Equal(LinearItemType.ListItem, document.LinearDocument.Items[1].Type);
-        Assert.Equal("1.p1", document.LinearDocument.Items[1].Pointer.SemanticNumber);
-        Assert.Equal("1.p2", document.LinearDocument.Items[2].Pointer.SemanticNumber);
-        Assert.Equal("Second item", document.LinearDocument.Items[2].Text);
+        Assert.Equal(3, document.Items.Count);
+        Assert.Equal("1", document.Items[0].Pointer.SemanticNumber);
+        Assert.Equal(LinearItemType.ListItem, document.Items[1].Type);
+        Assert.Equal("1.p1", document.Items[1].Pointer.SemanticNumber);
+        Assert.Equal("1.p2", document.Items[2].Pointer.SemanticNumber);
+        Assert.Equal("Second item", document.Items[2].Text);
     }
 }
