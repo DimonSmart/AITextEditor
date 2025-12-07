@@ -10,7 +10,7 @@ MCP-oriented toolkit around a linear Markdown domain model. The server keeps a s
 ## MCP server surface
 - Load markdown into a cached `LinearDocument` (`McpServer.LoadDocument`).
 - Inspect items for navigation or filtering (`McpServer.GetItems`).
-- Create and manage named target sets (`McpServer.CreateTargetSet`, `ListTargetSets`, `DeleteTargetSet`).
+- Create and manage named target sets (`McpServer.CreateTargetSet`, `ListTargetSets`, `GetTargetSet`, `DeleteTargetSet`).
 - Apply `LinearEditOperation` batches to the cached document with consistent reindexing (`McpServer.ApplyOperations`).
 
 Versioning, diffing, and long-running orchestration remain outside of the server; it only maintains the latest in-memory state.
