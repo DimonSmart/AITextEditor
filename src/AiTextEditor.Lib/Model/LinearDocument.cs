@@ -1,8 +1,12 @@
 namespace AiTextEditor.Lib.Model;
 
-public class LinearDocument
+public record LinearDocument(
+    string Id,
+    IReadOnlyList<LinearItem> Items,
+    string SourceText)
 {
-    public List<LinearItem> Items { get; set; } = new();
-
-    public string SourceText { get; set; } = string.Empty;
+    public static LinearDocument Empty(string? id = null)
+    {
+        return new LinearDocument(id ?? Guid.NewGuid().ToString(), Array.Empty<LinearItem>(), string.Empty);
+    }
 }

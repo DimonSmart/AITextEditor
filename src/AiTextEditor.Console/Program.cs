@@ -1,30 +1,11 @@
-using AiTextEditor.Lib.Interfaces;
 using AiTextEditor.Lib.Model;
 using AiTextEditor.Lib.Services;
 
-Console.WriteLine("--- AI Text Editor Prototype ---");
+Console.WriteLine("--- MCP Linear Document Demo ---");
 
-// 1. Setup Services
-IDocumentRepository repository = new MarkdownDocumentRepository();
-var ollamaEndpoint = Environment.GetEnvironmentVariable("OLLAMA_ENDPOINT") ?? "http://localhost:11434";
-var ollamaModel = Environment.GetEnvironmentVariable("OLLAMA_MODEL") ?? "qwen3:latest";
-
-ILlmClient llmClient = SemanticKernelLlmClient.CreateOllamaClient(
-    modelId: ollamaModel,
-    endpoint: new Uri(ollamaEndpoint));
-
-ILlmEditor llmEditor = new FunctionCallingLlmEditor(llmClient);
-ITargetSetService targetSetService = new InMemoryTargetSetService();
-IDocumentEditor docEditor = new DocumentEditor();
-var indexBuilder = new DocumentIndexBuilder();
-IEmbeddingGenerator embeddingGenerator = new SimpleEmbeddingGenerator();
-IVectorIndex vectorIndex = new InMemoryVectorIndex();
-var vectorIndexing = new VectorIndexingService(embeddingGenerator, vectorIndex);
-var planner = new AiCommandPlanner(indexBuilder, vectorIndexing, targetSetService);
-var editGenerator = new EditOperationGenerator(targetSetService, llmEditor);
-
-string inputPath = "sample.md";
-string outputPath = "sample_edited.md";
+var server = new McpServer();
+var inputPath = "sample.md";
+var outputPath = "sample_edited.md";
 
 if (!File.Exists(inputPath))
 {
@@ -32,39 +13,26 @@ if (!File.Exists(inputPath))
     return;
 }
 
-// 2. Load Document
-Console.WriteLine($"Loading {inputPath}...");
-Document document = repository.LoadFromMarkdownFile(inputPath);
-Console.WriteLine($"Loaded {document.Blocks.Count} blocks.");
+var markdown = File.ReadAllText(inputPath);
+var document = server.LoadDocument(markdown, "sample");
+Console.WriteLine($"Loaded document {document.Id} with {document.Items.Count} items.");
 
-// 3. Get user command (demo)
-string userCommand = "Добавь TODO во вторую главу: проверить, что все примеры компилируются.";
-Console.WriteLine($"User command: {userCommand}");
+var targetSet = server.CreateTargetSet(document.Id, Enumerable.Range(0, Math.Min(3, document.Items.Count)), "demo", "first-items");
+Console.WriteLine($"Target set {targetSet.Id} created with {targetSet.Targets.Count} targets.");
 
-// 4. Plan edits via AiCommandPlanner (indexes + raw command)
-var plan = await planner.PlanAsync(document, userCommand);
-Console.WriteLine(plan.Success
-    ? $"Target set {plan.TargetSet!.Id} with {plan.TargetSet!.Targets.Count} items created."
-    : "Planning failed.");
-
-if (plan.Success)
+var operations = new List<LinearEditOperation>();
+if (document.Items.Count > 0)
 {
-    Console.WriteLine("Generating operations...");
-    var operations = await editGenerator.GenerateAsync(document, plan.TargetSet!.Id, userCommand);
-    Console.WriteLine($"Planned {operations.Count} operations.");
-    foreach (var op in operations)
+    var first = document.Items[0];
+    var updatedFirst = first with
     {
-        Console.WriteLine($"Op: {op.Action} on {op.TargetBlockId}");
-    }
+        Markdown = first.Markdown + "\n\n<!-- edited by MCP demo -->",
+        Text = first.Text + "\n\n[annotated by MCP demo]"
+    };
 
-    Console.WriteLine("Applying edits...");
-    docEditor.ApplyEdits(document, operations);
-
-    Console.WriteLine($"Saving to {outputPath}...");
-    repository.SaveToMarkdownFile(document, outputPath);
-    Console.WriteLine("Done.");
-
-    Console.WriteLine("\n--- Result Preview ---");
-    var savedText = File.ReadAllText(outputPath);
-    Console.WriteLine(savedText);
+    operations.Add(new LinearEditOperation(LinearEditAction.Replace, first.Pointer, null, new[] { updatedFirst }));
 }
+
+var updated = operations.Count > 0 ? server.ApplyOperations(document.Id, operations) : document;
+File.WriteAllText(outputPath, string.Join("\n\n", updated.Items.Select(item => item.Markdown)));
+Console.WriteLine($"Saved updated document to {outputPath}.");

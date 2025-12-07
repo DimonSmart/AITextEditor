@@ -1,16 +1,26 @@
 namespace AiTextEditor.Lib.Model;
 
-public class TargetSet
+public record TargetSet(
+    string Id,
+    string DocumentId,
+    IReadOnlyList<TargetRef> Targets,
+    string? Label,
+    string? UserCommand,
+    DateTimeOffset CreatedAt)
 {
-    public string Id { get; set; } = Guid.NewGuid().ToString();
-
-    public string DocumentId { get; set; } = string.Empty;
-
-    public string? Label { get; set; }
-
-    public string? UserCommand { get; set; }
-
-    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
-
-    public List<TargetRef> Targets { get; set; } = new();
+    public static TargetSet Create(
+        string documentId,
+        IReadOnlyList<TargetRef> targets,
+        string? userCommand = null,
+        string? label = null)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(documentId);
+        return new TargetSet(
+            Guid.NewGuid().ToString(),
+            documentId,
+            targets,
+            label,
+            userCommand,
+            DateTimeOffset.UtcNow);
+    }
 }
