@@ -70,6 +70,11 @@ public class McpServer
         return targetSets.List(documentId);
     }
 
+    public TargetSet? GetTargetSet(string targetSetId)
+    {
+        return targetSets.Get(targetSetId);
+    }
+
     public bool DeleteTargetSet(string targetSetId)
     {
         return targetSets.Delete(targetSetId);
