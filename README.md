@@ -14,3 +14,21 @@ MCP-oriented toolkit around a linear Markdown domain model. The server keeps a s
 - Apply `LinearEditOperation` batches to the cached document with consistent reindexing (`McpServer.ApplyOperations`).
 
 Versioning, diffing, and long-running orchestration remain outside of the server; it only maintains the latest in-memory state.
+
+## Running LLM-backed tests
+Functional and MCP integration tests call a live LLM endpoint. Configure the client through environment variables before runnin
+g tests:
+
+- `LLM_BASE_URL` (or `OLLAMA_HOST`) — base URL of the Ollama endpoint, for example `https://api.ollama.com` or `http://localhos
+t:11434`.
+- `LLM_API_KEY` (or `OLLAMA_API_KEY`) — bearer token required by Ollama Cloud.
+- `LLM_MODEL` (or `OLLAMA_MODEL`) — model identifier to pass into `/api/generate`.
+
+Example:
+
+```bash
+export LLM_BASE_URL="https://api.ollama.com"
+export LLM_API_KEY="<your_token>"
+export LLM_MODEL="llama3"
+dotnet test
+```
