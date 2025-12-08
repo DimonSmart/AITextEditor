@@ -5,9 +5,20 @@ namespace AiTextEditor.Domain.Tests;
 
 public class MarkdownRoundtripTests
 {
-    public static IEnumerable<object[]> BookExamples => Directory
-        .EnumerateFiles(Path.Combine(AppContext.BaseDirectory, "Fixtures", "MarkdownBooks"), "*.md")
-        .Select(path => new object[] { Path.GetFileName(path) });
+    public static TheoryData<string> BookExamples
+    {
+        get
+        {
+            var data = new TheoryData<string>();
+
+            foreach (var path in Directory.EnumerateFiles(Path.Combine(AppContext.BaseDirectory, "Fixtures", "MarkdownBooks"), "*.md"))
+            {
+                data.Add(Path.GetFileName(path));
+            }
+
+            return data;
+        }
+    }
 
     [Theory]
     [MemberData(nameof(BookExamples))]
