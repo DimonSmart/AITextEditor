@@ -1,8 +1,6 @@
 using AiTextEditor.Lib.Model;
 using AiTextEditor.Lib.Services;
 using AiTextEditor.Lib.Services.SemanticKernel;
-using Vcr.HttpRecorder;
-using Vcr.HttpRecorder.Matchers;
 using Xunit;
 
 namespace AiTextEditor.Domain.Tests;
@@ -173,20 +171,20 @@ public class McpServerTests
     }
 
     [Fact]
-    public async Task SemanticAction_UsesVcrBackedLamaClient()
+    public async Task SemanticAction_UsesConfiguredLamaClient()
     {
         var server = new McpServer();
         var document = server.LoadDocument("# Heading\n\nParagraph one\n\nParagraph two");
         var targetSet = server.CreateTargetSet(document.Id, new[] { 1, 2 });
 
-        var cassettePath = Path.Combine(AppContext.BaseDirectory, "Fixtures", "Cassettes", "llama_gpt-oss_120b-cloud.har");
-        using var httpClient = CreateRecordedClient(cassettePath);
+        using var httpClient = await TestLlmConfiguration.CreateVerifiedLlmClientAsync();
+        var expectedModel = TestLlmConfiguration.ResolveModel();
 
         var llamaClient = new LamaClient(httpClient);
         var response = await llamaClient.SummarizeTargetsAsync(targetSet);
 
-        Assert.Equal("gpt-oss:120b-cloud", response.Model);
-        Assert.Contains("Summary: combined targets", response.Content);
+        Assert.Equal(expectedModel, response.Model);
+        Assert.False(string.IsNullOrWhiteSpace(response.Text));
     }
 
     [Fact]
@@ -205,8 +203,7 @@ The second chapter ends with a cliffhanger about the hidden door.
 """;
         var userCommand = "Расскажи мне, чем заканчивается вторая глава.";
 
-        var cassettePath = Path.Combine(AppContext.BaseDirectory, "Fixtures", "Cassettes", "llama_gpt-oss_120b-cloud.har");
-        using var httpClient = CreateRecordedClient(cassettePath);
+        using var httpClient = await TestLlmConfiguration.CreateVerifiedLlmClientAsync();
         var engine = new SemanticKernelEngine(httpClient);
 
         var result = await engine.SummarizeChapterAsync(markdown, userCommand, "chapters-demo");
@@ -214,23 +211,5 @@ The second chapter ends with a cliffhanger about the hidden door.
         Assert.NotNull(result.LastTargetSet);
         Assert.All(result.LastTargetSet!.Targets, target => Assert.StartsWith("2.", target.Pointer.SemanticNumber, StringComparison.Ordinal));
         Assert.False(string.IsNullOrWhiteSpace(result.LastAnswer));
-    }
-
-    private static HttpClient CreateRecordedClient(string cassettePath)
-    {
-        var recorderHandler = new HttpRecorderDelegatingHandler(
-            cassettePath,
-            HttpRecorderMode.Replay,
-            matcher: RulesMatcher.MatchMultiple
-                .ByHttpMethod()
-                .ByRequestUri(UriPartial.Path))
-        {
-            InnerHandler = new HttpClientHandler()
-        };
-
-        return new HttpClient(recorderHandler)
-        {
-            BaseAddress = new Uri("http://localhost:11434")
-        };
     }
 }

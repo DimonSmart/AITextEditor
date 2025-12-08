@@ -1,10 +1,9 @@
 using System.Globalization;
 using System.Text;
+using AiTextEditor.Domain.Tests;
 using AiTextEditor.Lib.Services.SemanticKernel;
 using Xunit;
 using Xunit.Abstractions;
-using Vcr.HttpRecorder;
-using Vcr.HttpRecorder.Matchers;
 
 namespace AiTextEditor.Domain.Tests.Functional;
 
@@ -21,8 +20,7 @@ public class McpFunctionalTests
     public async Task QuestionAboutProfessor_ReturnsPointerToFirstMention()
     {
         var markdown = LoadNeznaykaSample();
-        var cassettePath = Path.Combine(AppContext.BaseDirectory, "Fixtures", "Cassettes", "semantic_kernel_first_mention.har");
-        using var httpClient = CreateRecordedClient(cassettePath);
+        using var httpClient = await TestLlmConfiguration.CreateVerifiedLlmClientAsync(output);
         var engine = new SemanticKernelEngine(httpClient);
 
         var result = await engine.RunPointerQuestionAsync(markdown, "Где в книге впервые упоминается профессор Звездочкин?", "neznayka-sample");
@@ -30,6 +28,42 @@ public class McpFunctionalTests
         Assert.Equal("1.1.1.p21", result.LastTargetSet?.Targets.Single().Pointer.SemanticNumber);
         Assert.Contains(NormalizeForSearch("звездочкин"), NormalizeForSearch(result.LastTargetSet!.Targets.Single().Text), StringComparison.Ordinal);
         Assert.Contains("1.1.1.p21", result.LastAnswer, StringComparison.OrdinalIgnoreCase);
+        output.WriteLine(string.Join("\n", result.UserMessages));
+    }
+
+    [Fact]
+    public async Task QuestionAboutProfessor_WithAlternativeSpelling_ReturnsPointerToFirstMention()
+    {
+        var markdown = LoadNeznaykaSample();
+        using var httpClient = await TestLlmConfiguration.CreateVerifiedLlmClientAsync(output);
+        var engine = new SemanticKernelEngine(httpClient);
+
+        var result = await engine.RunPointerQuestionAsync(markdown, "Покажи первое упоминание профессора ЗВЁЗДОЧКИНА в тексте.", "neznayka-sample-variant");
+
+        Assert.Equal("1.1.1.p21", result.LastTargetSet?.Targets.Single().Pointer.SemanticNumber);
+        Assert.Contains(NormalizeForSearch("звездочкин"), NormalizeForSearch(result.LastTargetSet!.Targets.Single().Text), StringComparison.Ordinal);
+        Assert.Contains("1.1.1.p21", result.LastAnswer, StringComparison.OrdinalIgnoreCase);
+        output.WriteLine(string.Join("\n", result.UserMessages));
+    }
+
+    [Fact]
+    public async Task QuestionAboutProfessor_RewritesParagraphWithBlossomingApples()
+    {
+        var markdown = LoadNeznaykaSample();
+        using var httpClient = await TestLlmConfiguration.CreateVerifiedLlmClientAsync(output);
+        var engine = new SemanticKernelEngine(httpClient);
+
+        var result = await engine.RunPointerQuestionAsync(
+            markdown,
+            "Найди первое упоминание профессора Звёздочкина и перепиши параграф, добавив, что в этот момент начали распускаться яблоки.",
+            "neznayka-sample-rewrite");
+
+        var answer = result.LastAnswer ?? string.Empty;
+
+        Assert.Equal("1.1.1.p21", result.LastTargetSet?.Targets.Single().Pointer.SemanticNumber);
+        Assert.Contains(NormalizeForSearch("яблоки"), NormalizeForSearch(answer), StringComparison.Ordinal);
+        Assert.Contains(NormalizeForSearch("переписанный параграф"), NormalizeForSearch(answer), StringComparison.Ordinal);
+        Assert.Contains("1.1.1.p21", answer, StringComparison.OrdinalIgnoreCase);
         output.WriteLine(string.Join("\n", result.UserMessages));
     }
 
@@ -52,23 +86,5 @@ public class McpFunctionalTests
         }
 
         return builder.ToString();
-    }
-
-    private static HttpClient CreateRecordedClient(string cassettePath)
-    {
-        var recorderHandler = new HttpRecorderDelegatingHandler(
-            cassettePath,
-            HttpRecorderMode.Replay,
-            matcher: RulesMatcher.MatchMultiple
-                .ByHttpMethod()
-                .ByRequestUri(UriPartial.Path))
-        {
-            InnerHandler = new HttpClientHandler()
-        };
-
-        return new HttpClient(recorderHandler)
-        {
-            BaseAddress = new Uri("http://localhost:11434")
-        };
     }
 }
