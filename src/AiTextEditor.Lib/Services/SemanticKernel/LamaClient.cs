@@ -23,9 +23,8 @@ public class LamaClient
 
     public static string ResolveModelFromEnvironment()
     {
-        return Environment.GetEnvironmentVariable("LLM_MODEL")
-            ?? Environment.GetEnvironmentVariable("OLLAMA_MODEL")
-            ?? DefaultModel;
+        var model = Environment.GetEnvironmentVariable("LLM_MODEL");
+        return string.IsNullOrWhiteSpace(model) ? DefaultModel : model;
     }
 
     public async Task<LamaChatResponse> SummarizeTargetsAsync(TargetSet targetSet, CancellationToken cancellationToken = default)

@@ -20,12 +20,13 @@ public static class TestLlmConfiguration
 
     private static (HttpClient Client, string? ApiKey) CreateLlmClientInternal()
     {
-        var baseUrl = Environment.GetEnvironmentVariable("LLM_BASE_URL")
-            ?? Environment.GetEnvironmentVariable("OLLAMA_HOST")
-            ?? DefaultBaseUrl;
+        var baseUrl = Environment.GetEnvironmentVariable("LLM_BASE_URL");
+        if (string.IsNullOrWhiteSpace(baseUrl))
+        {
+            baseUrl = DefaultBaseUrl;
+        }
         var normalizedBaseUrl = NormalizeBaseUrl(baseUrl);
-        var apiKey = Environment.GetEnvironmentVariable("LLM_API_KEY")
-            ?? Environment.GetEnvironmentVariable("OLLAMA_API_KEY");
+        var apiKey = Environment.GetEnvironmentVariable("LLM_API_KEY");
 
         var client = new HttpClient
         {

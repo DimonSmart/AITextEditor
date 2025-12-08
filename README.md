@@ -18,9 +18,9 @@ Versioning, diffing, and long-running orchestration remain outside of the server
 ## Running LLM-backed tests
 Functional and MCP integration tests call a live LLM endpoint. Configure the client through environment variables before running tests:
 
-- `LLM_BASE_URL` (or `OLLAMA_HOST`) — base URL of the Ollama endpoint, for example `https://ollama.com/api` or `http://localhost:11434`.
-- `LLM_API_KEY` (or `OLLAMA_API_KEY`) — bearer token required by Ollama Cloud.
-- `LLM_MODEL` (or `OLLAMA_MODEL`) — model identifier to pass into `/api/generate`.
+- `LLM_BASE_URL` — base URL of the Ollama endpoint (defaults to `http://localhost:11434`), for example `https://ollama.com/api` or `http://localhost:11434`.
+- `LLM_API_KEY` — bearer token required by Ollama Cloud.
+- `LLM_MODEL` — model identifier to pass into `/api/generate`.
 
 Example:
 
