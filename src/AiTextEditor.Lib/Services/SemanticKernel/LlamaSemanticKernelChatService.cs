@@ -3,7 +3,7 @@ using System.Text;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 
-namespace AiTextEditor.Domain.Tests.Llm;
+namespace AiTextEditor.Lib.Services.SemanticKernel;
 
 public sealed class LlamaSemanticKernelChatService : IChatCompletionService
 {
