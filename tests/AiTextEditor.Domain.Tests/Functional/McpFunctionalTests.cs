@@ -1,6 +1,6 @@
 using System.Globalization;
-using System.Net.Http.Headers;
 using System.Text;
+using AiTextEditor.Domain.Tests;
 using AiTextEditor.Lib.Services.SemanticKernel;
 using Xunit;
 using Xunit.Abstractions;
@@ -88,20 +88,5 @@ public class McpFunctionalTests
         return builder.ToString();
     }
 
-    private static HttpClient CreateLlmClient()
-    {
-        var baseUrl = Environment.GetEnvironmentVariable("LLM_BASE_URL") ?? "http://localhost:11434";
-        var apiKey = Environment.GetEnvironmentVariable("LLM_API_KEY");
-        var client = new HttpClient
-        {
-            BaseAddress = new Uri(baseUrl)
-        };
-
-        if (!string.IsNullOrWhiteSpace(apiKey))
-        {
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
-        }
-
-        return client;
-    }
+    private static HttpClient CreateLlmClient() => TestLlmConfiguration.CreateLlmClient();
 }

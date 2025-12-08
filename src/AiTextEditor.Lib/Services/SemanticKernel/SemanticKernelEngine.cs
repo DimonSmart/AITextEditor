@@ -64,8 +64,8 @@ public sealed class SemanticKernelEngine
         context.LastTargetSet = targetSet;
 
         var response = await CreateLlmSummaryAsync(chatService, kernel, targetSet, userCommand);
-        context.LastAnswer = response.Content;
-        context.UserMessages.Add(response.Content);
+        context.LastAnswer = response.Text;
+        context.UserMessages.Add(response.Text);
 
         return context;
     }
@@ -163,6 +163,6 @@ public sealed class SemanticKernelEngine
             throw new InvalidOperationException("LLM did not return a response.");
         }
 
-        return new LamaChatResponse(((LlamaSemanticKernelChatService)chatService).ModelId, content.Content ?? string.Empty);
+        return new LamaChatResponse(((LlamaSemanticKernelChatService)chatService).ModelId, content.Content, null);
     }
 }

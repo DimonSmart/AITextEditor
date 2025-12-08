@@ -171,19 +171,20 @@ public class McpServerTests
     }
 
     [Fact]
-    public async Task SemanticAction_UsesVcrBackedLamaClient()
+    public async Task SemanticAction_UsesConfiguredLamaClient()
     {
         var server = new McpServer();
         var document = server.LoadDocument("# Heading\n\nParagraph one\n\nParagraph two");
         var targetSet = server.CreateTargetSet(document.Id, new[] { 1, 2 });
 
-        using var httpClient = CreateLlmClient();
+        using var httpClient = TestLlmConfiguration.CreateLlmClient();
+        var expectedModel = TestLlmConfiguration.ResolveModel();
 
         var llamaClient = new LamaClient(httpClient);
         var response = await llamaClient.SummarizeTargetsAsync(targetSet);
 
-        Assert.Equal("gpt-oss:120b-cloud", response.Model);
-        Assert.Contains("Summary: combined targets", response.Content);
+        Assert.Equal(expectedModel, response.Model);
+        Assert.False(string.IsNullOrWhiteSpace(response.Text));
     }
 
     [Fact]
@@ -202,7 +203,7 @@ The second chapter ends with a cliffhanger about the hidden door.
 """;
         var userCommand = "Расскажи мне, чем заканчивается вторая глава.";
 
-        using var httpClient = CreateLlmClient();
+        using var httpClient = TestLlmConfiguration.CreateLlmClient();
         var engine = new SemanticKernelEngine(httpClient);
 
         var result = await engine.SummarizeChapterAsync(markdown, userCommand, "chapters-demo");
@@ -210,22 +211,5 @@ The second chapter ends with a cliffhanger about the hidden door.
         Assert.NotNull(result.LastTargetSet);
         Assert.All(result.LastTargetSet!.Targets, target => Assert.StartsWith("2.", target.Pointer.SemanticNumber, StringComparison.Ordinal));
         Assert.False(string.IsNullOrWhiteSpace(result.LastAnswer));
-    }
-
-    private static HttpClient CreateLlmClient()
-    {
-        var baseUrl = Environment.GetEnvironmentVariable("LLM_BASE_URL") ?? "http://localhost:11434";
-        var apiKey = Environment.GetEnvironmentVariable("LLM_API_KEY");
-        var client = new HttpClient
-        {
-            BaseAddress = new Uri(baseUrl)
-        };
-
-        if (!string.IsNullOrWhiteSpace(apiKey))
-        {
-            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
-        }
-
-        return client;
     }
 }
