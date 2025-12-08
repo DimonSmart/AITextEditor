@@ -177,7 +177,7 @@ public class McpServerTests
         var document = server.LoadDocument("# Heading\n\nParagraph one\n\nParagraph two");
         var targetSet = server.CreateTargetSet(document.Id, new[] { 1, 2 });
 
-        using var httpClient = TestLlmConfiguration.CreateLlmClient();
+        using var httpClient = await TestLlmConfiguration.CreateVerifiedLlmClientAsync();
         var expectedModel = TestLlmConfiguration.ResolveModel();
 
         var llamaClient = new LamaClient(httpClient);
@@ -203,7 +203,7 @@ The second chapter ends with a cliffhanger about the hidden door.
 """;
         var userCommand = "Расскажи мне, чем заканчивается вторая глава.";
 
-        using var httpClient = TestLlmConfiguration.CreateLlmClient();
+        using var httpClient = await TestLlmConfiguration.CreateVerifiedLlmClientAsync();
         var engine = new SemanticKernelEngine(httpClient);
 
         var result = await engine.SummarizeChapterAsync(markdown, userCommand, "chapters-demo");

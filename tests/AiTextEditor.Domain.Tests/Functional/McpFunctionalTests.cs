@@ -20,7 +20,7 @@ public class McpFunctionalTests
     public async Task QuestionAboutProfessor_ReturnsPointerToFirstMention()
     {
         var markdown = LoadNeznaykaSample();
-        using var httpClient = CreateLlmClient();
+        using var httpClient = await TestLlmConfiguration.CreateVerifiedLlmClientAsync(output);
         var engine = new SemanticKernelEngine(httpClient);
 
         var result = await engine.RunPointerQuestionAsync(markdown, "Где в книге впервые упоминается профессор Звездочкин?", "neznayka-sample");
@@ -35,7 +35,7 @@ public class McpFunctionalTests
     public async Task QuestionAboutProfessor_WithAlternativeSpelling_ReturnsPointerToFirstMention()
     {
         var markdown = LoadNeznaykaSample();
-        using var httpClient = CreateLlmClient();
+        using var httpClient = await TestLlmConfiguration.CreateVerifiedLlmClientAsync(output);
         var engine = new SemanticKernelEngine(httpClient);
 
         var result = await engine.RunPointerQuestionAsync(markdown, "Покажи первое упоминание профессора ЗВЁЗДОЧКИНА в тексте.", "neznayka-sample-variant");
@@ -50,7 +50,7 @@ public class McpFunctionalTests
     public async Task QuestionAboutProfessor_RewritesParagraphWithBlossomingApples()
     {
         var markdown = LoadNeznaykaSample();
-        using var httpClient = CreateLlmClient();
+        using var httpClient = await TestLlmConfiguration.CreateVerifiedLlmClientAsync(output);
         var engine = new SemanticKernelEngine(httpClient);
 
         var result = await engine.RunPointerQuestionAsync(
@@ -87,6 +87,4 @@ public class McpFunctionalTests
 
         return builder.ToString();
     }
-
-    private static HttpClient CreateLlmClient() => TestLlmConfiguration.CreateLlmClient();
 }
