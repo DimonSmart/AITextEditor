@@ -8,12 +8,14 @@ public class LamaClient
 {
     private readonly HttpClient httpClient;
     private readonly string model;
+    private readonly string apiPrefix;
 
     public const string DefaultModel = "gpt-oss:120b-cloud";
 
     public LamaClient(HttpClient httpClient, string? model = null)
     {
         this.httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+        apiPrefix = ResolveApiPrefix(httpClient.BaseAddress);
         this.model = string.IsNullOrWhiteSpace(model) ? ResolveModelFromEnvironment() : model;
     }
 
@@ -30,7 +32,7 @@ public class LamaClient
     {
         var prompt = string.Join("\n", targetSet.Targets.Select(target => target.Text));
         var request = new LamaChatRequest(model, prompt);
-        using var response = await httpClient.PostAsJsonAsync("/api/generate", request, cancellationToken);
+        using var response = await httpClient.PostAsJsonAsync($"{apiPrefix}generate", request, cancellationToken);
         response.EnsureSuccessStatusCode();
 
         var content = await response.Content.ReadFromJsonAsync<LamaChatResponse>(cancellationToken: cancellationToken);
@@ -48,7 +50,7 @@ public class LamaClient
         ArgumentException.ThrowIfNullOrWhiteSpace(prompt);
 
         var request = new LamaChatRequest(model, prompt);
-        using var response = await httpClient.PostAsJsonAsync("/api/generate", request, cancellationToken);
+        using var response = await httpClient.PostAsJsonAsync($"{apiPrefix}generate", request, cancellationToken);
         response.EnsureSuccessStatusCode();
 
         var content = await response.Content.ReadFromJsonAsync<LamaChatResponse>(cancellationToken: cancellationToken);
@@ -70,6 +72,17 @@ public class LamaClient
 
         var modelId = string.IsNullOrWhiteSpace(response.Model) ? model : response.Model;
         return response with { Model = modelId };
+    }
+
+    private static string ResolveApiPrefix(Uri? baseAddress)
+    {
+        var path = baseAddress?.AbsolutePath ?? "/";
+        var normalizedPath = path.EndsWith('/') ? path : path + "/";
+
+        return string.Equals(normalizedPath, "/api/", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(normalizedPath, "/api", StringComparison.OrdinalIgnoreCase)
+            ? string.Empty
+            : "api/";
     }
 }
 
