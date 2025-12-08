@@ -1,5 +1,6 @@
 using AiTextEditor.Lib.Model;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
@@ -10,9 +11,16 @@ public sealed class SemanticKernelEngine
 {
     private readonly HttpClient httpClient;
 
+    private readonly ILoggerFactory loggerFactory;
+
     public SemanticKernelEngine(HttpClient httpClient)
     {
         this.httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+        loggerFactory = LoggerFactory.Create(builder =>
+        {
+            builder.AddConsole();
+            builder.SetMinimumLevel(LogLevel.Debug);
+        });
     }
 
     public async Task<SemanticKernelContext> RunAsync(string markdown, string userCommand)
@@ -29,9 +37,11 @@ public sealed class SemanticKernelEngine
 
         // 3. Build Kernel
         var builder = Kernel.CreateBuilder();
-        
+
         // Register Services
         builder.Services.AddSingleton(documentContext);
+        builder.Services.AddSingleton(loggerFactory);
+        builder.Services.AddLogging();
 
         // Configure OpenAI Connector for Ollama
         var modelId = Environment.GetEnvironmentVariable("LLM_MODEL") ?? "gpt-oss:120b-cloud";
@@ -48,12 +58,15 @@ public sealed class SemanticKernelEngine
         builder.AddOpenAIChatCompletion(
             modelId: modelId,
             apiKey: apiKey,
-            endpoint: new Uri(endpoint));
-        
+            endpoint: new Uri(endpoint),
+            httpClient: httpClient);
+
         // Register Plugins
         builder.Plugins.AddFromType<NavigationPlugin>();
 
         var kernel = builder.Build();
+        var logger = loggerFactory.CreateLogger<SemanticKernelEngine>();
+        logger.LogInformation("Kernel built with model {ModelId} at {Endpoint}", modelId, endpoint);
 
         // 4. Execute
         var chatService = kernel.GetRequiredService<IChatCompletionService>();
@@ -61,13 +74,16 @@ public sealed class SemanticKernelEngine
         history.AddSystemMessage("You are a helpful assistant. Use the available tools to answer the user's question.");
         history.AddUserMessage(userCommand);
 
-        var executionSettings = new OpenAIPromptExecutionSettings 
-        { 
-            ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions 
+        logger.LogInformation("User command: {UserCommand}", userCommand);
+
+        var executionSettings = new OpenAIPromptExecutionSettings
+        {
+            ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions
         };
 
         var result = await chatService.GetChatMessageContentsAsync(history, executionSettings, kernel);
         var answer = result.FirstOrDefault()?.Content ?? string.Empty;
+        logger.LogInformation("LLM answer: {Answer}", answer);
 
         // 5. Return Context (Populate what we can for compatibility/verification)
         var context = new SemanticKernelContext

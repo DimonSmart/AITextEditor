@@ -1,10 +1,14 @@
 using System.ComponentModel;
 using Microsoft.SemanticKernel;
+using Microsoft.Extensions.Logging;
 
 namespace AiTextEditor.Lib.Services.SemanticKernel;
 
-public class NavigationPlugin(DocumentContext context)
+public class NavigationPlugin(DocumentContext context, ILogger<NavigationPlugin> logger)
 {
+    private readonly DocumentContext context = context;
+    private readonly ILogger<NavigationPlugin> logger = logger;
+
     [KernelFunction]
     [Description("Searches the document for a specific character, topic, or phrase and returns the location pointer.")]
     public string FindFirstMention(
@@ -12,8 +16,10 @@ public class NavigationPlugin(DocumentContext context)
     {
         var match = context.Document.Items
             .FirstOrDefault(i => i.Text.Contains(query, StringComparison.OrdinalIgnoreCase));
-        
-        return match?.Pointer.SemanticNumber ?? "Not found";
+
+        var pointer = match?.Pointer.SemanticNumber ?? "Not found";
+        logger.LogInformation("FindFirstMention: query={Query}, pointer={Pointer}", query, pointer);
+        return pointer;
     }
 
     [KernelFunction]
