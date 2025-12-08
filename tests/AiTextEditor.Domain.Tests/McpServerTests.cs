@@ -1,8 +1,6 @@
 using AiTextEditor.Lib.Model;
 using AiTextEditor.Lib.Services;
 using AiTextEditor.Lib.Services.SemanticKernel;
-using Vcr.HttpRecorder;
-using Vcr.HttpRecorder.Matchers;
 using Xunit;
 
 namespace AiTextEditor.Domain.Tests;
@@ -179,8 +177,7 @@ public class McpServerTests
         var document = server.LoadDocument("# Heading\n\nParagraph one\n\nParagraph two");
         var targetSet = server.CreateTargetSet(document.Id, new[] { 1, 2 });
 
-        var cassettePath = Path.Combine(AppContext.BaseDirectory, "Fixtures", "Cassettes", "llama_gpt-oss_120b-cloud.har");
-        using var httpClient = CreateRecordedClient(cassettePath);
+        using var httpClient = CreateLlmClient();
 
         var llamaClient = new LamaClient(httpClient);
         var response = await llamaClient.SummarizeTargetsAsync(targetSet);
@@ -205,8 +202,7 @@ The second chapter ends with a cliffhanger about the hidden door.
 """;
         var userCommand = "Расскажи мне, чем заканчивается вторая глава.";
 
-        var cassettePath = Path.Combine(AppContext.BaseDirectory, "Fixtures", "Cassettes", "llama_gpt-oss_120b-cloud.har");
-        using var httpClient = CreateRecordedClient(cassettePath);
+        using var httpClient = CreateLlmClient();
         var engine = new SemanticKernelEngine(httpClient);
 
         var result = await engine.SummarizeChapterAsync(markdown, userCommand, "chapters-demo");
@@ -216,21 +212,20 @@ The second chapter ends with a cliffhanger about the hidden door.
         Assert.False(string.IsNullOrWhiteSpace(result.LastAnswer));
     }
 
-    private static HttpClient CreateRecordedClient(string cassettePath)
+    private static HttpClient CreateLlmClient()
     {
-        var recorderHandler = new HttpRecorderDelegatingHandler(
-            cassettePath,
-            HttpRecorderMode.Replay,
-            matcher: RulesMatcher.MatchMultiple
-                .ByHttpMethod()
-                .ByRequestUri(UriPartial.Path))
+        var baseUrl = Environment.GetEnvironmentVariable("LLM_BASE_URL") ?? "http://localhost:11434";
+        var apiKey = Environment.GetEnvironmentVariable("LLM_API_KEY");
+        var client = new HttpClient
         {
-            InnerHandler = new HttpClientHandler()
+            BaseAddress = new Uri(baseUrl)
         };
 
-        return new HttpClient(recorderHandler)
+        if (!string.IsNullOrWhiteSpace(apiKey))
         {
-            BaseAddress = new Uri("http://localhost:11434")
-        };
+            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
+        }
+
+        return client;
     }
 }
