@@ -1,0 +1,10 @@
+{
+  "Body": "{\u0022models\u0022:[\u0022gpt-oss:120b-cloud\u0022]}",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 08 Dec 2025 21:57:43 GMT"
+    ]
+  },
+  "StatusCode": 200
+}
