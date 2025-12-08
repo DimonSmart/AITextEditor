@@ -1,8 +1,8 @@
-using System.Text.RegularExpressions;
 using AiTextEditor.Lib.Model;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
+using Microsoft.SemanticKernel.Connectors.OpenAI;
 
 namespace AiTextEditor.Lib.Services.SemanticKernel;
 
@@ -15,154 +15,68 @@ public sealed class SemanticKernelEngine
         this.httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
     }
 
-    public async Task<SemanticKernelContext> RunPointerQuestionAsync(string markdown, string userCommand, string? documentId = null)
+    public async Task<SemanticKernelContext> RunAsync(string markdown, string userCommand)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(markdown);
         ArgumentException.ThrowIfNullOrWhiteSpace(userCommand);
 
-        var server = new McpServer();
-        var document = server.LoadDefaultDocument(markdown, documentId);
-        var context = CreateKernelContext(userCommand);
-        var kernel = CreateKernel(server, context);
+        // 1. Load Domain Model
+        var repository = new MarkdownDocumentRepository();
+        var document = repository.LoadFromMarkdown(markdown);
 
-        var items = server.GetItems(document.Id);
-        var formattedItems = string.Join("\n", items.Select(item => $"{item.Pointer.SemanticNumber}: {item.Text}"));
+        // 2. Create Shared Context
+        var documentContext = new DocumentContext(document);
 
+        // 3. Build Kernel
+        var builder = Kernel.CreateBuilder();
+        
+        // Register Services
+        builder.Services.AddSingleton(documentContext);
+
+        // Configure OpenAI Connector for Ollama
+        var modelId = Environment.GetEnvironmentVariable("LLM_MODEL") ?? "gpt-oss:120b-cloud";
+        var baseUrl = Environment.GetEnvironmentVariable("LLM_BASE_URL") ?? "http://localhost:11434";
+        var apiKey = Environment.GetEnvironmentVariable("LLM_API_KEY") ?? "ollama";
+
+        // Ensure the endpoint ends with /v1 for OpenAI compatibility
+        var endpoint = baseUrl.TrimEnd('/');
+        if (!endpoint.EndsWith("/v1"))
+        {
+            endpoint += "/v1";
+        }
+
+        builder.AddOpenAIChatCompletion(
+            modelId: modelId,
+            apiKey: apiKey,
+            endpoint: new Uri(endpoint));
+        
+        // Register Plugins
+        builder.Plugins.AddFromType<NavigationPlugin>();
+
+        var kernel = builder.Build();
+
+        // 4. Execute
         var chatService = kernel.GetRequiredService<IChatCompletionService>();
         var history = new ChatHistory();
-        history.AddSystemMessage("You are a Markdown MCP assistant. Use the MCP functions to inspect the document and answer with the exact pointer for the requested content.");
-        history.AddSystemMessage($"Document items:\n{formattedItems}");
+        history.AddSystemMessage("You are a helpful assistant. Use the available tools to answer the user's question.");
         history.AddUserMessage(userCommand);
 
-        var responses = await chatService.GetChatMessageContentsAsync(history, new PromptExecutionSettings(), kernel);
-        var answer = responses.FirstOrDefault()?.Content ?? string.Empty;
-
-        context.LastAnswer = answer;
-        var pointer = ExtractPointer(answer);
-        if (!string.IsNullOrWhiteSpace(pointer))
-        {
-            var targetSet = server.CreateTargetSet(new[] { FindItemIndex(items, pointer) }, userCommand, label: "user-request");
-            context.LastTargetSet = targetSet;
-            context.UserMessages.Add(answer);
-        }
-
-        return context;
-    }
-
-    public async Task<SemanticKernelContext> SummarizeChapterAsync(string markdown, string userCommand, string? documentId = null)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(markdown);
-        ArgumentException.ThrowIfNullOrWhiteSpace(userCommand);
-
-        var server = new McpServer();
-        var document = server.LoadDefaultDocument(markdown, documentId);
-        var context = CreateKernelContext(userCommand);
-        var kernel = CreateKernel(server, context);
-
-        var chatService = kernel.GetRequiredService<IChatCompletionService>();
-        var targetSet = CaptureChapterTargets(server, document, userCommand);
-        context.LastTargetSet = targetSet;
-
-        var response = await CreateLlmSummaryAsync(chatService, kernel, targetSet, userCommand);
-        context.LastAnswer = response.Text;
-        context.UserMessages.Add(response.Text);
-
-        return context;
-    }
-
-    private SemanticKernelContext CreateKernelContext(string userCommand)
-    {
-        return new SemanticKernelContext
-        {
-            LastCommand = userCommand
+        var executionSettings = new OpenAIPromptExecutionSettings 
+        { 
+            ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions 
         };
-    }
 
-    private Kernel CreateKernel(McpServer server, SemanticKernelContext context)
-    {
-        var lamaClient = new LamaClient(httpClient);
-        var builder = Kernel.CreateBuilder();
+        var result = await chatService.GetChatMessageContentsAsync(history, executionSettings, kernel);
+        var answer = result.FirstOrDefault()?.Content ?? string.Empty;
 
-        builder.Services.AddSingleton(lamaClient);
-        builder.Services.AddSingleton<IChatCompletionService, LlamaSemanticKernelChatService>();
-        builder.Plugins.AddFromObject(new McpServerPlugin(server, context));
-
-        return builder.Build();
-    }
-
-    private static string ExtractPointer(string answer)
-    {
-        if (string.IsNullOrWhiteSpace(answer))
+        // 5. Return Context (Populate what we can for compatibility/verification)
+        var context = new SemanticKernelContext
         {
-            return string.Empty;
-        }
+            LastCommand = userCommand,
+            LastAnswer = answer
+        };
+        context.UserMessages.Add(answer);
 
-        var match = Regex.Match(answer, @"\d+(?:\.\d+)*\.p\d+", RegexOptions.IgnoreCase);
-        return match.Success ? match.Value : string.Empty;
-    }
-
-    private static int FindItemIndex(IReadOnlyList<LinearItem> items, string pointer)
-    {
-        var match = items.FirstOrDefault(item => string.Equals(item.Pointer.SemanticNumber, pointer, StringComparison.OrdinalIgnoreCase));
-        if (match == null)
-        {
-            throw new InvalidOperationException($"Pointer '{pointer}' was not found in the document.");
-        }
-
-        return match.Index;
-    }
-
-    private static TargetSet CaptureChapterTargets(McpServer server, LinearDocument document, string userCommand)
-    {
-        var items = server.GetItems(document.Id);
-        var headings = items.Where(item => item.Type == LinearItemType.Heading).ToList();
-        var chapterNumber = ExtractChapterNumber(userCommand, headings.Count);
-        var start = headings[chapterNumber - 1].Index + 1;
-        var end = chapterNumber < headings.Count ? headings[chapterNumber].Index : items.Count;
-        var chapterItems = items.Skip(start).Take(end - start).ToList();
-
-        var targetSet = server.CreateTargetSet(chapterItems.Select(item => item.Index), userCommand, label: $"chapter-{chapterNumber}-summary");
-        return targetSet;
-    }
-
-    private static int ExtractChapterNumber(string userCommand, int headingCount)
-    {
-        var lower = userCommand.ToLowerInvariant();
-        if (lower.Contains("вторая", StringComparison.OrdinalIgnoreCase) || lower.Contains("second", StringComparison.OrdinalIgnoreCase))
-        {
-            return 2;
-        }
-
-        if (lower.Contains("первая", StringComparison.OrdinalIgnoreCase) || lower.Contains("first", StringComparison.OrdinalIgnoreCase))
-        {
-            return 1;
-        }
-
-        var digit = lower.FirstOrDefault(char.IsDigit);
-        if (digit != default && int.TryParse(digit.ToString(), out var parsed) && parsed > 0 && parsed <= headingCount)
-        {
-            return parsed;
-        }
-
-        throw new InvalidOperationException("Could not determine requested chapter number from command.");
-    }
-
-    private async Task<LamaChatResponse> CreateLlmSummaryAsync(IChatCompletionService chatService, Kernel kernel, TargetSet targetSet, string userCommand)
-    {
-        var builder = new ChatHistory();
-        var combinedTargets = string.Join("\n", targetSet.Targets.Select(target => target.Text));
-
-        builder.AddSystemMessage("You are summarizing a Markdown chapter for the user based on selected targets.");
-        builder.AddSystemMessage($"Targets:\n{combinedTargets}");
-        builder.AddUserMessage(userCommand);
-
-        var result = await chatService.GetChatMessageContentsAsync(builder, new PromptExecutionSettings(), kernel);
-        var content = result.FirstOrDefault();
-        if (content == null)
-        {
-            throw new InvalidOperationException("LLM did not return a response.");
-        }
-
-        return new LamaChatResponse(((LlamaSemanticKernelChatService)chatService).ModelId, content.Content, null);
+        return context;
     }
 }

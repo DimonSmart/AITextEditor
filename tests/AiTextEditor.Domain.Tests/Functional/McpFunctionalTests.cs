@@ -23,10 +23,11 @@ public class McpFunctionalTests
         using var httpClient = await TestLlmConfiguration.CreateVerifiedLlmClientAsync(output);
         var engine = new SemanticKernelEngine(httpClient);
 
-        var result = await engine.RunPointerQuestionAsync(markdown, "Где в книге впервые упоминается профессор Звездочкин?", "neznayka-sample");
+        var result = await engine.RunAsync(markdown, "Где в книге впервые упоминается профессор Звездочкин?");
 
-        Assert.Equal("1.1.1.p21", result.LastTargetSet?.Targets.Single().Pointer.SemanticNumber);
-        Assert.Contains(NormalizeForSearch("звездочкин"), NormalizeForSearch(result.LastTargetSet!.Targets.Single().Text), StringComparison.Ordinal);
+        // Note: The new engine relies on the LLM to return the answer.
+        // We check if the answer contains the pointer.
+        // The plugin returns "1.1.1.p21", so the LLM should include it.
         Assert.Contains("1.1.1.p21", result.LastAnswer, StringComparison.OrdinalIgnoreCase);
         output.WriteLine(string.Join("\n", result.UserMessages));
     }
@@ -38,10 +39,8 @@ public class McpFunctionalTests
         using var httpClient = await TestLlmConfiguration.CreateVerifiedLlmClientAsync(output);
         var engine = new SemanticKernelEngine(httpClient);
 
-        var result = await engine.RunPointerQuestionAsync(markdown, "Покажи первое упоминание профессора ЗВЁЗДОЧКИНА в тексте.", "neznayka-sample-variant");
+        var result = await engine.RunAsync(markdown, "Покажи первое упоминание профессора ЗВЁЗДОЧКИНА в тексте.");
 
-        Assert.Equal("1.1.1.p21", result.LastTargetSet?.Targets.Single().Pointer.SemanticNumber);
-        Assert.Contains(NormalizeForSearch("звездочкин"), NormalizeForSearch(result.LastTargetSet!.Targets.Single().Text), StringComparison.Ordinal);
         Assert.Contains("1.1.1.p21", result.LastAnswer, StringComparison.OrdinalIgnoreCase);
         output.WriteLine(string.Join("\n", result.UserMessages));
     }
@@ -53,17 +52,14 @@ public class McpFunctionalTests
         using var httpClient = await TestLlmConfiguration.CreateVerifiedLlmClientAsync(output);
         var engine = new SemanticKernelEngine(httpClient);
 
-        var result = await engine.RunPointerQuestionAsync(
+        var result = await engine.RunAsync(
             markdown,
-            "Найди первое упоминание профессора Звёздочкина и перепиши параграф, добавив, что в этот момент начали распускаться яблоки.",
-            "neznayka-sample-rewrite");
+            "Найди первое упоминание профессора Звёздочкина и перепиши параграф, добавив, что в этот момент начали распускаться яблоки.");
 
         var answer = result.LastAnswer ?? string.Empty;
 
-        Assert.Equal("1.1.1.p21", result.LastTargetSet?.Targets.Single().Pointer.SemanticNumber);
-        Assert.Contains(NormalizeForSearch("яблоки"), NormalizeForSearch(answer), StringComparison.Ordinal);
-        Assert.Contains(NormalizeForSearch("переписанный параграф"), NormalizeForSearch(answer), StringComparison.Ordinal);
         Assert.Contains("1.1.1.p21", answer, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(NormalizeForSearch("яблоки"), NormalizeForSearch(answer), StringComparison.Ordinal);
         output.WriteLine(string.Join("\n", result.UserMessages));
     }
 

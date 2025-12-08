@@ -170,22 +170,14 @@ public class McpServerTests
         }));
     }
 
+    /*
     [Fact]
     public async Task SemanticAction_UsesConfiguredLamaClient()
     {
-        var server = new McpServer();
-        var document = server.LoadDocument("# Heading\n\nParagraph one\n\nParagraph two");
-        var targetSet = server.CreateTargetSet(document.Id, new[] { 1, 2 });
-
-        using var httpClient = await TestLlmConfiguration.CreateVerifiedLlmClientAsync();
-        var expectedModel = TestLlmConfiguration.ResolveModel();
-
-        var llamaClient = new LamaClient(httpClient);
-        var response = await llamaClient.SummarizeTargetsAsync(targetSet);
-
-        Assert.Equal(expectedModel, response.Model);
-        Assert.False(string.IsNullOrWhiteSpace(response.Text));
+        // This test is no longer relevant as LamaClient has been removed.
+        // We should replace it with a test that verifies the Kernel configuration if needed.
     }
+    */
 
     [Fact]
     public async Task ChapterSummaryScenario_UsesNavigationAndSummarization()
@@ -206,10 +198,11 @@ The second chapter ends with a cliffhanger about the hidden door.
         using var httpClient = await TestLlmConfiguration.CreateVerifiedLlmClientAsync();
         var engine = new SemanticKernelEngine(httpClient);
 
-        var result = await engine.SummarizeChapterAsync(markdown, userCommand, "chapters-demo");
+        var result = await engine.RunAsync(markdown, userCommand);
 
-        Assert.NotNull(result.LastTargetSet);
-        Assert.All(result.LastTargetSet!.Targets, target => Assert.StartsWith("2.", target.Pointer.SemanticNumber, StringComparison.Ordinal));
-        Assert.False(string.IsNullOrWhiteSpace(result.LastAnswer));
+        // The new engine relies on the LLM to call the plugin and return the answer.
+        // We check if the answer contains relevant keywords from the second chapter.
+        Assert.Contains("cliffhanger", result.LastAnswer, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("hidden door", result.LastAnswer, StringComparison.OrdinalIgnoreCase);
     }
 }

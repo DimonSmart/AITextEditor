@@ -16,7 +16,11 @@ public static class TestLlmConfiguration
         return client;
     }
 
-    public static string ResolveModel() => LamaClient.ResolveModelFromEnvironment();
+    public static string ResolveModel()
+    {
+        var model = Environment.GetEnvironmentVariable("LLM_MODEL");
+        return string.IsNullOrWhiteSpace(model) ? "gpt-oss:120b-cloud" : model;
+    }
 
     private static (HttpClient Client, string? ApiKey) CreateLlmClientInternal()
     {
