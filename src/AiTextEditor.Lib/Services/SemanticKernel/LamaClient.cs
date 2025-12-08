@@ -1,7 +1,7 @@
 using System.Net.Http.Json;
 using AiTextEditor.Lib.Model;
 
-namespace AiTextEditor.Domain.Tests.Llm;
+namespace AiTextEditor.Lib.Services.SemanticKernel;
 
 public class LamaClient
 {
