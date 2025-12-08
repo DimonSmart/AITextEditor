@@ -23,6 +23,9 @@
     <None Include="Fixtures\MarkdownBooks\**\*.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Fixtures\Cassettes\**\*.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="..\Samples\neznayka_sample.md" Link="Fixtures\MarkdownBooks\neznayka_sample.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

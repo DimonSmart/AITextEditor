@@ -1,5 +1,6 @@
 using System;
 using System.Net.Http.Headers;
+using AiTextEditor.Domain.Tests.Infrastructure;
 using AiTextEditor.Lib.Services.SemanticKernel;
 using Xunit.Abstractions;
 
@@ -11,7 +12,7 @@ public static class TestLlmConfiguration
 
     public static async Task<HttpClient> CreateVerifiedLlmClientAsync(ITestOutputHelper? output = null, CancellationToken cancellationToken = default)
     {
-        var (client, apiKey) = CreateLlmClientInternal();
+        var (client, apiKey) = CreateLlmClientInternal(output);
         await AssertReachableAsync(client, apiKey, output, cancellationToken).ConfigureAwait(false);
         return client;
     }
@@ -22,7 +23,7 @@ public static class TestLlmConfiguration
         return string.IsNullOrWhiteSpace(model) ? "gpt-oss:120b-cloud" : model;
     }
 
-    private static (HttpClient Client, string? ApiKey) CreateLlmClientInternal()
+    private static (HttpClient Client, string? ApiKey) CreateLlmClientInternal(ITestOutputHelper? output)
     {
         var baseUrl = Environment.GetEnvironmentVariable("LLM_BASE_URL");
         if (string.IsNullOrWhiteSpace(baseUrl))
@@ -32,7 +33,8 @@ public static class TestLlmConfiguration
         var normalizedBaseUrl = NormalizeBaseUrl(baseUrl);
         var apiKey = Environment.GetEnvironmentVariable("LLM_API_KEY");
 
-        var client = new HttpClient
+        var handler = new CassetteHttpMessageHandler(output);
+        var client = new HttpClient(handler)
         {
             BaseAddress = new Uri(normalizedBaseUrl)
         };
