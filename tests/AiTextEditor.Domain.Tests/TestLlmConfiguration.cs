@@ -36,7 +36,8 @@ public static class TestLlmConfiguration
         var handler = new CassetteHttpMessageHandler(output);
         var client = new HttpClient(handler)
         {
-            BaseAddress = new Uri(normalizedBaseUrl)
+            BaseAddress = new Uri(normalizedBaseUrl),
+            Timeout = TimeSpan.FromMinutes(10)
         };
 
         if (!string.IsNullOrWhiteSpace(apiKey))
