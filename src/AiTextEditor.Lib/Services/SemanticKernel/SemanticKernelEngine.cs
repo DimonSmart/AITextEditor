@@ -1,4 +1,5 @@
 using AiTextEditor.Lib.Model;
+using AiTextEditor.Lib.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
@@ -25,27 +26,23 @@ public sealed class SemanticKernelEngine
         ArgumentException.ThrowIfNullOrWhiteSpace(markdown);
         ArgumentException.ThrowIfNullOrWhiteSpace(userCommand);
 
-        // 1. Load Domain Model
         var repository = new MarkdownDocumentRepository();
         var document = repository.LoadFromMarkdown(markdown);
 
-        // 2. Create Shared Context
         var documentContext = new DocumentContext(document);
 
-        // 3. Build Kernel
         var builder = Kernel.CreateBuilder();
 
-        // Register Services
         builder.Services.AddSingleton(documentContext);
+        builder.Services.AddSingleton(documentContext.CursorContext);
+        builder.Services.AddSingleton<CursorQueryExecutor>();
         builder.Services.AddSingleton<ILoggerFactory>(loggerFactory);
         builder.Services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
 
-        // Configure OpenAI Connector for Ollama
         var modelId = Environment.GetEnvironmentVariable("LLM_MODEL") ?? "gpt-oss:120b-cloud";
         var baseUrl = Environment.GetEnvironmentVariable("LLM_BASE_URL") ?? "http://localhost:11434";
         var apiKey = Environment.GetEnvironmentVariable("LLM_API_KEY") ?? "ollama";
 
-        // Ensure the endpoint ends with /v1 for OpenAI compatibility
         var endpoint = baseUrl.TrimEnd('/');
         if (!endpoint.EndsWith("/v1"))
         {
@@ -58,14 +55,12 @@ public sealed class SemanticKernelEngine
             endpoint: new Uri(endpoint),
             httpClient: httpClient);
 
-        // Register Plugins
         builder.Plugins.AddFromType<NavigationPlugin>();
 
         var kernel = builder.Build();
         var logger = loggerFactory.CreateLogger<SemanticKernelEngine>();
         logger.LogInformation("Kernel built with model {ModelId} at {Endpoint}", modelId, endpoint);
 
-        // 4. Execute
         var chatService = kernel.GetRequiredService<IChatCompletionService>();
         var history = new ChatHistory();
         history.AddSystemMessage("You are a helpful assistant. Use the available tools to answer the user's question.");
@@ -82,7 +77,6 @@ public sealed class SemanticKernelEngine
 
         var answer = result.FirstOrDefault()?.Content ?? string.Empty;
 
-        // 5. Return Context (Populate what we can for compatibility/verification)
         var context = new SemanticKernelContext
         {
             LastCommand = userCommand,
