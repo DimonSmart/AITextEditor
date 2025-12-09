@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Text;
 using AiTextEditor.Domain.Tests;
+using AiTextEditor.Domain.Tests.Infrastructure;
 using AiTextEditor.Lib.Services.SemanticKernel;
 using Xunit;
 using Xunit.Abstractions;
@@ -21,7 +22,8 @@ public class McpFunctionalTests
     {
         var markdown = LoadNeznaykaSample();
         using var httpClient = await TestLlmConfiguration.CreateVerifiedLlmClientAsync(output);
-        var engine = new SemanticKernelEngine(httpClient);
+        using var loggerFactory = TestLoggerFactory.Create(output);
+        var engine = new SemanticKernelEngine(httpClient, loggerFactory);
 
         var result = await engine.RunAsync(markdown, "Где в книге впервые упоминается профессор Звездочкин?");
 
@@ -37,7 +39,8 @@ public class McpFunctionalTests
     {
         var markdown = LoadNeznaykaSample();
         using var httpClient = await TestLlmConfiguration.CreateVerifiedLlmClientAsync(output);
-        var engine = new SemanticKernelEngine(httpClient);
+        using var loggerFactory = TestLoggerFactory.Create(output);
+        var engine = new SemanticKernelEngine(httpClient, loggerFactory);
 
         var result = await engine.RunAsync(markdown, "Покажи первое упоминание профессора ЗВЁЗДОЧКИНА в тексте.");
 
@@ -50,7 +53,8 @@ public class McpFunctionalTests
     {
         var markdown = LoadNeznaykaSample();
         using var httpClient = await TestLlmConfiguration.CreateVerifiedLlmClientAsync(output);
-        var engine = new SemanticKernelEngine(httpClient);
+        using var loggerFactory = TestLoggerFactory.Create(output);
+        var engine = new SemanticKernelEngine(httpClient, loggerFactory);
 
         var result = await engine.RunAsync(
             markdown,
