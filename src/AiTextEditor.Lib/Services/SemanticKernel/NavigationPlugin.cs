@@ -26,6 +26,7 @@ public class NavigationPlugin(DocumentContext context, ILogger<NavigationPlugin>
     [Description("Reads the content of a specific chapter aloud to the user.")]
     public void ReadChapterAloud(int chapterNumber)
     {
+        logger.LogInformation("ReadChapterAloud: chapter={ChapterNumber}", chapterNumber);
         var content = GetChapterContent(chapterNumber);
         context.SpeechQueue.Add(content);
     }
@@ -38,12 +39,13 @@ public class NavigationPlugin(DocumentContext context, ILogger<NavigationPlugin>
         // This assumes a flat list of items where headings denote structure
         var items = context.Document.Items;
         var headings = items.Where(item => item.Type == AiTextEditor.Lib.Model.LinearItemType.Heading).ToList();
-        
+
         if (chapterNumber < 1 || chapterNumber > headings.Count)
         {
             return "Chapter not found.";
         }
 
+        logger.LogInformation("GetChapterContent: chapter={ChapterNumber}", chapterNumber);
         var startItem = headings[chapterNumber - 1];
         var startIndex = startItem.Index;
         

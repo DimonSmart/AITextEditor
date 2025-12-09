@@ -13,14 +13,10 @@ public sealed class SemanticKernelEngine
 
     private readonly ILoggerFactory loggerFactory;
 
-    public SemanticKernelEngine(HttpClient httpClient)
+    public SemanticKernelEngine(HttpClient httpClient, ILoggerFactory? loggerFactory = null)
     {
         this.httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
-        loggerFactory = LoggerFactory.Create(builder =>
-        {
-            builder.AddConsole();
-            builder.SetMinimumLevel(LogLevel.Debug);
-        });
+        this.loggerFactory = loggerFactory ?? CreateDefaultLoggerFactory();
     }
 
     public async Task<SemanticKernelContext> RunAsync(string markdown, string userCommand)
@@ -41,7 +37,7 @@ public sealed class SemanticKernelEngine
         // Register Services
         builder.Services.AddSingleton(documentContext);
         builder.Services.AddSingleton(loggerFactory);
-        builder.Services.AddLogging();
+        builder.Services.AddLogging(loggingBuilder => loggingBuilder.SetMinimumLevel(LogLevel.Debug));
 
         // Configure OpenAI Connector for Ollama
         var modelId = Environment.GetEnvironmentVariable("LLM_MODEL") ?? "gpt-oss:120b-cloud";
@@ -94,5 +90,14 @@ public sealed class SemanticKernelEngine
         context.UserMessages.Add(answer);
 
         return context;
+    }
+
+    private static ILoggerFactory CreateDefaultLoggerFactory()
+    {
+        return LoggerFactory.Create(builder =>
+        {
+            builder.AddConsole();
+            builder.SetMinimumLevel(LogLevel.Debug);
+        });
     }
 }
