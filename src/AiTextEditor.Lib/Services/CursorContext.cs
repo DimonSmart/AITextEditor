@@ -93,7 +93,7 @@ public sealed class CursorContext
         }
 
         builder.Append('|');
-        builder.Append(item.Pointer.SemanticNumber);
+        builder.Append(item.Pointer.Serialize());
 
         if (includeText)
         {

@@ -58,7 +58,7 @@ public class McpServerTests
         var targetSet = server.CreateTargetSet(document.Id, new[] { 2, 2, 5, -1 });
 
         Assert.Single(targetSet.Targets);
-        Assert.Equal("1.p2", targetSet.Targets[0].Pointer.SemanticNumber);
+        Assert.Equal("{\"HeadingTitle\":\"Title\",\"LineIndex\":4,\"CharacterOffset\":26}", targetSet.Targets[0].Pointer.Serialize());
     }
 
     [Fact]
@@ -91,8 +91,8 @@ public class McpServerTests
 
         Assert.Equal(document.Id, targetSet.DocumentId);
         Assert.Equal(2, targetSet.Targets.Count);
-        Assert.Equal("1.p1", targetSet.Targets[0].Pointer.SemanticNumber);
-        Assert.Equal("1.p2", targetSet.Targets[1].Pointer.SemanticNumber);
+        Assert.Equal("{\"HeadingTitle\":\"Title\",\"LineIndex\":2,\"CharacterOffset\":9}", targetSet.Targets[0].Pointer.Serialize());
+        Assert.Equal("{\"HeadingTitle\":\"Title\",\"LineIndex\":4,\"CharacterOffset\":24}", targetSet.Targets[1].Pointer.Serialize());
     }
 
     [Fact]
@@ -161,7 +161,7 @@ public class McpServerTests
         var server = new McpServer();
         var document = server.LoadDocument("# Title\n\nParagraph");
 
-        var invalidPointer = new LinearPointer(10, new SemanticPointer(new[] { 9 }, 1));
+        var invalidPointer = new LinearPointer(10, new SemanticPointer(null, 0, 0));
         var replacement = document.Items[0];
 
         Assert.Throws<InvalidOperationException>(() => server.ApplyOperations(document.Id, new[]
