@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
+using System.Linq;
 
 namespace AiTextEditor.Lib.Services.SemanticKernel;
 
@@ -36,8 +37,8 @@ public sealed class SemanticKernelEngine
 
         // Register Services
         builder.Services.AddSingleton(documentContext);
-        builder.Services.AddSingleton(loggerFactory);
-        builder.Services.AddLogging(loggingBuilder => loggingBuilder.SetMinimumLevel(LogLevel.Debug));
+        builder.Services.AddSingleton<ILoggerFactory>(loggerFactory);
+        builder.Services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
 
         // Configure OpenAI Connector for Ollama
         var modelId = Environment.GetEnvironmentVariable("LLM_MODEL") ?? "gpt-oss:120b-cloud";
@@ -78,8 +79,8 @@ public sealed class SemanticKernelEngine
         };
 
         var result = await chatService.GetChatMessageContentsAsync(history, executionSettings, kernel);
+
         var answer = result.FirstOrDefault()?.Content ?? string.Empty;
-        logger.LogInformation("LLM answer: {Answer}", answer);
 
         // 5. Return Context (Populate what we can for compatibility/verification)
         var context = new SemanticKernelContext
