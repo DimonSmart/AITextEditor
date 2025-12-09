@@ -23,7 +23,7 @@ public sealed class McpServerPlugin
     {
         logger.LogInformation("ListPointers invoked");
         var items = server.GetItems();
-        return string.Join("\n", items.Select(item => $"{item.Pointer.SemanticNumber}: {item.Text}"));
+        return string.Join("\n", items.Select(item => $"{item.Pointer.Serialize()}: {item.Text}"));
     }
 
     [KernelFunction("get_default_document_id")]
@@ -44,7 +44,7 @@ public sealed class McpServerPlugin
         var indices = new List<int>();
         foreach (var pointer in pointers)
         {
-            var match = items.FirstOrDefault(item => string.Equals(item.Pointer.SemanticNumber, pointer, StringComparison.OrdinalIgnoreCase));
+            var match = items.FirstOrDefault(item => string.Equals(item.Pointer.Serialize(), pointer, StringComparison.Ordinal));
             if (match != null)
             {
                 indices.Add(match.Index);
@@ -76,7 +76,7 @@ public sealed class McpServerPlugin
         var builder = new StringBuilder();
         foreach (var item in server.GetItems())
         {
-            builder.AppendLine($"{item.Pointer.SemanticNumber}: {item.Text}");
+            builder.AppendLine($"{item.Pointer.Serialize()}: {item.Text}");
         }
 
         var content = builder.ToString();

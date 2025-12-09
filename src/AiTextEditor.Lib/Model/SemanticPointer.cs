@@ -1,34 +1,42 @@
+using System.Text.Json;
+
 namespace AiTextEditor.Lib.Model;
 
+/// <summary>
+/// Represents a stable location inside a document with minimal context.
+/// Serialized form uses JSON to include the heading title (if any), zero-based line index, and zero-based character offset.
+/// </summary>
 public class SemanticPointer
 {
-    public SemanticPointer(IEnumerable<int> headings, int? paragraphNumber)
+    public SemanticPointer(string? headingTitle, int lineIndex, int characterOffset)
     {
-        HeadingNumbers = headings?.ToList() ?? new List<int>();
-        ParagraphNumber = paragraphNumber;
+        HeadingTitle = string.IsNullOrWhiteSpace(headingTitle) ? null : headingTitle.Trim();
+        LineIndex = lineIndex < 0 ? 0 : lineIndex;
+        CharacterOffset = characterOffset < 0 ? 0 : characterOffset;
     }
 
-    public IReadOnlyList<int> HeadingNumbers { get; }
+    /// <summary>
+    /// Title of the nearest heading or chapter that contains the target element. Can be null when the document lacks headings.
+    /// </summary>
+    public string? HeadingTitle { get; }
 
-    public int? ParagraphNumber { get; }
+    /// <summary>
+    /// Zero-based line number in the source document where the referenced element starts.
+    /// </summary>
+    public int LineIndex { get; }
 
-    public string SemanticNumber
+    /// <summary>
+    /// Zero-based character offset from the beginning of the document to the start of the referenced element.
+    /// </summary>
+    public int CharacterOffset { get; }
+
+    public string Serialize()
     {
-        get
-        {
-            var prefix = HeadingNumbers.Count == 0
-                ? string.Empty
-                : string.Join('.', HeadingNumbers);
+        return JsonSerializer.Serialize(this);
+    }
 
-            if (ParagraphNumber.HasValue)
-            {
-                var paragraphLabel = $"p{ParagraphNumber.Value}";
-                return string.IsNullOrEmpty(prefix)
-                    ? paragraphLabel
-                    : $"{prefix}.{paragraphLabel}";
-            }
-
-            return prefix;
-        }
+    public override string ToString()
+    {
+        return Serialize();
     }
 }

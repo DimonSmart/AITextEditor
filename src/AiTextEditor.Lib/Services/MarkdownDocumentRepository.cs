@@ -35,12 +35,13 @@ public class MarkdownDocumentRepository
         var pipeline = new MarkdownPipelineBuilder().Build();
         var mdDocument = Markdig.Markdown.Parse(normalized, pipeline);
         var parsingState = new LinearParsingState();
+        var lineStartOffsets = GetLineStartOffsets(normalized);
         var items = new List<LinearItem>();
         var index = 0;
 
         foreach (var mdBlock in mdDocument)
         {
-            AppendLinearItems(mdBlock, items, normalized, parsingState, ref index);
+            AppendLinearItems(mdBlock, items, normalized, lineStartOffsets, parsingState, ref index);
         }
 
         return new LinearDocument(Guid.NewGuid().ToString(), Reindex(items), normalized);
@@ -52,11 +53,11 @@ public class MarkdownDocumentRepository
         for (var i = 0; i < items.Count; i++)
         {
             var item = items[i];
-            var pointer = item.Pointer ?? new LinearPointer(i, new SemanticPointer(Array.Empty<int>(), null));
+            var pointer = item.Pointer ?? new LinearPointer(i, new SemanticPointer(null, 0, 0));
             result.Add(item with
             {
                 Index = i,
-                Pointer = new LinearPointer(i, new SemanticPointer(pointer.HeadingNumbers, pointer.ParagraphNumber))
+                Pointer = new LinearPointer(i, new SemanticPointer(pointer.HeadingTitle, pointer.LineIndex, pointer.CharacterOffset))
             });
         }
 
@@ -67,12 +68,18 @@ public class MarkdownDocumentRepository
         Markdig.Syntax.Block mdBlock,
         List<LinearItem> items,
         string source,
+        IReadOnlyList<int> lineStartOffsets,
         LinearParsingState parsingState,
         ref int index)
     {
         switch (mdBlock)
         {
             case HeadingBlock heading:
+                var headingText = GetPlainText(heading.Inline);
+                var headingPointer = parsingState.EnterHeading(
+                    headingText,
+                    GetLineIndex(mdBlock.Span.Start, lineStartOffsets),
+                    Math.Max(0, mdBlock.Span.Start));
                 AddLinearItem(
                     items,
                     new LinearItem(
@@ -80,12 +87,15 @@ public class MarkdownDocumentRepository
                         LinearItemType.Heading,
                         heading.Level,
                         GetSourceText(mdBlock, source),
-                        GetPlainText(heading.Inline),
-                        new LinearPointer(index, parsingState.EnterHeading(heading.Level))),
+                        headingText,
+                        new LinearPointer(index, headingPointer)),
                     ref index);
                 break;
 
             case ParagraphBlock paragraph:
+                var paragraphPointer = parsingState.NextPointer(
+                    GetLineIndex(mdBlock.Span.Start, lineStartOffsets),
+                    Math.Max(0, mdBlock.Span.Start));
                 AddLinearItem(
                     items,
                     new LinearItem(
@@ -94,18 +104,21 @@ public class MarkdownDocumentRepository
                         null,
                         GetSourceText(mdBlock, source),
                         GetPlainText(paragraph.Inline),
-                        new LinearPointer(index, parsingState.NextParagraph())),
+                        new LinearPointer(index, paragraphPointer)),
                     ref index);
                 break;
 
             case ListBlock list:
                 foreach (var child in list)
                 {
-                    AppendLinearItems(child, items, source, parsingState, ref index);
+                    AppendLinearItems(child, items, source, lineStartOffsets, parsingState, ref index);
                 }
                 break;
 
             case ListItemBlock listItem:
+                var listItemPointer = parsingState.NextPointer(
+                    GetLineIndex(mdBlock.Span.Start, lineStartOffsets),
+                    Math.Max(0, mdBlock.Span.Start));
                 AddLinearItem(
                     items,
                     new LinearItem(
@@ -114,18 +127,21 @@ public class MarkdownDocumentRepository
                         null,
                         GetSourceText(mdBlock, source),
                         GetListItemPlainText(listItem),
-                        new LinearPointer(index, parsingState.NextParagraph())),
+                        new LinearPointer(index, listItemPointer)),
                     ref index);
                 break;
 
             case QuoteBlock quote:
                 foreach (var child in quote)
                 {
-                    AppendLinearItems(child, items, source, parsingState, ref index);
+                    AppendLinearItems(child, items, source, lineStartOffsets, parsingState, ref index);
                 }
                 break;
 
             case CodeBlock code:
+                var codePointer = parsingState.NextPointer(
+                    GetLineIndex(mdBlock.Span.Start, lineStartOffsets),
+                    Math.Max(0, mdBlock.Span.Start));
                 AddLinearItem(
                     items,
                     new LinearItem(
@@ -134,11 +150,14 @@ public class MarkdownDocumentRepository
                         null,
                         GetSourceText(mdBlock, source),
                         code.Lines.ToString(),
-                        new LinearPointer(index, parsingState.NextParagraph())),
+                        new LinearPointer(index, codePointer)),
                     ref index);
                 break;
 
             case ThematicBreakBlock:
+                var breakPointer = parsingState.NextPointer(
+                    GetLineIndex(mdBlock.Span.Start, lineStartOffsets),
+                    Math.Max(0, mdBlock.Span.Start));
                 AddLinearItem(
                     items,
                     new LinearItem(
@@ -147,7 +166,7 @@ public class MarkdownDocumentRepository
                         null,
                         GetSourceText(mdBlock, source),
                         string.Empty,
-                        new LinearPointer(index, parsingState.NextParagraph())),
+                        new LinearPointer(index, breakPointer)),
                     ref index);
                 break;
 
@@ -156,11 +175,14 @@ public class MarkdownDocumentRepository
                 {
                     foreach (var child in container)
                     {
-                        AppendLinearItems(child, items, source, parsingState, ref index);
+                        AppendLinearItems(child, items, source, lineStartOffsets, parsingState, ref index);
                     }
                 }
                 else
                 {
+                    var fallbackPointer = parsingState.NextPointer(
+                        GetLineIndex(mdBlock.Span.Start, lineStartOffsets),
+                        Math.Max(0, mdBlock.Span.Start));
                     AddLinearItem(
                         items,
                         new LinearItem(
@@ -169,7 +191,7 @@ public class MarkdownDocumentRepository
                             null,
                             GetSourceText(mdBlock, source),
                             GetSourceText(mdBlock, source),
-                            new LinearPointer(index, parsingState.NextParagraph())),
+                            new LinearPointer(index, fallbackPointer)),
                         ref index);
                 }
                 break;
@@ -246,54 +268,54 @@ public class MarkdownDocumentRepository
         return content.Replace("\r\n", "\n").Replace("\r", "\n");
     }
 
+    private static IReadOnlyList<int> GetLineStartOffsets(string content)
+    {
+        var starts = new List<int> { 0 };
+        for (var i = 0; i < content.Length; i++)
+        {
+            if (content[i] == '\n')
+            {
+                starts.Add(i + 1);
+            }
+        }
+
+        return starts;
+    }
+
+    private static int GetLineIndex(int position, IReadOnlyList<int> lineStartOffsets)
+    {
+        if (position <= 0 || lineStartOffsets.Count == 0)
+        {
+            return 0;
+        }
+
+        var lineIndex = 0;
+        for (var i = 0; i < lineStartOffsets.Count; i++)
+        {
+            if (lineStartOffsets[i] > position)
+            {
+                break;
+            }
+
+            lineIndex = i;
+        }
+
+        return lineIndex;
+    }
+
     private sealed class LinearParsingState
     {
-        private readonly List<int> headingNumbers = new();
-        private int paragraphCounter;
+        private string? currentHeadingTitle;
 
-        public SemanticPointer EnterHeading(int level)
+        public SemanticPointer EnterHeading(string? headingTitle, int lineIndex, int characterOffset)
         {
-            if (level <= 0)
-            {
-                level = 1;
-            }
-
-            while (headingNumbers.Count < level)
-            {
-                headingNumbers.Add(0);
-            }
-
-            if (headingNumbers.Count > level)
-            {
-                headingNumbers.RemoveRange(level, headingNumbers.Count - level);
-            }
-
-            headingNumbers[level - 1]++;
-
-            for (var i = level; i < headingNumbers.Count; i++)
-            {
-                headingNumbers[i] = 0;
-            }
-
-            paragraphCounter = 0;
-            return new SemanticPointer(GetHeadingPath(), null);
+            currentHeadingTitle = headingTitle;
+            return new SemanticPointer(currentHeadingTitle, lineIndex, characterOffset);
         }
 
-        public SemanticPointer NextParagraph()
+        public SemanticPointer NextPointer(int lineIndex, int characterOffset)
         {
-            paragraphCounter++;
-            return new SemanticPointer(GetHeadingPath(), paragraphCounter);
-        }
-
-        private IEnumerable<int> GetHeadingPath()
-        {
-            var lastNonZero = headingNumbers.FindLastIndex(n => n > 0);
-            if (lastNonZero < 0)
-            {
-                return Array.Empty<int>();
-            }
-
-            return headingNumbers.Take(lastNonZero + 1).ToArray();
+            return new SemanticPointer(currentHeadingTitle, lineIndex, characterOffset);
         }
     }
 }

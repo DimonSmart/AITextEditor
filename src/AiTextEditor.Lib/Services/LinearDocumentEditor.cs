@@ -90,11 +90,11 @@ public class LinearDocumentEditor
     {
         if (operation.TargetPointer != null)
         {
-            var semantic = operation.TargetPointer.SemanticNumber;
-            var index = items.FindIndex(i => string.Equals(i.Pointer.SemanticNumber, semantic, StringComparison.OrdinalIgnoreCase));
+            var serialized = operation.TargetPointer.Serialize();
+            var index = items.FindIndex(i => string.Equals(i.Pointer.Serialize(), serialized, StringComparison.Ordinal));
             if (index < 0)
             {
-                throw new InvalidOperationException($"Target pointer '{semantic}' does not exist in the current document.");
+                throw new InvalidOperationException($"Target pointer '{serialized}' does not exist in the current document.");
             }
 
             return index;
@@ -134,11 +134,11 @@ public class LinearDocumentEditor
         for (var i = 0; i < items.Count; i++)
         {
             var item = items[i];
-            var pointer = item.Pointer ?? new LinearPointer(i, new SemanticPointer(Array.Empty<int>(), null));
+            var pointer = item.Pointer ?? new LinearPointer(i, new SemanticPointer(null, 0, 0));
             result.Add(item with
             {
                 Index = i,
-                Pointer = new LinearPointer(i, new SemanticPointer(pointer.HeadingNumbers, pointer.ParagraphNumber))
+                Pointer = new LinearPointer(i, new SemanticPointer(pointer.HeadingTitle, pointer.LineIndex, pointer.CharacterOffset))
             });
         }
 

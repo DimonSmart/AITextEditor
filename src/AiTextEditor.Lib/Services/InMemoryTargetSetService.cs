@@ -21,7 +21,7 @@ public class InMemoryTargetSetService
             .Select(item => new TargetRef(
                 Guid.NewGuid().ToString(),
                 documentId,
-                new LinearPointer(item.Pointer.Index, new SemanticPointer(item.Pointer.HeadingNumbers, item.Pointer.ParagraphNumber)),
+                new LinearPointer(item.Pointer.Index, new SemanticPointer(item.Pointer.HeadingTitle, item.Pointer.LineIndex, item.Pointer.CharacterOffset)),
                 item.Type,
                 item.Markdown,
                 item.Text))

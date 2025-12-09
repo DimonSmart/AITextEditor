@@ -82,7 +82,7 @@ public sealed class CursorQueryExecutor
 
         foreach (var item in portion.Items)
         {
-            builder.AppendLine($"- Pointer={item.Pointer.SemanticNumber}; Type={item.Type}; Level={(item.Level.HasValue ? item.Level.Value.ToString() : "-")}; Text={item.Text}");
+            builder.AppendLine($"- Pointer={item.Pointer.Serialize()}; Type={item.Type}; Level={(item.Level.HasValue ? item.Level.Value.ToString() : "-")}; Text={item.Text}");
         }
 
         builder.AppendLine("Return JSON only.");
