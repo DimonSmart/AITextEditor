@@ -15,6 +15,9 @@ MCP-oriented toolkit around a linear Markdown domain model. The server keeps a s
 
 Versioning, diffing, and long-running orchestration remain outside of the server; it only maintains the latest in-memory state.
 
+## Cursor-powered search
+Long scans now use named cursors that stream the document in bounded portions instead of sending the full book to the LLM. Default cursors `CUR_WHOLE_BOOK_FORWARD` and `CUR_WHOLE_BOOK_BACKWARD` are always available for full traversal, and `CursorQueryExecutor` orchestrates applying LLM prompts over cursor data. See `docs/cursors.md` for details.
+
 ## Running LLM-backed tests
 Functional and MCP integration tests call a live LLM endpoint. Configure the client through environment variables before running tests:
 
