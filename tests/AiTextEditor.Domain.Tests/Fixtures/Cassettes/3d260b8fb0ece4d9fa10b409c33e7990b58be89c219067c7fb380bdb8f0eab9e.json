@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-358\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765403742,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022{\\\u0022status\\\u0022:\\\u0022continue\\\u0022,\\\u0022result\\\u0022:\\\u0022Scanning next sections for \\\\\\\u0022\u043F\u0440\u043E\u0444\u0435\u0441\u0441\u043E\u0440 \u0417\u0432\u0435\u0437\u0434\u043E\u0447\u043A\u0438\u043D\\\\\\\u0022\\\u0022}\u0022,\u0022reasoning\u0022:\u0022We need to process sequential cursor items. The first chunk has heading items, no paragraph with target text yet. We need to continue. The next chunk is a paragraph but we need to find the first occurrence of the name \\\u0022\u043F\u0440\u043E\u0444\u0435\u0441\u0441\u043E\u0440 \u0417\u0432\u0435\u0437\u0434\u043E\u0447\u043A\u0438\u043D\\\u0022 (note: original phrase maybe case-sensitive). In the paragraph text we have \\\u0022\u043F\u0440\u043E\u0444\u0435\u0441\u0441\u043E\u0440\u0430 \u0417\u0432\u0451\u0437\u0434\u043E\u0447\u043A\u0438\u043D\u0430\\\u0022 with different case and spelling (\u0417\u0432\u0451\u0437\u0434\u043E\u0447\u043A\u0438\u043D\u0430). That\u0027s not the exact target phrase \\\u0022\u043F\u0440\u043E\u0444\u0435\u0441\u0441\u043E\u0440 \u0417\u0432\u0435\u0437\u0434\u043E\u0447\u043A\u0438\u043D\\\u0022. So not a match yet. We must continue. So status continue.\\n\\nWe must provide JSON with status \\\u0022continue\\\u0022 and maybe result empty or some info. Probably include pointer where we are? The instructions: respond with JSON using statuses. For continue, we can give result \\\u0022searching\\\u0022. So output.\\n\\n\u0022},\u0022finish_reason\u0022:\u0022stop\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:1025,\u0022completion_tokens\u0022:206,\u0022total_tokens\u0022:1231}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Wed, 10 Dec 2025 21:55:41 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}
