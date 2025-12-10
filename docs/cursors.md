@@ -29,14 +29,29 @@
 
 Функция универсальна: её можно использовать для поиска, фильтрации, суммаризации и других сканирующих сценариев — достаточно задать нужный текст запроса.
 
+## Плагин навигации для LLM
+`NavigationPlugin` предоставляет функции, которые позволяют LLM создавать/сбрасывать курсоры, читать порции и запускать задачные запросы поверх курсора:
+- `CreateCursor` — создать или переинициализировать именованный курсор с лимитами и направлением.
+- `UseWholeBookCursor` — сбросить курсор для полной книги с заданными лимитами.
+- `GetNextPortion` — получить следующую порцию в виде компактного JSON с флагом `hasMore` и сериализованными семантическими указателями.
+- `QueryCursor` — выполнить инструкцию поверх курсора через `CursorQueryExecutor` и вернуть JSON с результатом (`success` + `result`).
+- `MapCursor` — применить инструкцию к каждой порции по отдельности и вернуть массив JSON-результатов по индексу порции (для map/reduce сценариев).
+- `DescribePointer` — расшифровка сериализованного семантического указателя.
+
+Возвращаемые значения сериализованы в JSON с `camelCase`, поэтому их удобно парсить в агентах или прокидывать в новые вызовы.
+
+`CursorHandle`, `CursorPortionView`, `CursorQueryResponse` и `CursorMapResponse` — простые доменные модели без вспомогательной логики, всё форматирование происходит в самом плагине.
+
+## Семантический указатель
+`SemanticPointer` описывает стабильное положение в документе: ближайший заголовок (может быть `null`), нулевой индекс строки и нулевой символьный офсет с начала документа. `LinearPointer` дополнительно содержит линейный индекс элемента. Оба типа сериализуются в JSON через метод `Serialize` и используются в курсорных ответах. При разборе указателя `DescribePointer` принимает как `SemanticPointer`, так и `LinearPointer` в сериализованном виде.
+
 ## Пример использования
-Поиск первого совпадения через `NavigationPlugin.FindFirst`:
+Поиск первого совпадения через `NavigationPlugin.QueryCursor` с дефолтным курсором:
 ```csharp
-var parameters = new CursorParameters(20, 2048, includeText: true);
-var cursorName = documentContext.CursorContext.EnsureWholeBookForward(parameters);
-var result = await cursorQueryExecutor.ExecuteQueryOverCursorAsync(cursorName,
+var handleJson = navigationPlugin.UseWholeBookCursor();
+var portionJson = navigationPlugin.GetNextPortion(CursorContext.DefaultWholeBookForward);
+var queryJson = await navigationPlugin.QueryCursor(CursorContext.DefaultWholeBookForward,
     "Locate the first mention of Ada Lovelace and return its semantic pointer.");
-var pointer = result.Success ? result.Result : "Not found";
 ```
 
 Благодаря курсору запрос идёт пакетами, не загружая целую книгу в память LLM.
