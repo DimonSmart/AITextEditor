@@ -1,3 +1,4 @@
+using System.Text.Encodings.Web;
 using System.Text.Json;
 
 namespace AiTextEditor.Lib.Model;
@@ -32,8 +33,12 @@ public class SemanticPointer
 
     public string Serialize()
     {
-        return JsonSerializer.Serialize(this);
+        return JsonSerializer.Serialize(this, SerializationOptions);
     }
+    private static JsonSerializerOptions SerializationOptions { get; } = new()
+    {
+        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+    };
 
     public override string ToString()
     {

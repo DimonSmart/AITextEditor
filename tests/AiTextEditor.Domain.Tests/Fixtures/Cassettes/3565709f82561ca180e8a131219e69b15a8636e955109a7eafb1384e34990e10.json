@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-280\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765486182,\u0022model\u0022:\u0022qwen3:latest\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022{\\\u0022action\\\u0022:\\\u0022agent_finish_not_found\\\u0022,\\\u0022summary\\\u0022:\\\u0022Target not found: items array is empty.\\\u0022}\u0022,\u0022reasoning\u0022:\u0022Okay, let\u0027s see. The user mentioned that the agent response was malformed and they want a JSON action. The cursor_next result shows hasMore as false and items as an empty array. Since there are no items, the target isn\u0027t found. I need to use the agent_finish_not_found action. The summary should explain that the target wasn\u0027t found because the items array is empty. No indices are needed here. Alright, that\u0027s the correct action.\\n\u0022},\u0022finish_reason\u0022:\u0022stop\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:212,\u0022completion_tokens\u0022:117,\u0022total_tokens\u0022:329}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 11 Dec 2025 20:49:42 GMT"
+    ]
+  }
+}
