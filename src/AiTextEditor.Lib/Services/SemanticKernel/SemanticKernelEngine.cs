@@ -35,7 +35,8 @@ public sealed class SemanticKernelEngine
 
         builder.Services.AddSingleton(documentContext);
         builder.Services.AddSingleton(documentContext.CursorContext);
-        builder.Services.AddSingleton<CursorQueryExecutor>();
+        builder.Services.AddSingleton(documentContext.TargetSetContext);
+        builder.Services.AddSingleton<CursorAgentRuntime>();
         builder.Services.AddSingleton<ILoggerFactory>(loggerFactory);
         builder.Services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
 
@@ -55,7 +56,7 @@ public sealed class SemanticKernelEngine
             endpoint: new Uri(endpoint),
             httpClient: httpClient);
 
-        builder.Plugins.AddFromType<NavigationPlugin>();
+        builder.Plugins.AddFromType<CursorAgentPlugin>();
 
         var kernel = builder.Build();
         var logger = loggerFactory.CreateLogger<SemanticKernelEngine>();

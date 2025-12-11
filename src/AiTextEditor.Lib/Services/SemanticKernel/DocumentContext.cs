@@ -10,5 +10,7 @@ public class DocumentContext(LinearDocument document)
 
     public CursorContext CursorContext { get; } = new(document);
 
+    public TargetSetContext TargetSetContext { get; } = new();
+
     public List<string> SpeechQueue { get; } = [];
 }
