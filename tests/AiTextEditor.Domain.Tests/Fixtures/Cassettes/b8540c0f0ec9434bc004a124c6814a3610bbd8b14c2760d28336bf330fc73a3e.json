@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-478\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765449665,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022{\\\u0022status\\\u0022:\\\u0022continue\\\u0022,\\\u0022result\\\u0022:\\\u0022\\\u0022}\u0022,\u0022reasoning\u0022:\u0022We have a long fictional book about \\\u0022\u0417\u043D\u0430\u0439\u043A\u0430\\\u0022. It\u0027s not about the color \\\u0022\u0444\u0443\u043A\u0441\u0438\u044F\\\u0022. So we haven\u0027t yet found the answer. The user is providing sequential portions of a linear document. The task: Find the earliest printed source that mentions the word \\\u0022\u0444\u0443\u043A\u0441\u0438\u044F\\\u0022 as a color name. Provide year, source title, author, and short excerpt.\\n\\nThus we need to continue scanning until possibly the text contains \\\u0022\u0444\u0443\u043A\u0441\u0438\u044F\\\u0022 used as a color name. So far we haven\u0027t seen it except the character name \\\u0022\u0424\u0443\u043A\u0441\u0438\u044F\\\u0022 (a character). That\u0027s not a color name but a name. We need to find earliest printed source where \\\u0022\u0444\u0443\u043A\u0441\u0438\u044F\\\u0022 used as a color name (the color fuchsia). This is likely outside this fictional book; maybe later parts of the document include reference to color naming.\\n\\nWe need to continue reading further portions (cursor continues). The last given portion ends at line 75. There\u0027s more content after that. We need to request next portion? The instructions say we get sequential portions and need to respond with status continue, found, or complete.\\n\\nThus we haven\u0027t found the answer yet; we should respond \\\u0022continue\\\u0022. Provide JSON with status continue and maybe empty result.\u0022},\u0022finish_reason\u0022:\u0022stop\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:10437,\u0022completion_tokens\u0022:269,\u0022total_tokens\u0022:10706}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 11 Dec 2025 10:41:05 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

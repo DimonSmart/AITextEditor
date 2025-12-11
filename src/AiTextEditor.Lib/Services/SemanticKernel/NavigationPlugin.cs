@@ -29,33 +29,37 @@ public class NavigationPlugin(DocumentContext context, CursorQueryExecutor curso
         [Description("Maximum number of items per portion.")] int maxElements = 20,
         [Description("Maximum byte size per portion.")] int maxBytes = 2048,
         [Description("When true, include raw text in each portion.")] bool includeText = true,
-        [Description("Direction of traversal: Forward or Backward.")] string direction = "Forward")
+        [Description("Direction flag: true walks forward, false backward.")] bool forward = true)
     {
-        var cursorDirection = ParseDirection(direction);
         var parameters = new CursorParameters(maxElements, maxBytes, includeText);
-        logger.LogInformation("CreateCursor: name={CursorName}, direction={Direction}, maxElements={MaxElements}, maxBytes={MaxBytes}, includeText={IncludeText}", cursorName, cursorDirection, maxElements, maxBytes, includeText);
+        logger.LogInformation(
+            "CreateCursor: name={CursorName}, direction={Direction}, maxElements={MaxElements}, maxBytes={MaxBytes}, includeText={IncludeText}",
+            cursorName,
+            forward ? "Forward" : "Backward",
+            maxElements,
+            maxBytes,
+            includeText);
 
-        context.CursorContext.CreateCursor(cursorName, parameters, cursorDirection);
-        var handle = new CursorHandle(cursorName, cursorDirection, parameters.MaxElements, parameters.MaxBytes, parameters.IncludeText);
+        context.CursorContext.CreateCursor(cursorName, parameters, forward);
+        var handle = new CursorHandle(cursorName, forward, parameters.MaxElements, parameters.MaxBytes, parameters.IncludeText);
         return JsonSerializer.Serialize(handle, SerializerOptions);
     }
 
     [KernelFunction]
     [Description("Resets the default whole-book cursor for the given direction and returns its handle.")]
     public string UseWholeBookCursor(
-        [Description("Direction of traversal: Forward or Backward.")] string direction = "Forward",
         [Description("Maximum number of items per portion.")] int maxElements = 20,
         [Description("Maximum byte size per portion.")] int maxBytes = 2048,
-        [Description("When true, include raw text in each portion.")] bool includeText = true)
+        [Description("When true, include raw text in each portion.")] bool includeText = true,
+        [Description("Direction flag: true walks forward, false backward.")] bool forward = true)
     {
-        var cursorDirection = ParseDirection(direction);
         var parameters = new CursorParameters(maxElements, maxBytes, includeText);
-        var cursorName = cursorDirection == CursorDirection.Forward
+        var cursorName = forward
             ? context.CursorContext.EnsureWholeBookForward(parameters)
             : context.CursorContext.EnsureWholeBookBackward(parameters);
 
-        logger.LogInformation("UseWholeBookCursor: name={CursorName}, direction={Direction}", cursorName, cursorDirection);
-        var handle = new CursorHandle(cursorName, cursorDirection, parameters.MaxElements, parameters.MaxBytes, parameters.IncludeText);
+        logger.LogInformation("UseWholeBookCursor: name={CursorName}, direction={Direction}", cursorName, forward ? "Forward" : "Backward");
+        var handle = new CursorHandle(cursorName, forward, parameters.MaxElements, parameters.MaxBytes, parameters.IncludeText);
         return JsonSerializer.Serialize(handle, SerializerOptions);
     }
 
@@ -104,12 +108,6 @@ public class NavigationPlugin(DocumentContext context, CursorQueryExecutor curso
         var pointer = DeserializePointer(pointerJson);
         var description = new PointerDescription(pointer.HeadingTitle, pointer.LineIndex, pointer.CharacterOffset, pointer.Serialize());
         return JsonSerializer.Serialize(description, SerializerOptions);
-    }
-
-    private static CursorDirection ParseDirection(string direction)
-    {
-        if (Enum.TryParse<CursorDirection>(direction, true, out var parsed)) return parsed;
-        throw new ArgumentException($"Unknown direction '{direction}'. Use Forward or Backward.", nameof(direction));
     }
 
     private static SemanticPointer DeserializePointer(string pointerJson)

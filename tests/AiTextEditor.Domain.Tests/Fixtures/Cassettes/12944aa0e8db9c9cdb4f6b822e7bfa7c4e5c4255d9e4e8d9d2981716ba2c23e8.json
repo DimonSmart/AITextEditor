@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-902\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765449600,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022{\\\u0022portionIndex\\\u0022:14,\\\u0022result\\\u0022:\\\u0022\\\u0022}\u0022,\u0022reasoning\u0022:\u0022We need to process this portion, list any occurrence of the word \\\u0022\u0444\u0443\u043A\u0441\u0438\u044F\\\u0022 with surrounding sentence and any date info. The provided text seems Russian, about Znaikina book, no \\\u0022\u0444\u0443\u043A\u0441\u0438\u044F\\\u0022. So result likely empty. The format: {\\\u0022portionIndex\\\u0022:14,\\\u0022result\\\u0022:\\\u0022...\\\u0022} We need short answer. Since no occurrence, result could be empty string or indicate none. Probably empty string. Return JSON only.\u0022},\u0022finish_reason\u0022:\u0022stop\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:495,\u0022completion_tokens\u0022:109,\u0022total_tokens\u0022:604}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 11 Dec 2025 10:40:00 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

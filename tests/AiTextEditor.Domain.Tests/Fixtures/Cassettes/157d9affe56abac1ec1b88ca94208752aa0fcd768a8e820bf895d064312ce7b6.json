@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-445\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765449561,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022{\\\u0022status\\\u0022:\\\u0022continue\\\u0022,\\\u0022result\\\u0022:\\\u0022Word \\\\\\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\\\\\u0022 not found in the processed portions yet; continue scanning.\\\u0022}\u0022,\u0022reasoning\u0022:\u0022The user provides a sequential chunk of document, we need to find the last occurrence of \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022. So far, the shipped portions do not contain the word \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022. We need to continue fetching more until we find it. Therefore respond status continue. Include maybe note that not found yet. Provide JSON.\u0022},\u0022finish_reason\u0022:\u0022stop\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:1436,\u0022completion_tokens\u0022:100,\u0022total_tokens\u0022:1536}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 11 Dec 2025 10:39:21 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

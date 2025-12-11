@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-285\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765450371,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022{\\\u0022status\\\u0022:\\\u0022continue\\\u0022,\\\u0022result\\\u0022:\\\u0022\\\u0022}\u0022,\u0022reasoning\u0022:\u0022The task: find first paragraph (walking backward) that contains word \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022 case-insensitive. We are iterating backward through the document, meaning we start from end of book and move backward. The given chunks are sequential portions of backward traversal. We need to detect when we encounter a paragraph that contains \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022. So far none of the displayed paragraphs contain \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022. Need to continue until we find.\\n\\nWe need to respond with JSON status. Since we haven\u0027t found yet, we respond \\\u0022continue\\\u0022. Include result maybe empty or note? Format: {\\\u0022status\\\u0022:\\\u0022continue\\\u0022,\\\u0022result\\\u0022:\\\u0022...\\\u0022}.\\n\\nThe instructions: Use \u0027found\u0027 when portion satisfies the task. Use \u0027complete\u0027 when task solved. Always respond with compact JSON. So for now: status continue, result maybe empty string.\\n\\nThus answer: {\\\u0022status\\\u0022:\\\u0022continue\\\u0022,\\\u0022result\\\u0022:\\\u0022\\\u0022}.\u0022},\u0022finish_reason\u0022:\u0022stop\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:7198,\u0022completion_tokens\u0022:196,\u0022total_tokens\u0022:7394}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 11 Dec 2025 10:52:51 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-120\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765450452,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022{\\\u0022status\\\u0022:\\\u0022continue\\\u0022,\\\u0022result\\\u0022:\\\u0022No matching paragraph found yet; continue scanning backward.\\\u0022}\u0022,\u0022reasoning\u0022:\u0022We need to find the first paragraph (walking backward) that contains the word \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022 case-insensitive. The cursor is walking backward through the document, meaning we are seeing later parts first? Actually backward means from end towards start. So we should scan the items in order they are presented (starting from later part of the book, moving earlier). The first occurrence we encounter should be returned. We have many paragraphs but none yet contain \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022. We must continue until we find one. The provided slices go further back; still haven\u0027t seen \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022. Let\u0027s keep scanning further items after the last displayed. The last displayed items ended at index 25. The document likely continues further backward. We need to request next chunk. So respond with continue.\\n\\n\u0022},\u0022finish_reason\u0022:\u0022stop\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:17555,\u0022completion_tokens\u0022:186,\u0022total_tokens\u0022:17741}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 11 Dec 2025 10:54:12 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

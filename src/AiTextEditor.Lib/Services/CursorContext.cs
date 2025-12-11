@@ -16,25 +16,25 @@ public sealed class CursorContext
     public CursorContext(LinearDocument document)
     {
         this.document = document ?? throw new ArgumentNullException(nameof(document));
-        CreateDefaultCursor(DefaultWholeBookForward, CursorDirection.Forward);
-        CreateDefaultCursor(DefaultWholeBookBackward, CursorDirection.Backward);
+        CreateDefaultCursor(DefaultWholeBookForward, true);
+        CreateDefaultCursor(DefaultWholeBookBackward, false);
     }
 
     public IReadOnlyDictionary<string, CursorState> Cursors => cursors;
 
-    public string CreateCursor(string name, CursorParameters parameters, CursorDirection direction)
+    public string CreateCursor(string name, CursorParameters parameters, bool forward)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         ArgumentNullException.ThrowIfNull(parameters);
 
-        var startIndex = direction == CursorDirection.Forward ? 0 : document.Items.Count - 1;
-        cursors[name] = new CursorState(name, parameters, direction, startIndex);
+        var startIndex = forward ? 0 : document.Items.Count - 1;
+        cursors[name] = new CursorState(name, parameters, forward, startIndex);
         return name;
     }
 
-    public string EnsureWholeBookForward(CursorParameters parameters) => CreateCursor(DefaultWholeBookForward, parameters, CursorDirection.Forward);
+    public string EnsureWholeBookForward(CursorParameters parameters) => CreateCursor(DefaultWholeBookForward, parameters, true);
 
-    public string EnsureWholeBookBackward(CursorParameters parameters) => CreateCursor(DefaultWholeBookBackward, parameters, CursorDirection.Backward);
+    public string EnsureWholeBookBackward(CursorParameters parameters) => CreateCursor(DefaultWholeBookBackward, parameters, false);
 
     public CursorPortion? GetNextPortion(string cursorName)
     {
@@ -57,7 +57,7 @@ public sealed class CursorContext
 
             items.Add(projectedItem);
             byteBudget -= itemBytes;
-            nextIndex = cursor.Direction == CursorDirection.Forward ? nextIndex + 1 : nextIndex - 1;
+            nextIndex = cursor.IsForward ? nextIndex + 1 : nextIndex - 1;
             if (byteBudget <= 0) break;
         }
 
@@ -66,7 +66,7 @@ public sealed class CursorContext
             var sourceItem = document.Items[nextIndex];
             var projectedItem = cursor.Parameters.IncludeText ? sourceItem : StripText(sourceItem);
             items.Add(projectedItem);
-            nextIndex = cursor.Direction == CursorDirection.Forward ? nextIndex + 1 : nextIndex - 1;
+            nextIndex = cursor.IsForward ? nextIndex + 1 : nextIndex - 1;
         }
 
         cursor.Advance(nextIndex);
@@ -74,10 +74,10 @@ public sealed class CursorContext
         return new CursorPortion(cursorName, items, hasMore);
     }
 
-    private void CreateDefaultCursor(string name, CursorDirection direction)
+    private void CreateDefaultCursor(string name, bool forward)
     {
         var parameters = new CursorParameters(20, 2048, true);
-        CreateCursor(name, parameters, direction);
+        CreateCursor(name, parameters, forward);
     }
 
     private static int CalculateSize(LinearItem item, bool includeText)

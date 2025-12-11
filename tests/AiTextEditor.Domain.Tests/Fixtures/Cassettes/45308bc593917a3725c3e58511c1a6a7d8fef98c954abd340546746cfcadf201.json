@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-260\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765449724,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022{\\\u0022portionIndex\\\u0022:12,\\\u0022result\\\u0022:[]}\u0022,\u0022reasoning\u0022:\u0022We need to process portion 12. The task: Identify if phrase \\\u0022\u043F\u0440\u043E\u0444\u0435\u0441\u0441\u043E\u0440 \u0417\u0432\u0451\u0437\u0434\u043E\u0447\u043A\u0438\u043D\u0430\\\u0022 appears in this portion. If it does, output JSON with fields HeadingTitle, LineIndex, CharacterOffset for each occurrence. If not, output an empty array. Return JSON only: {\\\u0022portionIndex\\\u0022:\\u003cnumber\\u003e,\\\u0022result\\\u0022:\\\u0022short answer\\\u0022}. Wait contradictory: earlier says \\\u0022return JSON only: {\\\u0022portionIndex\\\u0022:\\u003cnumber\\u003e,\\\u0022result\\\u0022:\\\u0022short answer\\\u0022}.\\\u0022 But later says If phrase appears, output JSON object with fields HeadingTitle, LineIndex, CharacterOffset for each occurrence. If not, output empty array. The overall output format? Likely need to output {\\\u0022portionIndex\\\u0022:12,\\\u0022result\\\u0022: [...] } where result is array of objects with those fields. If empty array, result: [].\\n\\nThus we check the provided text. The pointer indicates heading title \\\u0022\u041A\u0430\u043A \u0417\u043D\u0430\u043A ... \\\u0022 (some slavic text). The text content: \\\u0022\u041D\u043E \u043B\u0443\u043D\u0430\u0442\u0438\u043A\u0438 \u0437\u043D\u0430\u043B\u0438,...\\\u0022 No phrase \\\u0022\u043F\u0440\u043E\u0444\u0435\u0441\u0441\u043E\u0440 \u0417\u0432\u0451\u0437\u0434\u043E\u0447\u043A\u0438\u043D\u0430\\\u0022. So no occurrences. Output empty array.\\n\\nThus JSON: {\\\u0022portionIndex\\\u0022:12,\\\u0022result\\\u0022:[]}\u0022},\u0022finish_reason\u0022:\u0022stop\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:455,\u0022completion_tokens\u0022:260,\u0022total_tokens\u0022:715}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 11 Dec 2025 10:42:04 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

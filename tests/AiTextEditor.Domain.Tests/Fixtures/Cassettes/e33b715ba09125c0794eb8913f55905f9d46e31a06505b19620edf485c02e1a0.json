@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-76\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765449534,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022\u0022,\u0022reasoning\u0022:\u0022User asks in Russian: \\\u0022\u0420\u0430\u0441\u0441\u043A\u0430\u0436\u0438 \u043C\u043D\u0435, \u0447\u0435\u043C \u0437\u0430\u043A\u0430\u043D\u0447\u0438\u0432\u0430\u0435\u0442\u0441\u044F \u0432\u0442\u043E\u0440\u0430\u044F \u0433\u043B\u0430\u0432\u0430.\\\u0022 They want the ending of chapter 2. We need to fetch content of chapter 2 from the book. Use cursor to get portions and then find chapter 2. Probably need to query cursor for the part that contains \\\u0022\u0413\u043B\u0430\u0432\u0430 2\\\u0022. Use QueryCursor or MapCursor with instruction to extract ending. Approach: Use NavigationPlugin_QueryCursor with instruction to return the last few sentences of chapter 2. Provide pointer. Let\u0027s try QueryCursor with instruction: \\\u0022Find the text of Chapter 2 and return its final paragraph.\\\u0022\u0022,\u0022tool_calls\u0022:[{\u0022id\u0022:\u0022call_5hp6164f\u0022,\u0022index\u0022:0,\u0022type\u0022:\u0022function\u0022,\u0022function\u0022:{\u0022name\u0022:\u0022NavigationPlugin-QueryCursor\u0022,\u0022arguments\u0022:\u0022{\\\u0022cursorName\\\u0022:\\\u0022CUR_WHOLE_BOOK_FORWARD\\\u0022,\\\u0022instruction\\\u0022:\\\u0022Find the text of Chapter 2 and return its final paragraph.\\\u0022}\u0022}}]},\u0022finish_reason\u0022:\u0022tool_calls\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:713,\u0022completion_tokens\u0022:172,\u0022total_tokens\u0022:885}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 11 Dec 2025 10:38:54 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

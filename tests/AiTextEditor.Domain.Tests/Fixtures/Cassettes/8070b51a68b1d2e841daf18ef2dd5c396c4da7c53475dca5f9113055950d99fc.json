@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-283\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765449921,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022{\\\u0022status\\\u0022:\\\u0022continue\\\u0022,\\\u0022result\\\u0022:\\\u0022Word \\\\\\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\\\\\u0022 not encountered in processed portions yet.\\\u0022}\u0022,\u0022reasoning\u0022:\u0022We\u0027re receiving multiple cursor portions. The task: find earliest occurrence of word \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022. So far we have headings and paragraphs but no occurrence of \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022 appears in provided text. Need to continue scanning. Status should be \\\u0022continue\\\u0022. Provide result placeholder maybe empty.\\n\\nReturn JSON {\\\u0022status\\\u0022:\\\u0022continue\\\u0022,\\\u0022result\\\u0022:\\\u0022not found yet\\\u0022}.\\n\\n\u0022},\u0022finish_reason\u0022:\u0022stop\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:1456,\u0022completion_tokens\u0022:102,\u0022total_tokens\u0022:1558}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 11 Dec 2025 10:45:21 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-579\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765450364,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022{\\\u0022status\\\u0022:\\\u0022continue\\\u0022,\\\u0022result\\\u0022:\\\u0022\\\u0022}\u0022,\u0022reasoning\u0022:\u0022We must walk backward through the document. The provided chunks are from the end (backwards) moving towards beginning. Need first paragraph containing word \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022 (case-insensitive). So we need to scan each chunk\u0027s items for paragraphs that include that word. So far none have \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022. Continue scanning further earlier chunks (since we have only part of the document). The system will feed more chunks until we find. We must respond with status \\\u0022continue\\\u0022 until found, then \\\u0022found\\\u0022. So currently not found; respond continue with maybe result empty or note not found yet. The JSON requires \\\u0022result\\\u0022:\\\u0022\\u003cdetails\\u003e\\\u0022. Could give empty string. We\u0027ll output continue.\\n\\n\u0022},\u0022finish_reason\u0022:\u0022stop\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:5702,\u0022completion_tokens\u0022:160,\u0022total_tokens\u0022:5862}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 11 Dec 2025 10:52:44 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

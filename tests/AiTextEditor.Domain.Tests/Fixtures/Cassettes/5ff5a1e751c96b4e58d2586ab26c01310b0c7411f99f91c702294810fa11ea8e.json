@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-87\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765449942,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022{\\\u0022status\\\u0022:\\\u0022continue\\\u0022,\\\u0022result\\\u0022:\\\u0022\u0417\u0432\u0451\u0437\u0434\u043E\u0447\u043A\u0438\u043D not found yet\\\u0022}\u0022,\u0022reasoning\u0022:\u0022We need to find first occurrence of \\\u0022\u0417\u0432\u0451\u0437\u0434\u043E\u0447\u043A\u0438\u043D\\\u0022. The headings have \\\u0022\u0417\u0432\u0451\u0437\u0434\u043E\u0447\u043A\u0438\u043D\\\u0022 in heading title (case \\\u0022\u0417\u0432\u0451\u0437\u0434\u043E\u0447\u043A...\\\u0022) but need the name occurrence inside paragraph text. So far paragraphs posted do not contain \\\u0022\u0417\u0432\u0451\u0437\u0434\u043E\u0447\u043A\u0438\u043D\\\u0022. We have not hit occurrence yet. Continue. So respond with continue.\u0022},\u0022finish_reason\u0022:\u0022stop\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:2775,\u0022completion_tokens\u0022:109,\u0022total_tokens\u0022:2884}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 11 Dec 2025 10:45:42 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

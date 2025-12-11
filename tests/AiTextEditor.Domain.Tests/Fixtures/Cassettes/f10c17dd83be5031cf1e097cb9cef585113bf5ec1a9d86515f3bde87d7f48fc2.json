@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-147\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765449542,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022{\\\u0022status\\\u0022:\\\u0022continue\\\u0022,\\\u0022result\\\u0022:\\\u0022The word \\\\\\\u0022\u0424\u0443\u043A\u0441\u0438\u0438\\\\\\\u0022 was not found in this portion.\\\u0022}\u0022,\u0022reasoning\u0022:\u0022We need to process a cursor portion: The user provides a cursor identifier and says there are more items (Has more: True). We need to respond with JSON status \u0027continue\u0027 as we haven\u0027t found the word yet, unless this portion contains \\\u0022\u0424\u0443\u043A\u0441\u0438\u0438\\\u0022. The snippet shows a paragraph with heading title \\\u0022\u0417\u0430\u0433\u0430\u0434\u043A\u0430 ...\\\u0022. No indication that the text contains the target word. So respond continue.\\n\\nWe must give result field with details, maybe indicate not found yet.\\n\\nThus output: {\\\u0022status\\\u0022:\\\u0022continue\\\u0022,\\\u0022result\\\u0022:\\\u0022Not found in this portion\\\u0022}\u0022},\u0022finish_reason\u0022:\u0022stop\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:330,\u0022completion_tokens\u0022:144,\u0022total_tokens\u0022:474}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 11 Dec 2025 10:39:03 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

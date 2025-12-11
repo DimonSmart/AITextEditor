@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-483\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765449535,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022{\\\u0022status\\\u0022:\\\u0022found\\\u0022,\\\u0022result\\\u0022:\\\u0022The second chapter ends with a cliffhanger about the hidden door.\\\u0022}\u0022,\u0022reasoning\u0022:\u0022We have a document cursor with items. Task: Find the text of Chapter 2 and return its final paragraph. We have Chapter Two heading and two paragraphs: at LineIndex6 and LineIndex8. The final paragraph is presumably the last one: \\\u0022The second chapter ends with a cliffhanger about the hidden door.\\\u0022\\n\\nThus we return JSON with status \\\u0022found\\\u0022. result should be the final paragraph text.\\n\\nReturn: {\\\u0022status\\\u0022:\\\u0022found\\\u0022,\\\u0022result\\\u0022:\\\u0022The second chapter ends with a cliffhanger about the hidden door.\\\u0022}\u0022},\u0022finish_reason\u0022:\u0022stop\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:389,\u0022completion_tokens\u0022:135,\u0022total_tokens\u0022:524}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 11 Dec 2025 10:38:55 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-902\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765449573,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022\u0022,\u0022reasoning\u0022:\u0022The cursor gave some generic headings; not what we need. Need to search proper text. Probably need to set cursor to search a corpus? The tool appears to just retrieve some default document (maybe Wikipedia?). Need to specify query? The instruction earlier didn\u0027t work. Maybe we need to use MapCursor with instruction to search. Actually QueryCursor expects instruction applied to each portion. Could ask something like \\\u0022Identify any mention of the term \u0027\u0444\u0443\u043A\u0441\u0438\u044F\u0027 and note the year.\\\u0022 Let\u0027s try map with instruction.\u0022,\u0022tool_calls\u0022:[{\u0022id\u0022:\u0022call_8m5r7r4e\u0022,\u0022index\u0022:0,\u0022type\u0022:\u0022function\u0022,\u0022function\u0022:{\u0022name\u0022:\u0022NavigationPlugin-MapCursor\u0022,\u0022arguments\u0022:\u0022{\\\u0022cursorName\\\u0022:\\\u0022search_fuchsia\\\u0022,\\\u0022instruction\\\u0022:\\\u0022List any occurrence of the word \\\\\\\u0022\u0444\u0443\u043A\u0441\u0438\u044F\\\\\\\u0022 along with the surrounding sentence and any date information.\\\u0022}\u0022}}]},\u0022finish_reason\u0022:\u0022tool_calls\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:1585,\u0022completion_tokens\u0022:155,\u0022total_tokens\u0022:1740}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 11 Dec 2025 10:39:33 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

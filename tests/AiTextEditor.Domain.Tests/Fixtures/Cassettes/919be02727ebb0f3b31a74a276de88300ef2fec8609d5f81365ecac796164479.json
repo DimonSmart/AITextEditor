@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-266\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765450267,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022\u0022,\u0022reasoning\u0022:\u0022The user asks in Russian: \\\u0022\u0420\u0430\u0441\u0441\u043A\u0430\u0436\u0438 \u043C\u043D\u0435, \u0447\u0435\u043C \u0437\u0430\u043A\u0430\u043D\u0447\u0438\u0432\u0430\u0435\u0442\u0441\u044F \u0432\u0442\u043E\u0440\u0430\u044F \u0433\u043B\u0430\u0432\u0430.\\\u0022 They want to know how the second chapter ends. We need to know which book? Not specified. Probably they refer to some text the system has. We have navigation plugin to read a book. We need to use whole-book cursor and get second chapter content. Likely we need to fetch portion containing chapter 2 end. Use UseWholeBookCursor to get cursor, then maybe MapCursor with instruction to summarize end of second chapter. Or QueryCursor with instruction \\\u0022Summarize the ending of chapter 2\\\u0022. Let\u0027s create whole book cursor forward includeText true, default sizes.\u0022,\u0022tool_calls\u0022:[{\u0022id\u0022:\u0022call_xkwputev\u0022,\u0022index\u0022:0,\u0022type\u0022:\u0022function\u0022,\u0022function\u0022:{\u0022name\u0022:\u0022NavigationPlugin-UseWholeBookCursor\u0022,\u0022arguments\u0022:\u0022{\\\u0022forward\\\u0022:true,\\\u0022includeText\\\u0022:true,\\\u0022maxBytes\\\u0022:4096,\\\u0022maxElements\\\u0022:50}\u0022}}]},\u0022finish_reason\u0022:\u0022tool_calls\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:629,\u0022completion_tokens\u0022:191,\u0022total_tokens\u0022:820}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 11 Dec 2025 10:51:07 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

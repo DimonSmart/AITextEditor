@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-678\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765449646,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022\u0022,\u0022reasoning\u0022:\u0022We need to find earliest mention of \\\u0022\u0444\u0443\u043A\u0441\u0438\u044F\\\u0022 color name. Likely originates from Latin \\\u0022fuchsia\\\u0022 named after the plant, used in French \\\u0022fuchsia\\\u0022 about 1890s? In Russian possibly first appears in the 19th century? We need to search.\\n\\nWe have whole book cursor but unclear which corpus. Probably the tool indexes a large text data (maybe Wikipedia, etc). We can query the cursor with instruction to find earliest occurrence.\\n\\nUse QueryCursor with instruction to locate earliest printed usage. Let\u0027s try again with a more specific instruction.\u0022,\u0022tool_calls\u0022:[{\u0022id\u0022:\u0022call_0hns9pq0\u0022,\u0022index\u0022:0,\u0022type\u0022:\u0022function\u0022,\u0022function\u0022:{\u0022name\u0022:\u0022NavigationPlugin-QueryCursor\u0022,\u0022arguments\u0022:\u0022{\\\u0022cursorName\\\u0022:\\\u0022CUR_WHOLE_BOOK_FORWARD\\\u0022,\\\u0022instruction\\\u0022:\\\u0022Find the earliest printed source that mentions the word \\\\\\\u0022\u0444\u0443\u043A\u0441\u0438\u044F\\\\\\\u0022 as a color name. Provide the year, source title, author (if given), and a short excerpt containing the word.\\\u0022}\u0022}}]},\u0022finish_reason\u0022:\u0022tool_calls\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:3896,\u0022completion_tokens\u0022:190,\u0022total_tokens\u0022:4086}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 11 Dec 2025 10:40:46 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

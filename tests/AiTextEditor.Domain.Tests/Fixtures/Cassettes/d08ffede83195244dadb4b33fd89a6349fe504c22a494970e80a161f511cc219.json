@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-509\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765449541,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022\u0022,\u0022reasoning\u0022:\u0022We need to find the last mention of \\\u0022\u0424\u0443\u043A\u0441\u0438\u0438\\\u0022 (Fuchsia). Using backward cursor we can get portions from the end. We should query the cursor for the term. Use NavigationPlugin_QueryCursor with instruction to find last mention.\u0022,\u0022tool_calls\u0022:[{\u0022id\u0022:\u0022call_swhzakb4\u0022,\u0022index\u0022:0,\u0022type\u0022:\u0022function\u0022,\u0022function\u0022:{\u0022name\u0022:\u0022NavigationPlugin-QueryCursor\u0022,\u0022arguments\u0022:\u0022{\\\u0022cursorName\\\u0022:\\\u0022CUR_WHOLE_BOOK_BACKWARD\\\u0022,\\\u0022instruction\\\u0022:\\\u0022Find the last occurrence of the word \\\\\\\u0022\u0424\u0443\u043A\u0441\u0438\u0438\\\\\\\u0022 and return the surrounding text (a few sentences) containing it.\\\u0022}\u0022}}]},\u0022finish_reason\u0022:\u0022tool_calls\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:713,\u0022completion_tokens\u0022:111,\u0022total_tokens\u0022:824}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 11 Dec 2025 10:39:01 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

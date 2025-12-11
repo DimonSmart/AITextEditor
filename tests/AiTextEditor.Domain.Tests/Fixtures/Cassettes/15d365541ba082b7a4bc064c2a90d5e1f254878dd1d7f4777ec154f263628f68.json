@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-123\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765450306,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022{\\\u0022status\\\u0022:\\\u0022continue\\\u0022,\\\u0022result\\\u0022:\\\u0022\\\u0022}\u0022,\u0022reasoning\u0022:\u0022We need to find the last occurrence of the word \\\u0022\u0424\u0443\u043A\u0441\u0438\u0438\\\u0022. We have many chunks of the document from backward, meaning we\u0027re moving from end toward start. The last occurrence would be the one closest to the end of the book (i.e., earliest in backward traversal). We must continue reading items until we find the word \\\u0022\u0424\u0443\u043A\u0441\u0438\u0438\\\u0022. So far we haven\u0027t seen that word. The current chunk (LineIndex 87, etc.) doesn\u0027t contain it.\\n\\nThus we need to continue to next portion (still moving backward). The instruction: \\\u0022Continue\\\u0022 status if not yet found. So respond with continue.\\n\\nBut we also need to include result details? Probably just \\\u0022continue\\\u0022. The result field can be empty or some placeholder. Use something like \\\u0022\\\u0022.\\n\\nReturn {\\\u0022status\\\u0022:\\\u0022continue\\\u0022,\\\u0022result\\\u0022:\\\u0022\\\u0022}.\u0022},\u0022finish_reason\u0022:\u0022stop\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:9197,\u0022completion_tokens\u0022:182,\u0022total_tokens\u0022:9379}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 11 Dec 2025 10:51:46 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-210\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765450382,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022{\\\u0022status\\\u0022:\\\u0022continue\\\u0022,\\\u0022result\\\u0022:\\\u0022No paragraph containing \\\\\\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\\\\\u0022 found yet; continuing search.\\\u0022}\u0022,\u0022reasoning\u0022:\u0022We need to find first paragraph (walking backward) containing \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022. We are walking backward from end toward start, I think. The data provided is sequential chunks as we walk backward. The earlier items have higher line indices? The first chunk we saw: pointer line index 169, then later decreasing line indices (e.g., 167 heading etc). So backward means we start from the end of the book and go upward (decreasing line index). So the first paragraph we encounter that contains \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022 will be the one nearest the end that includes PONCHIK. We need to scan the paragraphs shown so far; none yet contain \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022. Continue scanning further backward. The next items we saw go down to line index 89 etc. Still no \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022. Likely later further back there will be a paragraph with \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022. We need to request next chunk until find. Since we haven\u0027t found yet, we should respond \\\u0022continue\\\u0022. Provide no result.\u0022},\u0022finish_reason\u0022:\u0022stop\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:9407,\u0022completion_tokens\u0022:240,\u0022total_tokens\u0022:9647}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 11 Dec 2025 10:53:02 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

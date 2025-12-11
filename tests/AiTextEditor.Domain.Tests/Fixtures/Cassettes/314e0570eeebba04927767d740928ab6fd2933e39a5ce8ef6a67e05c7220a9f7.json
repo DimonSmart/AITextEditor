@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-786\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765449562,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022{\\\u0022status\\\u0022:\\\u0022continue\\\u0022,\\\u0022result\\\u0022:\\\u0022\\\u0022}\u0022,\u0022reasoning\u0022:\u0022We need to determine if this portion contains the last occurrence of \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022. The task: Find the last occurrence of the word \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022 in the text. Provide surrounding sentence and its position (page/section if available). We have received sequential portions. The last provided paragraph includes multiple occurrences of \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022. This may be the last occurrence in the whole document, but we don\u0027t know if there are later portions. The cursor says Has more: True still? In this last portion, the metadata shows Has more: True. So there may be more text after. Therefore we cannot be sure if this is the final occurrence. So status should be \\\u0022continue\\\u0022. Provide no result? Probably empty result. According to spec, JSON includes result details. Could say result empty.\\n\\nThus: {\\\u0022status\\\u0022:\\\u0022continue\\\u0022,\\\u0022result\\\u0022:\\\u0022\\\u0022}.\u0022},\u0022finish_reason\u0022:\u0022stop\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:1871,\u0022completion_tokens\u0022:190,\u0022total_tokens\u0022:2061}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 11 Dec 2025 10:39:22 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

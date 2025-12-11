@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-559\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765449597,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022{\\\u0022portionIndex\\\u0022:12,\\\u0022result\\\u0022:\\\u0022\\\u0022}\u0022,\u0022reasoning\u0022:\u0022The task: \\\u0022List any occurrence of the word \\\u0022\u0444\u0443\u043A\u0441\u0438\u044F\\\u0022 along with the surrounding sentence and any date information.\\\u0022 We\u0027re given a portion with pointer and paragraph text. Need to search the text for the word \\\u0022\u0444\u0443\u043A\u0441\u0438\u044F\\\u0022. The given Russian text appears about Znaika, etc. No word \\\u0022\u0444\u0443\u043A\u0441\u0438\u044F\\\u0022 appears. So result likely empty. But they want \\\u0022short answer\\\u0022. Probably result empty string. So return JSON: {\\\u0022portionIndex\\\u0022:12,\\\u0022result\\\u0022:\\\u0022\\\u0022}. Ensure no extra spaces.\u0022},\u0022finish_reason\u0022:\u0022stop\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:491,\u0022completion_tokens\u0022:128,\u0022total_tokens\u0022:619}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 11 Dec 2025 10:39:57 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

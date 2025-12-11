@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-775\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765449656,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022{\\\u0022status\\\u0022:\\\u0022continue\\\u0022,\\\u0022result\\\u0022:\\\u0022Searching for earliest printed source mentioning \\\\\\\u0022\u0444\u0443\u043A\u0441\u0438\u044F\\\\\\\u0022 as a color name.\\\u0022}\u0022,\u0022reasoning\u0022:\u0022The user is providing sequential portions of a \\\u0022linear document cursor\\\u0022. The task is to find the earliest printed source that mentions the word \\\u0022\u0444\u0443\u043A\u0441\u0438\u044F\\\u0022 as a color name, provide year, source title, author if given, and short excerpt.\\n\\nSo far all the cursor items are from some fictional text about \\\u0022\u041D\u0435\u0437\u043D\u0430\u0439\u043A\u0430\\\u0022. Not relevant. The presence of word \\\u0022\u0424\u0443\u043A\u0441\u0438\u044F\\\u0022 appears as a character name in the text (Paragraph at line 15 earlier: \\\u0022\u0424\u0443\u043A\u0441\u0438\u0435\u0439\\\u0022) but that\u0027s a name, not color name. The task is to find earliest printed source that mentions \\\u0022\u0444\u0443\u043A\u0441\u0438\u044F\\\u0022 as a color name.\\n\\nThus we need to keep scanning. The provided cursor portions are not relevant. We have to continue scanning more of the document until we find a source citation (maybe a bibliography) referencing \\\u0022\u0444\u0443\u043A\u0441\u0438\u044F\\\u0022 as a color. Likely later in the book there might be a section about colors. So we need to respond with status continue, as we haven\u0027t found the target yet.\\n\\nThus output JSON: {\\\u0022status\\\u0022:\\\u0022continue\\\u0022,\\\u0022result\\\u0022:\\\u0022Searching for earliest printed source mentioning \\\\\\\u0022\u0444\u0443\u043A\u0441\u0438\u044F\\\\\\\u0022 as a color name.\\\u0022}\u0022},\u0022finish_reason\u0022:\u0022stop\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:6221,\u0022completion_tokens\u0022:269,\u0022total_tokens\u0022:6490}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 11 Dec 2025 10:40:56 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-52\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765450404,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022{\\\u0022status\\\u0022:\\\u0022continue\\\u0022,\\\u0022result\\\u0022:\\\u0022Scanning\\\u0022}\u0022,\u0022reasoning\u0022:\u0022We have to find first paragraph (walking backward) containing the word \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022 case-insensitive. We\u0027re reading backwards from end of document (cursor CUR_WHOLE_BOOK_BACKWARD). Items are presented in descending order (most recent, earlier?). The first portion given is at top of list: pointer line index 169, some paragraph not containing \u041F\u043E\u043D\u0447\u0438\u043A. Then subsequent portions show earlier (higher line index numbers decreasing). So we need to continue until we encounter a paragraph containing \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022. So far none have. We must continue scanning downwards (the next batch). The latest batch we have ends at line index 61. We haven\u0027t seen \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022. We have to request next chunk. According to protocol, we respond with status continue until we find. So currently not found. So return {\\\u0022status\\\u0022:\\\u0022continue\\\u0022,\\\u0022result\\\u0022:\\\u0022Scanning\\\u0022}.\\n\\n\u0022},\u0022finish_reason\u0022:\u0022stop\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:12724,\u0022completion_tokens\u0022:195,\u0022total_tokens\u0022:12919}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 11 Dec 2025 10:53:24 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

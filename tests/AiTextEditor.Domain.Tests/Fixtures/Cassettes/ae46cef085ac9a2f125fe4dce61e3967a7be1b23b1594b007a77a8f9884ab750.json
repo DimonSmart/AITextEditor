@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-581\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765449557,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022{\\\u0022status\\\u0022:\\\u0022continue\\\u0022,\\\u0022result\\\u0022:\\\u0022No occurrence of \\\\\\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\\\\\u0022 found in the provided segment; awaiting further text.\\\u0022}\u0022,\u0022reasoning\u0022:\u0022We have to respond with JSON status. The task: find last occurrence of word \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022. In this portion we have only headings, no occurrence yet. So we cannot find; we need to continue. Return status continue with maybe empty result.\u0022},\u0022finish_reason\u0022:\u0022stop\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:518,\u0022completion_tokens\u0022:87,\u0022total_tokens\u0022:605}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 11 Dec 2025 10:39:17 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

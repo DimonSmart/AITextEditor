@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-192\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765450365,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022{\\\u0022status\\\u0022:\\\u0022continue\\\u0022,\\\u0022result\\\u0022:\\\u0022\\\u0022}\u0022,\u0022reasoning\u0022:\u0022We need to walk backwards (from later parts to earlier). The cursor is whole book backward, and we have been given sequential portions (each chunk includes items). We must find the first paragraph encountered (when walking backward) that contains the word \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022 case-insensitive.\\n\\nWe have processed many chunks but haven\u0027t seen \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022 yet. We must continue scanning backwards. The next chunk will be presented later. Since current chunk does not contain \u041F\u043E\u043D\u0447\u0438\u043A, we should respond \\\u0022continue\\\u0022. Include result maybe empty. According to spec: JSON with status \\\u0022continue\\\u0022 and result details. Probably result can be empty string.\\n\\nThus respond: {\\\u0022status\\\u0022:\\\u0022continue\\\u0022,\\\u0022result\\\u0022:\\\u0022\\\u0022}\u0022},\u0022finish_reason\u0022:\u0022stop\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:6092,\u0022completion_tokens\u0022:159,\u0022total_tokens\u0022:6251}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 11 Dec 2025 10:52:46 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

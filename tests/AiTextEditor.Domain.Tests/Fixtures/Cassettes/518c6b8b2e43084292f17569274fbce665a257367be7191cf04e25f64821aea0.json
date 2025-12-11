@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-746\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765450359,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022{\\\u0022status\\\u0022:\\\u0022continue\\\u0022,\\\u0022result\\\u0022:\\\u0022\\\u0022}\u0022,\u0022reasoning\u0022:\u0022We need to find first paragraph (walking backward) containing word \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022. We are moving backward through whole book from presumably end to start. The cursor shows chunks with items in reverse order (starting from later lines). The first set we saw (first piece) didn\u0027t contain \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022. Continue analyzing subsequent chunks until we encounter \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022. The chunks we have listed so far: earliest (most recent) chunk includes heading \\\u0022\u0417\u0430\u0433\u0430\u0434\u043A\u0430 \u043B\u0443\u043D\u043D\u043E\u0433\u043E \u043A\u0430\u043C\u043D\u044F\\\u0022, etc. None contain \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022. Need continue further back. But we only have limited view. The last chunk shown is up to LineIndex 137 (some earlier part). We need to continue retrieving more items until we find paragraph with \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022. So we should respond with \\\u0022continue\\\u0022 because not found yet. However maybe the paragraph with \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022 appears later in earlier parts not yet shown. So we cannot found yet. So status: continue.\\n\\nWe need to include \\\u0022result\\\u0022 details maybe empty or something. The format: {\\\u0022status\\\u0022:\\\u0022continue\\\u0022,\\\u0022result\\\u0022:\\\u0022\\u003cdetails\\u003e\\\u0022}.\\n\\nWe can put result empty string. Provide JSON.\\n\\n\u0022},\u0022finish_reason\u0022:\u0022stop\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:3988,\u0022completion_tokens\u0022:258,\u0022total_tokens\u0022:4246}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 11 Dec 2025 10:52:39 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

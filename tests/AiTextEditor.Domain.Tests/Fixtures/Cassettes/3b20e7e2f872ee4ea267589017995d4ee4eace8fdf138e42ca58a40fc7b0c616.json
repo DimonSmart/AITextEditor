@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-893\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765450386,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022{\\\u0022status\\\u0022:\\\u0022continue\\\u0022,\\\u0022result\\\u0022:\\\u0022No matching paragraph in current batch\\\u0022}\u0022,\u0022reasoning\u0022:\u0022We need first paragraph walking backward that contains the word \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022. We\u0027re reading backwards from end of the book (cursor CUR_WHOLE_BOOK_BACKWARD). We have many items, but none yet contain \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022. Need to continue until we find.\\n\\nThe list goes quite far backward; many paragraphs about conference. Likely earlier there will be a paragraph mentioning \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022. We need to request next chunk? The instruction: we must respond with status continue until find. So we haven\u0027t found yet. Return continue.\\n\\nThus JSON: {\\\u0022status\\\u0022:\\\u0022continue\\\u0022,\\\u0022result\\\u0022:\\\u0022No matching paragraph in current batch\\\u0022}\u0022},\u0022finish_reason\u0022:\u0022stop\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:10290,\u0022completion_tokens\u0022:149,\u0022total_tokens\u0022:10439}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 11 Dec 2025 10:53:06 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

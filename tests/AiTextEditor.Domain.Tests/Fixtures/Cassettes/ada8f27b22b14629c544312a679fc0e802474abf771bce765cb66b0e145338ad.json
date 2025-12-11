@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-817\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765450393,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022{\\\u0022status\\\u0022:\\\u0022continue\\\u0022,\\\u0022result\\\u0022:\\\u0022\\\u0022}\u0022,\u0022reasoning\u0022:\u0022We need to find the first paragraph (walking backward) containing word \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022. The cursor is walking backward through the document: each batch is earlier part of the book (since backward). The first batch we saw (the earliest in backward order) is pointer line 169 (later part?), but we need first paragraph encountered that contains \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022. We need to continue scanning backwards until we find a paragraph with \u041F\u043E\u043D\u0447\u0438\u043A. So far none of the shown paragraphs contain \u041F\u043E\u043D\u0447\u0438\u043A. We need to keep requesting more items? The task expects iterative response: after each batch, we should output status \\\u0022continue\\\u0022 until we find. So far we haven\u0027t found. We should respond with continue. Also need to include result details? The JSON \\\u0022result\\\u0022 can be empty string or maybe note \\\u0022not found yet\\\u0022. Keep minimal. So reply with {\\\u0022status\\\u0022:\\\u0022continue\\\u0022,\\\u0022result\\\u0022:\\\u0022\\\u0022}.\u0022},\u0022finish_reason\u0022:\u0022stop\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:10516,\u0022completion_tokens\u0022:200,\u0022total_tokens\u0022:10716}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 11 Dec 2025 10:53:13 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -5,11 +5,11 @@ namespace AiTextEditor.Lib.Services;
 
 public sealed class CursorState
 {
-    public CursorState(string name, CursorParameters parameters, CursorDirection direction, int startIndex)
+    public CursorState(string name, CursorParameters parameters, bool isForward, int startIndex)
     {
         Name = name ?? throw new ArgumentNullException(nameof(name));
         Parameters = parameters ?? throw new ArgumentNullException(nameof(parameters));
-        Direction = direction;
+        IsForward = isForward;
         CurrentIndex = startIndex;
     }
 
@@ -17,7 +17,7 @@ public sealed class CursorState
 
     public CursorParameters Parameters { get; }
 
-    public CursorDirection Direction { get; }
+    public bool IsForward { get; }
 
     public int CurrentIndex { get; private set; }
 

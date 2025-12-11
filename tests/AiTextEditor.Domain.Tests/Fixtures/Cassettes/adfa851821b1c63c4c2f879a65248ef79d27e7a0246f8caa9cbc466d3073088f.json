@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-48\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765450463,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022{\\\u0022status\\\u0022:\\\u0022continue\\\u0022,\\\u0022result\\\u0022:\\\u0022No paragraph containing \\\\\\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\\\\\u0022 found yet; continue scanning backward.\\\u0022}\u0022,\u0022reasoning\u0022:\u0022We need to find the first paragraph (walking backward) containing \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022 case-insensitive. We have many items but all seem not containing that word.\\n\\nWe need continue scanning backwards, meaning from the end of the document towards beginning. The first occurrences will be later in the document (higher line index?), but we are given backward chunks - each chunk shown is from earlier part? Actually cursor is whole book backward \u2013 meaning reading from end to start. The first chunk we got includes a paragraph at line index 169 (near end). It didn\u0027t contain \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022. Next chunks earlier. We need continue scanning further earlier until find paragraph with \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022. We haven\u0027t seen yet. Continue requesting next portion.\\n\\nThus respond with status continue, no result yet.\\n\\n\u0022},\u0022finish_reason\u0022:\u0022stop\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:19313,\u0022completion_tokens\u0022:189,\u0022total_tokens\u0022:19502}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 11 Dec 2025 10:54:23 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

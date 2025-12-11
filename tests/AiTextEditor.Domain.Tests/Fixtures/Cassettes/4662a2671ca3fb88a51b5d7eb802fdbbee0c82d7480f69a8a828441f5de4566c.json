@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-366\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765449638,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022{\\\u0022portionIndex\\\u0022:34,\\\u0022result\\\u0022:\\\u0022\\\u0022}\u0022,\u0022reasoning\u0022:\u0022We need to process given cursor portion independently. Portion index 34. Task: List any occurrence of the word \\\u0022\u0444\u0443\u043A\u0441\u0438\u044F\\\u0022 along with the surrounding sentence and any date information. Output JSON with \\\u0022portionIndex\\\u0022:34, \\\u0022result\\\u0022:\\\u0022short answer\\\u0022. \\\u0022Result\\\u0022 should contain the found occurrences perhaps formatted. Since we only have a snippet: pointer with heading title \\\u0022\u0417\u0430\u0433\u0430\u0434\u043A\u0430 \u043B\u0443\u043D\u043D\u043E\u0433\u043E \u043A\u0430\u043C\u043D\u044F\\\u0022, line index etc. Text is truncated. We have no actual text of the paragraph. So we cannot find \\\u0022\u0444\u0443\u043A\u0441\u0438\u044F\\\u0022. Likely no occurrence. So result should be empty or indicate none. Probably empty string. So JSON: {\\\u0022portionIndex\\\u0022:34,\\\u0022result\\\u0022:\\\u0022\\\u0022}. Or maybe \\\u0022No occurrences\\\u0022. But \\\u0022short answer\\\u0022. Use empty.\u0022},\u0022finish_reason\u0022:\u0022stop\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:241,\u0022completion_tokens\u0022:176,\u0022total_tokens\u0022:417}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 11 Dec 2025 10:40:38 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}
