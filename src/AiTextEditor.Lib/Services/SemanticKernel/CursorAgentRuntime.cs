@@ -42,56 +42,106 @@ public sealed class CursorAgentRuntime
 
         for (var step = 0; step < maxSteps; step++)
         {
-            var response = await chatService.GetChatMessageContentsAsync(history, CreateSettings(), cancellationToken: cancellationToken);
-            var content = response.FirstOrDefault()?.Content ?? string.Empty;
-            logger.LogDebug("Cursor agent step {Step}: {Response}", step, content);
-
-            var command = ParseCommand(content);
+            var command = await GetNextCommandAsync(history, cancellationToken, step);
             if (command == null)
             {
                 history.AddUserMessage("Agent response malformed. Respond with JSON action.");
                 continue;
             }
 
-            switch (command.Action.ToLowerInvariant())
+            if (TryComplete(request, command, out var result))
             {
-                case "cursor_next":
-                    var portion = documentContext.CursorContext.GetNextPortion(request.CursorName);
-                    if (portion == null)
-                    {
-                        history.AddUserMessage("cursor_next failed: cursor not found");
-                        continue;
-                    }
-
-                    var snapshot = ProjectPortion(portion);
-                    history.AddUserMessage(BuildPortionFeedback(snapshot));
-                    break;
-
-                case "target_set_add":
-                    if (request.Mode != CursorAgentMode.CollectToTargetSet || string.IsNullOrWhiteSpace(request.TargetSetId))
-                    {
-                        history.AddUserMessage("target_set_add is not available in this mode.");
-                        continue;
-                    }
-
-                    var added = targetSetContext.Add(request.TargetSetId!, command.Indices ?? Array.Empty<int>());
-                    history.AddUserMessage(added ? "target_set_add ok" : "target_set_add failed: unknown target set");
-                    break;
-
-                case "agent_finish_success":
-                    return BuildSuccess(request, command);
-
-                case "agent_finish_not_found":
-                    return new CursorAgentResult(false, command.Summary ?? "Not found", null, command.Summary, request.TargetSetId);
-
-                default:
-                    history.AddUserMessage("Unknown action. Use cursor_next, target_set_add, agent_finish_success, agent_finish_not_found.");
-                    break;
+                return result;
             }
+
+            if (TryHandleAction(request, command, history))
+            {
+                continue;
+            }
+
+            history.AddUserMessage("Unknown action. Use cursor_next, target_set_add, agent_finish_success, agent_finish_not_found.");
         }
 
         return new CursorAgentResult(false, "Max steps exceeded", null, null, request.TargetSetId);
     }
+
+    private async Task<AgentCommand?> GetNextCommandAsync(ChatHistory history, CancellationToken cancellationToken, int step)
+    {
+        var response = await chatService.GetChatMessageContentsAsync(history, CreateSettings(), cancellationToken: cancellationToken);
+        var content = response.FirstOrDefault()?.Content ?? string.Empty;
+        logger.LogDebug("Cursor agent step {Step}: {Response}", step, content);
+
+        return ParseCommand(content);
+    }
+
+    private bool TryHandleAction(CursorAgentRequest request, AgentCommand command, ChatHistory history)
+    {
+        if (IsCursorNext(command.Action))
+        {
+            return TryHandleCursorNext(request, history);
+        }
+
+        if (IsTargetSetAdd(command.Action))
+        {
+            return TryHandleTargetSetAdd(request, command, history);
+        }
+
+        return false;
+    }
+
+    private static bool IsCursorNext(string action) => action.Equals("cursor_next", StringComparison.OrdinalIgnoreCase);
+
+    private static bool IsTargetSetAdd(string action) => action.Equals("target_set_add", StringComparison.OrdinalIgnoreCase);
+
+    private bool TryHandleCursorNext(CursorAgentRequest request, ChatHistory history)
+    {
+        var portion = documentContext.CursorContext.GetNextPortion(request.CursorName);
+        if (portion == null)
+        {
+            history.AddUserMessage("cursor_next failed: cursor not found");
+            return true;
+        }
+
+        var snapshot = ProjectPortion(portion);
+        history.AddUserMessage(BuildPortionFeedback(snapshot));
+        return true;
+    }
+
+    private bool TryHandleTargetSetAdd(CursorAgentRequest request, AgentCommand command, ChatHistory history)
+    {
+        if (request.Mode != CursorAgentMode.CollectToTargetSet || string.IsNullOrWhiteSpace(request.TargetSetId))
+        {
+            history.AddUserMessage("target_set_add is not available in this mode.");
+            return true;
+        }
+
+        var indices = command.Indices ?? Array.Empty<int>();
+        var added = targetSetContext.Add(request.TargetSetId!, indices);
+        history.AddUserMessage(added ? "target_set_add ok" : "target_set_add failed: unknown target set");
+        return true;
+    }
+
+    private static bool TryComplete(CursorAgentRequest request, AgentCommand command, out CursorAgentResult result)
+    {
+        if (IsFinishSuccess(command.Action))
+        {
+            result = BuildSuccess(request, command);
+            return true;
+        }
+
+        if (IsFinishNotFound(command.Action))
+        {
+            result = new CursorAgentResult(false, command.Summary ?? "Not found", null, command.Summary, request.TargetSetId);
+            return true;
+        }
+
+        result = default!;
+        return false;
+    }
+
+    private static bool IsFinishSuccess(string action) => action.Equals("agent_finish_success", StringComparison.OrdinalIgnoreCase);
+
+    private static bool IsFinishNotFound(string action) => action.Equals("agent_finish_not_found", StringComparison.OrdinalIgnoreCase);
 
     private static CursorAgentResult BuildSuccess(CursorAgentRequest request, AgentCommand command)
     {
@@ -145,11 +195,15 @@ public sealed class CursorAgentRuntime
     private static string BuildSystemPrompt(CursorAgentMode mode)
     {
         var builder = new StringBuilder();
-        builder.AppendLine("You are CursorAgent. Navigate a document via cursor_next calls and respond with compact JSON only.");
-        builder.AppendLine("Available actions: cursor_next, target_set_add (CollectToTargetSet only), agent_finish_success, agent_finish_not_found.");
-        builder.AppendLine("Return format: {\"action\":\"<name>\",\"indices\":[...],\"firstItemIndex\":<number>,\"summary\":\"text\"}.");
-        builder.AppendLine("Keep replies short. Do not add explanations.");
-        builder.Append("Mode: ").Append(mode).Append('.');
+        builder.AppendLine("You are CursorAgent. Navigate the document via cursor_next and respond with a single JSON object only, no prose or code fences.");
+        builder.AppendLine("Actions:");
+        builder.AppendLine("- cursor_next: request the next items. Payload: {\"action\":\"cursor_next\"}");
+        builder.AppendLine("- agent_finish_success: finish when done. Include summary. For FirstMatch also set firstItemIndex.");
+        builder.AppendLine("- agent_finish_not_found: finish when the target cannot be found. Include summary explaining why.");
+        builder.AppendLine("- target_set_add: only in CollectToTargetSet mode. Provide indices of relevant cursor items: {\"action\":\"target_set_add\",\"indices\":[...]}.");
+        builder.AppendLine("Return format: {\"action\":\"<name\">,\"indices\":[...],\"firstItemIndex\":<number>,\"summary\":\"text\"}.");
+        builder.AppendLine("Keep replies short. Avoid any text outside the JSON object.");
+        builder.Append("Mode: ").Append(mode).Append(". Use only the allowed actions for this mode.");
         return builder.ToString();
     }
 
