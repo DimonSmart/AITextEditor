@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-344\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765436745,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022{\\\u0022status\\\u0022:\\\u0022continue\\\u0022,\\\u0022result\\\u0022:\\\u0022\\\u0022}\u0022,\u0022reasoning\u0022:\u0022We need to find first mention of professor \u0417\u0432\u0451\u0437\u0434\u043E\u0447\u043A\u0438\u043D\u0430. The heading \\\u0022\u041A\u0430\u043A \u0417\u043D\u0430\u0439\u043A\u0430 \u043F\u043E\u0431\u0435\u0434\u0438\u043B \u043F\u0440\u043E\u0444\u0435\u0441\u0441\u043E\u0440\u0430 \u0417\u0432\u0451\u0437\u0434\u043E\u0447\u043A\u0438\u043D\u0430\\\u0022 is a heading (Level 3). The first mention likely is in that heading itself or in paragraph following. The task: \\\u0022return the full paragraph containing it, including surrounding text.\\\u0022 We need the paragraph that contains the first mention. The heading is not a paragraph. The first paragraph after heading is the one at LineIndex 7 (the long description). Does that paragraph contain the name? Let\u0027s check text: It describes travel etc, but doesn\u0027t mention professor. Actually reading: \\\u0022\u0421 \u0442\u0435\u0445 \u043F\u043E\u0440 \u043A\u0430\u043A \u041D\u0435\u0437\u043D\u0430\u0439\u043A\u0430 \u0441\u043E\u0432\u0435\u0440\u0448\u0438\u043B \u043F\u0443\u0442\u0435\u0448\u0435\u0441\u0442\u0432\u0438\u0435...\\\u0022 No mention of professor. Next paragraph at LineIndex 9 also doesn\u0027t. Next at 11 also doesn\u0027t. So maybe earlier paragraph before heading? Not given. The first mention could be in heading itself, but need paragraph containing it? Maybe heading counts as paragraph? Might need to return that heading line as part of paragraph? Might be that later in text there will be mention. However we only have first few paragraphs after heading, none contain professor name. The first mention is just in heading, not paragraph. So maybe we need to continue scanning further. Since cursor has more=True, we should continue. Return status continue with no result.\\n\\n\u0022},\u0022finish_reason\u0022:\u0022stop\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:1826,\u0022completion_tokens\u0022:292,\u0022total_tokens\u0022:2118}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 11 Dec 2025 07:05:45 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

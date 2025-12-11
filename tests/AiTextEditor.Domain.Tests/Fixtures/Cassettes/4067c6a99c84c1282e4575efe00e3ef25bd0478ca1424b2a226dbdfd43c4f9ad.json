@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-845\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765404792,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022{\\\u0022status\\\u0022:\\\u0022continue\\\u0022,\\\u0022result\\\u0022:\\\u0022The word \\\\\\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\\\\\u0022 was not found in the provided portions.\\\u0022}\u0022,\u0022reasoning\u0022:\u0022We need to process sequential portions of a linear document cursor. The task: find the last occurrence of the word \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022. We have been given two portions so far, each with pointers and text. We need to continue scanning until we find the last occurrence. Since we don\u0027t have the whole book, we need to respond appropriately: we have not yet found the word \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022. So status should be \\\u0022continue\\\u0022. Provide result maybe indicating we haven\u0027t found yet. According to instructions: respond with JSON: {\\\u0022status\\\u0022:\\\u0022continue\\\u0022,\\\u0022result\\\u0022:\\\u0022...\\\u0022}.\\n\\nWe should include maybe a note that not found yet. So result could be \\\u0022Not found in current portion\\\u0022. Return JSON only.\u0022},\u0022finish_reason\u0022:\u0022stop\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:1052,\u0022completion_tokens\u0022:173,\u0022total_tokens\u0022:1225}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Wed, 10 Dec 2025 22:13:11 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

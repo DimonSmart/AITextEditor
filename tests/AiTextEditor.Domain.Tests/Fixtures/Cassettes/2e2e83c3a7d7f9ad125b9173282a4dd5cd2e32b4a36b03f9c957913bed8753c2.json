@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-45\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765404900,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022{\\\u0022status\\\u0022:\\\u0022continue\\\u0022,\\\u0022result\\\u0022:\\\u0022Looking for line 47; not yet encountered in received items.\\\u0022}\u0022,\u0022reasoning\u0022:\u0022We need to locate LineIndex=47 with heading title. So far we have items around line 49, 51, etc. The target line is 47, not yet seen. Need to continue reading earlier portion (since we have line 49 onward). The cursor currently is at some point lines 49\u002B. We need lines 45-49? Actually context: two lines before and after line 47: lines 45,46,47,48,49.\\n\\nWe haven\u0027t seen line 47 yet. We need to fetch previous items. The cursor is forward and has more. So need to request earlier portion? Actually the cursor is moving forward through the document. The pointer line numbers increase. Since we are at line 49 onward, earlier lines (47) should have been earlier in the stream. Perhaps we need to go backward? But the cursor is forward only. However we can continue fetching previous items? There\u0027s maybe earlier part with line 47 earlier in the document. We need to get more items earlier? The system provided items from line 49 onward. So next fetch likely will go backward? But \\\u0022CUR_WHOLE_BOOK_FORWARD\\\u0022 suggests moving forward through the whole book. So earlier lines would have been seen already if we started at beginning. Maybe we started later. To locate line 47, we might need to request earlier portion? But we cannot go backward; we can continue forward hoping line 47 appears later? No, line numbers increase; line 47 is before 49. So we need to request previous segment maybe with a different cursor? Usually these tasks require continue until you find the target line. Since we haven\u0027t seen line 47, we should respond \\\u0022continue\\\u0022. Provide result maybe empty.\\n\\nThus status continue.\\n\\n\u0022},\u0022finish_reason\u0022:\u0022stop\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:3522,\u0022completion_tokens\u0022:385,\u0022total_tokens\u0022:3907}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Wed, 10 Dec 2025 22:14:58 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

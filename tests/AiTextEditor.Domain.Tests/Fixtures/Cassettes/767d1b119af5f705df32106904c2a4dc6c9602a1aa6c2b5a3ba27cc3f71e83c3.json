@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-175\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765404803,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022\u0022,\u0022reasoning\u0022:\u0022The result includes a pointer and a long paragraph containing \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022. We need to present the last occurrence. It appears this is the last mention. Provide the paragraph and pointer details. Might decode pointer fields: HeadingTitle etc. Could use DescribePointer to decode.\\n\\n\u0022,\u0022tool_calls\u0022:[{\u0022id\u0022:\u0022call_jm6f3a3m\u0022,\u0022index\u0022:0,\u0022type\u0022:\u0022function\u0022,\u0022function\u0022:{\u0022name\u0022:\u0022NavigationPlugin-DescribePointer\u0022,\u0022arguments\u0022:\u0022{\\\u0022pointerJson\\\u0022:\\\u0022{\\\\\\\u0022HeadingTitle\\\\\\\u0022:\\\\\\\u0022\u041A\u0430\u043A \u0417\u043D\u0430\u043A\u043A\u0430 \u043F\u043E\u0431\u0435\u0434\u0438\u043B \u043F\u0440\u043E\u0444\u0435\u0441\u0441\u043E\u0440a \u0417\u0432\u0451\u0437\u0434\u043E\u0447\u043A\u0438\u043D\\\\\\\u0022,\\\\\\\u0022LineIndex\\\\\\\u0022:13,\\\\\\\u0022CharacterOffset\\\\\\\u0022:2711}\\\u0022}\u0022}}]},\u0022finish_reason\u0022:\u0022tool_calls\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:3693,\u0022completion_tokens\u0022:111,\u0022total_tokens\u0022:3804}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Wed, 10 Dec 2025 22:13:22 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

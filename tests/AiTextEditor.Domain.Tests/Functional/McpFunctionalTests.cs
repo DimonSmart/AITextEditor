@@ -17,34 +17,25 @@ public class McpFunctionalTests
         this.output = output;
     }
 
-    [Fact]
-    public async Task QuestionAboutProfessor_ReturnsPointerToFirstMention()
+    [Theory]
+    [InlineData("Где в книге впервые упоминается профессор Звездочкин?", "1.1.1.p21")]
+    [InlineData("Покажи первое упоминание профессора ЗВЁЗДОЧКИНА в тексте.", "1.1.1.p21")]
+    [InlineData("Где в книге второе упоминание профессора Звёздочкина?", "1.1.1.p22")]
+    [InlineData("Где впервые упоминается Пончик?", "1.1.1.p3")]
+    [InlineData("Покажи последнее упоминание Пончика.", "1.1.1.p4")]
+    [InlineData("Где впервые упоминается Фуксия?", "1.1.1.p5")]
+    [InlineData("Покажи последнее упоминание Фуксии.", "1.1.1.p67")]
+    public async Task CharacterMentionQuestions_ReturnExpectedPointer(string question, string expectedPointer)
     {
         var markdown = LoadNeznaykaSample();
         using var httpClient = await TestLlmConfiguration.CreateVerifiedLlmClientAsync(output);
         using var loggerFactory = TestLoggerFactory.Create(output);
         var engine = new SemanticKernelEngine(httpClient, loggerFactory);
 
-        var result = await engine.RunAsync(markdown, "Где в книге впервые упоминается профессор Звездочкин?");
+        var result = await engine.RunAsync(markdown, question);
+        var answer = result.LastAnswer ?? string.Empty;
 
-        // Note: The new engine relies on the LLM to return the answer.
-        // We check if the answer contains the pointer.
-        // The plugin returns "1.1.1.p21", so the LLM should include it.
-        Assert.Contains("1.1.1.p21", result.LastAnswer, StringComparison.OrdinalIgnoreCase);
-        output.WriteLine(string.Join("\n", result.UserMessages));
-    }
-
-    [Fact]
-    public async Task QuestionAboutProfessor_WithAlternativeSpelling_ReturnsPointerToFirstMention()
-    {
-        var markdown = LoadNeznaykaSample();
-        using var httpClient = await TestLlmConfiguration.CreateVerifiedLlmClientAsync(output);
-        using var loggerFactory = TestLoggerFactory.Create(output);
-        var engine = new SemanticKernelEngine(httpClient, loggerFactory);
-
-        var result = await engine.RunAsync(markdown, "Покажи первое упоминание профессора ЗВЁЗДОЧКИНА в тексте.");
-
-        Assert.Contains("1.1.1.p21", result.LastAnswer, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(expectedPointer, answer, StringComparison.OrdinalIgnoreCase);
         output.WriteLine(string.Join("\n", result.UserMessages));
     }
 

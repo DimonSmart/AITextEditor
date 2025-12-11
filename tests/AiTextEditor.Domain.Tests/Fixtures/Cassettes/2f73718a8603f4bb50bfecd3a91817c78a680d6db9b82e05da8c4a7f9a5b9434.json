@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-786\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765404893,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022{\\\u0022status\\\u0022:\\\u0022continue\\\u0022,\\\u0022result\\\u0022:\\\u0022Need to retrieve lines 45-49 (two lines before and after LineIndex 47) to provide the requested context.\\\u0022}\u0022,\u0022reasoning\u0022:\u0022We have to output JSON with status and result. The task: At pointer location HeadingTitle=\u0027\u041A\u0430\u043A \u0417\u043D\u0430\u0439\u043A\u0430 \u043F\u043E\u0431\u0435\u0434\u0438\u043B \u043F\u0440\u043E\u0444\u0435\u0441\u0441\u043E\u0440\u0430 \u0417\u0432\u0451\u0437\u0434\u043E\u0447\u043A\u0438\u043D\u0430\u0027, LineIndex=47, give the text of that line and surrounding context (2 lines before and after). We have received items for LineIndex 49, 51, 53, 55, etc. We likely need to continue scanning earlier items to get lines 45-49 maybe. LineIndex 47 is earlier than 49, so we need to continue to get earlier items. Should respond with \\\u0022continue\\\u0022 and possibly include any info we have? We need to give result details maybe \\\u0022need more data\\\u0022. According guidelines: Use \u0027continue\u0027 when not yet have the needed line. So output status continue, result maybe \\\u0022need previous lines\\\u0022. So JSON: {\\\u0022status\\\u0022:\\\u0022continue\\\u0022,\\\u0022result\\\u0022:\\\u0022Need lines 45-49 surrounding line 47\\\u0022}\u0022},\u0022finish_reason\u0022:\u0022stop\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:1374,\u0022completion_tokens\u0022:230,\u0022total_tokens\u0022:1604}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Wed, 10 Dec 2025 22:14:52 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

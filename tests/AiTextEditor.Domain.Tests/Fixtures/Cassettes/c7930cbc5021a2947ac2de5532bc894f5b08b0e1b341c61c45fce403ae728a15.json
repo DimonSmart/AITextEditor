@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-352\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765436703,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022\u0022,\u0022reasoning\u0022:\u0022The user asks in Russian: \\\u0022\u0420\u0430\u0441\u0441\u043A\u0430\u0436\u0438 \u043C\u043D\u0435, \u0447\u0435\u043C \u0437\u0430\u043A\u0430\u043D\u0447\u0438\u0432\u0430\u0435\u0442\u0441\u044F \u0432\u0442\u043E\u0440\u0430\u044F \u0433\u043B\u0430\u0432\u0430.\\\u0022 They want to know how the second chapter ends. We need to retrieve from the current book? The system seems to have a navigation plugin that provides a whole book cursor etc. No specific book given, but likely implicit context: there is a loaded book. We need to fetch the second chapter content, especially its ending. Use the whole-book cursor with paging, then query or map to find chapter 2. Perhaps we can use NavigationPlugin_UseWholeBookCursor to get whole book portions, then query for chapter 2 ending. Or use QueryCursor with instruction to summarize the ending of chapter 2.\\n\\nThus: first create cursor for whole book. Then query cursor with instruction like \\\u0022Summarize the final part of chapter 2, focusing on how it ends.\\\u0022\\n\\nWe\u0027ll need to call NavigationPlugin_UseWholeBookCursor and then NavigationPlugin_QueryCursor.\\n\\nLet\u0027s do that.\u0022,\u0022tool_calls\u0022:[{\u0022id\u0022:\u0022call_djw3hul6\u0022,\u0022index\u0022:0,\u0022type\u0022:\u0022function\u0022,\u0022function\u0022:{\u0022name\u0022:\u0022NavigationPlugin-UseWholeBookCursor\u0022,\u0022arguments\u0022:\u0022{\\\u0022direction\\\u0022:\\\u0022Forward\\\u0022,\\\u0022includeText\\\u0022:true,\\\u0022maxBytes\\\u0022:4096,\\\u0022maxElements\\\u0022:50}\u0022}}]},\u0022finish_reason\u0022:\u0022tool_calls\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:627,\u0022completion_tokens\u0022:253,\u0022total_tokens\u0022:880}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 11 Dec 2025 07:05:03 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

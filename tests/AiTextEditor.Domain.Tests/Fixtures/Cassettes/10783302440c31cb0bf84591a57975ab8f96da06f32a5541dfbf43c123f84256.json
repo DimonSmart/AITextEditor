@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-960\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765404829,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022{\\\u0022status\\\u0022:\\\u0022continue\\\u0022,\\\u0022result\\\u0022:\\\u0022Scanning further for a mention of the color name \\\\\\\u0022\u0444\u0443\u043A\u0441\u0438\u044F\\\\\\\u0022 (Fuchsia) in a non\u2011fiction context, not as a character name.\\\u0022}\u0022,\u0022reasoning\u0022:\u0022We need to determine if the earliest known mention of color name \\\u0022\u0444\u0443\u043A\u0441\u0438\u044F\\\u0022 appears in these lines. The text we saw is from some fictional story (\u041D\u0435\u0437\u043D\u0430\u0439\u043A\u0430) and mentions characters named \u0424\u0443\u043A\u0441\u0438\u044F, but that\u0027s a proper name, not the color. So not relevant.\\n\\nWe need to continue scanning. So status continue.\u0022},\u0022finish_reason\u0022:\u0022stop\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:3689,\u0022completion_tokens\u0022:118,\u0022total_tokens\u0022:3807}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Wed, 10 Dec 2025 22:13:47 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

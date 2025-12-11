@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-492\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765436705,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022\u0022,\u0022reasoning\u0022:\u0022We have the whole book cursor. Now need to get to second chapter content. Likely need to fetch portions until we find chapter 2 end. Use GetNextPortion repeatedly? Could use QueryCursor with instruction to summarize end of second chapter. Let\u0027s use QueryCursor with instruction: \\\u0022Provide the ending of the second chapter.\\\u0022\u0022,\u0022tool_calls\u0022:[{\u0022id\u0022:\u0022call_bt0jep3s\u0022,\u0022index\u0022:0,\u0022type\u0022:\u0022function\u0022,\u0022function\u0022:{\u0022name\u0022:\u0022NavigationPlugin-QueryCursor\u0022,\u0022arguments\u0022:\u0022{\\\u0022cursorName\\\u0022:\\\u0022CUR_WHOLE_BOOK_FORWARD\\\u0022,\\\u0022instruction\\\u0022:\\\u0022Provide the ending of the second chapter of the book, summarizing the final events and any conclusions.\\\u0022}\u0022}}]},\u0022finish_reason\u0022:\u0022tool_calls\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:712,\u0022completion_tokens\u0022:121,\u0022total_tokens\u0022:833}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 11 Dec 2025 07:05:05 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

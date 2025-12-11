@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-761\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765436706,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022{\\\u0022status\\\u0022:\\\u0022found\\\u0022,\\\u0022result\\\u0022:\\\u0022The second chapter culminates as the team, after crossing the river, discovers a mysterious hidden door. The narrative ends on a cliffhanger, leaving the fate of the characters and the secrets behind the door unresolved.\\\u0022}\u0022,\u0022reasoning\u0022:\u0022We have a single cursor that includes entire book? It says Has more: False. We have items list with two chapters. The task: Provide the ending of the second chapter of the book, summarizing final events and any conclusions. The items include a paragraph: \\\u0022The second chapter ends with a cliffhanger about the hidden door.\\\u0022 So we need to summarize final events: hidden door cliffhanger, maybe summarizing. The answer should be JSON with status \\\u0022found\\\u0022 and result with summary. Provide summary: The chapter concludes with team discovering hidden door, cliffhanger, unresolved. So produce JSON.\u0022},\u0022finish_reason\u0022:\u0022stop\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:403,\u0022completion_tokens\u0022:180,\u0022total_tokens\u0022:583}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 11 Dec 2025 07:05:06 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

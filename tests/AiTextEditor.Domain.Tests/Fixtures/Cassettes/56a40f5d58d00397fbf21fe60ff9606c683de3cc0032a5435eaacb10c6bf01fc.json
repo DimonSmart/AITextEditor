@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-18\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765404910,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022{\\\u0022status\\\u0022:\\\u0022continue\\\u0022,\\\u0022result\\\u0022:\\\u0022Need earlier lines (including LineIndex 47) to provide the requested line and its surrounding context.\\\u0022}\u0022,\u0022reasoning\u0022:\u0022We need line index 47. We have seen lines starting at 49 onward. So need earlier lines. Need to continue fetching earlier portion? The cursor is forward, we have later lines, so line 47 earlier. Need to request previous items? Possibly need to go backward. But we can request more with same cursor? It is forward reading; to get earlier lines, we must keep moving backward maybe using CUR_WHOLE_BOOK_BACKWARD? Not provided. Probably we need to continue fetching until we encounter LineIndex 47. Since we have lines 49 onward, we need lines 45-51. So need to request more items with same cursor (forward) maybe it will give earlier lines? Actually forward likely reads sequentially; we started somewhere earlier? We have line 49 as first item; we need line 47 earlier, which should appear before. So need to request earlier part; maybe using CUR_WHOLE_BOOK_BACKWARD. But not given.\\n\\nWe can respond continue to indicate need more data. So status continue.\u0022},\u0022finish_reason\u0022:\u0022stop\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:6807,\u0022completion_tokens\u0022:249,\u0022total_tokens\u0022:7056}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Wed, 10 Dec 2025 22:15:08 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

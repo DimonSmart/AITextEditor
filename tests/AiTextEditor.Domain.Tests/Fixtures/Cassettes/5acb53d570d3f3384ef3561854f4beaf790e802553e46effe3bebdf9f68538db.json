@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-336\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765404770,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022{\\\u0022status\\\u0022:\\\u0022continue\\\u0022,\\\u0022result\\\u0022:\\\u0022\u0424\u0443\u043A\u0441\u0438\u044F not found in examined portions\\\u0022}\u0022,\u0022reasoning\u0022:\u0022We need to process each portion, looking for most recent occurrence of word \\\u0022\u0424\u0443\u043A\u0441\u0438\u044F\\\u0022. Since cursor is backward, we get items from end backward. The first provided item (line index 171) is truncated, no text visible. The second item (line index 169) text is given, but does it contain \\\u0022\u0424\u0443\u043A\u0441\u0438\u044F\\\u0022? Scanning: text mentions \\\u0022\u0444... \u0444\u0435\u043B\u044C\u0435\u0442\u043E\u043D\u043E\u0432, ... \u0441\u0442\u0430\u0442\u0435\u0435\u043A, ...\\\u0022. No \\\u0022\u0424\u0443\u043A\u0441\u0438\u044F\\\u0022. So not found yet. We need to continue, but we only have these two items; probably need to request next portion. So respond status continue, result empty or note not found yet.\u0022},\u0022finish_reason\u0022:\u0022stop\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:778,\u0022completion_tokens\u0022:160,\u0022total_tokens\u0022:938}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Wed, 10 Dec 2025 22:12:48 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

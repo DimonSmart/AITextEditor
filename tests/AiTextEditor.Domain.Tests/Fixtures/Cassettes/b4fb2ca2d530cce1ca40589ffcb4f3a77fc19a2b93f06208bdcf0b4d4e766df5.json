@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-539\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765436783,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022\u0022,\u0022reasoning\u0022:\u0022We got only snippet maybe truncated. Need full paragraph. The result seems truncated; maybe need to fetch more portion? The query may have returned pointer? It gave text snippet only. Might need to get more context around. Could use MapCursor with instruction to fetch surrounding lines? Actually we need full paragraph containing the first mention. Might need to retrieve the portion where it appears, then maybe get the whole paragraph from that portion. Let\u0027s request get next portion to see context.\u0022,\u0022tool_calls\u0022:[{\u0022id\u0022:\u0022call_je5umot9\u0022,\u0022index\u0022:0,\u0022type\u0022:\u0022function\u0022,\u0022function\u0022:{\u0022name\u0022:\u0022NavigationPlugin-GetNextPortion\u0022,\u0022arguments\u0022:\u0022{\\\u0022cursorName\\\u0022:\\\u0022CUR_WHOLE_BOOK_FORWARD\\\u0022}\u0022}}]},\u0022finish_reason\u0022:\u0022tool_calls\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:974,\u0022completion_tokens\u0022:129,\u0022total_tokens\u0022:1103}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 11 Dec 2025 07:06:23 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}
