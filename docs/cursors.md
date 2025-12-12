@@ -373,7 +373,7 @@ while true:
 - **TargetSetCreate(name?)** — создать целевой набор индексов. Возвращает `targetSetId` и логирует событие `target_set_create`.
 - **TargetSetAdd(targetSetId, itemIndices)** — добавить индексы элементов (`LinearItem.Index`). Работает только в созданных наборах, возвращает `success` и `count`.
 - **TargetSetGet(targetSetId)** — получить все сохранённые индексы набора: `itemIndices` упорядочены по возрастанию.
-- **RunCursorAgent(cursorName, mode, taskDescription, targetSetId?, maxSteps?)** — запустить CursorAgent Runtime. Возвращает `CursorAgentResult` (`success`, `reason`, `firstItemIndex`, `summary`, `targetSetId`). Лимит шагов по умолчанию — `128`, верхняя граница — `512`. Для режима `CollectToTargetSet` `targetSetId` обязателен.
+- **RunCursorAgent(cursorName, mode, taskDescription, targetSetId?, maxSteps?)** — запустить CursorAgent Runtime. Возвращает `CursorAgentResult` (`success`, `reason`, `firstItemIndex`, `summary`, `targetSetId`, `semanticPointer`, `markdown`, опционально `confidence`, `reasons`). Лимит шагов по умолчанию — `128`, верхняя граница — `512`. Для режима `CollectToTargetSet` `targetSetId` обязателен.
 
 Все результаты сериализуются в JSON c `camelCase`, поэтому их легко парсить внутри tool-calling промпта.
 
