@@ -12,11 +12,15 @@ public sealed record CursorAgentRequest(
     CursorAgentMode Mode,
     string TaskDescription,
     string? TargetSetId = null,
-    int? MaxSteps = null);
+    int? MaxSteps = null,
+    string? TaskId = null,
+    AiTextEditor.Lib.Services.SemanticKernel.TaskState? State = null);
 
 public sealed record CursorAgentResult(
     bool Success,
     string? Reason,
     int? FirstItemIndex,
     string? Summary,
-    string? TargetSetId);
+    string? TargetSetId,
+    string? TaskId = null,
+    AiTextEditor.Lib.Services.SemanticKernel.TaskState? State = null);

@@ -12,5 +12,7 @@ public class DocumentContext(LinearDocument document)
 
     public TargetSetContext TargetSetContext { get; } = new();
 
+    public SessionStore SessionStore { get; } = new();
+
     public List<string> SpeechQueue { get; } = [];
 }
