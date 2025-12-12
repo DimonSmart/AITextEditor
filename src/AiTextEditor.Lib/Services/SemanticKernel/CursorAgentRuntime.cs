@@ -1,10 +1,12 @@
-using System.Text;
-using System.Text.Json;
 using AiTextEditor.Lib.Model;
+using DimonSmart.AiUtils;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Text.Json;
 
 namespace AiTextEditor.Lib.Services.SemanticKernel;
 
@@ -40,15 +42,14 @@ public sealed class CursorAgentRuntime
         var maxSteps = request.MaxSteps.GetValueOrDefault(DefaultMaxSteps);
         var systemPrompt = BuildSystemPrompt(request.Mode);
         var taskMessage = BuildTaskMessage(request);
-        string? lastAssistantMessage = null;
         string? lastPortionMessage = null;
+        var completedCursors = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
         for (var step = 0; step < maxSteps; step++)
         {
-            var command = await GetNextCommandAsync(systemPrompt, taskMessage, lastAssistantMessage, lastPortionMessage, cancellationToken, step);
+            var command = await GetNextCommandAsync(systemPrompt, taskMessage, lastPortionMessage, cancellationToken, step);
             if (command == null)
             {
-                lastAssistantMessage = null;
                 lastPortionMessage = "Agent response malformed. Respond with JSON action.";
                 continue;
             }
@@ -58,29 +59,23 @@ public sealed class CursorAgentRuntime
                 return result;
             }
 
-            if (TryHandleAction(request, command, out var newPortionMessage))
+            if (TryHandleAction(request, command, completedCursors, out var newPortionMessage))
             {
-                lastAssistantMessage = command.RawContent;
                 lastPortionMessage = newPortionMessage;
                 continue;
             }
 
-            lastAssistantMessage = command.RawContent;
             lastPortionMessage = "Unknown action. Use cursor_next, target_set_add, agent_finish_success, agent_finish_not_found.";
         }
 
         return new CursorAgentResult(false, "Max steps exceeded", null, null, request.TargetSetId);
     }
 
-    private async Task<AgentCommand?> GetNextCommandAsync(string systemPrompt, string taskMessage, string? lastAssistantMessage, string? lastPortionMessage, CancellationToken cancellationToken, int step)
+    private async Task<AgentCommand?> GetNextCommandAsync(string systemPrompt, string taskMessage, string? lastPortionMessage, CancellationToken cancellationToken, int step)
     {
         var history = new ChatHistory();
         history.AddSystemMessage(systemPrompt);
         history.AddUserMessage(taskMessage);
-        if (!string.IsNullOrWhiteSpace(lastAssistantMessage))
-        {
-            history.AddAssistantMessage(lastAssistantMessage);
-        }
 
         if (!string.IsNullOrWhiteSpace(lastPortionMessage))
         {
@@ -88,20 +83,32 @@ public sealed class CursorAgentRuntime
         }
 
         var response = await chatService.GetChatMessageContentsAsync(history, CreateSettings(), cancellationToken: cancellationToken);
-        var content = response.FirstOrDefault()?.Content ?? string.Empty;
-        logger.LogDebug("Cursor agent step {Step}: {Response}", step, content);
+        var message = response.FirstOrDefault();
+        var content = message?.Content ?? string.Empty;
+        LogCompletionSkeleton(step, message);
+        LogRawCompletion(step, content);
 
-        var parsed = ParseCommand(content);
-        return parsed?.WithRawContent(content);
+        var parsed = ParseCommand(content, out var parsedFragment, out var multipleActions, out var finishDetected);
+        if (multipleActions)
+        {
+            logger.LogWarning("multiple actions returned");
+        }
+
+        if (parsed != null)
+        {
+            logger.LogDebug("cursor_agent_parsed: step={Step}, action={Action}, finishFound={Finish}, parsedAction={ParsedAction}", step, parsed.Action, finishDetected, Truncate(parsedFragment ?? string.Empty, 500));
+        }
+
+        return parsed?.WithRawContent(parsedFragment ?? content);
     }
 
-    private bool TryHandleAction(CursorAgentRequest request, AgentCommand command, out string? portionMessage)
+    private bool TryHandleAction(CursorAgentRequest request, AgentCommand command, HashSet<string> completedCursors, out string? portionMessage)
     {
         portionMessage = null;
 
         if (IsCursorNext(command.Action))
         {
-            portionMessage = TryHandleCursorNext(request);
+            portionMessage = TryHandleCursorNext(request, completedCursors);
             return true;
         }
 
@@ -118,8 +125,13 @@ public sealed class CursorAgentRuntime
 
     private static bool IsTargetSetAdd(string action) => action.Equals("target_set_add", StringComparison.OrdinalIgnoreCase);
 
-    private string? TryHandleCursorNext(CursorAgentRequest request)
+    private string? TryHandleCursorNext(CursorAgentRequest request, HashSet<string> completedCursors)
     {
+        if (completedCursors.Contains(request.CursorName))
+        {
+            return $"cursor_next halted: cursor '{request.CursorName}' is complete. Finish with agent_finish_*";
+        }
+
         var portion = documentContext.CursorContext.GetNextPortion(request.CursorName);
         if (portion == null)
         {
@@ -127,6 +139,16 @@ public sealed class CursorAgentRuntime
         }
 
         var snapshot = ProjectPortion(portion);
+        var pointerLabel = snapshot.Items.FirstOrDefault()?.PointerLabel ?? "<none>";
+        var snippet = snapshot.HasMore && snapshot.Items.Count > 0 ? Truncate(snapshot.Items[0].Markdown, 200) : string.Empty;
+        var eventName = snapshot.HasMore ? "cursor_batch" : "cursor_batch_complete";
+        logger.LogDebug("{Event}: cursor={Cursor}, count={Count}, hasMore={HasMore}, pointerLabel={PointerLabel}, snippet={Snippet}", eventName, snapshot.CursorName, snapshot.Items.Count, snapshot.HasMore, pointerLabel, snippet);
+
+        if (!snapshot.HasMore)
+        {
+            completedCursors.Add(snapshot.CursorName);
+        }
+
         return BuildPortionFeedback(snapshot);
     }
 
@@ -198,23 +220,21 @@ public sealed class CursorAgentRuntime
         var builder = new StringBuilder();
         builder.AppendLine("cursor_next result (JSON):");
         builder.AppendLine(json);
-        builder.AppendLine("Respond with a JSON action.");
+        if (!portion.HasMore)
+        {
+            builder.AppendLine("hasMore is false. Cursor stream is complete. Stop calling cursor_next.");
+        }
+
+        builder.AppendLine("Return only one JSON action.");
         return builder.ToString();
     }
 
     private static string BuildTaskMessage(CursorAgentRequest request)
     {
         var builder = new StringBuilder();
-        builder.AppendLine($"Cursor name: {request.CursorName}");
-        builder.AppendLine($"Mode: {request.Mode}");
-        if (!string.IsNullOrWhiteSpace(request.TargetSetId))
-        {
-            builder.AppendLine($"Target set: {request.TargetSetId}");
-        }
-
-        builder.AppendLine("Task description:");
-        builder.AppendLine(request.TaskDescription);
-        builder.AppendLine("Start by requesting cursor_next to receive items.");
+        builder.AppendLine($"Cursor: {request.CursorName}, mode: {request.Mode}.");
+        builder.AppendLine($"Goal: {request.TaskDescription}");
+        builder.AppendLine("Use one action per step. Start with cursor_next.");
 
         return builder.ToString();
     }
@@ -222,24 +242,11 @@ public sealed class CursorAgentRuntime
     private static string BuildSystemPrompt(CursorAgentMode mode)
     {
         var builder = new StringBuilder();
-        builder.AppendLine("You are CursorAgent. Navigate the document via cursor_next and respond with a single JSON object only, no prose or code fences.");
-        builder.AppendLine("Actions:");
-        builder.AppendLine("- cursor_next: request the next items. Payload: {\"action\":\"cursor_next\"}");
-        builder.AppendLine("- agent_finish_success: finish when done. Include summary. For FirstMatch also set firstItemIndex.");
-        builder.AppendLine("- agent_finish_not_found: finish when the target cannot be found. Include summary explaining why.");
-        builder.AppendLine("- target_set_add: only in CollectToTargetSet mode. Provide indices of relevant cursor items: {\"action\":\"target_set_add\",\"indices\":[...]}.");
-        builder.AppendLine("Return format: {\"action\":\"<name\">,\"indices\":[...],\"firstItemIndex\":<number>,\"summary\":\"text\"}.");
-        builder.AppendLine("When you find a match, include its pointerLabel (and pointer) in the summary so the user can locate it quickly.");
-        builder.AppendLine("Stop as soon as you find the first relevant paragraph; avoid iterating the full cursor unnecessarily.");
-        builder.AppendLine("Inspect each item in the current cursor_next batch independently. If multiple items are present, choose the earliest item whose markdown contains the target and return that item's index and pointer/pointerLabel.");
-        builder.AppendLine("Prefer paragraph-like items (Type=Paragraph/ListItem) over headings unless the user explicitly asks about headings. Ignore heading matches when looking for mentions in the body text.");
-        builder.AppendLine("Treat obvious Russian spelling/diacritic variants as equivalent (for example, ё and е) and match case-insensitively.");
-        builder.AppendLine("Treat clear inflected forms of the same name/term as mentions (for example, профессор/профессора, Звёздочкин/Звёздочкина) unless the task demands an exact quote.");
-        builder.AppendLine("Before finishing, explicitly check that the current markdown contains the normalized name/term; if not present, request cursor_next.");
-        builder.AppendLine("When finishing, quote the exact matched substring from the markdown in the summary together with pointerLabel/pointer.");
-        builder.AppendLine("Do not guess. Only finish when the current item's markdown actually contains the requested phrase/name/term after this normalization. If the text does not contain it, keep using cursor_next.");
-        builder.AppendLine("Keep replies short. Avoid any text outside the JSON object.");
-        builder.Append("Mode: ").Append(mode).Append(". Use only the allowed actions for this mode.");
+        builder.AppendLine("You are CursorAgent. Use exactly one JSON action per reply without code fences. Return only a single JSON action.");
+        builder.AppendLine("Actions: cursor_next; agent_finish_success; agent_finish_not_found; target_set_add (CollectToTargetSet mode only).");
+        builder.AppendLine("Choose the earliest matching item in the batch. Include pointerLabel and pointer in summaries.");
+        builder.AppendLine("Stop after the first relevant paragraph. If text does not contain the normalized term, keep requesting cursor_next.");
+        builder.AppendLine("Mode: ").Append(mode).Append(". Return format: {\"action\":...,\"indices\":[...],\"firstItemIndex\":n,\"summary\":\"text\"}.");
         return builder.ToString();
     }
 
@@ -258,7 +265,34 @@ public sealed class CursorAgentRuntime
         return new CursorPortionView(portion.CursorName, items, portion.HasMore);
     }
 
-    private static AgentCommand? ParseCommand(string content)
+    private AgentCommand? ParseCommand(string content, out string? parsedFragment, out bool multipleActions, out bool finishDetected)
+    {
+        parsedFragment = null;
+
+        var commands = JsonExtractor
+            .ExtractAllJsons(content)
+            .Select(ParseSingle)
+            .Where(command => command != null)
+            .Cast<AgentCommand>()
+            .ToList();
+
+        if (commands.Count == 0)
+        {
+            multipleActions = false;
+            finishDetected = false;
+            return null;
+        }
+
+        multipleActions = commands.Count > 1;
+        var finish = commands.FirstOrDefault(command => IsFinishSuccess(command.Action) || IsFinishNotFound(command.Action));
+        finishDetected = finish != null;
+
+        var selected = finish ?? commands[0];
+        parsedFragment = selected.RawContent;
+        return selected;
+    }
+
+    private static AgentCommand? ParseSingle(string content)
     {
         try
         {
@@ -282,7 +316,7 @@ public sealed class CursorAgentRuntime
                 ? firstElement.GetInt32()
                 : (int?)null;
 
-            return new AgentCommand(action!, indices, summary, firstIndex);
+            return new AgentCommand(action!, indices, summary, firstIndex) { RawContent = content };
         }
         catch (Exception)
         {
@@ -290,12 +324,46 @@ public sealed class CursorAgentRuntime
         }
     }
 
+    private void LogCompletionSkeleton(int step, object? message)
+    {
+        if (message == null)
+        {
+            logger.LogInformation("cursor_agent_call: step={Step}, callId=<none>, model=<unknown>, tokens=<unknown>, result=<empty>", step);
+            return;
+        }
+
+        var metadata = message.GetType().GetProperty("Metadata")?.GetValue(message) as IReadOnlyDictionary<string, object?>;
+        var modelId = message.GetType().GetProperty("ModelId")?.GetValue(message) ?? "<unknown>";
+
+        var callId = metadata?.TryGetValue("id", out var id) == true ? id : "<none>";
+        var tokens = metadata?.TryGetValue("usage", out var usage) == true ? usage : "<unknown>";
+
+        logger.LogInformation("cursor_agent_call: step={Step}, callId={CallId}, model={Model}, tokens={Tokens}, result=<received>", step, callId, modelId, tokens);
+    }
+
+    private void LogRawCompletion(int step, string content)
+    {
+        var snippet = Truncate(content, 1000);
+        logger.LogDebug("cursor_agent_raw: step={Step}, snippet={Snippet}", step, snippet);
+    }
+
+    private static string Truncate(string text, int maxLength)
+    {
+        if (string.IsNullOrEmpty(text) || text.Length <= maxLength)
+        {
+            return text;
+        }
+
+        return text[..maxLength] + $"... (+{text.Length - maxLength} chars)";
+    }
+
     private static OpenAIPromptExecutionSettings CreateSettings()
     {
         return new OpenAIPromptExecutionSettings
         {
             Temperature = 0,
-            TopP = 0
+            TopP = 0,
+            ResponseFormat = "json_object"
         };
     }
 
