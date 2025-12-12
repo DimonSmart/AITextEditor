@@ -23,4 +23,8 @@ public sealed record CursorAgentResult(
     string? Summary,
     string? TargetSetId,
     string? TaskId = null,
-    AiTextEditor.Lib.Services.SemanticKernel.TaskState? State = null);
+    AiTextEditor.Lib.Services.SemanticKernel.TaskState? State = null,
+    string? SemanticPointer = null,
+    string? Markdown = null,
+    double? Confidence = null,
+    string? Reasons = null);

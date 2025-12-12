@@ -58,6 +58,7 @@ public sealed class CursorAgentRuntime
         int? firstItemIndex = null;
         string? summary = request.State?.Progress;
         CursorPortionView? lastPortion = null;
+        AgentResult? agentResult = null;
 
         for (var step = 0; step < maxSteps; step++)
         {
@@ -72,7 +73,7 @@ public sealed class CursorAgentRuntime
                 continue;
             }
 
-            (state, firstItemIndex, summary) = ApplyCommand(state, command, firstItemIndex, summary, lastPortion);
+            (state, firstItemIndex, summary, agentResult) = ApplyCommand(state, command, firstItemIndex, summary, lastPortion, agentResult);
             sessionStore.Set(taskId, state);
 
             if (request.Mode == CursorAgentMode.CollectToTargetSet && command.NewEvidence?.Count > 0 && !string.IsNullOrWhiteSpace(request.TargetSetId))
@@ -84,7 +85,7 @@ public sealed class CursorAgentRuntime
                 }
             }
 
-            if (ShouldStop(request, state, completedCursors.Contains(request.CursorName), firstItemIndex, summary, taskId, out var completedResult))
+            if (ShouldStop(request, state, completedCursors.Contains(request.CursorName), firstItemIndex, summary, taskId, agentResult, out var completedResult))
             {
                 return completedResult;
             }
@@ -98,7 +99,7 @@ public sealed class CursorAgentRuntime
                         ? newPortionMessage + "\nneedMoreContext was true in the previous step; adjust Snapshot accordingly."
                         : newPortionMessage;
 
-                    if (ShouldStop(request, state, completedCursors.Contains(request.CursorName), firstItemIndex, summary, taskId, out completedResult))
+                    if (ShouldStop(request, state, completedCursors.Contains(request.CursorName), firstItemIndex, summary, taskId, agentResult, out completedResult))
                     {
                         return completedResult;
                     }
@@ -112,7 +113,7 @@ public sealed class CursorAgentRuntime
 
         var overflowState = state.WithProgress(summary ?? state.Progress);
         sessionStore.Set(taskId, overflowState);
-        return new CursorAgentResult(false, "Max steps exceeded", firstItemIndex, summary, request.TargetSetId, taskId, overflowState);
+        return new CursorAgentResult(false, "Max steps exceeded", firstItemIndex, summary, request.TargetSetId, taskId, overflowState, agentResult?.SemanticPointer, agentResult?.Markdown, agentResult?.Confidence, agentResult?.Reasons);
     }
 
     private async Task<AgentCommand?> GetNextCommandAsync(string systemPrompt, string taskMessage, string snapshotMessage, string? lastPortionMessage, CancellationToken cancellationToken, int step)
@@ -147,9 +148,16 @@ public sealed class CursorAgentRuntime
         return parsed?.WithRawContent(parsedFragment ?? content);
     }
 
-    private (TaskState State, int? FirstItemIndex, string? Summary) ApplyCommand(TaskState state, AgentCommand command, int? firstItemIndex, string? summary, CursorPortionView? lastPortion)
+    private (TaskState State, int? FirstItemIndex, string? Summary, AgentResult? AgentResult) ApplyCommand(
+        TaskState state,
+        AgentCommand command,
+        int? firstItemIndex,
+        string? summary,
+        CursorPortionView? lastPortion,
+        AgentResult? agentResult)
     {
         var updated = ApplyStateUpdate(state, command.StateUpdate);
+        var result = agentResult;
 
         if (command.Result != null)
         {
@@ -157,6 +165,8 @@ public sealed class CursorAgentRuntime
             summary ??= command.Result.Excerpt ?? command.Result.Pointer;
             firstItemIndex ??= TryMapPointerToIndex(command.Result.Pointer, lastPortion);
             updated = updated.WithProgress(summary ?? updated.Progress);
+            var markdown = TryFindMarkdown(command.Result.Pointer, lastPortion);
+            result = new AgentResult(command.Result.Pointer, markdown, command.Result.Score, command.Result.Reason);
         }
         else if (command.StateUpdate?.Found == true)
         {
@@ -169,12 +179,18 @@ public sealed class CursorAgentRuntime
             updated = updated.WithProgress(summary ?? updated.Progress);
         }
 
-        if (command.NewEvidence?.Count > 0 && firstItemIndex == null)
+        if (command.NewEvidence?.Count > 0)
         {
-            firstItemIndex = TryMapPointerToIndex(command.NewEvidence[0].Pointer, lastPortion);
+            firstItemIndex ??= TryMapPointerToIndex(command.NewEvidence[0].Pointer, lastPortion);
+            if (result == null)
+            {
+                var pointer = command.NewEvidence[0].Pointer;
+                var markdown = TryFindMarkdown(pointer, lastPortion);
+                result = new AgentResult(pointer, markdown, command.NewEvidence[0].Score, command.NewEvidence[0].Reason);
+            }
         }
 
-        return (updated, firstItemIndex, summary);
+        return (updated, firstItemIndex, summary, result);
     }
 
     private static TaskState ApplyStateUpdate(TaskState state, TaskStateUpdate? update)
@@ -193,29 +209,29 @@ public sealed class CursorAgentRuntime
         return new TaskState(goal, found, seen, progress, limits);
     }
 
-    private bool ShouldStop(CursorAgentRequest request, TaskState state, bool cursorComplete, int? firstItemIndex, string? summary, string taskId, out CursorAgentResult result)
+    private bool ShouldStop(CursorAgentRequest request, TaskState state, bool cursorComplete, int? firstItemIndex, string? summary, string taskId, AgentResult? agentResult, out CursorAgentResult result)
     {
         if (state.Found == true)
         {
-            result = BuildSuccess(request, firstItemIndex, summary ?? state.Progress, taskId, state);
+            result = BuildSuccess(request, firstItemIndex, summary ?? state.Progress, taskId, state, agentResult);
             return true;
         }
 
         if (state.Found == false)
         {
-            result = new CursorAgentResult(false, summary ?? state.Progress, firstItemIndex, summary ?? state.Progress, request.TargetSetId, taskId, state);
+            result = new CursorAgentResult(false, summary ?? state.Progress, firstItemIndex, summary ?? state.Progress, request.TargetSetId, taskId, state, agentResult?.SemanticPointer, agentResult?.Markdown, agentResult?.Confidence, agentResult?.Reasons);
             return true;
         }
 
         if (state.Limits.Remaining <= 0)
         {
-            result = new CursorAgentResult(false, "TaskState limits reached", firstItemIndex, summary ?? state.Progress, request.TargetSetId, taskId, state);
+            result = new CursorAgentResult(false, "TaskState limits reached", firstItemIndex, summary ?? state.Progress, request.TargetSetId, taskId, state, agentResult?.SemanticPointer, agentResult?.Markdown, agentResult?.Confidence, agentResult?.Reasons);
             return true;
         }
 
         if (cursorComplete)
         {
-            result = new CursorAgentResult(false, state.Progress ?? "Cursor exhausted with no match", firstItemIndex, summary ?? state.Progress, request.TargetSetId, taskId, state);
+            result = new CursorAgentResult(false, state.Progress ?? "Cursor exhausted with no match", firstItemIndex, summary ?? state.Progress, request.TargetSetId, taskId, state, agentResult?.SemanticPointer, agentResult?.Markdown, agentResult?.Confidence, agentResult?.Reasons);
             return true;
         }
 
@@ -223,14 +239,14 @@ public sealed class CursorAgentRuntime
         return false;
     }
 
-    private static CursorAgentResult BuildSuccess(CursorAgentRequest request, int? firstItemIndex, string? summary, string taskId, TaskState state)
+    private static CursorAgentResult BuildSuccess(CursorAgentRequest request, int? firstItemIndex, string? summary, string taskId, TaskState state, AgentResult? agentResult)
     {
         return request.Mode switch
         {
-            CursorAgentMode.FirstMatch => new CursorAgentResult(true, null, firstItemIndex, summary, request.TargetSetId, taskId, state),
-            CursorAgentMode.AggregateSummary => new CursorAgentResult(true, null, null, summary, request.TargetSetId, taskId, state),
-            CursorAgentMode.CollectToTargetSet => new CursorAgentResult(true, null, null, summary, request.TargetSetId, taskId, state),
-            _ => new CursorAgentResult(false, "Unsupported mode", null, summary, request.TargetSetId, taskId, state)
+            CursorAgentMode.FirstMatch => new CursorAgentResult(true, null, firstItemIndex, summary, request.TargetSetId, taskId, state, agentResult?.SemanticPointer, agentResult?.Markdown, agentResult?.Confidence, agentResult?.Reasons),
+            CursorAgentMode.AggregateSummary => new CursorAgentResult(true, null, null, summary, request.TargetSetId, taskId, state, agentResult?.SemanticPointer, agentResult?.Markdown, agentResult?.Confidence, agentResult?.Reasons),
+            CursorAgentMode.CollectToTargetSet => new CursorAgentResult(true, null, null, summary, request.TargetSetId, taskId, state, agentResult?.SemanticPointer, agentResult?.Markdown, agentResult?.Confidence, agentResult?.Reasons),
+            _ => new CursorAgentResult(false, "Unsupported mode", null, summary, request.TargetSetId, taskId, state, agentResult?.SemanticPointer, agentResult?.Markdown, agentResult?.Confidence, agentResult?.Reasons)
         };
     }
 
@@ -606,6 +622,17 @@ public sealed class CursorAgentRuntime
         return match?.Index;
     }
 
+    private static string? TryFindMarkdown(string pointer, CursorPortionView? portion)
+    {
+        if (portion == null)
+        {
+            return null;
+        }
+
+        var match = portion.Items.FirstOrDefault(item => item.Pointer.Equals(pointer, StringComparison.OrdinalIgnoreCase));
+        return match?.Markdown;
+    }
+
     private IReadOnlyList<int> MapEvidenceToIndices(IReadOnlyList<EvidenceItem> evidence, CursorPortionView? portion)
     {
         if (portion == null)
@@ -664,6 +691,8 @@ public sealed class CursorAgentRuntime
             ResponseFormat = "json_object"
         };
     }
+
+    private sealed record AgentResult(string SemanticPointer, string? Markdown, double? Confidence, string? Reasons);
 
     private sealed record AgentCommand(string Decision, IReadOnlyList<EvidenceItem>? NewEvidence, EvidenceItem? Result, bool NeedMoreContext, TaskStateUpdate? StateUpdate)
     {
