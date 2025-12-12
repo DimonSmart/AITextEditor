@@ -108,7 +108,7 @@ public sealed class CursorContext
 
     private static LinearItem StripText(LinearItem item)
     {
-        return new LinearItem(item.Index, item.Type, item.Level, string.Empty, string.Empty, item.Pointer);
+        return new LinearItem(item.Id, item.Index, item.Type, item.Level, string.Empty, string.Empty, item.Pointer);
     }
 
     private bool IsWithinBounds(int index)

@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-431\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765529590,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022\u0022,\u0022reasoning\u0022:\u0022We need to find where in the markdown book \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022 is first mentioned. Use cursor tools.\\n\\nWe need to know the cursor name for whole book forward. Probably there is a cursor defined? We can create a cursor? The instructions mention using CUR_WHOLE_BOOK_FORWARD. Likely a predefined cursor name.\\n\\nWe should run cursor agent with FirstMatch mode, task: find first occurrence of the word \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022. Include pointerLabel in the summary.\\n\\nLet\u0027s call run_cursor_agent.\u0022,\u0022tool_calls\u0022:[{\u0022id\u0022:\u0022call_rrb0vyw0\u0022,\u0022index\u0022:0,\u0022type\u0022:\u0022function\u0022,\u0022function\u0022:{\u0022name\u0022:\u0022CursorAgentPlugin-RunCursorAgent\u0022,\u0022arguments\u0022:\u0022{\\\u0022cursorName\\\u0022:\\\u0022CUR_WHOLE_BOOK_FORWARD\\\u0022,\\\u0022maxSteps\\\u0022:null,\\\u0022mode\\\u0022:\\\u0022FirstMatch\\\u0022,\\\u0022targetSetId\\\u0022:\\\u0022\\\u0022,\\\u0022taskDescription\\\u0022:\\\u0022\u041D\u0430\u0439\u0442\u0438 \u043F\u0435\u0440\u0432\u043E\u0435 \u0443\u043F\u043E\u043C\u0438\u043D\u0430\u043D\u0438\u0435 \u0441\u043B\u043E\u0432\u0430 \u0027\u041F\u043E\u043D\u0447\u0438\u043A\u0027 \u0438 \u0432\u0435\u0440\u043D\u0443\u0442\u044C \u0441\u043E\u043E\u0442\u0432\u0435\u0442\u0441\u0442\u0432\u0443\u044E\u0449\u0438\u0439 \u0430\u0431\u0437\u0430\u0446 \u0432\u043C\u0435\u0441\u0442\u0435 \u0441 semantic pointer.\\\u0022}\u0022}}]},\u0022finish_reason\u0022:\u0022tool_calls\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:655,\u0022completion_tokens\u0022:192,\u0022total_tokens\u0022:847}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 12 Dec 2025 08:53:10 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

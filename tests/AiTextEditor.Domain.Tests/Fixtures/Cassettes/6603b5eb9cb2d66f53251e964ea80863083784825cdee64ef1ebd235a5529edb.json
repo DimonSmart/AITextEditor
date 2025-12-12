@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-133\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765529602,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022{\\\u0022action\\\u0022:\\\u0022agent_finish_success\\\u0022,\\\u0022firstItemIndex\\\u0022:0,\\\u0022summary\\\u0022:\\\u0022Found first mention of \\\\\\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\\\\\u0022 in paragraph. PointerLabel: 1.1.1.p3, Pointer: {\\\\\\\u0022Id\\\\\\\u0022:6,\\\\\\\u0022Label\\\\\\\u0022:\\\\\\\u00221.1.1.p3\\\\\\\u0022}\\\u0022}\u0022,\u0022reasoning\u0022:\u0022We have first batch, contains paragraph with pointerLabel 1.1.1.p3 and markdown includes \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022 multiple times. Task: find first mention of word \u0027\u041F\u043E\u043D\u0447\u0438\u043A\u0027 and return corresponding paragraph with semantic pointer. So we should finish success, including firstItemIndex (index 0) within batch, pointerLabel, and quote substring. Provide JSON with action agent_finish_success, firstItemIndex, summary. Ensure include pointerLabel and pointer maybe. Provide the exact matched substring. For first mention, it\u0027s \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022. Provide maybe the substring \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022. Provide summary: Found first mention of \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022 in paragraph pointer 1.1.1.p3. Include pointer. The required format: {\\\u0022action\\\u0022:\\\u0022agent_finish_success\\\u0022,\\\u0022firstItemIndex\\\u0022:0,\\\u0022summary\\\u0022:\\\u0022...\\\u0022} Possibly include pointer and pointerLabel in summary. Also include indices? Not needed for finish. The spec says: Return format: {\\\u0022action\\\u0022:\\\u0022\\u003cname\\u003e\\\u0022,\\\u0022indices\\\u0022:[...],\\\u0022firstItemIndex\\\u0022:\\u003cnumber\\u003e,\\\u0022summary\\\u0022:\\\u0022text\\\u0022}. For agent_finish_success, include firstItemIndex and summary. So produce that.\u0022},\u0022finish_reason\u0022:\u0022stop\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:885,\u0022completion_tokens\u0022:303,\u0022total_tokens\u0022:1188}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 12 Dec 2025 08:53:22 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

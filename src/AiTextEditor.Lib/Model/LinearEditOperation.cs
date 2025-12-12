@@ -13,7 +13,7 @@ public enum LinearEditAction
 
 public record LinearEditOperation(
     LinearEditAction Action,
-    LinearPointer? TargetPointer,
+    SemanticPointer? TargetPointer,
     int? TargetIndex,
     IReadOnlyList<LinearItem> Items)
 {

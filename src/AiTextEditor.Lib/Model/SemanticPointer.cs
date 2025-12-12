@@ -5,31 +5,25 @@ namespace AiTextEditor.Lib.Model;
 
 /// <summary>
 /// Represents a stable location inside a document with minimal context.
-/// Serialized form uses JSON to include the heading title (if any), zero-based line index, and zero-based character offset.
+/// Serialized form uses JSON containing a stable Id and a human-readable Label.
 /// </summary>
 public class SemanticPointer
 {
-    public SemanticPointer(string? headingTitle, int lineIndex, int characterOffset)
+    public SemanticPointer(int id, string? label = null)
     {
-        HeadingTitle = string.IsNullOrWhiteSpace(headingTitle) ? null : headingTitle.Trim();
-        LineIndex = lineIndex < 0 ? 0 : lineIndex;
-        CharacterOffset = characterOffset < 0 ? 0 : characterOffset;
+        Id = id;
+        Label = string.IsNullOrWhiteSpace(label) ? null : label.Trim();
     }
 
     /// <summary>
-    /// Title of the nearest heading or chapter that contains the target element. Can be null when the document lacks headings.
+    /// Stable numeric identifier of the target element inside the document.
     /// </summary>
-    public string? HeadingTitle { get; }
+    public int Id { get; }
 
     /// <summary>
-    /// Zero-based line number in the source document where the referenced element starts.
+    /// Optional human-readable pointer (e.g., section/paragraph numbering).
     /// </summary>
-    public int LineIndex { get; }
-
-    /// <summary>
-    /// Zero-based character offset from the beginning of the document to the start of the referenced element.
-    /// </summary>
-    public int CharacterOffset { get; }
+    public string? Label { get; }
 
     public string Serialize()
     {

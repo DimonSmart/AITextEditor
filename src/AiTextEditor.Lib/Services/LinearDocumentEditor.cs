@@ -1,4 +1,5 @@
 using AiTextEditor.Lib.Model;
+using System.Linq;
 
 namespace AiTextEditor.Lib.Services;
 
@@ -131,14 +132,21 @@ public class LinearDocumentEditor
     private static IReadOnlyList<LinearItem> Reindex(IReadOnlyList<LinearItem> items)
     {
         var result = new List<LinearItem>(items.Count);
+        var nextId = items.Select(i => i.Pointer?.Id ?? i.Id).DefaultIfEmpty(0).Max() + 1;
         for (var i = 0; i < items.Count; i++)
         {
             var item = items[i];
-            var pointer = item.Pointer ?? new LinearPointer(i, new SemanticPointer(null, 0, 0));
+            var pointer = item.Pointer ?? new SemanticPointer(nextId++, null);
+            var id = item.Id > 0 ? item.Id : (pointer.Id > 0 ? pointer.Id : nextId++);
+            if (pointer.Id != id)
+            {
+                pointer = new SemanticPointer(id, pointer.Label);
+            }
             result.Add(item with
             {
+                Id = id,
                 Index = i,
-                Pointer = new LinearPointer(i, new SemanticPointer(pointer.HeadingTitle, pointer.LineIndex, pointer.CharacterOffset))
+                Pointer = new SemanticPointer(pointer.Id, pointer.Label)
             });
         }
 

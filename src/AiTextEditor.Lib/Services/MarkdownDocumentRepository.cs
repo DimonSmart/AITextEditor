@@ -3,6 +3,7 @@ using AiTextEditor.Lib.Model;
 using Markdig;
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
+using System.Linq;
 
 namespace AiTextEditor.Lib.Services;
 
@@ -35,13 +36,13 @@ public class MarkdownDocumentRepository
         var pipeline = new MarkdownPipelineBuilder().Build();
         var mdDocument = Markdig.Markdown.Parse(normalized, pipeline);
         var parsingState = new LinearParsingState();
-        var lineStartOffsets = GetLineStartOffsets(normalized);
         var items = new List<LinearItem>();
         var index = 0;
+        var nextId = 1;
 
         foreach (var mdBlock in mdDocument)
         {
-            AppendLinearItems(mdBlock, items, normalized, lineStartOffsets, parsingState, ref index);
+            AppendLinearItems(mdBlock, items, normalized, parsingState, ref index, ref nextId);
         }
 
         return new LinearDocument(Guid.NewGuid().ToString(), Reindex(items), normalized);
@@ -50,14 +51,21 @@ public class MarkdownDocumentRepository
     private static IReadOnlyList<LinearItem> Reindex(IReadOnlyList<LinearItem> items)
     {
         var result = new List<LinearItem>(items.Count);
+        var nextId = items.Select(i => i.Pointer?.Id ?? i.Id).DefaultIfEmpty(0).Max() + 1;
         for (var i = 0; i < items.Count; i++)
         {
             var item = items[i];
-            var pointer = item.Pointer ?? new LinearPointer(i, new SemanticPointer(null, 0, 0));
+            var pointer = item.Pointer ?? new SemanticPointer(nextId++, null);
+            var id = item.Id > 0 ? item.Id : (pointer.Id > 0 ? pointer.Id : nextId++);
+            if (pointer.Id != id)
+            {
+                pointer = new SemanticPointer(id, pointer.Label);
+            }
             result.Add(item with
             {
+                Id = id,
                 Index = i,
-                Pointer = new LinearPointer(i, new SemanticPointer(pointer.HeadingTitle, pointer.LineIndex, pointer.CharacterOffset))
+                Pointer = new SemanticPointer(pointer.Id, pointer.Label)
             });
         }
 
@@ -68,105 +76,105 @@ public class MarkdownDocumentRepository
         Markdig.Syntax.Block mdBlock,
         List<LinearItem> items,
         string source,
-        IReadOnlyList<int> lineStartOffsets,
         LinearParsingState parsingState,
-        ref int index)
+        ref int index,
+        ref int nextId)
     {
         switch (mdBlock)
         {
             case HeadingBlock heading:
                 var headingText = GetPlainText(heading.Inline);
                 var headingPointer = parsingState.EnterHeading(
-                    headingText,
-                    GetLineIndex(mdBlock.Span.Start, lineStartOffsets),
-                    Math.Max(0, mdBlock.Span.Start));
+                    nextId++,
+                    heading.Level);
                 AddLinearItem(
                     items,
                     new LinearItem(
+                        headingPointer.Id,
                         index,
                         LinearItemType.Heading,
                         heading.Level,
                         GetSourceText(mdBlock, source),
                         headingText,
-                        new LinearPointer(index, headingPointer)),
+                        headingPointer),
                     ref index);
                 break;
 
             case ParagraphBlock paragraph:
                 var paragraphPointer = parsingState.NextPointer(
-                    GetLineIndex(mdBlock.Span.Start, lineStartOffsets),
-                    Math.Max(0, mdBlock.Span.Start));
+                    nextId++);
                 AddLinearItem(
                     items,
                     new LinearItem(
+                        paragraphPointer.Id,
                         index,
                         LinearItemType.Paragraph,
                         null,
                         GetSourceText(mdBlock, source),
                         GetPlainText(paragraph.Inline),
-                        new LinearPointer(index, paragraphPointer)),
+                        paragraphPointer),
                     ref index);
                 break;
 
             case ListBlock list:
                 foreach (var child in list)
                 {
-                    AppendLinearItems(child, items, source, lineStartOffsets, parsingState, ref index);
+                    AppendLinearItems(child, items, source, parsingState, ref index, ref nextId);
                 }
                 break;
 
             case ListItemBlock listItem:
                 var listItemPointer = parsingState.NextPointer(
-                    GetLineIndex(mdBlock.Span.Start, lineStartOffsets),
-                    Math.Max(0, mdBlock.Span.Start));
+                    nextId++);
                 AddLinearItem(
                     items,
                     new LinearItem(
+                        listItemPointer.Id,
                         index,
                         LinearItemType.ListItem,
                         null,
                         GetSourceText(mdBlock, source),
                         GetListItemPlainText(listItem),
-                        new LinearPointer(index, listItemPointer)),
+                        listItemPointer),
                     ref index);
                 break;
 
             case QuoteBlock quote:
                 foreach (var child in quote)
                 {
-                    AppendLinearItems(child, items, source, lineStartOffsets, parsingState, ref index);
+                    AppendLinearItems(child, items, source, parsingState, ref index, ref nextId);
                 }
                 break;
 
             case CodeBlock code:
                 var codePointer = parsingState.NextPointer(
-                    GetLineIndex(mdBlock.Span.Start, lineStartOffsets),
-                    Math.Max(0, mdBlock.Span.Start));
+                    nextId++);
                 AddLinearItem(
                     items,
                     new LinearItem(
+                        codePointer.Id,
                         index,
                         LinearItemType.Code,
                         null,
                         GetSourceText(mdBlock, source),
                         code.Lines.ToString(),
-                        new LinearPointer(index, codePointer)),
+                        codePointer),
                     ref index);
                 break;
 
             case ThematicBreakBlock:
                 var breakPointer = parsingState.NextPointer(
-                    GetLineIndex(mdBlock.Span.Start, lineStartOffsets),
-                    Math.Max(0, mdBlock.Span.Start));
+                    nextId++);
                 AddLinearItem(
                     items,
                     new LinearItem(
+                        breakPointer.Id,
                         index,
                         LinearItemType.ThematicBreak,
                         null,
                         GetSourceText(mdBlock, source),
                         string.Empty,
-                        new LinearPointer(index, breakPointer)),
+                        breakPointer),
                     ref index);
                 break;
 
@@ -175,23 +183,23 @@ public class MarkdownDocumentRepository
                 {
                     foreach (var child in container)
                     {
-                        AppendLinearItems(child, items, source, lineStartOffsets, parsingState, ref index);
+                        AppendLinearItems(child, items, source, parsingState, ref index, ref nextId);
                     }
                 }
                 else
                 {
                     var fallbackPointer = parsingState.NextPointer(
-                        GetLineIndex(mdBlock.Span.Start, lineStartOffsets),
-                        Math.Max(0, mdBlock.Span.Start));
+                        nextId++);
                     AddLinearItem(
                         items,
                         new LinearItem(
+                            fallbackPointer.Id,
                             index,
                             LinearItemType.Paragraph,
                             null,
                             GetSourceText(mdBlock, source),
                             GetSourceText(mdBlock, source),
-                            new LinearPointer(index, fallbackPointer)),
+                            fallbackPointer),
                         ref index);
                 }
                 break;
@@ -268,54 +276,54 @@ public class MarkdownDocumentRepository
         return content.Replace("\r\n", "\n").Replace("\r", "\n");
     }
 
-    private static IReadOnlyList<int> GetLineStartOffsets(string content)
-    {
-        var starts = new List<int> { 0 };
-        for (var i = 0; i < content.Length; i++)
-        {
-            if (content[i] == '\n')
-            {
-                starts.Add(i + 1);
-            }
-        }
-
-        return starts;
-    }
-
-    private static int GetLineIndex(int position, IReadOnlyList<int> lineStartOffsets)
-    {
-        if (position <= 0 || lineStartOffsets.Count == 0)
-        {
-            return 0;
-        }
-
-        var lineIndex = 0;
-        for (var i = 0; i < lineStartOffsets.Count; i++)
-        {
-            if (lineStartOffsets[i] > position)
-            {
-                break;
-            }
-
-            lineIndex = i;
-        }
-
-        return lineIndex;
-    }
-
     private sealed class LinearParsingState
     {
-        private string? currentHeadingTitle;
+        private readonly List<int> headingCounters = new();
+        private int paragraphCounter = 0;
 
-        public SemanticPointer EnterHeading(string? headingTitle, int lineIndex, int characterOffset)
+        public SemanticPointer EnterHeading(int id, int headingLevel)
         {
-            currentHeadingTitle = headingTitle;
-            return new SemanticPointer(currentHeadingTitle, lineIndex, characterOffset);
+            UpdateHeadingCounters(headingLevel);
+            paragraphCounter = 0;
+            var label = string.Join('.', headingCounters);
+            return new SemanticPointer(id, label);
         }
 
-        public SemanticPointer NextPointer(int lineIndex, int characterOffset)
+        public SemanticPointer NextPointer(int id)
         {
-            return new SemanticPointer(currentHeadingTitle, lineIndex, characterOffset);
+            paragraphCounter++;
+            var label = headingCounters.Count == 0
+                ? $"p{paragraphCounter}"
+                : $"{string.Join('.', headingCounters)}.p{paragraphCounter}";
+            return new SemanticPointer(id, label);
+        }
+
+        private void UpdateHeadingCounters(int headingLevel)
+        {
+            if (headingLevel <= 0)
+            {
+                headingCounters.Clear();
+                headingCounters.Add(1);
+                return;
+            }
+
+            while (headingCounters.Count < headingLevel)
+            {
+                headingCounters.Add(0);
+            }
+
+            headingCounters[headingLevel - 1]++;
+            for (var i = headingLevel; i < headingCounters.Count; i++)
+            {
+                headingCounters[i] = 0;
+            }
+
+            // Trim trailing zeros for cleaner labels (e.g., 1.2 not 1.2.0)
+            for (var i = headingCounters.Count - 1; i >= 0; i--)
+            {
+                if (headingCounters[i] != 0) break;
+                headingCounters.RemoveAt(i);
+            }
         }
     }
 }
