@@ -112,6 +112,243 @@
 - Длинные циклы навигации выносить в подагента;
 - В ответах инструментов возвращать минимум: pointer + markdown + опционально confidence/reasons.
 
+## Stateful Cursor Agent Loop
+
+Этот раздел описывает, как сабагент с курсором работает с «памятью» при обработке больших документов, когда каждый вызов LLM изолирован и не помнит предыдущие шаги.
+
+Ключевая идея: память живёт не в LLM, а в рантайме. Каждый шаг цикла передаёт в LLM компактный **Snapshot** состояния и получает обратно **Decision + StateUpdate**. Рантайм применяет обновление и продолжает цикл.
+
+### Зачем это нужно
+
+Задачи вида «найди второй диалог персонажа X» или «найди следующую орфографическую ошибку после этого места» не решаются локально на одном абзаце без памяти. Без состояния LLM будет снова и снова возвращать первый найденный матч.
+
+---
+
+## Понятия
+
+### Session Store
+
+Хранилище артефактов сессии, доступное всем сабагентам в рамках обработки одного пользовательского запроса.
+
+- хранит **TaskState** между итерациями `while`;
+- хранит результаты (evidence) для передачи другим сабагентам;
+- может быть большим, но в LLM передаётся только сжатый Snapshot.
+
+### TaskState
+
+Полное состояние конкретной задачи сабагента. Оно обновляется на каждом шаге цикла.
+
+Минимальный состав:
+
+- **Goal**: что ищем и критерии;
+- **Found**: найденные доказательства (evidence);
+- **Seen**: что уже обработали, чтобы не находить одно и то же повторно;
+- **Progress**: маркер продвижения по потоку кандидатов;
+- **Budgets**: лимиты на размер памяти, число кандидатов и т.п. (служебное).
+
+### Snapshot
+
+Сжатое представление TaskState, которое реально передаётся в LLM на каждом шаге.
+
+---
+
+## Контракт данных
+
+### EvidenceItem
+
+Минимальная единица результата, которую можно хранить и передавать между сабагентами.
+
+```json
+{
+   "pointer": "1.2.3.p45",
+   "excerpt": "— Звездочкин, вы опять опоздали! — ...",
+   "reason": "Диалоговая форма + явная привязка к персонажу",
+   "score": 0.91
+}
+```
+
+### TaskState (пример)
+
+```json
+{
+   "goal": {
+      "type": "FindNthDialogue",
+      "character": "Профессор Звездочкин",
+      "n": 2
+   },
+   "found": [
+      { "pointer": "1.2.1.p10", "excerpt": "— ...", "score": 0.88 }
+   ],
+   "seenPointers": ["1.2.1.p10", "1.2.1.p11"],
+   "progress": {
+      "continueAfterPointer": "1.2.1.p11"
+   },
+   "limits": {
+      "maxFound": 20,
+      "maxSeenTail": 200
+   }
+}
+```
+
+### Snapshot (пример)
+
+Snapshot должен быть маленьким. Обычно достаточно:
+
+- цель;
+- top-K найденных;
+- хвост `seenPointers` (последние N);
+- маркер прогресса;
+- правило дедупликации.
+
+```json
+{
+   "goal": { "type": "FindNthDialogue", "character": "Профессор Звездочкин", "n": 2 },
+   "alreadyFound": [
+      { "pointer": "1.2.1.p10", "excerpt": "— ...", "score": 0.88 }
+   ],
+   "seenTail": ["1.2.1.p10", "1.2.1.p11"],
+   "progress": { "continueAfterPointer": "1.2.1.p11" },
+   "dedupRule": "Never return a pointer already present in alreadyFound or seenTail"
+}
+```
+
+### Batch (порция кандидатов)
+
+Источник кандидатов может быть любым: курсор, exact search, semantic search, гибрид. Важно лишь, что он отдаёт поток элементов с `pointer`.
+
+```json
+{
+   "batchId": "cursor:main:chunk-0042",
+   "items": [
+      { "pointer": "1.2.2.p14", "markdown": "— ... — сказал Звездочкин." },
+      { "pointer": "1.2.2.p15", "markdown": "Они вышли на улицу..." }
+   ]
+}
+```
+
+### Decision (ответ LLM)
+
+LLM возвращает:
+
+- решение: продолжать или завершать;
+- новые evidence (если найдены);
+- патч состояния (`StateUpdate`);
+- опционально запрос допконтекста.
+
+```json
+{
+   "decision": "continue",
+   "newEvidence": [
+      {
+         "pointer": "1.2.2.p14",
+         "excerpt": "— ... — сказал Звездочкин.",
+         "reason": "Диалог + указание говорящего",
+         "score": 0.93
+      }
+   ],
+   "stateUpdate": {
+      "addSeenPointers": ["1.2.2.p14", "1.2.2.p15"],
+      "setContinueAfterPointer": "1.2.2.p15"
+   },
+   "needMoreContext": false
+}
+```
+
+Когда найдено достаточно (например, найден N-й диалог), LLM отвечает:
+
+```json
+{
+   "decision": "done",
+   "result": {
+      "pointer": "1.2.2.p14",
+      "excerpt": "— ... — сказал Звездочкин.",
+      "score": 0.93
+   },
+   "stateUpdate": {
+      "addSeenPointers": ["1.2.2.p14", "1.2.2.p15"]
+   }
+}
+```
+
+---
+
+## Цикл сабагента
+
+Сабагент выполняет цикл `while`, но память переносится через `TaskState`.
+
+### Псевдокод
+
+```text
+load state from SessionStore
+
+while true:
+   batch = CandidateSource.next(state.progress)
+   if batch is end:
+      return not found
+
+   snapshot = buildSnapshot(state)
+   prompt = buildPrompt(systemRules, goal, snapshot, batch)
+
+   decision = callLLM(prompt)  // JSON only
+
+   applyStateUpdate(state, decision.stateUpdate)
+   addNewEvidence(state, decision.newEvidence)
+   persist state to SessionStore
+
+   if stopConditionMet(state):   // например state.found.count >= goal.n
+      return state.found[goal.n - 1]
+
+   if decision.needMoreContext:
+      enqueue extra context via Read(pointer) or neighbor batches
+```
+
+---
+
+## Правила обновления памяти
+
+### Дедупликация
+
+Нельзя возвращать один и тот же результат повторно.
+
+- базовый ключ: `pointer`;
+- при необходимости: `pointer + localOffset` или `hash(excerpt)`.
+
+### Сжатие памяти
+
+Чтобы Snapshot не раздувал контекст:
+
+- `found`: хранить полный список в Session Store, но в Snapshot отдавать только top-K;
+- `seenPointers`: хранить полное множество, но в Snapshot отдавать хвост (последние N) + правило «не возвращай seen».
+
+### Маркер прогресса
+
+Используется не «номер итерации», а указатель на место в потоке:
+
+- `continueAfterPointer`;
+- `lastBatchTailPointer`.
+
+---
+
+## Передача результатов другим сабагентам
+
+Результаты и состояние сабагента сохраняются в Session Store как артефакты.
+
+Пример:
+
+- Cursor Agent пишет:
+   - `session.task.findDialogue.state`
+   - `session.task.findDialogue.found`
+- Другой агент (например, Context Builder) читает `found`, подтягивает окружение через `Read(pointer)` и формирует финальный ответ или данные для редактирования.
+
+---
+
+## Рекомендации по промпту для сабагента
+
+- Требовать ответ строго в JSON по схеме Decision;
+- Явно перечислять `alreadyFound` и `dedupRule`;
+- Просить возвращать `needMoreContext` вместо попыток угадать по неполному контексту;
+- Считать задачу завершённой только при выполнении stop-condition по состоянию, а не по «ощущению модели».
+
 Курсор — именованный поток элементов `LinearDocument`, предназначенный для постраничного обхода длинного текста. Состояние курсора (позиция, параметры порции) живёт в `DocumentContext`, поэтому одна сессия может держать несколько независимых курсоров и переключаться между ними без дополнительных запросов к LLM.
 
 ## Параметры курсора
