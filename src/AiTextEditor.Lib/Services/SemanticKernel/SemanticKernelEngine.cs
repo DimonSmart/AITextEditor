@@ -36,6 +36,7 @@ public sealed class SemanticKernelEngine
         builder.Services.AddSingleton(documentContext);
         builder.Services.AddSingleton(documentContext.CursorContext);
         builder.Services.AddSingleton(documentContext.TargetSetContext);
+        builder.Services.AddSingleton(documentContext.SessionStore);
         builder.Services.AddSingleton<CursorAgentRuntime>();
         builder.Services.AddSingleton<ILoggerFactory>(loggerFactory);
         builder.Services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
