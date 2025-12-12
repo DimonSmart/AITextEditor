@@ -5,7 +5,7 @@ using AiTextEditor.Lib.Services;
 
 namespace AiTextEditor.Lib.Services.SemanticKernel;
 
-public sealed record CursorHandle(string Name, bool IsForward, int MaxElements, int MaxBytes, bool IncludeText);
+public sealed record CursorHandle(string Name, bool IsForward, int MaxElements, int MaxBytes, bool IncludeContent);
 
 public sealed record CursorItemView(int Index, string Markdown, string Pointer, string PointerLabel, string Type, int? HeadingLevel);
 

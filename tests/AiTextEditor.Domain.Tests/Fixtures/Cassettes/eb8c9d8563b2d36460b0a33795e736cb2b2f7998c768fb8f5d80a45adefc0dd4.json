@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-525\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765557219,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022**\u041F\u0430\u0440\u0430\u0433\u0440\u0430\u0444 (PointerLabel:\u202F1.1.1):**  \\n\u041A\u0430\u043A \u0417\u043D\u0430\u0439\u043A\u0430 \u043F\u043E\u0431\u0435\u0434\u0438\u043B \u043F\u0440\u043E\u0444\u0435\u0441\u0441\u043E\u0440\u0430\u202F\u0417\u0432\u0451\u0437\u0434\u043E\u0447\u043A\u0438\u043D\u0430  \\n\\n*\u0412 \u044D\u0442\u043E\u0442 \u043C\u043E\u043C\u0435\u043D\u0442 \u043D\u0430\u0447\u0430\u043B\u0438 \u0440\u0430\u0441\u043F\u0443\u0441\u043A\u0430\u0442\u044C\u0441\u044F \u044F\u0431\u043B\u043E\u043A\u0438.*\u0022,\u0022reasoning\u0022:\u0022We have first paragraph mentioning professor Zvezdochkin. Need to \\\u0022\u043F\u0435\u0440\u0435\u043F\u0438\u0448\u0438 \u043F\u0430\u0440\u0430\u0433\u0440\u0430\u0444, \u0434\u043E\u0431\u0430\u0432\u0438\u0432, \u0447\u0442\u043E \u0432 \u044D\u0442\u043E\u0442 \u043C\u043E\u043C\u0435\u043D\u0442 \u043D\u0430\u0447\u0430\u043B\u0438 \u0440\u0430\u0441\u043F\u0443\u0441\u043A\u0430\u0442\u044C\u0441\u044F \u044F\u0431\u043B\u043E\u043A\u0438.\\\u0022 So we need to output the paragraph with added sentence. Use the pointerLabel in answer. Provide in Russian. Let\u0027s output the paragraph text with addition.\u0022},\u0022finish_reason\u0022:\u0022stop\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:937,\u0022completion_tokens\u0022:123,\u0022total_tokens\u0022:1060}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 12 Dec 2025 16:33:39 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

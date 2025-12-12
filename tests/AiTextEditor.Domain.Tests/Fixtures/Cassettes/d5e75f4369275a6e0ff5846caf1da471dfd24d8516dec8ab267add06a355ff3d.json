@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-617\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765557175,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022{\\\u0022action\\\u0022:\\\u0022cursor_next\\\u0022,\\\u0022indices\\\u0022:[],\\\u0022firstItemIndex\\\u0022:-1,\\\u0022summary\\\u0022:\\\u0022\\\u0022}\u0022,\u0022reasoning\u0022:\u0022The user wants: \\\u0022\u0413\u0434\u0435 \u0432\u043F\u0435\u0440\u0432\u044B\u0435 \u0443\u043F\u043E\u043C\u0438\u043D\u0430\u0435\u0442\u0441\u044F \u041F\u043E\u043D\u0447\u0438\u043A?\\\u0022 Need to find first mention of \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022 in the book. We have first paragraph, doesn\u0027t contain \\\u0022\u041F\u043E\u043D\u0447\u0438\u043A\\\u0022. Must request next cursor_next.\\n\\nWe should output action cursor_next. Include required format: {\\\u0022action\\\u0022:\\\u0022cursor_next\\\u0022,\\\u0022indices\\\u0022:[...],\\\u0022firstItemIndex\\\u0022:...,\\\u0022summary\\\u0022:\\\u0022...\\\u0022}? The spec: Return format: {\\\u0022action\\\u0022:...,\\\u0022indices\\\u0022:[...],\\\u0022firstItemIndex\\\u0022:n,\\\u0022summary\\\u0022:\\\u0022text\\\u0022}.\\n\\n\\\u0022indices\\\u0022 presumably indicates where in the cursor result? Probably we need to indicate which items we processed? For first match, we haven\u0027t found. Probably we still need to return action with cursor_next? The spec says actions: cursor_next; agent_finish_success; ... So for moving to next, action is cursor_next. But also need indices etc? Might be required format always includes those fields.\\n\\nSince we are not finishing, we just request next. Provide action cursor_next, maybe indices empty list, firstItemIndex -1, summary empty.\\n\\nI\u0027ll output: {\\\u0022action\\\u0022:\\\u0022cursor_next\\\u0022,\\\u0022indices\\\u0022:[],\\\u0022firstItemIndex\\\u0022:-1,\\\u0022summary\\\u0022:\\\u0022\\\u0022}\u0022},\u0022finish_reason\u0022:\u0022stop\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:519,\u0022completion_tokens\u0022:268,\u0022total_tokens\u0022:787}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 12 Dec 2025 16:32:55 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "StatusCode": 503,
+  "Body": "{\u0022error\u0022:{\u0022message\u0022:\u0022503 Service Unavailable: Service Temporarily Unavailable\u0022,\u0022type\u0022:\u0022api_error\u0022,\u0022param\u0022:null,\u0022code\u0022:null}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 12 Dec 2025 15:03:30 GMT"
+    ]
+  }
+}

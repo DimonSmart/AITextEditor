@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-353\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765557118,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022{\\\u0022action\\\u0022:\\\u0022cursor_next\\\u0022,\\\u0022indices\\\u0022:[],\\\u0022firstItemIndex\\\u0022:0,\\\u0022summary\\\u0022:\\\u0022\\\u0022}\u0022,\u0022reasoning\u0022:\u0022We need to respond with a JSON action. Since mode is CollectToTargetSet, we need to use cursor_next to get next batch of text, then if we find term \\\u0022\u0417\u0432\u0435\u0437\u0434\u043E\u0447\u043A\\\u0022 (Latin e not \u0451) we add pointer to target set via target_set_add action.\\n\\nFirst action: cursor_next with no indices? According to format: {\\\u0022action\\\u0022:\\\u0022cursor_next\\\u0022,\\\u0022indices\\\u0022:[...],\\\u0022firstItemIndex\\\u0022:n,\\\u0022summary\\\u0022:\\\u0022text\\\u0022}? Actually for cursor_next we need to specify indices to fetch? The spec: Actions: cursor_next; agent_finish_success; agent_finish_not_found; target_set_add (CollectToTargetSet mode only). For cursor_next presumably you give indices? The return format: {\\\u0022action\\\u0022:...,\\\u0022indices\\\u0022:[...],\\\u0022firstItemIndex\\\u0022:n,\\\u0022summary\\\u0022:\\\u0022text\\\u0022}.\\n\\nThus we need to request next batch with cursor_next and include placeholder indices maybe empty? Not sure. Usually you request next page: provide empty indices? Probably you give empty indices array to get next batch. Provide firstItemIndex as whatever current index (maybe 0 if start). Let\u0027s set indices: [] meaning next batch. firstItemIndex: 0. summary empty.\\n\\nThus reply.\u0022},\u0022finish_reason\u0022:\u0022stop\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:253,\u0022completion_tokens\u0022:273,\u0022total_tokens\u0022:526}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 12 Dec 2025 16:31:58 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-990\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765557107,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022\u0022,\u0022reasoning\u0022:\u0022We tried to find \\\u0022\u043F\u0440\u043E\u0444\u0435\u0441\u0441\u043E\u0440 \u0417\u0432\u0451\u0437\u0434\u043E\u0447\u043A\u0438\u043D\\\u0022. Possibly the name appears with different case or transliteration? Could be \\\u0022\u0417\u0432\u0451\u0437\u0434\u043E\u0447\u043A\u0438\u043D\\\u0022 without \\\u0022\u043F\u0440\u043E\u0444\u0435\u0441\u0441\u043E\u0440\\\u0022. Could be \\\u0022\u043F\u0440\u043E\u0444. \u0417\u0432\u0451\u0437\u0434\u043E\u0447\u043A\u0438\u043D\\\u0022. Let\u0027s search for \\\u0022\u0417\u0432\u0451\u0437\u0434\u043E\u0447\\\u0022 alone. Already tried substring \\\u0022\u0417\u0432\u0451\u0437\u0434\u043E\u0447\u043A\\\u0022. Not found. Maybe the document uses Latin? Or maybe the name is \\\u0022\u0417\u0432\u0451\u0437\u0434\u043E\u0447\u043D\u044B\u0439\\\u0022? Check for \\\u0022\u0417\u0432\u0451\u0437\u0434\u043E\u0447\u043D\\\u0022.\u0022,\u0022tool_calls\u0022:[{\u0022id\u0022:\u0022call_6r9x8p89\u0022,\u0022index\u0022:0,\u0022type\u0022:\u0022function\u0022,\u0022function\u0022:{\u0022name\u0022:\u0022CursorAgentPlugin-RunCursorAgent\u0022,\u0022arguments\u0022:\u0022{\\\u0022cursorName\\\u0022:\\\u0022CUR_WHOLE_BOOK_FORWARD\\\u0022,\\\u0022maxSteps\\\u0022:null,\\\u0022mode\\\u0022:\\\u0022CollectToTargetSet\\\u0022,\\\u0022targetSetId\\\u0022:\\\u0022ProfZ\\\u0022,\\\u0022taskDescription\\\u0022:\\\u0022Find every paragraph or list item containing \\\\\\\u0022\u0417\u0432\u0451\u0437\u0434\u043E\u0447\u043D\\\\\\\u0022 and add its pointer to the target set.\\\u0022}\u0022}}]},\u0022finish_reason\u0022:\u0022tool_calls\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:1492,\u0022completion_tokens\u0022:193,\u0022total_tokens\u0022:1685}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 12 Dec 2025 16:31:47 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

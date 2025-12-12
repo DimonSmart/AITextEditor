@@ -49,8 +49,8 @@ public sealed class CursorContext
         while (IsWithinBounds(nextIndex))
         {
             var sourceItem = document.Items[nextIndex];
-            var projectedItem = cursor.Parameters.IncludeText ? sourceItem : StripText(sourceItem);
-            var itemBytes = CalculateSize(projectedItem, cursor.Parameters.IncludeText);
+            var projectedItem = cursor.Parameters.IncludeContent ? sourceItem : StripText(sourceItem);
+            var itemBytes = CalculateSize(projectedItem, cursor.Parameters.IncludeContent);
 
             if (items.Count >= countBudget) break;
             if (items.Count > 0 && byteBudget - itemBytes < 0) break;
@@ -64,7 +64,7 @@ public sealed class CursorContext
         if (items.Count == 0 && IsWithinBounds(nextIndex))
         {
             var sourceItem = document.Items[nextIndex];
-            var projectedItem = cursor.Parameters.IncludeText ? sourceItem : StripText(sourceItem);
+            var projectedItem = cursor.Parameters.IncludeContent ? sourceItem : StripText(sourceItem);
             items.Add(projectedItem);
             nextIndex = cursor.IsForward ? nextIndex + 1 : nextIndex - 1;
         }
@@ -80,7 +80,7 @@ public sealed class CursorContext
         CreateCursor(name, parameters, forward);
     }
 
-    private static int CalculateSize(LinearItem item, bool includeText)
+    private static int CalculateSize(LinearItem item, bool includeContent)
     {
         var builder = new StringBuilder();
         builder.Append(item.Index);
@@ -95,7 +95,7 @@ public sealed class CursorContext
         builder.Append('|');
         builder.Append(item.Pointer.Serialize());
 
-        if (includeText)
+        if (includeContent)
         {
             builder.Append('|');
             builder.Append(item.Markdown);

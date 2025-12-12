@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-14\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765557144,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022{\\\u0022action\\\u0022:\\\u0022cursor_next\\\u0022,\\\u0022cursor\\\u0022:\\\u0022CUR_WHOLE_BOOK_FORWARD\\\u0022,\\\u0022indices\\\u0022:[]}\u0022,\u0022reasoning\u0022:\u0022The user requests to find first mention of professor \\\u0022\u0417\u0432\u0435\u0437\u0434\u043E\u0447\u043A\u0438\u043D\\\u0022. First result paragraph has no mention, so we need cursor_next again.\\n\\nWe must output JSON action: cursor_next with same cursor? The prior is that we must request next batch. Action: {\\\u0022action\\\u0022:\\\u0022cursor_next\\\u0022,\\\u0022cursor\\\u0022:\\\u0022CUR_WHOLE_BOOK_FORWARD\\\u0022,\\\u0022indices\\\u0022:[...???]}. In previous response we saw items list. We need to request next items. Usually we specify indices maybe empty to get next? According to spec, we can just request cursor_next with no indices or maybe with null. Let\u0027s output with empty indices array.\\n\\n\u0022},\u0022finish_reason\u0022:\u0022stop\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:399,\u0022completion_tokens\u0022:153,\u0022total_tokens\u0022:552}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 12 Dec 2025 16:32:25 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

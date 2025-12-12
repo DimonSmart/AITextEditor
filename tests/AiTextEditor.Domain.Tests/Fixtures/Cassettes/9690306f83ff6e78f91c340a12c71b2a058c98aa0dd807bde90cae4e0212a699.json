@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-484\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765557049,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022\u0022,\u0022reasoning\u0022:\u0022We need to create cursor with maxElements within 1-200. Use e.g., maxElements 200.\u0022,\u0022tool_calls\u0022:[{\u0022id\u0022:\u0022call_ujf98n9y\u0022,\u0022index\u0022:0,\u0022type\u0022:\u0022function\u0022,\u0022function\u0022:{\u0022name\u0022:\u0022CursorAgentPlugin-CreateCursor\u0022,\u0022arguments\u0022:\u0022{\\\u0022cursorName\\\u0022:\\\u0022CUR_WHOLE_BOOK_FORWARD\\\u0022,\\\u0022forward\\\u0022:true,\\\u0022includeContent\\\u0022:true,\\\u0022maxBytes\\\u0022:100000,\\\u0022maxElements\\\u0022:200}\u0022}}]},\u0022finish_reason\u0022:\u0022tool_calls\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:746,\u0022completion_tokens\u0022:77,\u0022total_tokens\u0022:823}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 12 Dec 2025 16:30:49 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

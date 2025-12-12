@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-52\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765557185,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022\u0022,\u0022reasoning\u0022:\u0022We need to find the first dialogue (presumably a quoted exchange) between two characters, and provide their names. Must locate the earliest occurrence in the book where there is a dialogue between two characters. Use the cursor. We have document loaded; need a cursor name like CUR_WHOLE_BOOK_FORWARD? Not defined but likely a cursor exists. The tool expects creating cursor via CreateCursor. But description says we have CUR_WHOLE_BOOK_FORWARD already? The instruction: \\\u0022call run_cursor_agent over CUR_WHOLE_BOOK_FORWARD in FirstMatch mode\\\u0022. So we can assume a cursor named \\\u0022CUR_WHOLE_BOOK_FORWARD\\\u0022 exists. We\u0027ll use RunCursorAgent with mode FirstMatch, task description: \\\u0022Find the first dialogue between two characters and provide their names.\\\u0022 Also ask to include pointerLabel. Let\u0027s run.\u0022,\u0022tool_calls\u0022:[{\u0022id\u0022:\u0022call_eudb2h4w\u0022,\u0022index\u0022:0,\u0022type\u0022:\u0022function\u0022,\u0022function\u0022:{\u0022name\u0022:\u0022CursorAgentPlugin-RunCursorAgent\u0022,\u0022arguments\u0022:\u0022{\\\u0022cursorName\\\u0022:\\\u0022CUR_WHOLE_BOOK_FORWARD\\\u0022,\\\u0022maxSteps\\\u0022:null,\\\u0022mode\\\u0022:\\\u0022FirstMatch\\\u0022,\\\u0022targetSetId\\\u0022:\\\u0022\\\u0022,\\\u0022taskDescription\\\u0022:\\\u0022Find the first dialogue between two characters in the book and return the paragraph containing it, including the names of the speakers. Include the pointerLabel and pointer.\\\u0022}\u0022}}]},\u0022finish_reason\u0022:\u0022tool_calls\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:663,\u0022completion_tokens\u0022:261,\u0022total_tokens\u0022:924}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 12 Dec 2025 16:33:05 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

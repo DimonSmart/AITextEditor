@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-222\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765557053,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022{\\\u0022action\\\u0022:\\\u0022cursor_next\\\u0022,\\\u0022indices\\\u0022:[],\\\u0022firstItemIndex\\\u0022:-1,\\\u0022summary\\\u0022:\\\u0022\\\u0022}\u0022,\u0022reasoning\u0022:\u0022We need to output JSON action to request next chunk. Since cursor is set to whole book forward, mode FirstMatch. Goal: find last paragraph of second chapter and return its content with pointerLabel and pointer. So we need to iterate until we get to second chapter and its last paragraph. Start with cursor_next. Provide JSON action.\\n\\nWe need to follow developer instructions: exactly one JSON action per reply without code fences. Return only a single JSON action. The JSON must include action, indices, firstItemIndex, summary. Since we haven\u0027t fetched any text yet, summary can be empty? Probably we need to provide summary of fetched chunk. But we haven\u0027t fetched yet. Likely we should request cursor_next with appropriate parameters? The format includes \\\u0022indices\\\u0022 and \\\u0022firstItemIndex\\\u0022. Not sure. Based on prior tasks, indices is array of indices of items selected? firstItemIndex is index of first matched in batch. summary is text. For a request, maybe we set summary empty? Or we can include placeholder. Probably we just request next batch, with no summary. The required fields: action, indices, firstItemIndex, summary. For request, indices can be empty list, firstItemIndex maybe -1, summary empty. Let\u0027s output.\\n\\n\u0022},\u0022finish_reason\u0022:\u0022stop\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:244,\u0022completion_tokens\u0022:282,\u0022total_tokens\u0022:526}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 12 Dec 2025 16:30:53 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

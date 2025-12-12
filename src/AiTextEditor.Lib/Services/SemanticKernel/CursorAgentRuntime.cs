@@ -7,12 +7,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace AiTextEditor.Lib.Services.SemanticKernel;
 
 public sealed class CursorAgentRuntime
 {
-    private const int DefaultMaxSteps = 128;
+    internal const int DefaultMaxSteps = 128;
+    internal const int MaxStepsLimit = 512;
 
     private readonly DocumentContext documentContext;
     private readonly TargetSetContext targetSetContext;
@@ -39,7 +41,8 @@ public sealed class CursorAgentRuntime
             throw new ArgumentException("TargetSetId is required for CollectToTargetSet mode.", nameof(request));
         }
 
-        var maxSteps = request.MaxSteps.GetValueOrDefault(DefaultMaxSteps);
+        var requestedSteps = request.MaxSteps.GetValueOrDefault(DefaultMaxSteps);
+        var maxSteps = requestedSteps > MaxStepsLimit ? MaxStepsLimit : requestedSteps;
         var systemPrompt = BuildSystemPrompt(request.Mode);
         var taskMessage = BuildTaskMessage(request);
         string? lastPortionMessage = null;
@@ -294,6 +297,23 @@ public sealed class CursorAgentRuntime
 
     private static AgentCommand? ParseSingle(string content)
     {
+        var command = TryParseJson(content);
+        if (command != null)
+        {
+            return command;
+        }
+
+        var sanitized = SanitizeJson(content);
+        if (sanitized != content)
+        {
+            return TryParseJson(sanitized);
+        }
+
+        return null;
+    }
+
+    private static AgentCommand? TryParseJson(string content)
+    {
         try
         {
             using var document = JsonDocument.Parse(content);
@@ -322,6 +342,22 @@ public sealed class CursorAgentRuntime
         {
             return null;
         }
+    }
+
+    private static string SanitizeJson(string json)
+    {
+        return Regex.Replace(json, "\"(?:[^\"\\\\]|\\\\.)*\"", match =>
+        {
+            var value = match.Value;
+            if (value.Contains('\n') || value.Contains('\r') || value.Contains('\t'))
+            {
+                return value
+                    .Replace("\n", "\\n")
+                    .Replace("\r", "\\r")
+                    .Replace("\t", "\\t");
+            }
+            return value;
+        });
     }
 
     private void LogCompletionSkeleton(int step, object? message)
@@ -362,7 +398,7 @@ public sealed class CursorAgentRuntime
         return new OpenAIPromptExecutionSettings
         {
             Temperature = 0,
-            TopP = 0,
+            TopP = 1,
             ResponseFormat = "json_object"
         };
     }

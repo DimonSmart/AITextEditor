@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-757\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765557092,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022{\\\u0022action\\\u0022:\\\u0022cursor_next\\\u0022,\\\u0022indices\\\u0022:[],\\\u0022firstItemIndex\\\u0022:0,\\\u0022summary\\\u0022:\\\u0022\\\u0022}\u0022,\u0022reasoning\u0022:\u0022We need to output a JSON action with cursor_next, indices, firstItemIndex etc. Since mode CollectToTargetSet, we need to start with cursor_next. Provide indices presumably for the batch? The instruction: \\\u0022Choose the earliest matching item in the batch. Include pointerLabel and pointer in summaries.\\\u0022 The JSON format: {\\\u0022action\\\u0022:...,\\\u0022indices\\\u0022:[...],\\\u0022firstItemIndex\\\u0022:n,\\\u0022summary\\\u0022:\\\u0022text\\\u0022}.\\n\\nWe need to request cursor_next to get next batch. No pointerLabel? Probably not needed now. Provide action: cursor_next, indices empty? For cursor_next we likely need \\\u0022indices\\\u0022: []? Not sure. Might include empty list. firstItemIndex maybe 0? summary maybe empty. Probably: {\\\u0022action\\\u0022:\\\u0022cursor_next\\\u0022,\\\u0022indices\\\u0022:[],\\\u0022firstItemIndex\\\u0022:0,\\\u0022summary\\\u0022:\\\u0022\\\u0022}.\u0022},\u0022finish_reason\u0022:\u0022stop\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:248,\u0022completion_tokens\u0022:194,\u0022total_tokens\u0022:442}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 12 Dec 2025 16:31:32 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-479\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765557205,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022{\\\u0022action\\\u0022:\\\u0022cursor_next\\\u0022,\\\u0022indices\\\u0022:[0]}\u0022,\u0022reasoning\u0022:\u0022We have cursor_next result with first item. Need to find first dialogue between two characters, containing speakers\u0027 names. The current paragraph does not contain any dialogue. So need to request cursor_next again. Return action cursor_next.\u0022},\u0022finish_reason\u0022:\u0022stop\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:545,\u0022completion_tokens\u0022:65,\u0022total_tokens\u0022:610}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 12 Dec 2025 16:33:25 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

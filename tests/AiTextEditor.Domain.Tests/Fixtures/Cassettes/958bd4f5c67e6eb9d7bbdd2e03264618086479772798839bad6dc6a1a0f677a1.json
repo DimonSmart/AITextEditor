@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-794\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765557215,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022\u0022,\u0022reasoning\u0022:\u0022We need to locate first mention of professor Zvezdochkin. Use cursor over whole book forward. Need to know cursor name: likely CUR_WHOLE_BOOK_FORWARD pre-defined. Use run_cursor_agent with mode FirstMatch, task description: \\\u0022Find the first paragraph that mentions professor Zvezdochkin\\\u0022. Include pointerLabel. Let\u0027s call.\u0022,\u0022tool_calls\u0022:[{\u0022id\u0022:\u0022call_t3xkgtxh\u0022,\u0022index\u0022:0,\u0022type\u0022:\u0022function\u0022,\u0022function\u0022:{\u0022name\u0022:\u0022CursorAgentPlugin-RunCursorAgent\u0022,\u0022arguments\u0022:\u0022{\\\u0022cursorName\\\u0022:\\\u0022CUR_WHOLE_BOOK_FORWARD\\\u0022,\\\u0022maxSteps\\\u0022:null,\\\u0022mode\\\u0022:\\\u0022FirstMatch\\\u0022,\\\u0022targetSetId\\\u0022:\\\u0022\\\u0022,\\\u0022taskDescription\\\u0022:\\\u0022Find the first paragraph that mentions professor Zvezdochkin\\\u0022}\u0022}}]},\u0022finish_reason\u0022:\u0022tool_calls\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:683,\u0022completion_tokens\u0022:146,\u0022total_tokens\u0022:829}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 12 Dec 2025 16:33:35 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}
