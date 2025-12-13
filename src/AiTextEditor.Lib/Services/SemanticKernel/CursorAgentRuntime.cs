@@ -180,6 +180,14 @@ public sealed class CursorAgentRuntime
         AgentResult? agentResult)
     {
         var updated = ApplyStateUpdate(state, command.StateUpdate);
+
+        // Fix: Models often return "found": false to indicate "not found YET".
+        // We should only treat it as a terminal "not found" if the decision is explicitly "not_found".
+        if (command.Decision != "not_found" && updated.Found == false)
+        {
+            updated = updated with { Found = null };
+        }
+
         var result = agentResult;
         var evidenceToAdd = new List<EvidenceItem>();
 
@@ -189,7 +197,7 @@ public sealed class CursorAgentRuntime
             summary ??= command.Result.Excerpt ?? command.Result.Pointer;
             firstItemIndex ??= TryMapPointerToIndex(command.Result.Pointer, lastPortion);
             updated = updated.WithProgress(summary ?? updated.Progress);
-            var markdown = TryFindMarkdown(command.Result.Pointer, lastPortion);
+            var markdown = TryFindMarkdown(command.Result.Pointer, lastPortion) ?? command.Result.Excerpt;
             result = new AgentResult(command.Result.Pointer, markdown, command.Result.Score, command.Result.Reason);
             evidenceToAdd.Add(command.Result);
         }
@@ -197,7 +205,7 @@ public sealed class CursorAgentRuntime
         {
             summary ??= updated.Progress;
         }
-        else if (command.StateUpdate?.Found == false || command.Decision == "not_found")
+        else if (command.Decision == "not_found")
         {
             updated = updated with { Found = false };
             summary ??= command.StateUpdate?.Progress ?? updated.Progress;
@@ -211,7 +219,7 @@ public sealed class CursorAgentRuntime
             if (result == null)
             {
                 var pointer = command.NewEvidence[0].Pointer;
-                var markdown = TryFindMarkdown(pointer, lastPortion);
+                var markdown = TryFindMarkdown(pointer, lastPortion) ?? command.NewEvidence[0].Excerpt;
                 result = new AgentResult(pointer, markdown, command.NewEvidence[0].Score, command.NewEvidence[0].Reason);
             }
         }
@@ -626,6 +634,12 @@ public sealed class CursorAgentRuntime
         var excerpt = element.TryGetProperty("excerpt", out var excerptElement) && excerptElement.ValueKind == JsonValueKind.String
             ? excerptElement.GetString()
             : null;
+
+        if (excerpt == null && element.TryGetProperty("markdown", out var markdownElement) && markdownElement.ValueKind == JsonValueKind.String)
+        {
+            excerpt = markdownElement.GetString();
+        }
+
         var reason = element.TryGetProperty("reason", out var reasonElement) && reasonElement.ValueKind == JsonValueKind.String
             ? reasonElement.GetString()
             : null;

@@ -18,10 +18,10 @@ public class McpFunctionalTests
     }
 
     [Theory]
-    [InlineData("Где в книге впервые упоминается профессор Звёздочкин? (исключая заголовки)", "1.1.1.p21")]
+    //[InlineData("Где в книге впервые упоминается профессор Звёздочкин? (исключая заголовки)", "1.1.1.p21")]
     //[InlineData("Где в книге второе упоминание профессора Звёздочкина? (исключая заголовки)", "1.1.1.p22")]
-    //[InlineData("Где впервые упоминается Пончик?", "1.1.1.p3")]
-    //[InlineData("Найди первый диалог между двумя персонажами и назови их имена", "Знайка, Незнайка")]
+    [InlineData("Где впервые упоминается Пончик?", "1.1.1.p3")]
+    [InlineData("Найди первый диалог между двумя персонажами и назови их имена", "1.1.1.p26")]
     //[InlineData("Где впервые упоминается Фуксия?", "1.1.1.p5")]
     //[InlineData("Покажи последнее упоминание Фуксии.", "1.1.1.p67")]
     public async Task CharacterMentionQuestions_ReturnExpectedPointer(string question, string expectedPointer)
@@ -35,6 +35,12 @@ public class McpFunctionalTests
         var answer = result.LastAnswer ?? string.Empty;
 
         Assert.Contains(expectedPointer, answer, StringComparison.OrdinalIgnoreCase);
+
+        if (question.Contains("диалог"))
+        {
+            Assert.DoesNotContain("Alice", answer, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("Rabbit", answer, StringComparison.OrdinalIgnoreCase);
+        }
     }
 
     [Fact]

@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-436\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765628878,\u0022model\u0022:\u0022gpt-oss:120b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022\u0022,\u0022reasoning\u0022:\u0022It seems the RunCursorAgent function requires also parameters like maxSteps maybe and targetSetId maybe optional. The errors indicate some required fields missing, maybe need maxSteps or targetSetId even if not used? The docs: fields: cursorName, maxSteps, mode, state, targetSetId, taskDescription, taskId. So must provide all. Provide maxSteps: maybe 10. targetSetId: empty string ok? Previously gave empty string gave error same. Perhaps targetSetId must be null? Let\u0027s try null.\u0022,\u0022tool_calls\u0022:[{\u0022id\u0022:\u0022call_oo8fjgjm\u0022,\u0022index\u0022:0,\u0022type\u0022:\u0022function\u0022,\u0022function\u0022:{\u0022name\u0022:\u0022CursorAgentPlugin-RunCursorAgent\u0022,\u0022arguments\u0022:\u0022{\\\u0022cursorName\\\u0022:\\\u0022CUR_WHOLE_BOOK_FORWARD\\\u0022,\\\u0022maxSteps\\\u0022:10,\\\u0022mode\\\u0022:\\\u0022FirstMatch\\\u0022,\\\u0022state\\\u0022:{},\\\u0022targetSetId\\\u0022:null,\\\u0022taskDescription\\\u0022:\\\u0022\u041D\u0430\u0439\u0442\u0438 \u043F\u0435\u0440\u0432\u043E\u0435 \u0443\u043F\u043E\u043C\u0438\u043D\u0430\u043D\u0438\u0435 \u0438\u043C\u0435\u043D\u0438 \u043F\u0440\u043E\u0444\u0435\u0441\u0441\u043E\u0440 \u0417\u0432\u0451\u0437\u0434\u043E\u0447\u043A\u0438\u043D \u0432 \u0442\u0435\u043A\u0441\u0442\u0435 \u043A\u043D\u0438\u0433\u0438, \u0438\u0441\u043A\u043B\u044E\u0447\u0430\u044F \u0437\u0430\u0433\u043E\u043B\u043E\u0432\u043A\u0438. \u0412\u0435\u0440\u043D\u0443\u0442\u044C \u0430\u0431\u0437\u0430\u0446 (\u0438\u043B\u0438 \u043F\u0443\u043D\u043A\u0442 \u0441\u043F\u0438\u0441\u043A\u0430) \u0441 \u0443\u043F\u043E\u043C\u0438\u043D\u0430\u043D\u0438\u0435\u043C, \u0432\u043A\u043B\u044E\u0447\u0430\u044F semantic pointer (pointerLabel \u0438 pointer).\\\u0022,\\\u0022taskId\\\u0022:\\\u0022task1\\\u0022}\u0022}}]},\u0022finish_reason\u0022:\u0022tool_calls\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:1671,\u0022completion_tokens\u0022:223,\u0022total_tokens\u0022:1894}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sat, 13 Dec 2025 12:27:58 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

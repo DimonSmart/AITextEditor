@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-930\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765642218,\u0022model\u0022:\u0022ministral-3:14b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022\u0022,\u0022tool_calls\u0022:[{\u0022id\u0022:\u0022zYKkfUXB4\u0022,\u0022index\u0022:0,\u0022type\u0022:\u0022function\u0022,\u0022function\u0022:{\u0022name\u0022:\u0022CursorAgentPlugin-CursorNext\u0022,\u0022arguments\u0022:\u0022{\\\u0022cursorName\\\u0022:\\\u0022CUR_WHOLE_BOOK_FORWARD\\\u0022}\u0022}}]},\u0022finish_reason\u0022:\u0022tool_calls\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:1712,\u0022completion_tokens\u0022:25,\u0022total_tokens\u0022:1737}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sat, 13 Dec 2025 16:10:18 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

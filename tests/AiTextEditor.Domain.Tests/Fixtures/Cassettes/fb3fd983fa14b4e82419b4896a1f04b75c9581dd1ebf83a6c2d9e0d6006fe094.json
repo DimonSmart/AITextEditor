@@ -1,0 +1,10 @@
+{
+  "StatusCode": 400,
+  "Body": "{\u0022error\u0022:{\u0022message\u0022:\u0022registry.ollama.ai/library/phi4:latest does not support tools\u0022,\u0022type\u0022:\u0022api_error\u0022,\u0022param\u0022:null,\u0022code\u0022:null}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sat, 13 Dec 2025 13:59:26 GMT"
+    ]
+  }
+}
