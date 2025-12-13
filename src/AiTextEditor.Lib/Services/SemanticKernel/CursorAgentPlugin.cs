@@ -105,7 +105,9 @@ public class CursorAgentPlugin(
         [Description("Mode: FirstMatch, CollectToTargetSet, or AggregateSummary.")] string mode,
         [Description("Natural language task for the agent.")] string taskDescription,
         [Description("Target set id for CollectToTargetSet mode.")] string? targetSetId = null,
-        [Description("Optional safety limit for steps.")] int? maxSteps = null)
+        [Description("Optional safety limit for steps.")] int? maxSteps = null,
+        [Description("Existing task id to continue the same agent session.")] string? taskId = null,
+        [Description("Serialized TaskState to resume from a previous step.")] TaskState? state = null)
     {
         ValidateCursorName(cursorName);
 
@@ -131,7 +133,7 @@ public class CursorAgentPlugin(
             return JsonSerializer.Serialize(error, SerializerOptions);
         }
 
-        var request = new CursorAgentRequest(cursorName, parsedMode, taskDescription, targetSetId, resolvedSteps);
+        var request = new CursorAgentRequest(cursorName, parsedMode, taskDescription, targetSetId, resolvedSteps, taskId, state);
         var result = await cursorAgentRuntime.RunAsync(request);
 
         logger.LogInformation("run_cursor_agent: cursor={Cursor}, mode={Mode}, success={Success}", cursorName, parsedMode, result.Success);
