@@ -7,7 +7,7 @@ namespace AiTextEditor.Lib.Services.SemanticKernel;
 
 public sealed record CursorHandle(string Name, bool IsForward, int MaxElements, int MaxBytes, bool IncludeContent);
 
-public sealed record CursorItemView(int Index, string Markdown, string Pointer, string PointerLabel, string Type);
+public sealed record CursorItemView(int Index, string Markdown, string Text, string Pointer, string PointerLabel, string Type, int PointerId);
 
 public sealed record CursorPortionView(string CursorName, IReadOnlyList<CursorItemView> Items, bool HasMore)
 {
@@ -17,9 +17,11 @@ public sealed record CursorPortionView(string CursorName, IReadOnlyList<CursorIt
             .Select(item => new CursorItemView(
                 item.Index,
                 item.Markdown,
+                item.Text,
                 item.Pointer.Serialize(),
                 BuildPointerLabel(item),
-                item.Type.ToString()))
+                item.Type.ToString(),
+                item.Pointer.Id))
             .ToList();
 
         return new CursorPortionView(portion.CursorName, items, portion.HasMore);

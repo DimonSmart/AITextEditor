@@ -137,7 +137,27 @@ public class CursorAgentPlugin(
         var result = await cursorAgentRuntime.RunAsync(request);
 
         logger.LogInformation("run_cursor_agent: cursor={Cursor}, mode={Mode}, success={Success}", cursorName, parsedMode, result.Success);
-        return JsonSerializer.Serialize(result, SerializerOptions);
+        
+        // Create a lightweight result for the LLM to avoid token limit issues and distractions
+        var lightweightResult = new
+        {
+            result.Success,
+            result.FirstItemIndex,
+            result.Summary,
+            result.TaskId,
+            State = new 
+            { 
+                result.State?.Goal, 
+                result.State?.Found, 
+                result.State?.Progress,
+                result.State?.Limits,
+                result.State?.Evidence 
+            },
+            result.SemanticPointer,
+            result.Markdown
+        };
+
+        return JsonSerializer.Serialize(lightweightResult, SerializerOptions);
     }
 
     private static void ValidateCursorName(string cursorName)

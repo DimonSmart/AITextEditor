@@ -193,7 +193,7 @@ The journey continues as the team crosses the river.
 
 The second chapter ends with a cliffhanger about the hidden door.
 """;
-        var userCommand = "Расскажи мне, чем заканчивается вторая глава.";
+        var userCommand = "Tell me how the second chapter ends. Answer in English.";
 
         using var httpClient = await TestLlmConfiguration.CreateVerifiedLlmClientAsync();
         var engine = new SemanticKernelEngine(httpClient);

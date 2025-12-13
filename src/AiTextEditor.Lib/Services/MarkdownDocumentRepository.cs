@@ -167,6 +167,20 @@ public class MarkdownDocumentRepository
                     ref index);
                 break;
 
+            case HtmlBlock html:
+                var htmlPointer = parsingState.NextPointer(
+                    nextId++);
+                AddLinearItem(
+                    items,
+                    new LinearItem(
+                        index,
+                        LinearItemType.Html,
+                        GetSourceText(mdBlock, source),
+                        GetSourceText(mdBlock, source),
+                        htmlPointer),
+                    ref index);
+                break;
+
             default:
                 if (mdBlock is ContainerBlock container)
                 {

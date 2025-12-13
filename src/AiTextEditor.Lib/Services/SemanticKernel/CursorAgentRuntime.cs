@@ -55,7 +55,7 @@ public sealed class CursorAgentRuntime
         state = NormalizeState(state, request.TaskDescription, maxSteps);
         state = state.WithStep(new TaskLimits(state.Limits.Step, maxSteps, state.Limits.MaxSeenTail, state.Limits.MaxFound));
         sessionStore.Set(taskId, state);
-        string? lastPortionMessage = null;
+        
         var completedCursors = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         int? firstItemIndex = null;
         string? summary = request.State?.Progress;
@@ -67,11 +67,19 @@ public sealed class CursorAgentRuntime
             state = state.WithStep(state.Limits.NextStep());
             sessionStore.Set(taskId, state);
 
+            if (lastPortion == null)
+            {
+                TryHandleCursorNext(request, completedCursors, state, out state, out lastPortion);
+                sessionStore.Set(taskId, state);
+            }
+
             var snapshotMessage = BuildSnapshotMessage(state);
-            var command = await GetNextCommandAsync(systemPrompt, taskMessage, snapshotMessage, lastPortionMessage, cancellationToken, step);
+            var batchMessage = lastPortion != null ? BuildBatchMessage(state, lastPortion) : "No more content.";
+
+            var command = await GetNextCommandAsync(systemPrompt, taskMessage, snapshotMessage, batchMessage, cancellationToken, step);
             if (command == null)
             {
-                lastPortionMessage = "Agent response malformed. Respond with Decision JSON including stateUpdate.";
+                logger.LogWarning("Agent response malformed.");
                 continue;
             }
 
@@ -92,29 +100,11 @@ public sealed class CursorAgentRuntime
                 return completedResult;
             }
 
-            if (command.Decision is "continue" or "review")
+            if (command.Decision == "continue")
             {
-                if (TryHandleCursorNext(request, completedCursors, state, out state, out var newPortionMessage, out lastPortion))
-                {
-                    sessionStore.Set(taskId, state);
-                    lastPortionMessage = command.NeedMoreContext && newPortionMessage != null
-                        ? newPortionMessage + "\nneedMoreContext was true in the previous step; adjust Snapshot accordingly."
-                        : newPortionMessage;
-
-                    // Only stop on cursor completion if we didn't just retrieve a new portion.
-                    // If lastPortion is not null, the agent hasn't seen it yet, so we must continue.
-                    var stopOnCursorComplete = completedCursors.Contains(request.CursorName) && lastPortion == null;
-
-                    if (ShouldStop(request, state, stopOnCursorComplete, firstItemIndex, summary, taskId, agentResult, out completedResult))
-                    {
-                        return completedResult;
-                    }
-
-                    continue;
-                }
+                lastPortion = null; // Force fetch next portion
+                continue;
             }
-
-            lastPortionMessage = "Decision malformed. Return decision (continue/done/not_found), stateUpdate, newEvidence, needMoreContext.";
         }
 
         var overflowState = state.WithProgress(summary ?? state.Progress);
@@ -139,16 +129,16 @@ public sealed class CursorAgentRuntime
         return new TaskState(normalizedGoal!, state.Found, seen, progress!, adjustedLimits, evidence);
     }
 
-    private async Task<AgentCommand?> GetNextCommandAsync(string systemPrompt, string taskMessage, string snapshotMessage, string? lastPortionMessage, CancellationToken cancellationToken, int step)
+    private async Task<AgentCommand?> GetNextCommandAsync(string systemPrompt, string taskMessage, string snapshotMessage, string batchMessage, CancellationToken cancellationToken, int step)
     {
         var history = new ChatHistory();
         history.AddSystemMessage(systemPrompt);
         history.AddUserMessage(taskMessage);
         history.AddUserMessage(snapshotMessage);
 
-        if (!string.IsNullOrWhiteSpace(lastPortionMessage))
+        if (!string.IsNullOrWhiteSpace(batchMessage))
         {
-            history.AddUserMessage(lastPortionMessage);
+            history.AddUserMessage(batchMessage);
         }
 
         var response = await chatService.GetChatMessageContentsAsync(history, CreateSettings(), cancellationToken: cancellationToken);
@@ -198,7 +188,8 @@ public sealed class CursorAgentRuntime
             firstItemIndex ??= TryMapPointerToIndex(command.Result.Pointer, lastPortion);
             updated = updated.WithProgress(summary ?? updated.Progress);
             var markdown = TryFindMarkdown(command.Result.Pointer, lastPortion) ?? command.Result.Excerpt;
-            result = new AgentResult(command.Result.Pointer, markdown, command.Result.Score, command.Result.Reason);
+            var label = TryFindPointerLabel(command.Result.Pointer, lastPortion) ?? command.Result.Pointer;
+            result = new AgentResult(label, markdown, command.Result.Score, command.Result.Reason);
             evidenceToAdd.Add(command.Result);
         }
         else if (command.StateUpdate?.Found == true)
@@ -216,11 +207,12 @@ public sealed class CursorAgentRuntime
         {
             evidenceToAdd.AddRange(command.NewEvidence);
             firstItemIndex ??= TryMapPointerToIndex(command.NewEvidence[0].Pointer, lastPortion);
-            if (result == null)
+            if (command.Result == null)
             {
                 var pointer = command.NewEvidence[0].Pointer;
                 var markdown = TryFindMarkdown(pointer, lastPortion) ?? command.NewEvidence[0].Excerpt;
-                result = new AgentResult(pointer, markdown, command.NewEvidence[0].Score, command.NewEvidence[0].Reason);
+                var label = TryFindPointerLabel(pointer, lastPortion) ?? pointer;
+                result = new AgentResult(label, markdown, command.NewEvidence[0].Score, command.NewEvidence[0].Reason);
             }
         }
 
@@ -242,15 +234,10 @@ public sealed class CursorAgentRuntime
         var goal = update.Goal ?? state.Goal;
         var found = update.Found ?? state.Found;
         var progress = update.Progress ?? state.Progress;
-        var limits = update.Limits ?? state.Limits;
+        var limits = state.Limits;
 
         var updated = new TaskState(goal, found, state.Seen, state.Progress, limits, state.Evidence);
         updated = updated.WithProgress(progress);
-
-        if (update.Seen != null && update.Seen.Count > 0)
-        {
-            updated = updated.WithSeen(update.Seen);
-        }
 
         return updated;
     }
@@ -296,23 +283,20 @@ public sealed class CursorAgentRuntime
         };
     }
 
-    private bool TryHandleCursorNext(CursorAgentRequest request, HashSet<string> completedCursors, TaskState state, out TaskState updatedState, out string? portionMessage, out CursorPortionView? lastPortion)
+    private bool TryHandleCursorNext(CursorAgentRequest request, HashSet<string> completedCursors, TaskState state, out TaskState updatedState, out CursorPortionView? lastPortion)
     {
         updatedState = state;
-        portionMessage = null;
         lastPortion = null;
 
         if (completedCursors.Contains(request.CursorName))
         {
-            portionMessage = $"cursor_next halted: cursor '{request.CursorName}' is complete. Use agent_finish_* or stateUpdate.found.";
-            return true;
+            return false;
         }
 
         var portion = documentContext.CursorContext.GetNextPortion(request.CursorName);
         if (portion == null)
         {
-            portionMessage = "cursor_next failed: cursor not found";
-            return true;
+            return false;
         }
 
         var snapshot = ProjectPortion(portion);
@@ -332,7 +316,6 @@ public sealed class CursorAgentRuntime
             }
         }
 
-        portionMessage = BuildPortionFeedback(updatedState, snapshot);
         return true;
     }
 
@@ -342,36 +325,18 @@ public sealed class CursorAgentRuntime
         return state.WithSeen(seenPointers);
     }
 
-    private static string BuildPortionFeedback(TaskState state, CursorPortionView portion)
+    private static string BuildBatchMessage(TaskState state, CursorPortionView portion)
     {
-        var seenTail = state.Seen.Count <= state.Limits.MaxSeenTail
-            ? state.Seen
-            : state.Seen.Skip(state.Seen.Count - state.Limits.MaxSeenTail).ToArray();
-
-        var foundTop = state.Evidence.Count <= SnapshotEvidenceLimit
-            ? state.Evidence
-            : state.Evidence.Skip(state.Evidence.Count - SnapshotEvidenceLimit).ToArray();
-
-        var snapshot = new
-        {
-            goal = state.Goal,
-            alreadyFound = foundTop.Select(item => new { item.Pointer, item.Excerpt, item.Reason, item.Score }),
-            seenTail,
-            progress = state.Progress,
-            limits = new { state.Limits.Step, state.Limits.MaxSteps, state.Limits.Remaining, state.Limits.MaxSeenTail, state.Limits.MaxFound },
-            dedupRule = "Never return a pointer already present in alreadyFound or seenTail"
-        };
-
         var batch = new
         {
             batchId = $"cursor:{portion.CursorName}:step-{state.Limits.Step}",
             hasMore = portion.HasMore,
             items = portion.Items.Select(item => new
             {
-                pointer = item.Pointer,
+                pointerId = item.PointerId,
                 pointerLabel = item.PointerLabel,
-                markdown = item.Markdown,
-                type = item.Type
+                type = item.Type,
+                text = item.Text
             })
         };
 
@@ -382,11 +347,8 @@ public sealed class CursorAgentRuntime
         };
 
         var builder = new StringBuilder();
-        builder.AppendLine("Snapshot (JSON):");
-        builder.AppendLine(JsonSerializer.Serialize(snapshot, options));
         builder.AppendLine("Batch (JSON):");
         builder.AppendLine(JsonSerializer.Serialize(batch, options));
-        builder.AppendLine("Return Decision JSON: decision, newEvidence, stateUpdate, result (for done), needMoreContext.");
         return builder.ToString();
     }
 
@@ -396,8 +358,8 @@ public sealed class CursorAgentRuntime
         builder.AppendLine("Task snapshot (compact):");
         builder.AppendLine($"goal: {state.Goal}");
         builder.AppendLine($"found flag: {state.Found?.ToString() ?? "undecided"}");
-        builder.AppendLine($"evidenceCount: {state.Evidence.Count} (top {SnapshotEvidenceLimit} included in Snapshot)");
-        builder.AppendLine($"seenCount: {state.Seen.Count}, seenTailLimit: {state.Limits.MaxSeenTail}");
+        builder.AppendLine($"evidenceCount: {state.Evidence.Count}");
+        builder.AppendLine($"seenCount: {state.Seen.Count}");
         builder.AppendLine($"progress: {state.Progress}");
         builder.AppendLine($"limits: step={state.Limits.Step}, maxSteps={state.Limits.MaxSteps}, remaining={state.Limits.Remaining}, maxFound={state.Limits.MaxFound}");
         builder.AppendLine("dedupRule: Never return a pointer already present in alreadyFound or seenTail.");
@@ -412,7 +374,7 @@ public sealed class CursorAgentRuntime
         builder.AppendLine($"Cursor: {request.CursorName}, mode: {request.Mode}.");
         builder.AppendLine($"Goal: {request.TaskDescription}");
         builder.AppendLine("Respond with a single Decision JSON object: decision (continue|done|not_found), optional result, newEvidence array, stateUpdate, needMoreContext flag.");
-        builder.AppendLine("Snapshot includes goal, alreadyFound (top evidence), seenTail, progress, limits.");
+        builder.AppendLine("Snapshot includes goal, evidenceCount, seenCount, progress, limits.");
         builder.AppendLine("Deduplication: never return pointers already present in Snapshot.alreadyFound or Snapshot.seenTail. Use the earliest matching pointer in the batch.");
         builder.AppendLine("Stop when decision is done or not_found, or when stateUpdate.found is true/false.");
         builder.AppendLine("Respect the first mention rule: prefer the first matching item in the current batch.");
@@ -425,10 +387,12 @@ public sealed class CursorAgentRuntime
         var builder = new StringBuilder();
         builder.AppendLine("You are CursorAgent. Reply with a single JSON Decision object, no code fences.");
         builder.AppendLine("Decision schema: {\"decision\":\"continue|done|not_found\",\"newEvidence\":[...],\"stateUpdate\":{...},\"result\":{...},\"needMoreContext\":false}.");
-        builder.AppendLine("State lives outside the model: always include stateUpdate reflecting goal, found flag, seen pointers, progress marker, and limits (step,maxSteps,maxSeenTail,maxFound).");
-        builder.AppendLine("Snapshot delivers goal, alreadyFound (top evidence), seenTail, progress, limits, dedupRule.");
+        builder.AppendLine("State lives outside the model: always include stateUpdate reflecting goal, found flag, progress marker.");
+        builder.AppendLine("Do NOT include seen or limits in stateUpdate.");
+        builder.AppendLine("Snapshot delivers goal, evidenceCount, seenCount, progress, limits, dedupRule.");
         builder.AppendLine("Dedup rule: never repeat pointers from Snapshot.alreadyFound or Snapshot.seenTail.");
         builder.AppendLine("First mention rule: prefer the earliest matching item in the batch when multiple options exist.");
+        builder.AppendLine("Type preference: When looking for content/mentions, prefer 'Paragraph' over 'Heading' unless the user asks for titles/headings.");
         builder.AppendLine("Stop-condition: set decision=done with result when goal is satisfied; use decision=not_found when exhausted.");
         builder.AppendLine("Mode: ").Append(mode).Append('.');
         return builder.ToString();
@@ -440,9 +404,11 @@ public sealed class CursorAgentRuntime
             .Select(item => new CursorItemView(
                 item.Index,
                 item.Markdown,
+                item.Text,
                 item.Pointer.Serialize(),
                 item.Pointer.Label ?? $"p{item.Index}",
-                item.Type.ToString()))
+                item.Type.ToString(),
+                item.Pointer.Id))
             .ToList();
 
         return new CursorPortionView(portion.CursorName, items, portion.HasMore);
@@ -549,25 +515,6 @@ public sealed class CursorAgentRuntime
             found = false;
         }
 
-        IReadOnlyCollection<string>? seen = null;
-        if (element.TryGetProperty("seen", out var seenElement) && seenElement.ValueKind == JsonValueKind.Array)
-        {
-            seen = seenElement.EnumerateArray()
-                .Where(x => x.ValueKind == JsonValueKind.String)
-                .Select(x => x.GetString()!)
-                .ToArray();
-        }
-
-        if (element.TryGetProperty("addSeenPointers", out var addSeenElement) && addSeenElement.ValueKind == JsonValueKind.Array)
-        {
-            var extraSeen = addSeenElement.EnumerateArray()
-                .Where(x => x.ValueKind == JsonValueKind.String)
-                .Select(x => x.GetString()!)
-                .ToArray();
-
-            seen = seen == null ? extraSeen : seen.Concat(extraSeen).ToArray();
-        }
-
         string? progress = null;
         if (element.TryGetProperty("progress", out var progressElement) && progressElement.ValueKind != JsonValueKind.Null && progressElement.ValueKind != JsonValueKind.Undefined)
         {
@@ -579,29 +526,7 @@ public sealed class CursorAgentRuntime
             progress = continueAfter.GetString();
         }
 
-        TaskLimits? limits = null;
-        if (element.TryGetProperty("limits", out var limitsElement) && limitsElement.ValueKind == JsonValueKind.Object)
-        {
-            var step = limitsElement.TryGetProperty("step", out var stepElement) && stepElement.ValueKind == JsonValueKind.Number
-                ? stepElement.GetInt32()
-                : (int?)null;
-            var maxSteps = limitsElement.TryGetProperty("maxSteps", out var maxElement) && maxElement.ValueKind == JsonValueKind.Number
-                ? maxElement.GetInt32()
-                : (int?)null;
-            var maxSeenTail = limitsElement.TryGetProperty("maxSeenTail", out var seenTailElement) && seenTailElement.ValueKind == JsonValueKind.Number
-                ? seenTailElement.GetInt32()
-                : TaskLimits.DefaultMaxSeenTail;
-            var maxFound = limitsElement.TryGetProperty("maxFound", out var maxFoundElement) && maxFoundElement.ValueKind == JsonValueKind.Number
-                ? maxFoundElement.GetInt32()
-                : TaskLimits.DefaultMaxFound;
-
-            if (step.HasValue && maxSteps.HasValue)
-            {
-                limits = new TaskLimits(step.Value, maxSteps.Value, maxSeenTail, maxFound);
-            }
-        }
-
-        return new TaskStateUpdate(goal, found, seen, progress, limits);
+        return new TaskStateUpdate(goal, found, null, progress, null);
     }
 
     private static List<EvidenceItem> ParseEvidenceArray(JsonElement element)
@@ -626,7 +551,32 @@ public sealed class CursorAgentRuntime
 
     private static EvidenceItem? ParseEvidence(JsonElement element)
     {
-        if (!element.TryGetProperty("pointer", out var pointerElement) || pointerElement.ValueKind != JsonValueKind.String)
+        string? pointer = null;
+        if (element.TryGetProperty("pointerId", out var pointerIdElement))
+        {
+            if (pointerIdElement.ValueKind == JsonValueKind.Number)
+            {
+                pointer = pointerIdElement.GetInt32().ToString();
+            }
+            else if (pointerIdElement.ValueKind == JsonValueKind.String)
+            {
+                pointer = pointerIdElement.GetString();
+            }
+        }
+
+        if (pointer == null && element.TryGetProperty("pointer", out var pointerElement))
+        {
+            if (pointerElement.ValueKind == JsonValueKind.String)
+            {
+                pointer = pointerElement.GetString();
+            }
+            else if (pointerElement.ValueKind == JsonValueKind.Number)
+            {
+                pointer = pointerElement.GetInt32().ToString();
+            }
+        }
+
+        if (pointer == null)
         {
             return null;
         }
@@ -649,7 +599,7 @@ public sealed class CursorAgentRuntime
             score = scoreElement.GetDouble();
         }
 
-        return new EvidenceItem(pointerElement.GetString()!, excerpt, reason, score);
+        return new EvidenceItem(pointer!, excerpt, reason, score);
     }
 
     private static string SanitizeJson(string json)
@@ -675,6 +625,15 @@ public sealed class CursorAgentRuntime
             return null;
         }
 
+        if (int.TryParse(pointer, out var pointerId))
+        {
+            var matchById = portion.Items.FirstOrDefault(item => item.PointerId == pointerId);
+            if (matchById != null)
+            {
+                return matchById.Index;
+            }
+        }
+
         var match = portion.Items.FirstOrDefault(item => item.Pointer.Equals(pointer, StringComparison.OrdinalIgnoreCase));
         return match?.Index;
     }
@@ -686,8 +645,37 @@ public sealed class CursorAgentRuntime
             return null;
         }
 
+        if (int.TryParse(pointer, out var pointerId))
+        {
+            var matchById = portion.Items.FirstOrDefault(item => item.PointerId == pointerId);
+            if (matchById != null)
+            {
+                return matchById.Markdown;
+            }
+        }
+
         var match = portion.Items.FirstOrDefault(item => item.Pointer.Equals(pointer, StringComparison.OrdinalIgnoreCase));
         return match?.Markdown;
+    }
+
+    private static string? TryFindPointerLabel(string pointer, CursorPortionView? portion)
+    {
+        if (portion == null)
+        {
+            return null;
+        }
+
+        if (int.TryParse(pointer, out var pointerId))
+        {
+            var matchById = portion.Items.FirstOrDefault(item => item.PointerId == pointerId);
+            if (matchById != null)
+            {
+                return matchById.PointerLabel;
+            }
+        }
+
+        var match = portion.Items.FirstOrDefault(item => item.Pointer.Equals(pointer, StringComparison.OrdinalIgnoreCase));
+        return match?.PointerLabel;
     }
 
     private IReadOnlyList<int> MapEvidenceToIndices(IReadOnlyList<EvidenceItem> evidence, CursorPortionView? portion)
