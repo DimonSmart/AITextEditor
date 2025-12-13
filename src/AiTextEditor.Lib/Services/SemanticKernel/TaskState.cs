@@ -5,8 +5,11 @@ using System.Threading;
 
 namespace AiTextEditor.Lib.Services.SemanticKernel;
 
-public sealed record TaskLimits(int Step, int MaxSteps)
+public sealed record TaskLimits(int Step, int MaxSteps, int MaxSeenTail, int MaxFound)
 {
+    public const int DefaultMaxSeenTail = 200;
+    public const int DefaultMaxFound = 20;
+
     public int Remaining => Math.Max(0, MaxSteps - Step);
 
     public TaskLimits NextStep()
@@ -23,24 +26,28 @@ public sealed record TaskLimits(int Step, int MaxSteps)
 public sealed record TaskState(
     string Goal,
     bool? Found,
-    IReadOnlyCollection<string> Seen,
+    IReadOnlyList<string> Seen,
     string Progress,
-    TaskLimits Limits)
+    TaskLimits Limits,
+    IReadOnlyList<EvidenceItem> Evidence)
 {
     public static TaskState Create(string goal, int maxSteps)
     {
-        return new(goal, null, Array.Empty<string>(), "not_started", new TaskLimits(0, maxSteps));
+        return new(goal, null, Array.Empty<string>(), "not_started", new TaskLimits(0, maxSteps, TaskLimits.DefaultMaxSeenTail, TaskLimits.DefaultMaxFound), Array.Empty<EvidenceItem>());
     }
 
     public TaskState WithSeen(IEnumerable<string> seen)
     {
-        var merged = new HashSet<string>(Seen, StringComparer.OrdinalIgnoreCase);
+        var merged = new List<string>(Seen);
         foreach (var item in seen)
         {
-            merged.Add(item);
+            if (!merged.Any(existing => existing.Equals(item, StringComparison.OrdinalIgnoreCase)))
+            {
+                merged.Add(item);
+            }
         }
 
-        return this with { Seen = merged.ToArray() };
+        return this with { Seen = merged };
     }
 
     public TaskState WithProgress(string? progress)
@@ -54,6 +61,26 @@ public sealed record TaskState(
     {
         return this with { Limits = limits };
     }
+
+    public TaskState WithEvidence(IEnumerable<EvidenceItem> newEvidence)
+    {
+        var merged = new List<EvidenceItem>(Evidence);
+        foreach (var item in newEvidence)
+        {
+            if (!merged.Any(existing => existing.Pointer.Equals(item.Pointer, StringComparison.OrdinalIgnoreCase)))
+            {
+                merged.Add(item);
+            }
+        }
+
+        if (merged.Count > Limits.MaxFound)
+        {
+            var skip = merged.Count - Limits.MaxFound;
+            merged = merged.Skip(skip).ToList();
+        }
+
+        return this with { Evidence = merged };
+    }
 }
 
 public sealed record TaskStateUpdate(
@@ -62,6 +89,8 @@ public sealed record TaskStateUpdate(
     IReadOnlyCollection<string>? Seen,
     string? Progress,
     TaskLimits? Limits);
+
+public sealed record EvidenceItem(string Pointer, string? Excerpt, string? Reason, double? Score);
 
 public sealed class SessionStore
 {

@@ -17,6 +17,7 @@ public sealed class CursorAgentRuntime
 {
     internal const int DefaultMaxSteps = 128;
     internal const int MaxStepsLimit = 512;
+    private const int SnapshotEvidenceLimit = 5;
 
     private readonly DocumentContext documentContext;
     private readonly TargetSetContext targetSetContext;
@@ -51,7 +52,7 @@ public sealed class CursorAgentRuntime
         var taskMessage = BuildTaskMessage(request);
         var taskId = string.IsNullOrWhiteSpace(request.TaskId) ? Guid.NewGuid().ToString("N") : request.TaskId!;
         var state = sessionStore.GetOrAdd(taskId, () => request.State ?? TaskState.Create(request.TaskDescription, maxSteps));
-        state = state.WithStep(new TaskLimits(state.Limits.Step, maxSteps));
+        state = state.WithStep(new TaskLimits(state.Limits.Step, maxSteps, state.Limits.MaxSeenTail, state.Limits.MaxFound));
         sessionStore.Set(taskId, state);
         string? lastPortionMessage = null;
         var completedCursors = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -162,6 +163,7 @@ public sealed class CursorAgentRuntime
     {
         var updated = ApplyStateUpdate(state, command.StateUpdate);
         var result = agentResult;
+        var evidenceToAdd = new List<EvidenceItem>();
 
         if (command.Result != null)
         {
@@ -171,6 +173,7 @@ public sealed class CursorAgentRuntime
             updated = updated.WithProgress(summary ?? updated.Progress);
             var markdown = TryFindMarkdown(command.Result.Pointer, lastPortion);
             result = new AgentResult(command.Result.Pointer, markdown, command.Result.Score, command.Result.Reason);
+            evidenceToAdd.Add(command.Result);
         }
         else if (command.StateUpdate?.Found == true)
         {
@@ -185,6 +188,7 @@ public sealed class CursorAgentRuntime
 
         if (command.NewEvidence?.Count > 0)
         {
+            evidenceToAdd.AddRange(command.NewEvidence);
             firstItemIndex ??= TryMapPointerToIndex(command.NewEvidence[0].Pointer, lastPortion);
             if (result == null)
             {
@@ -192,6 +196,11 @@ public sealed class CursorAgentRuntime
                 var markdown = TryFindMarkdown(pointer, lastPortion);
                 result = new AgentResult(pointer, markdown, command.NewEvidence[0].Score, command.NewEvidence[0].Reason);
             }
+        }
+
+        if (evidenceToAdd.Count > 0)
+        {
+            updated = updated.WithEvidence(evidenceToAdd);
         }
 
         return (updated, firstItemIndex, summary, result);
@@ -206,11 +215,18 @@ public sealed class CursorAgentRuntime
 
         var goal = update.Goal ?? state.Goal;
         var found = update.Found ?? state.Found;
-        var seen = update.Seen != null ? MergeSeen(state.Seen, update.Seen) : state.Seen;
         var progress = update.Progress ?? state.Progress;
         var limits = update.Limits ?? state.Limits;
 
-        return new TaskState(goal, found, seen, progress, limits);
+        var updated = new TaskState(goal, found, state.Seen, state.Progress, limits, state.Evidence);
+        updated = updated.WithProgress(progress);
+
+        if (update.Seen != null && update.Seen.Count > 0)
+        {
+            updated = updated.WithSeen(update.Seen);
+        }
+
+        return updated;
     }
 
     private bool ShouldStop(CursorAgentRequest request, TaskState state, bool cursorComplete, int? firstItemIndex, string? summary, string taskId, AgentResult? agentResult, out CursorAgentResult result)
@@ -300,26 +316,23 @@ public sealed class CursorAgentRuntime
         return state.WithSeen(seenPointers);
     }
 
-    private static IReadOnlyCollection<string> MergeSeen(IReadOnlyCollection<string> existing, IReadOnlyCollection<string> incoming)
-    {
-        var merged = new HashSet<string>(existing, StringComparer.OrdinalIgnoreCase);
-        foreach (var item in incoming)
-        {
-            merged.Add(item);
-        }
-
-        return merged.ToArray();
-    }
-
     private static string BuildPortionFeedback(TaskState state, CursorPortionView portion)
     {
+        var seenTail = state.Seen.Count <= state.Limits.MaxSeenTail
+            ? state.Seen
+            : state.Seen.Skip(state.Seen.Count - state.Limits.MaxSeenTail).ToArray();
+
+        var foundTop = state.Evidence.Count <= SnapshotEvidenceLimit
+            ? state.Evidence
+            : state.Evidence.Skip(state.Evidence.Count - SnapshotEvidenceLimit).ToArray();
+
         var snapshot = new
         {
             goal = state.Goal,
-            alreadyFound = Array.Empty<object>(),
-            seenTail = state.Seen,
-            progress = new { state.Progress },
-            limits = new { state.Limits.Step, state.Limits.MaxSteps, state.Limits.Remaining },
+            alreadyFound = foundTop.Select(item => new { item.Pointer, item.Excerpt, item.Reason, item.Score }),
+            seenTail,
+            progress = state.Progress,
+            limits = new { state.Limits.Step, state.Limits.MaxSteps, state.Limits.Remaining, state.Limits.MaxSeenTail, state.Limits.MaxFound },
             dedupRule = "Never return a pointer already present in alreadyFound or seenTail"
         };
 
@@ -356,11 +369,12 @@ public sealed class CursorAgentRuntime
         var builder = new StringBuilder();
         builder.AppendLine("Task snapshot (compact):");
         builder.AppendLine($"goal: {state.Goal}");
-        builder.AppendLine($"found: {state.Found?.ToString() ?? "undecided"}");
-        builder.AppendLine($"seenCount: {state.Seen.Count}");
+        builder.AppendLine($"found flag: {state.Found?.ToString() ?? "undecided"}");
+        builder.AppendLine($"evidenceCount: {state.Evidence.Count} (top {SnapshotEvidenceLimit} included in Snapshot)");
+        builder.AppendLine($"seenCount: {state.Seen.Count}, seenTailLimit: {state.Limits.MaxSeenTail}");
         builder.AppendLine($"progress: {state.Progress}");
-        builder.AppendLine($"limits: step={state.Limits.Step}, maxSteps={state.Limits.MaxSteps}, remaining={state.Limits.Remaining}");
-        builder.AppendLine("dedupRule: Never return a pointer already present in found or seenTail.");
+        builder.AppendLine($"limits: step={state.Limits.Step}, maxSteps={state.Limits.MaxSteps}, remaining={state.Limits.Remaining}, maxFound={state.Limits.MaxFound}");
+        builder.AppendLine("dedupRule: Never return a pointer already present in alreadyFound or seenTail.");
         builder.AppendLine("stopCondition: stateUpdate.found = true|false or decision=done/not_found.");
         builder.AppendLine("first mention rule: prefer the earliest matching pointer in the current batch.");
         return builder.ToString();
@@ -372,7 +386,8 @@ public sealed class CursorAgentRuntime
         builder.AppendLine($"Cursor: {request.CursorName}, mode: {request.Mode}.");
         builder.AppendLine($"Goal: {request.TaskDescription}");
         builder.AppendLine("Respond with a single Decision JSON object: decision (continue|done|not_found), optional result, newEvidence array, stateUpdate, needMoreContext flag.");
-        builder.AppendLine("Deduplication: never return pointers already present in Snapshot.seenTail. Use the earliest matching pointer in the batch.");
+        builder.AppendLine("Snapshot includes goal, alreadyFound (top evidence), seenTail, progress, limits.");
+        builder.AppendLine("Deduplication: never return pointers already present in Snapshot.alreadyFound or Snapshot.seenTail. Use the earliest matching pointer in the batch.");
         builder.AppendLine("Stop when decision is done or not_found, or when stateUpdate.found is true/false.");
         builder.AppendLine("Respect the first mention rule: prefer the first matching item in the current batch.");
 
@@ -384,8 +399,9 @@ public sealed class CursorAgentRuntime
         var builder = new StringBuilder();
         builder.AppendLine("You are CursorAgent. Reply with a single JSON Decision object, no code fences.");
         builder.AppendLine("Decision schema: {\"decision\":\"continue|done|not_found\",\"newEvidence\":[...],\"stateUpdate\":{...},\"result\":{...},\"needMoreContext\":false}.");
-        builder.AppendLine("Always include stateUpdate reflecting goal, found flag, seen pointers, progress marker, and limits (step,maxSteps).");
-        builder.AppendLine("Dedup rule: never repeat pointers from Snapshot.seenTail or previously returned evidence.");
+        builder.AppendLine("State lives outside the model: always include stateUpdate reflecting goal, found flag, seen pointers, progress marker, and limits (step,maxSteps,maxSeenTail,maxFound).");
+        builder.AppendLine("Snapshot delivers goal, alreadyFound (top evidence), seenTail, progress, limits, dedupRule.");
+        builder.AppendLine("Dedup rule: never repeat pointers from Snapshot.alreadyFound or Snapshot.seenTail.");
         builder.AppendLine("First mention rule: prefer the earliest matching item in the batch when multiple options exist.");
         builder.AppendLine("Stop-condition: set decision=done with result when goal is satisfied; use decision=not_found when exhausted.");
         builder.AppendLine("Mode: ").Append(mode).Append('.');
@@ -546,10 +562,16 @@ public sealed class CursorAgentRuntime
             var maxSteps = limitsElement.TryGetProperty("maxSteps", out var maxElement) && maxElement.ValueKind == JsonValueKind.Number
                 ? maxElement.GetInt32()
                 : (int?)null;
+            var maxSeenTail = limitsElement.TryGetProperty("maxSeenTail", out var seenTailElement) && seenTailElement.ValueKind == JsonValueKind.Number
+                ? seenTailElement.GetInt32()
+                : TaskLimits.DefaultMaxSeenTail;
+            var maxFound = limitsElement.TryGetProperty("maxFound", out var maxFoundElement) && maxFoundElement.ValueKind == JsonValueKind.Number
+                ? maxFoundElement.GetInt32()
+                : TaskLimits.DefaultMaxFound;
 
             if (step.HasValue && maxSteps.HasValue)
             {
-                limits = new TaskLimits(step.Value, maxSteps.Value);
+                limits = new TaskLimits(step.Value, maxSteps.Value, maxSeenTail, maxFound);
             }
         }
 
@@ -703,6 +725,4 @@ public sealed class CursorAgentRuntime
 
         public AgentCommand WithRawContent(string raw) => this with { RawContent = raw };
     }
-
-    private sealed record EvidenceItem(string Pointer, string? Excerpt, string? Reason, double? Score);
 }
