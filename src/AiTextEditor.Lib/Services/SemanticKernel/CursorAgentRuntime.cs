@@ -99,7 +99,11 @@ public sealed class CursorAgentRuntime
                         ? newPortionMessage + "\nneedMoreContext was true in the previous step; adjust Snapshot accordingly."
                         : newPortionMessage;
 
-                    if (ShouldStop(request, state, completedCursors.Contains(request.CursorName), firstItemIndex, summary, taskId, agentResult, out completedResult))
+                    // Only stop on cursor completion if we didn't just retrieve a new portion.
+                    // If lastPortion is not null, the agent hasn't seen it yet, so we must continue.
+                    var stopOnCursorComplete = completedCursors.Contains(request.CursorName) && lastPortion == null;
+
+                    if (ShouldStop(request, state, stopOnCursorComplete, firstItemIndex, summary, taskId, agentResult, out completedResult))
                     {
                         return completedResult;
                     }
