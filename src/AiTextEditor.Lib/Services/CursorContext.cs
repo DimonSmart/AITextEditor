@@ -86,11 +86,6 @@ public sealed class CursorContext
         builder.Append(item.Index);
         builder.Append('|');
         builder.Append(item.Type);
-        builder.Append('|');
-        if (item.Level.HasValue)
-        {
-            builder.Append(item.Level.Value);
-        }
 
         builder.Append('|');
         builder.Append(item.Pointer.Serialize());
@@ -108,7 +103,7 @@ public sealed class CursorContext
 
     private static LinearItem StripText(LinearItem item)
     {
-        return new LinearItem(item.Id, item.Index, item.Type, item.Level, string.Empty, string.Empty, item.Pointer);
+        return new LinearItem(item.Index, item.Type, string.Empty, string.Empty, item.Pointer);
     }
 
     private bool IsWithinBounds(int index)
