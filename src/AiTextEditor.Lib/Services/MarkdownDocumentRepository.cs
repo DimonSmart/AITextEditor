@@ -51,19 +51,18 @@ public class MarkdownDocumentRepository
     private static IReadOnlyList<LinearItem> Reindex(IReadOnlyList<LinearItem> items)
     {
         var result = new List<LinearItem>(items.Count);
-        var nextId = items.Select(i => i.Pointer?.Id ?? i.Id).DefaultIfEmpty(0).Max() + 1;
+        var nextId = items.Select(i => i.Pointer?.Id ?? 0).DefaultIfEmpty(0).Max() + 1;
         for (var i = 0; i < items.Count; i++)
         {
             var item = items[i];
             var pointer = item.Pointer ?? new SemanticPointer(nextId++, null);
-            var id = item.Id > 0 ? item.Id : (pointer.Id > 0 ? pointer.Id : nextId++);
-            if (pointer.Id != id)
+            if (pointer.Id <= 0)
             {
-                pointer = new SemanticPointer(id, pointer.Label);
+                pointer = new SemanticPointer(nextId++, pointer.Label);
             }
+
             result.Add(item with
             {
-                Id = id,
                 Index = i,
                 Pointer = new SemanticPointer(pointer.Id, pointer.Label)
             });
@@ -90,10 +89,8 @@ public class MarkdownDocumentRepository
                 AddLinearItem(
                     items,
                     new LinearItem(
-                        headingPointer.Id,
                         index,
                         LinearItemType.Heading,
-                        heading.Level,
                         GetSourceText(mdBlock, source),
                         headingText,
                         headingPointer),
@@ -106,10 +103,8 @@ public class MarkdownDocumentRepository
                 AddLinearItem(
                     items,
                     new LinearItem(
-                        paragraphPointer.Id,
                         index,
                         LinearItemType.Paragraph,
-                        null,
                         GetSourceText(mdBlock, source),
                         GetPlainText(paragraph.Inline),
                         paragraphPointer),
@@ -129,10 +124,8 @@ public class MarkdownDocumentRepository
                 AddLinearItem(
                     items,
                     new LinearItem(
-                        listItemPointer.Id,
                         index,
                         LinearItemType.ListItem,
-                        null,
                         GetSourceText(mdBlock, source),
                         GetListItemPlainText(listItem),
                         listItemPointer),
@@ -152,10 +145,8 @@ public class MarkdownDocumentRepository
                 AddLinearItem(
                     items,
                     new LinearItem(
-                        codePointer.Id,
                         index,
                         LinearItemType.Code,
-                        null,
                         GetSourceText(mdBlock, source),
                         code.Lines.ToString(),
                         codePointer),
@@ -168,10 +159,8 @@ public class MarkdownDocumentRepository
                 AddLinearItem(
                     items,
                     new LinearItem(
-                        breakPointer.Id,
                         index,
                         LinearItemType.ThematicBreak,
-                        null,
                         GetSourceText(mdBlock, source),
                         string.Empty,
                         breakPointer),
@@ -193,10 +182,8 @@ public class MarkdownDocumentRepository
                     AddLinearItem(
                         items,
                         new LinearItem(
-                            fallbackPointer.Id,
                             index,
                             LinearItemType.Paragraph,
-                            null,
                             GetSourceText(mdBlock, source),
                             GetSourceText(mdBlock, source),
                             fallbackPointer),

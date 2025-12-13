@@ -399,9 +399,8 @@ public sealed class CursorAgentRuntime
                 item.Index,
                 item.Markdown,
                 item.Pointer.Serialize(),
-                item.Pointer.Label ?? $"{(item.Level.HasValue ? $"H{item.Level.Value}" : "H?")}.p{item.Index}",
-                item.Type.ToString(),
-                item.Level))
+                item.Pointer.Label ?? $"p{item.Index}",
+                item.Type.ToString()))
             .ToList();
 
         return new CursorPortionView(portion.CursorName, items, portion.HasMore);
