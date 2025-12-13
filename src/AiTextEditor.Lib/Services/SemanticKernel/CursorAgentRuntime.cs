@@ -52,6 +52,7 @@ public sealed class CursorAgentRuntime
         var taskMessage = BuildTaskMessage(request);
         var taskId = string.IsNullOrWhiteSpace(request.TaskId) ? Guid.NewGuid().ToString("N") : request.TaskId!;
         var state = sessionStore.GetOrAdd(taskId, () => request.State ?? TaskState.Create(request.TaskDescription, maxSteps));
+        state = NormalizeState(state, request.TaskDescription, maxSteps);
         state = state.WithStep(new TaskLimits(state.Limits.Step, maxSteps, state.Limits.MaxSeenTail, state.Limits.MaxFound));
         sessionStore.Set(taskId, state);
         string? lastPortionMessage = null;
@@ -119,6 +120,23 @@ public sealed class CursorAgentRuntime
         var overflowState = state.WithProgress(summary ?? state.Progress);
         sessionStore.Set(taskId, overflowState);
         return new CursorAgentResult(false, "Max steps exceeded", firstItemIndex, summary, request.TargetSetId, taskId, overflowState, agentResult?.SemanticPointer, agentResult?.Markdown, agentResult?.Confidence, agentResult?.Reasons);
+    }
+
+    private static TaskState NormalizeState(TaskState state, string goal, int maxSteps)
+    {
+        var limits = state.Limits ?? new TaskLimits(0, maxSteps, TaskLimits.DefaultMaxSeenTail, TaskLimits.DefaultMaxFound);
+        var adjustedLimits = new TaskLimits(
+            Math.Min(limits.Step, maxSteps),
+            maxSteps,
+            limits.MaxSeenTail <= 0 ? TaskLimits.DefaultMaxSeenTail : limits.MaxSeenTail,
+            limits.MaxFound <= 0 ? TaskLimits.DefaultMaxFound : limits.MaxFound);
+
+        var seen = state.Seen ?? Array.Empty<string>();
+        var evidence = state.Evidence ?? Array.Empty<EvidenceItem>();
+        var progress = string.IsNullOrWhiteSpace(state.Progress) ? "not_started" : state.Progress;
+        var normalizedGoal = string.IsNullOrWhiteSpace(state.Goal) ? goal : state.Goal;
+
+        return new TaskState(normalizedGoal!, state.Found, seen, progress!, adjustedLimits, evidence);
     }
 
     private async Task<AgentCommand?> GetNextCommandAsync(string systemPrompt, string taskMessage, string snapshotMessage, string? lastPortionMessage, CancellationToken cancellationToken, int step)
