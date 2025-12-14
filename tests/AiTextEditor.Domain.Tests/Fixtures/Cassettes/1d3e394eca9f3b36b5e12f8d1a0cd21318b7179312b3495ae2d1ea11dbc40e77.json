@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-185\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765660733,\u0022model\u0022:\u0022deepseek-v3.1:671b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022\u041F\u0440\u043E\u0444\u0435\u0441\u0441\u043E\u0440 \u0417\u0432\u0451\u0437\u0434\u043E\u0447\u043A\u0438\u043D \u0432\u043F\u0435\u0440\u0432\u044B\u0435 \u0443\u043F\u043E\u043C\u0438\u043D\u0430\u0435\u0442\u0441\u044F \u0432 \u043A\u043D\u0438\u0433\u0435 \u043F\u043E \u0430\u0434\u0440\u0435\u0441\u0443 **1.1.1.p21**.\u0022},\u0022finish_reason\u0022:\u0022stop\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:922,\u0022completion_tokens\u0022:33,\u0022total_tokens\u0022:955}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sat, 13 Dec 2025 21:18:53 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

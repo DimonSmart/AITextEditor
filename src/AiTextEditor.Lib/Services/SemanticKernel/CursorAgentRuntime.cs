@@ -109,7 +109,15 @@ public sealed class CursorAgentRuntime
 
         var overflowState = state.WithProgress(summary ?? state.Progress);
         sessionStore.Set(taskId, overflowState);
-        return new CursorAgentResult(false, "Max steps exceeded", firstItemIndex, summary, request.TargetSetId, taskId, overflowState, agentResult?.SemanticPointer, agentResult?.Markdown, agentResult?.Confidence, agentResult?.Reasons);
+        return new CursorAgentResult(false, "Max steps exceeded", firstItemIndex, summary, request.TargetSetId, taskId, overflowState, 
+            PointerFrom: agentResult?.SemanticPointer, 
+            Excerpt: agentResult?.Excerpt ?? agentResult?.Markdown, 
+            WhyThis: agentResult?.Reasons, 
+            Evidence: state.Evidence,
+            SemanticPointer: agentResult?.SemanticPointer, 
+            Markdown: agentResult?.Markdown, 
+            Confidence: agentResult?.Confidence, 
+            Reasons: agentResult?.Reasons);
     }
 
     private static TaskState NormalizeState(TaskState state, string goal, int maxSteps)
@@ -171,11 +179,9 @@ public sealed class CursorAgentRuntime
     {
         var updated = ApplyStateUpdate(state, command.StateUpdate);
 
-        // Fix: Models often return "found": false to indicate "not found YET".
-        // We should only treat it as a terminal "not found" if the decision is explicitly "not_found".
-        if (command.Decision != "not_found" && updated.Found == false)
+        if (command.Decision == "continue")
         {
-            updated = updated with { Found = null };
+            updated = updated with { Found = state.Found };
         }
 
         var result = agentResult;
@@ -189,11 +195,15 @@ public sealed class CursorAgentRuntime
             updated = updated.WithProgress(summary ?? updated.Progress);
             var markdown = TryFindMarkdown(command.Result.Pointer, lastPortion) ?? command.Result.Excerpt;
             var label = TryFindPointerLabel(command.Result.Pointer, lastPortion) ?? command.Result.Pointer;
-            result = new AgentResult(label, markdown, command.Result.Score, command.Result.Reason);
+            result = new AgentResult(label, markdown, command.Result.Score, command.Result.Reason, command.Result.Excerpt);
             evidenceToAdd.Add(command.Result);
         }
-        else if (command.StateUpdate?.Found == true)
+        else if (command.Decision == "done")
         {
+            if (updated.Found != false)
+            {
+                updated = updated with { Found = true };
+            }
             summary ??= updated.Progress;
         }
         else if (command.Decision == "not_found")
@@ -212,7 +222,7 @@ public sealed class CursorAgentRuntime
                 var pointer = command.NewEvidence[0].Pointer;
                 var markdown = TryFindMarkdown(pointer, lastPortion) ?? command.NewEvidence[0].Excerpt;
                 var label = TryFindPointerLabel(pointer, lastPortion) ?? pointer;
-                result = new AgentResult(label, markdown, command.NewEvidence[0].Score, command.NewEvidence[0].Reason);
+                result = new AgentResult(label, markdown, command.NewEvidence[0].Score, command.NewEvidence[0].Reason, command.NewEvidence[0].Excerpt);
             }
         }
 
@@ -231,12 +241,10 @@ public sealed class CursorAgentRuntime
             return state;
         }
 
-        var goal = update.Goal ?? state.Goal;
         var found = update.Found ?? state.Found;
         var progress = update.Progress ?? state.Progress;
-        var limits = state.Limits;
 
-        var updated = new TaskState(goal, found, state.Seen, state.Progress, limits, state.Evidence);
+        var updated = new TaskState(state.Goal, found, state.Seen, state.Progress, state.Limits, state.Evidence);
         updated = updated.WithProgress(progress);
 
         return updated;
@@ -252,19 +260,43 @@ public sealed class CursorAgentRuntime
 
         if (state.Found == false)
         {
-            result = new CursorAgentResult(false, summary ?? state.Progress, firstItemIndex, summary ?? state.Progress, request.TargetSetId, taskId, state, agentResult?.SemanticPointer, agentResult?.Markdown, agentResult?.Confidence, agentResult?.Reasons);
+            result = new CursorAgentResult(false, summary ?? state.Progress, firstItemIndex, summary ?? state.Progress, request.TargetSetId, taskId, state, 
+                PointerFrom: agentResult?.SemanticPointer, 
+                Excerpt: agentResult?.Excerpt ?? agentResult?.Markdown, 
+                WhyThis: agentResult?.Reasons, 
+                Evidence: state.Evidence,
+                SemanticPointer: agentResult?.SemanticPointer, 
+                Markdown: agentResult?.Markdown, 
+                Confidence: agentResult?.Confidence, 
+                Reasons: agentResult?.Reasons);
             return true;
         }
 
         if (state.Limits.Remaining <= 0)
         {
-            result = new CursorAgentResult(false, "TaskState limits reached", firstItemIndex, summary ?? state.Progress, request.TargetSetId, taskId, state, agentResult?.SemanticPointer, agentResult?.Markdown, agentResult?.Confidence, agentResult?.Reasons);
+            result = new CursorAgentResult(false, "TaskState limits reached", firstItemIndex, summary ?? state.Progress, request.TargetSetId, taskId, state, 
+                PointerFrom: agentResult?.SemanticPointer, 
+                Excerpt: agentResult?.Excerpt ?? agentResult?.Markdown, 
+                WhyThis: agentResult?.Reasons, 
+                Evidence: state.Evidence,
+                SemanticPointer: agentResult?.SemanticPointer, 
+                Markdown: agentResult?.Markdown, 
+                Confidence: agentResult?.Confidence, 
+                Reasons: agentResult?.Reasons);
             return true;
         }
 
         if (cursorComplete)
         {
-            result = new CursorAgentResult(false, state.Progress ?? "Cursor exhausted with no match", firstItemIndex, summary ?? state.Progress, request.TargetSetId, taskId, state, agentResult?.SemanticPointer, agentResult?.Markdown, agentResult?.Confidence, agentResult?.Reasons);
+            result = new CursorAgentResult(false, state.Progress ?? "Cursor exhausted with no match", firstItemIndex, summary ?? state.Progress, request.TargetSetId, taskId, state, 
+                PointerFrom: agentResult?.SemanticPointer, 
+                Excerpt: agentResult?.Excerpt ?? agentResult?.Markdown, 
+                WhyThis: agentResult?.Reasons, 
+                Evidence: state.Evidence,
+                SemanticPointer: agentResult?.SemanticPointer, 
+                Markdown: agentResult?.Markdown, 
+                Confidence: agentResult?.Confidence, 
+                Reasons: agentResult?.Reasons);
             return true;
         }
 
@@ -276,10 +308,42 @@ public sealed class CursorAgentRuntime
     {
         return request.Mode switch
         {
-            CursorAgentMode.FirstMatch => new CursorAgentResult(true, null, firstItemIndex, summary, request.TargetSetId, taskId, state, agentResult?.SemanticPointer, agentResult?.Markdown, agentResult?.Confidence, agentResult?.Reasons),
-            CursorAgentMode.AggregateSummary => new CursorAgentResult(true, null, null, summary, request.TargetSetId, taskId, state, agentResult?.SemanticPointer, agentResult?.Markdown, agentResult?.Confidence, agentResult?.Reasons),
-            CursorAgentMode.CollectToTargetSet => new CursorAgentResult(true, null, null, summary, request.TargetSetId, taskId, state, agentResult?.SemanticPointer, agentResult?.Markdown, agentResult?.Confidence, agentResult?.Reasons),
-            _ => new CursorAgentResult(false, "Unsupported mode", null, summary, request.TargetSetId, taskId, state, agentResult?.SemanticPointer, agentResult?.Markdown, agentResult?.Confidence, agentResult?.Reasons)
+            CursorAgentMode.FirstMatch => new CursorAgentResult(true, null, firstItemIndex, summary, request.TargetSetId, taskId, state, 
+                PointerFrom: agentResult?.SemanticPointer, 
+                Excerpt: agentResult?.Excerpt ?? agentResult?.Markdown, 
+                WhyThis: agentResult?.Reasons, 
+                Evidence: state.Evidence,
+                SemanticPointer: agentResult?.SemanticPointer, 
+                Markdown: agentResult?.Markdown, 
+                Confidence: agentResult?.Confidence, 
+                Reasons: agentResult?.Reasons),
+            CursorAgentMode.AggregateSummary => new CursorAgentResult(true, null, null, summary, request.TargetSetId, taskId, state, 
+                PointerFrom: agentResult?.SemanticPointer, 
+                Excerpt: agentResult?.Excerpt ?? agentResult?.Markdown, 
+                WhyThis: agentResult?.Reasons, 
+                Evidence: state.Evidence,
+                SemanticPointer: agentResult?.SemanticPointer, 
+                Markdown: agentResult?.Markdown, 
+                Confidence: agentResult?.Confidence, 
+                Reasons: agentResult?.Reasons),
+            CursorAgentMode.CollectToTargetSet => new CursorAgentResult(true, null, null, summary, request.TargetSetId, taskId, state, 
+                PointerFrom: agentResult?.SemanticPointer, 
+                Excerpt: agentResult?.Excerpt ?? agentResult?.Markdown, 
+                WhyThis: agentResult?.Reasons, 
+                Evidence: state.Evidence,
+                SemanticPointer: agentResult?.SemanticPointer, 
+                Markdown: agentResult?.Markdown, 
+                Confidence: agentResult?.Confidence, 
+                Reasons: agentResult?.Reasons),
+            _ => new CursorAgentResult(false, "Unsupported mode", null, summary, request.TargetSetId, taskId, state, 
+                PointerFrom: agentResult?.SemanticPointer, 
+                Excerpt: agentResult?.Excerpt ?? agentResult?.Markdown, 
+                WhyThis: agentResult?.Reasons, 
+                Evidence: state.Evidence,
+                SemanticPointer: agentResult?.SemanticPointer, 
+                Markdown: agentResult?.Markdown, 
+                Confidence: agentResult?.Confidence, 
+                Reasons: agentResult?.Reasons)
         };
     }
 
@@ -331,8 +395,9 @@ public sealed class CursorAgentRuntime
         {
             batchId = $"cursor:{portion.CursorName}:step-{state.Limits.Step}",
             hasMore = portion.HasMore,
-            items = portion.Items.Select(item => new
+            items = portion.Items.Select((item, idx) => new
             {
+                index = idx,
                 pointerId = item.PointerId,
                 pointerLabel = item.PointerLabel,
                 type = item.Type,
@@ -364,7 +429,7 @@ public sealed class CursorAgentRuntime
         builder.AppendLine($"limits: step={state.Limits.Step}, maxSteps={state.Limits.MaxSteps}, remaining={state.Limits.Remaining}, maxFound={state.Limits.MaxFound}");
         builder.AppendLine("dedupRule: Never return a pointer already present in alreadyFound or seenTail.");
         builder.AppendLine("stopCondition: stateUpdate.found = true|false or decision=done/not_found.");
-        builder.AppendLine("first mention rule: prefer the earliest matching pointer in the current batch.");
+        builder.AppendLine("first mention rule: Scan batch from top to bottom. Stop at the VERY FIRST item that matches. Do not look for 'better' matches later in the batch.");
         return builder.ToString();
     }
 
@@ -376,8 +441,8 @@ public sealed class CursorAgentRuntime
         builder.AppendLine("Respond with a single Decision JSON object: decision (continue|done|not_found), optional result, newEvidence array, stateUpdate, needMoreContext flag.");
         builder.AppendLine("Snapshot includes goal, evidenceCount, seenCount, progress, limits.");
         builder.AppendLine("Deduplication: never return pointers already present in Snapshot.alreadyFound or Snapshot.seenTail. Use the earliest matching pointer in the batch.");
-        builder.AppendLine("Stop when decision is done or not_found, or when stateUpdate.found is true/false.");
-        builder.AppendLine("Respect the first mention rule: prefer the first matching item in the current batch.");
+        builder.AppendLine("Stop when decision is done or not_found.");
+        builder.AppendLine("Respect the first mention rule: Scan strictly from top to bottom. Prefer the first matching item in the current batch.");
 
         return builder.ToString();
     }
@@ -387,13 +452,19 @@ public sealed class CursorAgentRuntime
         var builder = new StringBuilder();
         builder.AppendLine("You are CursorAgent. Reply with a single JSON Decision object, no code fences.");
         builder.AppendLine("Decision schema: {\"decision\":\"continue|done|not_found\",\"newEvidence\":[...],\"stateUpdate\":{...},\"result\":{...},\"needMoreContext\":false}.");
-        builder.AppendLine("State lives outside the model: always include stateUpdate reflecting goal, found flag, progress marker.");
-        builder.AppendLine("Do NOT include seen or limits in stateUpdate.");
+        builder.AppendLine("State lives outside the model. Do not echo goal/seen/limits back.");
+        builder.AppendLine("stateUpdate is optional and must contain only fields you intend to change (progress, found). Do NOT include seenCount.");
         builder.AppendLine("Snapshot delivers goal, evidenceCount, seenCount, progress, limits, dedupRule.");
         builder.AppendLine("Dedup rule: never repeat pointers from Snapshot.alreadyFound or Snapshot.seenTail.");
-        builder.AppendLine("First mention rule: prefer the earliest matching item in the batch when multiple options exist.");
+        builder.AppendLine("First mention rule: Scan the batch from top to bottom. Stop at the VERY FIRST item that matches. Do not scan the rest of the batch for 'better' matches if a valid match is found early.");
         builder.AppendLine("Type preference: When looking for content/mentions, prefer 'Paragraph' over 'Heading' unless the user asks for titles/headings.");
         builder.AppendLine("Stop-condition: set decision=done with result when goal is satisfied; use decision=not_found when exhausted.");
+
+        if (mode == CursorAgentMode.FirstMatch)
+        {
+            builder.AppendLine("In FirstMatch mode, do not add items to newEvidence unless they are the match. Just output decision: continue.");
+        }
+
         builder.AppendLine("Mode: ").Append(mode).Append('.');
         return builder.ToString();
     }
@@ -590,6 +661,11 @@ public sealed class CursorAgentRuntime
             excerpt = markdownElement.GetString();
         }
 
+        if (excerpt == null && element.TryGetProperty("text", out var textElement) && textElement.ValueKind == JsonValueKind.String)
+        {
+            excerpt = textElement.GetString();
+        }
+
         var reason = element.TryGetProperty("reason", out var reasonElement) && reasonElement.ValueKind == JsonValueKind.String
             ? reasonElement.GetString()
             : null;
@@ -737,7 +813,7 @@ public sealed class CursorAgentRuntime
         };
     }
 
-    private sealed record AgentResult(string SemanticPointer, string? Markdown, double? Confidence, string? Reasons);
+    private sealed record AgentResult(string SemanticPointer, string? Markdown, double? Confidence, string? Reasons, string? Excerpt);
 
     private sealed record AgentCommand(string Decision, IReadOnlyList<EvidenceItem>? NewEvidence, EvidenceItem? Result, bool NeedMoreContext, TaskStateUpdate? StateUpdate)
     {

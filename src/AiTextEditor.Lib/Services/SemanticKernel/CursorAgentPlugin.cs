@@ -36,6 +36,11 @@ public class CursorAgentPlugin(
         [Description("Include markdown content in responses.")] bool includeContent)
     {
         ValidateCursorName(cursorName);
+
+        // Clamp to recommended hard maximums
+        maxElements = Math.Clamp(maxElements, 1, CursorParameters.MaxElementsUpperBound);
+        maxBytes = Math.Clamp(maxBytes, 1, CursorParameters.MaxBytesUpperBound);
+
         ValidatePortionLimits(maxElements, maxBytes);
 
         var parameters = new CursorParameters(maxElements, maxBytes, includeContent);
@@ -153,8 +158,11 @@ public class CursorAgentPlugin(
                 result.State?.Limits,
                 result.State?.Evidence 
             },
-            result.SemanticPointer,
-            result.Markdown
+            result.PointerFrom,
+            result.PointerTo,
+            result.Excerpt,
+            result.WhyThis,
+            result.Evidence
         };
 
         return JsonSerializer.Serialize(lightweightResult, SerializerOptions);

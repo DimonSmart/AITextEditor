@@ -4,8 +4,8 @@ namespace AiTextEditor.Lib.Model;
 
 public sealed record CursorParameters
 {
-    public const int MaxElementsUpperBound = 200;
-    public const int MaxBytesUpperBound = 65_536;
+    public const int MaxElementsUpperBound = 50;
+    public const int MaxBytesUpperBound = 32_768;
 
     public CursorParameters(int maxElements, int maxBytes, bool includeContent)
     {

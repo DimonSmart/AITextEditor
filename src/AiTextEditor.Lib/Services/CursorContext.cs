@@ -76,7 +76,7 @@ public sealed class CursorContext
 
     private void CreateDefaultCursor(string name, bool forward)
     {
-        var parameters = new CursorParameters(20, 2048, true);
+        var parameters = new CursorParameters(50, 32768, true);
         CreateCursor(name, parameters, forward);
     }
 

@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\u0022id\u0022:\u0022chatcmpl-398\u0022,\u0022object\u0022:\u0022chat.completion\u0022,\u0022created\u0022:1765660360,\u0022model\u0022:\u0022deepseek-v3.1:671b-cloud\u0022,\u0022system_fingerprint\u0022:\u0022fp_ollama\u0022,\u0022choices\u0022:[{\u0022index\u0022:0,\u0022message\u0022:{\u0022role\u0022:\u0022assistant\u0022,\u0022content\u0022:\u0022{\\n  \\\u0022decision\\\u0022: \\\u0022continue\\\u0022,\\n  \\\u0022newEvidence\\\u0022: [],\\n  \\\u0022stateUpdate\\\u0022: {\\\u0022progress\\\u0022: \\\u0022searching\\\u0022},\\n  \\\u0022needMoreContext\\\u0022: false\\n}\u0022},\u0022finish_reason\u0022:\u0022stop\u0022}],\u0022usage\u0022:{\u0022prompt_tokens\u0022:795,\u0022completion_tokens\u0022:36,\u0022total_tokens\u0022:831}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sat, 13 Dec 2025 21:12:40 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

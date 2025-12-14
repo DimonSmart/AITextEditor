@@ -24,6 +24,12 @@ public sealed record CursorAgentResult(
     string? TargetSetId,
     string? TaskId = null,
     AiTextEditor.Lib.Services.SemanticKernel.TaskState? State = null,
+    string? PointerFrom = null,
+    string? PointerTo = null,
+    string? Excerpt = null,
+    string? WhyThis = null,
+    System.Collections.Generic.IReadOnlyList<AiTextEditor.Lib.Services.SemanticKernel.EvidenceItem>? Evidence = null,
+    // Deprecated fields kept for backward compatibility if needed, or mapped to new ones
     string? SemanticPointer = null,
     string? Markdown = null,
     double? Confidence = null,
