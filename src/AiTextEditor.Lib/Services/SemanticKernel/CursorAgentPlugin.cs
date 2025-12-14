@@ -12,7 +12,6 @@ public class CursorAgentPlugin(
     CursorAgentRuntime cursorAgentRuntime,
     ILogger<CursorAgentPlugin> logger)
 {
-    private static readonly string[] AllowedModeNames = Enum.GetNames<CursorAgentMode>();
 
     private static readonly JsonSerializerOptions SerializerOptions = new()
     {
@@ -62,9 +61,8 @@ public class CursorAgentPlugin(
         [Description("Maximum items per portion.")] int maxElements,
         [Description("Maximum bytes per portion.")] int maxBytes,
         [Description("Include markdown content in responses.")] bool includeContent,
-        [Description("Mode: FirstMatch, CollectToTargetSet, or AggregateSummary.")] string mode,
         [Description("Natural language task for the agent.")] string taskDescription,
-        [Description("Target set id for CollectToTargetSet mode.")] string? targetSetId = null,
+        [Description("Optional target set id for storing evidence.")] string? targetSetId = null,
         [Description("Optional safety limit for steps.")] int? maxSteps = null,
         [Description("Existing task id to continue the same agent session.")] string? taskId = null,
         [Description("Serialized TaskState to resume from a previous step.")] TaskState? state = null)
@@ -75,21 +73,6 @@ public class CursorAgentPlugin(
         ValidatePortionLimits(maxElements, maxBytes);
         var parameters = new CursorParameters(maxElements, maxBytes, includeContent);
 
-        if (!Enum.TryParse<CursorAgentMode>(mode, true, out var parsedMode))
-        {
-            var allowedValues = string.Join(", ", AllowedModeNames);
-            var error = CreateErrorResult($"Unsupported cursor agent mode '{mode}'. Allowed values: {allowedValues}.", targetSetId);
-            logger.LogWarning("run_cursor_agent_invalid_mode: mode={Mode}", mode);
-            return JsonSerializer.Serialize(error, SerializerOptions);
-        }
-
-        if (parsedMode == CursorAgentMode.CollectToTargetSet && string.IsNullOrWhiteSpace(targetSetId))
-        {
-            var error = CreateErrorResult("targetSetId is required for CollectToTargetSet mode.");
-            logger.LogWarning("run_cursor_agent_missing_target_set");
-            return JsonSerializer.Serialize(error, SerializerOptions);
-        }
-
         if (!TryResolveMaxSteps(maxSteps, out var resolvedSteps, out var stepsError))
         {
             var error = CreateErrorResult(stepsError!, targetSetId);
@@ -97,21 +80,23 @@ public class CursorAgentPlugin(
             return JsonSerializer.Serialize(error, SerializerOptions);
         }
 
-        var request = new CursorAgentRequest(parameters, parsedMode, taskDescription, targetSetId, resolvedSteps, taskId, state);
+        var request = new CursorAgentRequest(parameters, taskDescription, targetSetId, resolvedSteps, taskId, state);
         var result = await cursorAgentRuntime.RunAsync(request);
 
-        logger.LogInformation("run_cursor_agent: mode={Mode}, success={Success}, maxElements={MaxElements}, maxBytes={MaxBytes}, includeContent={IncludeContent}",
-            parsedMode, result.Success, parameters.MaxElements, parameters.MaxBytes, parameters.IncludeContent);
+        logger.LogInformation("run_cursor_agent: success={Success}, maxElements={MaxElements}, maxBytes={MaxBytes}, includeContent={IncludeContent}",
+            result.Success, parameters.MaxElements, parameters.MaxBytes, parameters.IncludeContent);
         
         // Create a lightweight result for the LLM to avoid token limit issues and distractions
         var lightweightResult = new
         {
             result.Success,
+            result.Reason,
             result.FirstItemIndex,
             result.Summary,
+            result.TargetSetId,
             result.TaskId,
-            State = new 
-            { 
+            State = new
+            {
                 result.State?.Goal, 
                 result.State?.Found, 
                 result.State?.Progress,
