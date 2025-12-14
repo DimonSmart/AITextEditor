@@ -8,7 +8,8 @@ public enum CursorAgentMode
 }
 
 public sealed record CursorAgentRequest(
-    string CursorName,
+    CursorParameters Parameters,
+    bool Forward,
     CursorAgentMode Mode,
     string TaskDescription,
     string? TargetSetId = null,

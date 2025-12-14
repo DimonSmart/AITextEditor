@@ -8,8 +8,6 @@ public class DocumentContext(LinearDocument document)
 {
     public LinearDocument Document { get; } = document;
 
-    public CursorContext CursorContext { get; } = new(document);
-
     public TargetSetContext TargetSetContext { get; } = new();
 
     public SessionStore SessionStore { get; } = new();
