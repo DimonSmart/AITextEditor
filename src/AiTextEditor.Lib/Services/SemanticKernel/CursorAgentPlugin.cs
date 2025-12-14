@@ -12,7 +12,6 @@ public class CursorAgentPlugin(
     CursorAgentRuntime cursorAgentRuntime,
     ILogger<CursorAgentPlugin> logger)
 {
-    private const int MaxCursorNameLength = 96;
     private static readonly string[] AllowedModeNames = Enum.GetNames<CursorAgentMode>();
 
     private static readonly JsonSerializerOptions SerializerOptions = new()
@@ -25,52 +24,6 @@ public class CursorAgentPlugin(
     private readonly DocumentContext documentContext = documentContext;
     private readonly CursorAgentRuntime cursorAgentRuntime = cursorAgentRuntime;
     private readonly ILogger<CursorAgentPlugin> logger = logger;
-
-    [KernelFunction]
-    [Description("Create or reset a cursor with paging settings.")]
-    public string CreateCursor(
-        [Description("Custom cursor name.")] string cursorName,
-        [Description("Walk forward when true, backward when false.")] bool forward,
-        [Description("Maximum items per portion.")] int maxElements,
-        [Description("Maximum bytes per portion.")] int maxBytes,
-        [Description("Include markdown content in responses.")] bool includeContent)
-    {
-        ValidateCursorName(cursorName);
-
-        // Clamp to recommended hard maximums
-        maxElements = Math.Clamp(maxElements, 1, CursorParameters.MaxElementsUpperBound);
-        maxBytes = Math.Clamp(maxBytes, 1, CursorParameters.MaxBytesUpperBound);
-
-        ValidatePortionLimits(maxElements, maxBytes);
-
-        var parameters = new CursorParameters(maxElements, maxBytes, includeContent);
-        documentContext.CursorContext.CreateCursor(cursorName, parameters, forward);
-        var handle = new CursorHandle(cursorName, forward, parameters.MaxElements, parameters.MaxBytes, parameters.IncludeContent);
-        logger.LogInformation("cursor_create: {CursorName}, forward={Forward}", cursorName, forward);
-        return JsonSerializer.Serialize(handle, SerializerOptions);
-    }
-
-    [KernelFunction]
-    [Description("Return the next chunk from a cursor.")]
-    public string CursorNext([Description("Cursor name returned by CreateCursor.")] string cursorName)
-    {
-        ValidateCursorName(cursorName);
-
-        var portion = documentContext.CursorContext.GetNextPortion(cursorName);
-        if (portion == null)
-        {
-            var cursorExists = documentContext.CursorContext.Cursors.ContainsKey(cursorName);
-            var message = cursorExists
-                ? $"Cursor '{cursorName}' has reached the end. Reset it before requesting more portions."
-                : $"Cursor '{cursorName}' does not exist. Call CreateCursor before CursorNext.";
-
-            throw new InvalidOperationException(message);
-        }
-
-        var snapshot = CursorPortionView.FromPortion(portion);
-        logger.LogInformation("cursor_next: {CursorName}, count={Count}, hasMore={HasMore}", cursorName, snapshot.Items.Count, snapshot.HasMore);
-        return JsonSerializer.Serialize(snapshot, SerializerOptions);
-    }
 
     [KernelFunction]
     [Description("Create a target set for collecting item indices.")]
@@ -106,7 +59,10 @@ public class CursorAgentPlugin(
     [KernelFunction]
     [Description("Launch a cursor agent with a concise system prompt.")]
     public async Task<string> RunCursorAgent(
-        [Description("Cursor name to operate on.")] string cursorName,
+        [Description("Walk forward when true, backward when false.")] bool forward,
+        [Description("Maximum items per portion.")] int maxElements,
+        [Description("Maximum bytes per portion.")] int maxBytes,
+        [Description("Include markdown content in responses.")] bool includeContent,
         [Description("Mode: FirstMatch, CollectToTargetSet, or AggregateSummary.")] string mode,
         [Description("Natural language task for the agent.")] string taskDescription,
         [Description("Target set id for CollectToTargetSet mode.")] string? targetSetId = null,
@@ -114,7 +70,11 @@ public class CursorAgentPlugin(
         [Description("Existing task id to continue the same agent session.")] string? taskId = null,
         [Description("Serialized TaskState to resume from a previous step.")] TaskState? state = null)
     {
-        ValidateCursorName(cursorName);
+        maxElements = Math.Clamp(maxElements, 1, CursorParameters.MaxElementsUpperBound);
+        maxBytes = Math.Clamp(maxBytes, 1, CursorParameters.MaxBytesUpperBound);
+
+        ValidatePortionLimits(maxElements, maxBytes);
+        var parameters = new CursorParameters(maxElements, maxBytes, includeContent);
 
         if (!Enum.TryParse<CursorAgentMode>(mode, true, out var parsedMode))
         {
@@ -138,10 +98,11 @@ public class CursorAgentPlugin(
             return JsonSerializer.Serialize(error, SerializerOptions);
         }
 
-        var request = new CursorAgentRequest(cursorName, parsedMode, taskDescription, targetSetId, resolvedSteps, taskId, state);
+        var request = new CursorAgentRequest(parameters, forward, parsedMode, taskDescription, targetSetId, resolvedSteps, taskId, state);
         var result = await cursorAgentRuntime.RunAsync(request);
 
-        logger.LogInformation("run_cursor_agent: cursor={Cursor}, mode={Mode}, success={Success}", cursorName, parsedMode, result.Success);
+        logger.LogInformation("run_cursor_agent: direction={Direction}, mode={Mode}, success={Success}, maxElements={MaxElements}, maxBytes={MaxBytes}, includeContent={IncludeContent}",
+            forward ? "forward" : "backward", parsedMode, result.Success, parameters.MaxElements, parameters.MaxBytes, parameters.IncludeContent);
         
         // Create a lightweight result for the LLM to avoid token limit issues and distractions
         var lightweightResult = new
@@ -166,19 +127,6 @@ public class CursorAgentPlugin(
         };
 
         return JsonSerializer.Serialize(lightweightResult, SerializerOptions);
-    }
-
-    private static void ValidateCursorName(string cursorName)
-    {
-        if (string.IsNullOrWhiteSpace(cursorName))
-        {
-            throw new ArgumentException("cursorName must not be empty.", nameof(cursorName));
-        }
-
-        if (cursorName.Length > MaxCursorNameLength)
-        {
-            throw new ArgumentException($"cursorName cannot exceed {MaxCursorNameLength} characters.", nameof(cursorName));
-        }
     }
 
     private static void ValidatePortionLimits(int maxElements, int maxBytes)

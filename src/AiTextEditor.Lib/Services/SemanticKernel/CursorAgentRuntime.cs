@@ -1,4 +1,5 @@
 using AiTextEditor.Lib.Model;
+using AiTextEditor.Lib.Services;
 using DimonSmart.AiUtils;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel.ChatCompletion;
@@ -56,7 +57,8 @@ public sealed class CursorAgentRuntime
         state = state.WithStep(new TaskLimits(state.Limits.Step, maxSteps, state.Limits.MaxSeenTail, state.Limits.MaxFound));
         sessionStore.Set(taskId, state);
         
-        var completedCursors = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var cursor = new CursorStream(documentContext.Document, request.Parameters, request.Forward);
+        var cursorComplete = false;
         int? firstItemIndex = null;
         string? summary = request.State?.Progress;
         CursorPortionView? lastPortion = null;
@@ -69,7 +71,7 @@ public sealed class CursorAgentRuntime
 
             if (lastPortion == null)
             {
-                TryHandleCursorNext(request, completedCursors, state, out state, out lastPortion);
+                TryHandleCursorNext(cursor, state, out state, out lastPortion, ref cursorComplete);
                 sessionStore.Set(taskId, state);
             }
 
@@ -95,7 +97,7 @@ public sealed class CursorAgentRuntime
                 }
             }
 
-            if (ShouldStop(request, state, completedCursors.Contains(request.CursorName), firstItemIndex, summary, taskId, agentResult, out var completedResult))
+            if (ShouldStop(request, state, cursorComplete, firstItemIndex, summary, taskId, agentResult, out var completedResult))
             {
                 return completedResult;
             }
@@ -347,19 +349,20 @@ public sealed class CursorAgentRuntime
         };
     }
 
-    private bool TryHandleCursorNext(CursorAgentRequest request, HashSet<string> completedCursors, TaskState state, out TaskState updatedState, out CursorPortionView? lastPortion)
+    private bool TryHandleCursorNext(CursorStream cursor, TaskState state, out TaskState updatedState, out CursorPortionView? lastPortion, ref bool cursorComplete)
     {
         updatedState = state;
         lastPortion = null;
 
-        if (completedCursors.Contains(request.CursorName))
+        if (cursorComplete)
         {
             return false;
         }
 
-        var portion = documentContext.CursorContext.GetNextPortion(request.CursorName);
+        var portion = cursor.NextPortion();
         if (portion == null)
         {
+            cursorComplete = true;
             return false;
         }
 
@@ -369,11 +372,11 @@ public sealed class CursorAgentRuntime
         var pointerLabel = snapshot.Items.FirstOrDefault()?.PointerLabel ?? "<none>";
         var snippet = snapshot.HasMore && snapshot.Items.Count > 0 ? Truncate(snapshot.Items[0].Markdown, 200) : string.Empty;
         var eventName = snapshot.HasMore ? "cursor_batch" : "cursor_batch_complete";
-        logger.LogDebug("{Event}: cursor={Cursor}, count={Count}, hasMore={HasMore}, pointerLabel={PointerLabel}, snippet={Snippet}", eventName, snapshot.CursorName, snapshot.Items.Count, snapshot.HasMore, pointerLabel, snippet);
+        logger.LogDebug("{Event}: count={Count}, hasMore={HasMore}, pointerLabel={PointerLabel}, snippet={Snippet}", eventName, snapshot.Items.Count, snapshot.HasMore, pointerLabel, snippet);
 
         if (!snapshot.HasMore)
         {
-            completedCursors.Add(snapshot.CursorName);
+            cursorComplete = true;
             if (updatedState.Found != true)
             {
                 updatedState = updatedState.WithProgress("Cursor stream is complete.");
@@ -393,7 +396,7 @@ public sealed class CursorAgentRuntime
     {
         var batch = new
         {
-            batchId = $"cursor:{portion.CursorName}:step-{state.Limits.Step}",
+            batchId = $"cursor:local:step-{state.Limits.Step}",
             hasMore = portion.HasMore,
             items = portion.Items.Select((item, idx) => new
             {
@@ -436,7 +439,7 @@ public sealed class CursorAgentRuntime
     private static string BuildTaskMessage(CursorAgentRequest request)
     {
         var builder = new StringBuilder();
-        builder.AppendLine($"Cursor: {request.CursorName}, mode: {request.Mode}.");
+        builder.AppendLine($"Cursor: {(request.Forward ? "forward" : "backward")}, maxElements={request.Parameters.MaxElements}, maxBytes={request.Parameters.MaxBytes}, includeContent={request.Parameters.IncludeContent}, mode: {request.Mode}.");
         builder.AppendLine($"Goal: {request.TaskDescription}");
         builder.AppendLine("Respond with a single Decision JSON object: decision (continue|done|not_found), optional result, newEvidence array, stateUpdate, needMoreContext flag.");
         builder.AppendLine("You are processing one batch of a multi-step session. Treat Snapshot as cumulative state from previous steps.");
@@ -471,21 +474,7 @@ public sealed class CursorAgentRuntime
         return builder.ToString();
     }
 
-    private static CursorPortionView ProjectPortion(CursorPortion portion)
-    {
-        var items = portion.Items
-            .Select(item => new CursorItemView(
-                item.Index,
-                item.Markdown,
-                item.Text,
-                item.Pointer.Serialize(),
-                item.Pointer.Label ?? $"p{item.Index}",
-                item.Type.ToString(),
-                item.Pointer.Id))
-            .ToList();
-
-        return new CursorPortionView(portion.CursorName, items, portion.HasMore);
-    }
+    private static CursorPortionView ProjectPortion(CursorPortion portion) => CursorPortionView.FromPortion(portion);
 
     private AgentCommand? ParseCommand(string content, out string? parsedFragment, out bool multipleActions, out bool finishDetected)
     {

@@ -3,4 +3,4 @@ using AiTextEditor.Lib.Model;
 
 namespace AiTextEditor.Lib.Services;
 
-public sealed record CursorPortion(string CursorName, IReadOnlyList<LinearItem> Items, bool HasMore);
+public sealed record CursorPortion(IReadOnlyList<LinearItem> Items, bool HasMore);
