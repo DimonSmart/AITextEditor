@@ -19,10 +19,11 @@ public sealed class CursorAgentRuntime
     internal const int DefaultMaxSteps = 128;
     internal const int MaxStepsLimit = 512;
     private const int SnapshotEvidenceLimit = 5;
+    private const int MaxSummaryLength = 500;
+    private const int MaxExcerptLength = 1000;
 
     private readonly DocumentContext documentContext;
     private readonly TargetSetContext targetSetContext;
-    private readonly SessionStore sessionStore;
     private readonly IChatCompletionService chatService;
     private readonly ILogger<CursorAgentRuntime> logger;
 
@@ -34,23 +35,21 @@ public sealed class CursorAgentRuntime
     {
         this.documentContext = documentContext ?? throw new ArgumentNullException(nameof(documentContext));
         this.targetSetContext = targetSetContext ?? throw new ArgumentNullException(nameof(targetSetContext));
-        sessionStore = documentContext.SessionStore ?? throw new ArgumentNullException(nameof(documentContext.SessionStore));
         this.chatService = chatService ?? throw new ArgumentNullException(nameof(chatService));
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<CursorAgentResult> RunAsync(CursorAgentRequest request, string? targetSetId = null, string? taskId = null, CancellationToken cancellationToken = default)
+    public async Task<CursorAgentResult> RunAsync(CursorAgentRequest request, string? targetSetId = null, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
         var requestedSteps = request.MaxSteps.GetValueOrDefault(DefaultMaxSteps);
         var maxSteps = requestedSteps > MaxStepsLimit ? MaxStepsLimit : requestedSteps;
-        var systemPrompt = BuildSystemPrompt();
-        var taskMessage = BuildTaskMessage(request);
-        taskId = string.IsNullOrWhiteSpace(taskId) ? Guid.NewGuid().ToString("N") : taskId!;
-        var state = sessionStore.GetOrAdd(taskId, () => request.State ?? TaskState.Create(request.TaskDescription, maxSteps));
-        state = NormalizeState(state, request.TaskDescription, maxSteps);
+        var agentSystemPrompt = BuildAgentSystemPrompt();
+        var taskDefinitionPrompt = BuildTaskDefinitionPrompt(request);
+        
+        var state = request.State ?? TaskState.Create(maxSteps);
+        state = NormalizeState(state, maxSteps);
         state = state.WithStep(new TaskLimits(state.Limits.Step, maxSteps, state.Limits.MaxSeenTail, state.Limits.MaxFound));
-        sessionStore.Set(taskId, state);
         
         var lastSeenPointer = state.Seen.LastOrDefault();
         var parameters = request.Parameters;
@@ -69,18 +68,16 @@ public sealed class CursorAgentRuntime
         for (var step = 0; step < maxSteps; step++)
         {
             state = state.WithStep(state.Limits.NextStep());
-            sessionStore.Set(taskId, state);
 
             if (lastPortion == null)
             {
                 TryHandleCursorNext(cursor, state, out state, out lastPortion, ref cursorComplete);
-                sessionStore.Set(taskId, state);
             }
 
             var snapshotMessage = BuildSnapshotMessage(state);
             var batchMessage = lastPortion != null ? BuildBatchMessage(state, lastPortion) : "No more content.";
 
-            var command = await GetNextCommandAsync(systemPrompt, taskMessage, snapshotMessage, batchMessage, cancellationToken, step);
+            var command = await GetNextCommandAsync(agentSystemPrompt, taskDefinitionPrompt, snapshotMessage, batchMessage, cancellationToken, step);
             if (command == null)
             {
                 logger.LogWarning("Agent response malformed.");
@@ -88,7 +85,6 @@ public sealed class CursorAgentRuntime
             }
 
             (state, firstItemIndex, summary, agentResult) = ApplyCommand(state, command, firstItemIndex, summary, lastPortion, agentResult);
-            sessionStore.Set(taskId, state);
 
             if (command.NewEvidence?.Count > 0 && !string.IsNullOrWhiteSpace(targetSetId))
             {
@@ -99,7 +95,7 @@ public sealed class CursorAgentRuntime
                 }
             }
 
-            if (ShouldStop(targetSetId, state, cursorComplete, firstItemIndex, summary, taskId, agentResult, out var completedResult))
+            if (ShouldStop(targetSetId, state, cursorComplete, firstItemIndex, summary, agentResult, out var completedResult))
             {
                 return completedResult;
             }
@@ -112,10 +108,9 @@ public sealed class CursorAgentRuntime
         }
 
         var overflowState = state.WithProgress(summary ?? state.Progress);
-        sessionStore.Set(taskId, overflowState);
-        return new CursorAgentResult(false, "Max steps exceeded", firstItemIndex, summary, targetSetId, taskId, overflowState, 
+        return new CursorAgentResult(false, "Max steps exceeded", firstItemIndex, summary, targetSetId, overflowState, 
             PointerFrom: agentResult?.SemanticPointer, 
-            Excerpt: agentResult?.Excerpt ?? agentResult?.Markdown, 
+            Excerpt: Truncate(agentResult?.Excerpt ?? agentResult?.Markdown, MaxExcerptLength), 
             WhyThis: agentResult?.Reasons, 
             Evidence: state.Evidence,
             SemanticPointer: agentResult?.SemanticPointer, 
@@ -124,7 +119,7 @@ public sealed class CursorAgentRuntime
             Reasons: agentResult?.Reasons);
     }
 
-    private static TaskState NormalizeState(TaskState state, string goal, int maxSteps)
+    private static TaskState NormalizeState(TaskState state, int maxSteps)
     {
         var limits = state.Limits ?? new TaskLimits(0, maxSteps, TaskLimits.DefaultMaxSeenTail, TaskLimits.DefaultMaxFound);
         var adjustedLimits = new TaskLimits(
@@ -136,16 +131,15 @@ public sealed class CursorAgentRuntime
         var seen = state.Seen ?? Array.Empty<string>();
         var evidence = state.Evidence ?? Array.Empty<EvidenceItem>();
         var progress = string.IsNullOrWhiteSpace(state.Progress) ? "not_started" : state.Progress;
-        var normalizedGoal = string.IsNullOrWhiteSpace(state.Goal) ? goal : state.Goal;
 
-        return new TaskState(normalizedGoal!, state.Found, seen, progress!, adjustedLimits, evidence);
+        return new TaskState(state.Found, seen, progress!, adjustedLimits, evidence);
     }
 
-    private async Task<AgentCommand?> GetNextCommandAsync(string systemPrompt, string taskMessage, string snapshotMessage, string batchMessage, CancellationToken cancellationToken, int step)
+    private async Task<AgentCommand?> GetNextCommandAsync(string agentSystemPrompt, string taskDefinitionPrompt, string snapshotMessage, string batchMessage, CancellationToken cancellationToken, int step)
     {
         var history = new ChatHistory();
-        history.AddSystemMessage(systemPrompt);
-        history.AddUserMessage(taskMessage);
+        history.AddSystemMessage(agentSystemPrompt);
+        history.AddUserMessage(taskDefinitionPrompt);
         history.AddUserMessage(snapshotMessage);
 
         if (!string.IsNullOrWhiteSpace(batchMessage))
@@ -195,6 +189,7 @@ public sealed class CursorAgentRuntime
         {
             updated = updated with { Found = true };
             summary ??= command.Result.Excerpt ?? command.Result.Pointer;
+            summary = Truncate(summary, MaxSummaryLength);
             firstItemIndex ??= TryMapPointerToIndex(command.Result.Pointer, lastPortion);
             updated = updated.WithProgress(summary ?? updated.Progress);
             var markdown = TryFindMarkdown(command.Result.Pointer, lastPortion) ?? command.Result.Excerpt;
@@ -214,6 +209,7 @@ public sealed class CursorAgentRuntime
         {
             updated = updated with { Found = false };
             summary ??= command.StateUpdate?.Progress ?? updated.Progress;
+            summary = Truncate(summary, MaxSummaryLength);
             updated = updated.WithProgress(summary ?? updated.Progress);
         }
 
@@ -247,26 +243,27 @@ public sealed class CursorAgentRuntime
 
         var found = update.Found ?? state.Found;
         var progress = update.Progress ?? state.Progress;
+        progress = Truncate(progress, MaxSummaryLength);
 
-        var updated = new TaskState(state.Goal, found, state.Seen, state.Progress, state.Limits, state.Evidence);
+        var updated = new TaskState(found, state.Seen, state.Progress, state.Limits, state.Evidence);
         updated = updated.WithProgress(progress);
 
         return updated;
     }
 
-private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplete, int? firstItemIndex, string? summary, string taskId, AgentResult? agentResult, out CursorAgentResult result)
+private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplete, int? firstItemIndex, string? summary, AgentResult? agentResult, out CursorAgentResult result)
     {
         if (state.Found == true)
         {
-            result = BuildSuccess(targetSetId, firstItemIndex, summary ?? state.Progress, taskId, state, agentResult);
+            result = BuildSuccess(targetSetId, firstItemIndex, summary ?? state.Progress, state, agentResult);
             return true;
         }
 
         if (state.Found == false)
         {
-            result = new CursorAgentResult(false, summary ?? state.Progress, firstItemIndex, summary ?? state.Progress, targetSetId, taskId, state, 
+            result = new CursorAgentResult(false, summary ?? state.Progress, firstItemIndex, summary ?? state.Progress, targetSetId, state, 
                 PointerFrom: agentResult?.SemanticPointer, 
-                Excerpt: agentResult?.Excerpt ?? agentResult?.Markdown, 
+                Excerpt: Truncate(agentResult?.Excerpt ?? agentResult?.Markdown, MaxExcerptLength), 
                 WhyThis: agentResult?.Reasons, 
                 Evidence: state.Evidence,
                 SemanticPointer: agentResult?.SemanticPointer, 
@@ -278,9 +275,9 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
 
         if (state.Limits.Remaining <= 0)
         {
-            result = new CursorAgentResult(false, "TaskState limits reached", firstItemIndex, summary ?? state.Progress, targetSetId, taskId, state, 
+            result = new CursorAgentResult(false, "TaskState limits reached", firstItemIndex, summary ?? state.Progress, targetSetId, state, 
                 PointerFrom: agentResult?.SemanticPointer, 
-                Excerpt: agentResult?.Excerpt ?? agentResult?.Markdown, 
+                Excerpt: Truncate(agentResult?.Excerpt ?? agentResult?.Markdown, MaxExcerptLength), 
                 WhyThis: agentResult?.Reasons, 
                 Evidence: state.Evidence,
                 SemanticPointer: agentResult?.SemanticPointer, 
@@ -292,7 +289,7 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
 
         if (cursorComplete)
         {
-            result = new CursorAgentResult(false, state.Progress ?? "Cursor exhausted with no match", firstItemIndex, summary ?? state.Progress, targetSetId, taskId, state, 
+            result = new CursorAgentResult(false, state.Progress ?? "Cursor exhausted with no matc.Markdown, MaxExcerptLength)ursor exhausted with no match", firstItemIndex, summary ?? state.Progress, targetSetId, state, 
                 PointerFrom: agentResult?.SemanticPointer, 
                 Excerpt: agentResult?.Excerpt ?? agentResult?.Markdown, 
                 WhyThis: agentResult?.Reasons, 
@@ -308,11 +305,11 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
         return false;
     }
 
-    private static CursorAgentResult BuildSuccess(string? targetSetId, int? firstItemIndex, string? summary, string taskId, TaskState state, AgentResult? agentResult)
+    private static CursorAgentResult BuildSuccess(string? targetSetId, int? firstItemIndex, string? summary, TaskState state, AgentResult? agentResult)
     {
-        return new CursorAgentResult(true, null, firstItemIndex, summary, targetSetId, taskId, state,
+        return new CursorAgentResult(true, null, firstItemIndex, summary, targetSetId, state,
             PointerFrom: agentResult?.SemanticPointer,
-            Excerpt: agentResult?.Excerpt ?? agentResult?.Markdown,
+            Excerpt: Truncate(agentResult?.Excerpt ?? agentResult?.Markdown, MaxExcerptLength),
             WhyThis: agentResult?.Reasons,
             Evidence: state.Evidence,
             SemanticPointer: agentResult?.SemanticPointer,
@@ -401,8 +398,6 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
     {
         var builder = new StringBuilder();
         builder.AppendLine("Task snapshot (compact):");
-        builder.AppendLine($"goal: {state.Goal}");
-        builder.AppendLine($"found flag: {state.Found?.ToString() ?? "undecided"}");
         builder.AppendLine($"evidenceCount: {state.Evidence.Count}");
         builder.AppendLine($"seenCount: {state.Seen.Count}");
         builder.AppendLine($"progress: {state.Progress}");
@@ -413,7 +408,7 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
         return builder.ToString();
     }
 
-    private static string BuildTaskMessage(CursorAgentRequest request)
+    private static string BuildTaskDefinitionPrompt(CursorAgentRequest request)
     {
         var builder = new StringBuilder();
         builder.AppendLine($"Cursor: maxElements={request.Parameters.MaxElements}, maxBytes={request.Parameters.MaxBytes}, includeContent={request.Parameters.IncludeContent}.");
@@ -422,15 +417,16 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
         builder.AppendLine("You are processing one batch of a multi-step session. Treat Snapshot as cumulative state from previous steps.");
         builder.AppendLine("Snapshot includes goal, evidenceCount, seenCount, progress, limits.");
         builder.AppendLine("Do not treat this batch as an initial step unless Snapshot shows no prior progress; continue from the provided state.");
-        builder.AppendLine("Batch JSON contains firstBatch/lastBatch flags to help you decide whether to continue scanning or aggregate findings.");
+        builder.AppendLine("Batch JSON containtBatch/lastBatch flags to help you decide whether to continue scanning or aggregate findings.");
         builder.AppendLine("Deduplication: never return pointers already present in Snapshot.alreadyFound or Snapshot.seenTail. Use the earliest matching pointer in the batch.");
         builder.AppendLine("Stop when decision is done or not_found.");
         builder.AppendLine("Respect the first mention rule: Scan strictly from top to bottom. Prefer the first matching item in the current batch.");
+        builder.AppendLine("Excerpt: Summary if long, verbatim if short.");
 
         return builder.ToString();
     }
 
-    private static string BuildSystemPrompt()
+    private static string BuildAgentSystemPrompt()
     {
         var builder = new StringBuilder();
         builder.AppendLine("You are CursorAgent. Reply with a single JSON Decision object, no code fences.");
@@ -439,8 +435,9 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
         builder.AppendLine("Each call is one step in a larger run: read Snapshot to understand prior findings and continue from that state without restarting.");
         builder.AppendLine("Snapshot delivers goal, evidenceCount, seenCount, progress, limits, dedupRule.");
         builder.AppendLine("Dedup rule: never repeat pointers from Snapshot.alreadyFound or Snapshot.seenTail.");
-        builder.AppendLine("First mention rule: Scan the batch from top to bottom. Stop at the VERY FIRST item that matches. Do not scan the rest of the batch for 'better' matches if a valid match is found early.");
+        builder.AppendLine("First mention rule the batch from top to bottom. Stop at the VERY FIRST item that matches. Do not scan the rest of the batch for 'better' matches if a valid match is found early.");
         builder.AppendLine("Type preference: When looking for content/mentions, prefer 'Paragraph' over 'Heading' unless the user asks for titles/headings.");
+        builder.AppendLine("Excerpt rule: For the 'excerpt' field, if the found text is short, return it verbatim. If it is long, provide a concise summary. Always include the 'pointer'.");
         builder.AppendLine("Stop-condition: set decision=done with result when goal is satisfied; use decision=not_found when exhausted.");
         builder.AppendLine("Batch markers show whether this is the first batch or the last batch in the stream. Use them to decide whether to continue, aggregate, or conclude.");
         return builder.ToString();
@@ -533,12 +530,6 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
 
     private static TaskStateUpdate ParseStateUpdate(JsonElement element)
     {
-        string? goal = null;
-        if (element.TryGetProperty("goal", out var goalElement) && goalElement.ValueKind == JsonValueKind.String)
-        {
-            goal = goalElement.GetString();
-        }
-
         bool? found = null;
         if (element.TryGetProperty("found", out var foundElement) && foundElement.ValueKind == JsonValueKind.True)
         {
@@ -560,7 +551,7 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
             progress = continueAfter.GetString();
         }
 
-        return new TaskStateUpdate(goal, found, null, progress, null);
+        return new TaskStateUpdate(found, null, progress, null);
     }
 
     private static List<EvidenceItem> ParseEvidenceArray(JsonElement element)
@@ -691,17 +682,16 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
     {
         if (message == null)
         {
-            logger.LogInformation("cursor_agent_call: step={Step}, callId=<none>, model=<unknown>, tokens=<unknown>, result=<empty>", step);
+            logger.LogInformation("cursor_agent_call: step={Step}, model=<unknown>, tokens=<unknown>, result=<empty>", step);
             return;
         }
 
         var metadata = message.GetType().GetProperty("Metadata")?.GetValue(message) as IReadOnlyDictionary<string, object?>;
         var modelId = message.GetType().GetProperty("ModelId")?.GetValue(message) ?? "<unknown>";
 
-        var callId = metadata?.TryGetValue("id", out var id) == true ? id : "<none>";
         var tokens = metadata?.TryGetValue("usage", out var usage) == true ? usage : "<unknown>";
 
-        logger.LogInformation("cursor_agent_call: step={Step}, callId={CallId}, model={Model}, tokens={Tokens}, result=<received>", step, callId, modelId, tokens);
+        logger.LogInformation("cursor_agent_call: step={Step}, model={Model}, tokens={Tokens}, result=<received>", step, modelId, tokens);
     }
 
     private void LogRawCompletion(int step, string content)
@@ -710,7 +700,7 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
         logger.LogDebug("cursor_agent_raw: step={Step}, snippet={Snippet}", step, snippet);
     }
 
-    private static string Truncate(string text, int maxLength)
+    private static string? Truncate(string? text, int maxLength)
     {
         if (string.IsNullOrEmpty(text) || text.Length <= maxLength)
         {

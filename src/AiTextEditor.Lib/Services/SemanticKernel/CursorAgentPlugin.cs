@@ -64,7 +64,6 @@ public class CursorAgentPlugin(
         [Description("Natural language task for the agent.")] string taskDescription,
         [Description("Optional target set id for storing evidence.")] string? targetSetId = null,
         [Description("Optional safety limit for steps.")] int? maxSteps = null,
-        [Description("Existing task id to continue the same agent session.")] string? taskId = null,
         [Description("Serialized TaskState to resume from a previous step.")] TaskState? state = null)
     {
         maxElements = Math.Clamp(maxElements, 1, CursorParameters.MaxElementsUpperBound);
@@ -81,7 +80,7 @@ public class CursorAgentPlugin(
         }
 
         var request = new CursorAgentRequest(parameters, taskDescription, resolvedSteps, state);
-        var result = await cursorAgentRuntime.RunAsync(request, targetSetId, taskId);
+        var result = await cursorAgentRuntime.RunAsync(request, targetSetId);
 
         logger.LogInformation("run_cursor_agent: success={Success}, maxElements={MaxElements}, maxBytes={MaxBytes}, includeContent={IncludeContent}",
             result.Success, parameters.MaxElements, parameters.MaxBytes, parameters.IncludeContent);
@@ -94,10 +93,8 @@ public class CursorAgentPlugin(
             result.FirstItemIndex,
             result.Summary,
             result.TargetSetId,
-            result.TaskId,
             State = new
             {
-                result.State?.Goal, 
                 result.State?.Found, 
                 result.State?.Progress,
                 result.State?.Limits,

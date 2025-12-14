@@ -24,16 +24,15 @@ public sealed record TaskLimits(int Step, int MaxSteps, int MaxSeenTail, int Max
 }
 
 public sealed record TaskState(
-    string Goal,
     bool? Found,
     IReadOnlyList<string> Seen,
     string Progress,
     TaskLimits Limits,
     IReadOnlyList<EvidenceItem> Evidence)
 {
-    public static TaskState Create(string goal, int maxSteps)
+    public static TaskState Create(int maxSteps)
     {
-        return new(goal, null, Array.Empty<string>(), "not_started", new TaskLimits(0, maxSteps, TaskLimits.DefaultMaxSeenTail, TaskLimits.DefaultMaxFound), Array.Empty<EvidenceItem>());
+        return new(null, Array.Empty<string>(), "not_started", new TaskLimits(0, maxSteps, TaskLimits.DefaultMaxSeenTail, TaskLimits.DefaultMaxFound), Array.Empty<EvidenceItem>());
     }
 
     public TaskState WithSeen(IEnumerable<string> seen)
@@ -84,7 +83,6 @@ public sealed record TaskState(
 }
 
 public sealed record TaskStateUpdate(
-    string? Goal,
     bool? Found,
     IReadOnlyCollection<string>? Seen,
     string? Progress,

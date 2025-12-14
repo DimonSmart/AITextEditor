@@ -15,7 +15,6 @@ public sealed record CursorAgentResult(
     int? FirstItemIndex,
     string? Summary,
     string? TargetSetId,
-    string? TaskId = null,
     TaskState? State = null,
     string? PointerFrom = null,
     string? PointerTo = null,

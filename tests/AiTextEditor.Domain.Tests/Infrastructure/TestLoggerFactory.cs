@@ -12,7 +12,7 @@ internal static class TestLoggerFactory
         return LoggerFactory.Create(builder =>
         {
             builder.AddProvider(new TestOutputLoggerProvider(output));
-            builder.SetMinimumLevel(LogLevel.Debug);
+            builder.SetMinimumLevel(LogLevel.Information);
         });
     }
 
