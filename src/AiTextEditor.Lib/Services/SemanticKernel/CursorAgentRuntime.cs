@@ -21,6 +21,7 @@ public sealed class CursorAgentRuntime
     private const int SnapshotEvidenceLimit = 5;
     private const int MaxSummaryLength = 500;
     private const int MaxExcerptLength = 1000;
+    private const int DefaultResponseTokenLimit = 192;
 
     private readonly DocumentContext documentContext;
     private readonly TargetSetContext targetSetContext;
@@ -710,13 +711,14 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
         return text[..maxLength] + $"... (+{text.Length - maxLength} chars)";
     }
 
-    private static OpenAIPromptExecutionSettings CreateSettings()
+    private OpenAIPromptExecutionSettings CreateSettings()
     {
         return new OpenAIPromptExecutionSettings
         {
             Temperature = 0,
             TopP = 1,
-            ResponseFormat = "json_object"
+            ResponseFormat = "json_object",
+            MaxTokens = DefaultResponseTokenLimit
         };
     }
 
