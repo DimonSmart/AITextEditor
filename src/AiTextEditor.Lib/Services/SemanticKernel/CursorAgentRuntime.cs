@@ -439,7 +439,9 @@ public sealed class CursorAgentRuntime
         builder.AppendLine($"Cursor: {request.CursorName}, mode: {request.Mode}.");
         builder.AppendLine($"Goal: {request.TaskDescription}");
         builder.AppendLine("Respond with a single Decision JSON object: decision (continue|done|not_found), optional result, newEvidence array, stateUpdate, needMoreContext flag.");
+        builder.AppendLine("You are processing one batch of a multi-step session. Treat Snapshot as cumulative state from previous steps.");
         builder.AppendLine("Snapshot includes goal, evidenceCount, seenCount, progress, limits.");
+        builder.AppendLine("Do not treat this batch as an initial step unless Snapshot shows no prior progress; continue from the provided state.");
         builder.AppendLine("Deduplication: never return pointers already present in Snapshot.alreadyFound or Snapshot.seenTail. Use the earliest matching pointer in the batch.");
         builder.AppendLine("Stop when decision is done or not_found.");
         builder.AppendLine("Respect the first mention rule: Scan strictly from top to bottom. Prefer the first matching item in the current batch.");
@@ -453,7 +455,7 @@ public sealed class CursorAgentRuntime
         builder.AppendLine("You are CursorAgent. Reply with a single JSON Decision object, no code fences.");
         builder.AppendLine("Decision schema: {\"decision\":\"continue|done|not_found\",\"newEvidence\":[...],\"stateUpdate\":{...},\"result\":{...},\"needMoreContext\":false}.");
         builder.AppendLine("State lives outside the model. Do not echo goal/seen/limits back.");
-        builder.AppendLine("stateUpdate is optional and must contain only fields you intend to change (progress, found). Do NOT include seenCount.");
+        builder.AppendLine("Each call is one step in a larger run: read Snapshot to understand prior findings and continue from that state without restarting.");
         builder.AppendLine("Snapshot delivers goal, evidenceCount, seenCount, progress, limits, dedupRule.");
         builder.AppendLine("Dedup rule: never repeat pointers from Snapshot.alreadyFound or Snapshot.seenTail.");
         builder.AppendLine("First mention rule: Scan the batch from top to bottom. Stop at the VERY FIRST item that matches. Do not scan the rest of the batch for 'better' matches if a valid match is found early.");
