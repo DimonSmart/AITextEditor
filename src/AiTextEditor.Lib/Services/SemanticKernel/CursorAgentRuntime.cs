@@ -398,14 +398,12 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
     private static string BuildSnapshotMessage(TaskState state)
     {
         var builder = new StringBuilder();
-        builder.AppendLine("Task snapshot (compact):");
-        builder.AppendLine($"evidenceCount: {state.Evidence.Count}");
-        builder.AppendLine($"seenCount: {state.Seen.Count}");
+        builder.AppendLine("Task snapshot:");
+        builder.AppendLine($"counts: evidence={state.Evidence.Count}, seen={state.Seen.Count}");
         builder.AppendLine($"progress: {state.Progress}");
         builder.AppendLine($"limits: step={state.Limits.Step}, maxSteps={state.Limits.MaxSteps}, remaining={state.Limits.Remaining}, maxFound={state.Limits.MaxFound}");
-        builder.AppendLine("dedupRule: Never return a pointer already present in alreadyFound or seenTail.");
-        builder.AppendLine("stopCondition: stateUpdate.found = true|false or decision=done/not_found.");
-        builder.AppendLine("first mention rule: Scan batch from top to bottom. Stop at the VERY FIRST item that matches. Do not look for 'better' matches later in the batch.");
+        builder.AppendLine("dedup: skip pointers from alreadyFound or seenTail.");
+        builder.AppendLine("first mention: stop at the first valid match in the batch.");
         return builder.ToString();
     }
 
@@ -422,7 +420,8 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
         builder.AppendLine("Deduplication: never return pointers already present in Snapshot.alreadyFound or Snapshot.seenTail. Use the earliest matching pointer in the batch.");
         builder.AppendLine("Stop when decision is done or not_found.");
         builder.AppendLine("Respect the first mention rule: Scan strictly from top to bottom. Prefer the first matching item in the current batch.");
-        builder.AppendLine("Excerpt: Summary if long, verbatim if short.");
+        builder.AppendLine("Excerpt: return a short window around the match (few nearby sentences) capped at 400 characters; avoid long summaries.");
+        builder.AppendLine("Do not keep a running text log of progress; report state via counters and concise reasons only.");
 
         return builder.ToString();
     }
@@ -438,9 +437,11 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
         builder.AppendLine("Dedup rule: never repeat pointers from Snapshot.alreadyFound or Snapshot.seenTail.");
         builder.AppendLine("First mention rule the batch from top to bottom. Stop at the VERY FIRST item that matches. Do not scan the rest of the batch for 'better' matches if a valid match is found early.");
         builder.AppendLine("Type preference: When looking for content/mentions, prefer 'Paragraph' over 'Heading' unless the user asks for titles/headings.");
-        builder.AppendLine("Excerpt rule: For the 'excerpt' field, if the found text is short, return it verbatim. If it is long, provide a concise summary. Always include the 'pointer'.");
+        builder.AppendLine("Excerpt rule: Provide a brief nearby snippet capped at 500 characters; avoid paraphrasing and do not copy long spans. Always include the 'pointer'.");
         builder.AppendLine("Stop-condition: set decision=done with result when goal is satisfied; use decision=not_found when exhausted.");
         builder.AppendLine("Batch markers show whether this is the first batch or the last batch in the stream. Use them to decide whether to continue, aggregate, or conclude.");
+        builder.AppendLine("Response must be under 200 tokens. Do not paraphrase inputs or copy long spans; keep excerpts within 300-500 characters.");
+        builder.AppendLine("stateUpdate/progress fields: only counters and a brief reason; do not accumulate narrative text.");
         return builder.ToString();
     }
 
