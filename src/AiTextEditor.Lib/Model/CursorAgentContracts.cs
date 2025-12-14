@@ -6,9 +6,7 @@ namespace AiTextEditor.Lib.Model;
 public sealed record CursorAgentRequest(
     CursorParameters Parameters,
     string TaskDescription,
-    string? TargetSetId = null,
     int? MaxSteps = null,
-    string? TaskId = null,
     TaskState? State = null);
 
 public sealed record CursorAgentResult(

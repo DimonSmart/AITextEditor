@@ -39,14 +39,14 @@ public sealed class CursorAgentRuntime
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<CursorAgentResult> RunAsync(CursorAgentRequest request, CancellationToken cancellationToken = default)
+    public async Task<CursorAgentResult> RunAsync(CursorAgentRequest request, string? targetSetId = null, string? taskId = null, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
         var requestedSteps = request.MaxSteps.GetValueOrDefault(DefaultMaxSteps);
         var maxSteps = requestedSteps > MaxStepsLimit ? MaxStepsLimit : requestedSteps;
         var systemPrompt = BuildSystemPrompt();
         var taskMessage = BuildTaskMessage(request);
-        var taskId = string.IsNullOrWhiteSpace(request.TaskId) ? Guid.NewGuid().ToString("N") : request.TaskId!;
+        taskId = string.IsNullOrWhiteSpace(taskId) ? Guid.NewGuid().ToString("N") : taskId!;
         var state = sessionStore.GetOrAdd(taskId, () => request.State ?? TaskState.Create(request.TaskDescription, maxSteps));
         state = NormalizeState(state, request.TaskDescription, maxSteps);
         state = state.WithStep(new TaskLimits(state.Limits.Step, maxSteps, state.Limits.MaxSeenTail, state.Limits.MaxFound));
@@ -83,16 +83,16 @@ public sealed class CursorAgentRuntime
             (state, firstItemIndex, summary, agentResult) = ApplyCommand(state, command, firstItemIndex, summary, lastPortion, agentResult);
             sessionStore.Set(taskId, state);
 
-            if (command.NewEvidence?.Count > 0 && !string.IsNullOrWhiteSpace(request.TargetSetId))
+            if (command.NewEvidence?.Count > 0 && !string.IsNullOrWhiteSpace(targetSetId))
             {
                 var indices = MapEvidenceToIndices(command.NewEvidence, lastPortion);
                 if (indices.Count > 0)
                 {
-                    targetSetContext.Add(request.TargetSetId!, indices);
+                    targetSetContext.Add(targetSetId!, indices);
                 }
             }
 
-            if (ShouldStop(request, state, cursorComplete, firstItemIndex, summary, taskId, agentResult, out var completedResult))
+            if (ShouldStop(targetSetId, state, cursorComplete, firstItemIndex, summary, taskId, agentResult, out var completedResult))
             {
                 return completedResult;
             }
@@ -106,7 +106,7 @@ public sealed class CursorAgentRuntime
 
         var overflowState = state.WithProgress(summary ?? state.Progress);
         sessionStore.Set(taskId, overflowState);
-        return new CursorAgentResult(false, "Max steps exceeded", firstItemIndex, summary, request.TargetSetId, taskId, overflowState, 
+        return new CursorAgentResult(false, "Max steps exceeded", firstItemIndex, summary, targetSetId, taskId, overflowState, 
             PointerFrom: agentResult?.SemanticPointer, 
             Excerpt: agentResult?.Excerpt ?? agentResult?.Markdown, 
             WhyThis: agentResult?.Reasons, 
@@ -247,17 +247,17 @@ public sealed class CursorAgentRuntime
         return updated;
     }
 
-    private bool ShouldStop(CursorAgentRequest request, TaskState state, bool cursorComplete, int? firstItemIndex, string? summary, string taskId, AgentResult? agentResult, out CursorAgentResult result)
+private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplete, int? firstItemIndex, string? summary, string taskId, AgentResult? agentResult, out CursorAgentResult result)
     {
         if (state.Found == true)
         {
-            result = BuildSuccess(request, firstItemIndex, summary ?? state.Progress, taskId, state, agentResult);
+            result = BuildSuccess(targetSetId, firstItemIndex, summary ?? state.Progress, taskId, state, agentResult);
             return true;
         }
 
         if (state.Found == false)
         {
-            result = new CursorAgentResult(false, summary ?? state.Progress, firstItemIndex, summary ?? state.Progress, request.TargetSetId, taskId, state, 
+            result = new CursorAgentResult(false, summary ?? state.Progress, firstItemIndex, summary ?? state.Progress, targetSetId, taskId, state, 
                 PointerFrom: agentResult?.SemanticPointer, 
                 Excerpt: agentResult?.Excerpt ?? agentResult?.Markdown, 
                 WhyThis: agentResult?.Reasons, 
@@ -271,7 +271,7 @@ public sealed class CursorAgentRuntime
 
         if (state.Limits.Remaining <= 0)
         {
-            result = new CursorAgentResult(false, "TaskState limits reached", firstItemIndex, summary ?? state.Progress, request.TargetSetId, taskId, state, 
+            result = new CursorAgentResult(false, "TaskState limits reached", firstItemIndex, summary ?? state.Progress, targetSetId, taskId, state, 
                 PointerFrom: agentResult?.SemanticPointer, 
                 Excerpt: agentResult?.Excerpt ?? agentResult?.Markdown, 
                 WhyThis: agentResult?.Reasons, 
@@ -285,7 +285,7 @@ public sealed class CursorAgentRuntime
 
         if (cursorComplete)
         {
-            result = new CursorAgentResult(false, state.Progress ?? "Cursor exhausted with no match", firstItemIndex, summary ?? state.Progress, request.TargetSetId, taskId, state, 
+            result = new CursorAgentResult(false, state.Progress ?? "Cursor exhausted with no match", firstItemIndex, summary ?? state.Progress, targetSetId, taskId, state, 
                 PointerFrom: agentResult?.SemanticPointer, 
                 Excerpt: agentResult?.Excerpt ?? agentResult?.Markdown, 
                 WhyThis: agentResult?.Reasons, 
@@ -301,9 +301,9 @@ public sealed class CursorAgentRuntime
         return false;
     }
 
-    private static CursorAgentResult BuildSuccess(CursorAgentRequest request, int? firstItemIndex, string? summary, string taskId, TaskState state, AgentResult? agentResult)
+    private static CursorAgentResult BuildSuccess(string? targetSetId, int? firstItemIndex, string? summary, string taskId, TaskState state, AgentResult? agentResult)
     {
-        return new CursorAgentResult(true, null, firstItemIndex, summary, request.TargetSetId, taskId, state,
+        return new CursorAgentResult(true, null, firstItemIndex, summary, targetSetId, taskId, state,
             PointerFrom: agentResult?.SemanticPointer,
             Excerpt: agentResult?.Excerpt ?? agentResult?.Markdown,
             WhyThis: agentResult?.Reasons,

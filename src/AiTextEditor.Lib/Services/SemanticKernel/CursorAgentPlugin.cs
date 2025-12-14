@@ -80,8 +80,8 @@ public class CursorAgentPlugin(
             return JsonSerializer.Serialize(error, SerializerOptions);
         }
 
-        var request = new CursorAgentRequest(parameters, taskDescription, targetSetId, resolvedSteps, taskId, state);
-        var result = await cursorAgentRuntime.RunAsync(request);
+        var request = new CursorAgentRequest(parameters, taskDescription, resolvedSteps, state);
+        var result = await cursorAgentRuntime.RunAsync(request, targetSetId, taskId);
 
         logger.LogInformation("run_cursor_agent: success={Success}, maxElements={MaxElements}, maxBytes={MaxBytes}, includeContent={IncludeContent}",
             result.Success, parameters.MaxElements, parameters.MaxBytes, parameters.IncludeContent);
