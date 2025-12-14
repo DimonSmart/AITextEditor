@@ -42,14 +42,9 @@ public sealed class CursorAgentRuntime
     public async Task<CursorAgentResult> RunAsync(CursorAgentRequest request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
-        if (request.Mode == CursorAgentMode.CollectToTargetSet && string.IsNullOrWhiteSpace(request.TargetSetId))
-        {
-            throw new ArgumentException("TargetSetId is required for CollectToTargetSet mode.", nameof(request));
-        }
-
         var requestedSteps = request.MaxSteps.GetValueOrDefault(DefaultMaxSteps);
         var maxSteps = requestedSteps > MaxStepsLimit ? MaxStepsLimit : requestedSteps;
-        var systemPrompt = BuildSystemPrompt(request.Mode);
+        var systemPrompt = BuildSystemPrompt();
         var taskMessage = BuildTaskMessage(request);
         var taskId = string.IsNullOrWhiteSpace(request.TaskId) ? Guid.NewGuid().ToString("N") : request.TaskId!;
         var state = sessionStore.GetOrAdd(taskId, () => request.State ?? TaskState.Create(request.TaskDescription, maxSteps));
@@ -88,7 +83,7 @@ public sealed class CursorAgentRuntime
             (state, firstItemIndex, summary, agentResult) = ApplyCommand(state, command, firstItemIndex, summary, lastPortion, agentResult);
             sessionStore.Set(taskId, state);
 
-            if (request.Mode == CursorAgentMode.CollectToTargetSet && command.NewEvidence?.Count > 0 && !string.IsNullOrWhiteSpace(request.TargetSetId))
+            if (command.NewEvidence?.Count > 0 && !string.IsNullOrWhiteSpace(request.TargetSetId))
             {
                 var indices = MapEvidenceToIndices(command.NewEvidence, lastPortion);
                 if (indices.Count > 0)
@@ -308,45 +303,15 @@ public sealed class CursorAgentRuntime
 
     private static CursorAgentResult BuildSuccess(CursorAgentRequest request, int? firstItemIndex, string? summary, string taskId, TaskState state, AgentResult? agentResult)
     {
-        return request.Mode switch
-        {
-            CursorAgentMode.FirstMatch => new CursorAgentResult(true, null, firstItemIndex, summary, request.TargetSetId, taskId, state, 
-                PointerFrom: agentResult?.SemanticPointer, 
-                Excerpt: agentResult?.Excerpt ?? agentResult?.Markdown, 
-                WhyThis: agentResult?.Reasons, 
-                Evidence: state.Evidence,
-                SemanticPointer: agentResult?.SemanticPointer, 
-                Markdown: agentResult?.Markdown, 
-                Confidence: agentResult?.Confidence, 
-                Reasons: agentResult?.Reasons),
-            CursorAgentMode.AggregateSummary => new CursorAgentResult(true, null, null, summary, request.TargetSetId, taskId, state, 
-                PointerFrom: agentResult?.SemanticPointer, 
-                Excerpt: agentResult?.Excerpt ?? agentResult?.Markdown, 
-                WhyThis: agentResult?.Reasons, 
-                Evidence: state.Evidence,
-                SemanticPointer: agentResult?.SemanticPointer, 
-                Markdown: agentResult?.Markdown, 
-                Confidence: agentResult?.Confidence, 
-                Reasons: agentResult?.Reasons),
-            CursorAgentMode.CollectToTargetSet => new CursorAgentResult(true, null, null, summary, request.TargetSetId, taskId, state, 
-                PointerFrom: agentResult?.SemanticPointer, 
-                Excerpt: agentResult?.Excerpt ?? agentResult?.Markdown, 
-                WhyThis: agentResult?.Reasons, 
-                Evidence: state.Evidence,
-                SemanticPointer: agentResult?.SemanticPointer, 
-                Markdown: agentResult?.Markdown, 
-                Confidence: agentResult?.Confidence, 
-                Reasons: agentResult?.Reasons),
-            _ => new CursorAgentResult(false, "Unsupported mode", null, summary, request.TargetSetId, taskId, state, 
-                PointerFrom: agentResult?.SemanticPointer, 
-                Excerpt: agentResult?.Excerpt ?? agentResult?.Markdown, 
-                WhyThis: agentResult?.Reasons, 
-                Evidence: state.Evidence,
-                SemanticPointer: agentResult?.SemanticPointer, 
-                Markdown: agentResult?.Markdown, 
-                Confidence: agentResult?.Confidence, 
-                Reasons: agentResult?.Reasons)
-        };
+        return new CursorAgentResult(true, null, firstItemIndex, summary, request.TargetSetId, taskId, state,
+            PointerFrom: agentResult?.SemanticPointer,
+            Excerpt: agentResult?.Excerpt ?? agentResult?.Markdown,
+            WhyThis: agentResult?.Reasons,
+            Evidence: state.Evidence,
+            SemanticPointer: agentResult?.SemanticPointer,
+            Markdown: agentResult?.Markdown,
+            Confidence: agentResult?.Confidence,
+            Reasons: agentResult?.Reasons);
     }
 
     private bool TryHandleCursorNext(CursorStream cursor, TaskState state, out TaskState updatedState, out CursorPortionView? lastPortion, ref bool cursorComplete)
@@ -394,9 +359,13 @@ public sealed class CursorAgentRuntime
 
     private static string BuildBatchMessage(TaskState state, CursorPortionView portion)
     {
+        var firstBatch = state.Limits.Step == 1;
+        var lastBatch = !portion.HasMore;
         var batch = new
         {
             batchId = $"cursor:local:step-{state.Limits.Step}",
+            firstBatch,
+            lastBatch,
             hasMore = portion.HasMore,
             items = portion.Items.Select((item, idx) => new
             {
@@ -416,6 +385,7 @@ public sealed class CursorAgentRuntime
 
         var builder = new StringBuilder();
         builder.AppendLine("Batch (JSON):");
+        builder.AppendLine($"batchPosition: {(firstBatch ? "first batch" : lastBatch ? "last batch" : "middle batch")}");
         builder.AppendLine(JsonSerializer.Serialize(batch, options));
         return builder.ToString();
     }
@@ -439,12 +409,13 @@ public sealed class CursorAgentRuntime
     private static string BuildTaskMessage(CursorAgentRequest request)
     {
         var builder = new StringBuilder();
-        builder.AppendLine($"Cursor: maxElements={request.Parameters.MaxElements}, maxBytes={request.Parameters.MaxBytes}, includeContent={request.Parameters.IncludeContent}, mode: {request.Mode}.");
+        builder.AppendLine($"Cursor: maxElements={request.Parameters.MaxElements}, maxBytes={request.Parameters.MaxBytes}, includeContent={request.Parameters.IncludeContent}.");
         builder.AppendLine($"Goal: {request.TaskDescription}");
         builder.AppendLine("Respond with a single Decision JSON object: decision (continue|done|not_found), optional result, newEvidence array, stateUpdate, needMoreContext flag.");
         builder.AppendLine("You are processing one batch of a multi-step session. Treat Snapshot as cumulative state from previous steps.");
         builder.AppendLine("Snapshot includes goal, evidenceCount, seenCount, progress, limits.");
         builder.AppendLine("Do not treat this batch as an initial step unless Snapshot shows no prior progress; continue from the provided state.");
+        builder.AppendLine("Batch JSON contains firstBatch/lastBatch flags to help you decide whether to continue scanning or aggregate findings.");
         builder.AppendLine("Deduplication: never return pointers already present in Snapshot.alreadyFound or Snapshot.seenTail. Use the earliest matching pointer in the batch.");
         builder.AppendLine("Stop when decision is done or not_found.");
         builder.AppendLine("Respect the first mention rule: Scan strictly from top to bottom. Prefer the first matching item in the current batch.");
@@ -452,7 +423,7 @@ public sealed class CursorAgentRuntime
         return builder.ToString();
     }
 
-    private static string BuildSystemPrompt(CursorAgentMode mode)
+    private static string BuildSystemPrompt()
     {
         var builder = new StringBuilder();
         builder.AppendLine("You are CursorAgent. Reply with a single JSON Decision object, no code fences.");
@@ -464,13 +435,7 @@ public sealed class CursorAgentRuntime
         builder.AppendLine("First mention rule: Scan the batch from top to bottom. Stop at the VERY FIRST item that matches. Do not scan the rest of the batch for 'better' matches if a valid match is found early.");
         builder.AppendLine("Type preference: When looking for content/mentions, prefer 'Paragraph' over 'Heading' unless the user asks for titles/headings.");
         builder.AppendLine("Stop-condition: set decision=done with result when goal is satisfied; use decision=not_found when exhausted.");
-
-        if (mode == CursorAgentMode.FirstMatch)
-        {
-            builder.AppendLine("In FirstMatch mode, do not add items to newEvidence unless they are the match. Just output decision: continue.");
-        }
-
-        builder.AppendLine("Mode: ").Append(mode).Append('.');
+        builder.AppendLine("Batch markers show whether this is the first batch or the last batch in the stream. Use them to decide whether to continue, aggregate, or conclude.");
         return builder.ToString();
     }
 
