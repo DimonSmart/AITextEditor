@@ -374,7 +374,9 @@ public sealed class CursorAgentRuntime
         builder.AppendLine($"Cursor: {request.CursorName}, mode: {request.Mode}.");
         builder.AppendLine($"Goal: {request.TaskDescription}");
         builder.AppendLine("Respond with a single Decision JSON object: decision (continue|done|not_found), optional result, newEvidence array, stateUpdate, needMoreContext flag.");
+        builder.AppendLine("You are processing one batch of a multi-step session. Treat Snapshot as cumulative state from previous steps.");
         builder.AppendLine("Snapshot includes goal, evidenceCount, seenCount, progress, limits.");
+        builder.AppendLine("Do not treat this batch as an initial step unless Snapshot shows no prior progress; continue from the provided state.");
         builder.AppendLine("Deduplication: never return pointers already present in Snapshot.alreadyFound or Snapshot.seenTail. Use the earliest matching pointer in the batch.");
         builder.AppendLine("Stop when decision is done or not_found, or when stateUpdate.found is true/false.");
         builder.AppendLine("Respect the first mention rule: prefer the first matching item in the current batch.");
@@ -388,6 +390,7 @@ public sealed class CursorAgentRuntime
         builder.AppendLine("You are CursorAgent. Reply with a single JSON Decision object, no code fences.");
         builder.AppendLine("Decision schema: {\"decision\":\"continue|done|not_found\",\"newEvidence\":[...],\"stateUpdate\":{...},\"result\":{...},\"needMoreContext\":false}.");
         builder.AppendLine("State lives outside the model: always include stateUpdate reflecting goal, found flag, progress marker.");
+        builder.AppendLine("Each call is one step in a larger run: read Snapshot to understand prior findings and continue from that state without restarting.");
         builder.AppendLine("Do NOT include seen or limits in stateUpdate.");
         builder.AppendLine("Snapshot delivers goal, evidenceCount, seenCount, progress, limits, dedupRule.");
         builder.AppendLine("Dedup rule: never repeat pointers from Snapshot.alreadyFound or Snapshot.seenTail.");
