@@ -10,13 +10,12 @@ public sealed class CursorStream
     private readonly LinearDocument document;
     private readonly CursorState state;
 
-    public CursorStream(LinearDocument document, CursorParameters parameters, bool forward)
+    public CursorStream(LinearDocument document, CursorParameters parameters)
     {
         this.document = document ?? throw new ArgumentNullException(nameof(document));
         ArgumentNullException.ThrowIfNull(parameters);
 
-        var startIndex = forward ? 0 : Math.Max(0, document.Items.Count - 1);
-        state = new CursorState(parameters, forward, startIndex);
+        state = new CursorState(parameters, 0);
     }
 
     public CursorPortion? NextPortion()
@@ -48,7 +47,7 @@ public sealed class CursorStream
 
             items.Add(projectedItem);
             byteBudget -= itemBytes;
-            nextIndex = state.IsForward ? nextIndex + 1 : nextIndex - 1;
+            nextIndex = nextIndex + 1;
             if (byteBudget <= 0) break;
         }
 
@@ -57,7 +56,7 @@ public sealed class CursorStream
             var sourceItem = document.Items[nextIndex];
             var projectedItem = state.Parameters.IncludeContent ? sourceItem : StripText(sourceItem);
             items.Add(projectedItem);
-            nextIndex = state.IsForward ? nextIndex + 1 : nextIndex - 1;
+            nextIndex = nextIndex + 1;
         }
 
         state.Advance(nextIndex);

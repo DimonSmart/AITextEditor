@@ -57,7 +57,7 @@ public sealed class CursorAgentRuntime
         state = state.WithStep(new TaskLimits(state.Limits.Step, maxSteps, state.Limits.MaxSeenTail, state.Limits.MaxFound));
         sessionStore.Set(taskId, state);
         
-        var cursor = new CursorStream(documentContext.Document, request.Parameters, request.Forward);
+        var cursor = new CursorStream(documentContext.Document, request.Parameters);
         var cursorComplete = false;
         int? firstItemIndex = null;
         string? summary = request.State?.Progress;
@@ -439,7 +439,7 @@ public sealed class CursorAgentRuntime
     private static string BuildTaskMessage(CursorAgentRequest request)
     {
         var builder = new StringBuilder();
-        builder.AppendLine($"Cursor: {(request.Forward ? "forward" : "backward")}, maxElements={request.Parameters.MaxElements}, maxBytes={request.Parameters.MaxBytes}, includeContent={request.Parameters.IncludeContent}, mode: {request.Mode}.");
+        builder.AppendLine($"Cursor: maxElements={request.Parameters.MaxElements}, maxBytes={request.Parameters.MaxBytes}, includeContent={request.Parameters.IncludeContent}, mode: {request.Mode}.");
         builder.AppendLine($"Goal: {request.TaskDescription}");
         builder.AppendLine("Respond with a single Decision JSON object: decision (continue|done|not_found), optional result, newEvidence array, stateUpdate, needMoreContext flag.");
         builder.AppendLine("You are processing one batch of a multi-step session. Treat Snapshot as cumulative state from previous steps.");

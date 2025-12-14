@@ -59,7 +59,6 @@ public class CursorAgentPlugin(
     [KernelFunction]
     [Description("Launch a cursor agent with a concise system prompt.")]
     public async Task<string> RunCursorAgent(
-        [Description("Walk forward when true, backward when false.")] bool forward,
         [Description("Maximum items per portion.")] int maxElements,
         [Description("Maximum bytes per portion.")] int maxBytes,
         [Description("Include markdown content in responses.")] bool includeContent,
@@ -98,11 +97,11 @@ public class CursorAgentPlugin(
             return JsonSerializer.Serialize(error, SerializerOptions);
         }
 
-        var request = new CursorAgentRequest(parameters, forward, parsedMode, taskDescription, targetSetId, resolvedSteps, taskId, state);
+        var request = new CursorAgentRequest(parameters, parsedMode, taskDescription, targetSetId, resolvedSteps, taskId, state);
         var result = await cursorAgentRuntime.RunAsync(request);
 
-        logger.LogInformation("run_cursor_agent: direction={Direction}, mode={Mode}, success={Success}, maxElements={MaxElements}, maxBytes={MaxBytes}, includeContent={IncludeContent}",
-            forward ? "forward" : "backward", parsedMode, result.Success, parameters.MaxElements, parameters.MaxBytes, parameters.IncludeContent);
+        logger.LogInformation("run_cursor_agent: mode={Mode}, success={Success}, maxElements={MaxElements}, maxBytes={MaxBytes}, includeContent={IncludeContent}",
+            parsedMode, result.Success, parameters.MaxElements, parameters.MaxBytes, parameters.IncludeContent);
         
         // Create a lightweight result for the LLM to avoid token limit issues and distractions
         var lightweightResult = new
