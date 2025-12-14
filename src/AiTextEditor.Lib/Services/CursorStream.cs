@@ -15,7 +15,26 @@ public sealed class CursorStream
         this.document = document ?? throw new ArgumentNullException(nameof(document));
         ArgumentNullException.ThrowIfNull(parameters);
 
-        state = new CursorState(parameters, 0);
+        var startIndex = 0;
+        if (!string.IsNullOrEmpty(parameters.StartAfterPointer))
+        {
+            var foundIndex = -1;
+            for (var i = 0; i < document.Items.Count; i++)
+            {
+                if (document.Items[i].Pointer.Serialize() == parameters.StartAfterPointer)
+                {
+                    foundIndex = i;
+                    break;
+                }
+            }
+
+            if (foundIndex != -1)
+            {
+                startIndex = foundIndex + 1;
+            }
+        }
+
+        state = new CursorState(parameters, startIndex);
     }
 
     public CursorPortion? NextPortion()

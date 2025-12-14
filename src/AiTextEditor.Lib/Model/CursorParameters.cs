@@ -7,7 +7,7 @@ public sealed record CursorParameters
     public const int MaxElementsUpperBound = 50;
     public const int MaxBytesUpperBound = 32_768;
 
-    public CursorParameters(int maxElements, int maxBytes, bool includeContent)
+    public CursorParameters(int maxElements, int maxBytes, bool includeContent, string? startAfterPointer = null)
     {
         if (maxElements <= 0 || maxElements > MaxElementsUpperBound)
         {
@@ -24,6 +24,7 @@ public sealed record CursorParameters
         MaxElements = maxElements;
         MaxBytes = maxBytes;
         IncludeContent = includeContent;
+        StartAfterPointer = startAfterPointer;
     }
 
     public int MaxElements { get; }
@@ -31,4 +32,6 @@ public sealed record CursorParameters
     public int MaxBytes { get; }
 
     public bool IncludeContent { get; }
+
+    public string? StartAfterPointer { get; }
 }

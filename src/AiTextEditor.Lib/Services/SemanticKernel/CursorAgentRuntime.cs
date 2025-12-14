@@ -52,7 +52,14 @@ public sealed class CursorAgentRuntime
         state = state.WithStep(new TaskLimits(state.Limits.Step, maxSteps, state.Limits.MaxSeenTail, state.Limits.MaxFound));
         sessionStore.Set(taskId, state);
         
-        var cursor = new CursorStream(documentContext.Document, request.Parameters);
+        var lastSeenPointer = state.Seen.LastOrDefault();
+        var parameters = request.Parameters;
+        if (!string.IsNullOrEmpty(lastSeenPointer))
+        {
+             parameters = new CursorParameters(parameters.MaxElements, parameters.MaxBytes, parameters.IncludeContent, lastSeenPointer);
+        }
+
+        var cursor = new CursorStream(documentContext.Document, parameters);
         var cursorComplete = false;
         int? firstItemIndex = null;
         string? summary = request.State?.Progress;
@@ -370,7 +377,7 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
             items = portion.Items.Select((item, idx) => new
             {
                 index = idx,
-                pointerId = item.PointerId,
+                pointer = item.Pointer,
                 pointerLabel = item.PointerLabel,
                 type = item.Type,
                 text = item.Text
@@ -579,28 +586,9 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
     private static EvidenceItem? ParseEvidence(JsonElement element)
     {
         string? pointer = null;
-        if (element.TryGetProperty("pointerId", out var pointerIdElement))
+        if (element.TryGetProperty("pointer", out var pointerElement) && pointerElement.ValueKind == JsonValueKind.String)
         {
-            if (pointerIdElement.ValueKind == JsonValueKind.Number)
-            {
-                pointer = pointerIdElement.GetInt32().ToString();
-            }
-            else if (pointerIdElement.ValueKind == JsonValueKind.String)
-            {
-                pointer = pointerIdElement.GetString();
-            }
-        }
-
-        if (pointer == null && element.TryGetProperty("pointer", out var pointerElement))
-        {
-            if (pointerElement.ValueKind == JsonValueKind.String)
-            {
-                pointer = pointerElement.GetString();
-            }
-            else if (pointerElement.ValueKind == JsonValueKind.Number)
-            {
-                pointer = pointerElement.GetInt32().ToString();
-            }
+            pointer = pointerElement.GetString();
         }
 
         if (pointer == null)
@@ -657,15 +645,6 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
             return null;
         }
 
-        if (int.TryParse(pointer, out var pointerId))
-        {
-            var matchById = portion.Items.FirstOrDefault(item => item.PointerId == pointerId);
-            if (matchById != null)
-            {
-                return matchById.Index;
-            }
-        }
-
         var match = portion.Items.FirstOrDefault(item => item.Pointer.Equals(pointer, StringComparison.OrdinalIgnoreCase));
         return match?.Index;
     }
@@ -677,15 +656,6 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
             return null;
         }
 
-        if (int.TryParse(pointer, out var pointerId))
-        {
-            var matchById = portion.Items.FirstOrDefault(item => item.PointerId == pointerId);
-            if (matchById != null)
-            {
-                return matchById.Markdown;
-            }
-        }
-
         var match = portion.Items.FirstOrDefault(item => item.Pointer.Equals(pointer, StringComparison.OrdinalIgnoreCase));
         return match?.Markdown;
     }
@@ -695,15 +665,6 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
         if (portion == null)
         {
             return null;
-        }
-
-        if (int.TryParse(pointer, out var pointerId))
-        {
-            var matchById = portion.Items.FirstOrDefault(item => item.PointerId == pointerId);
-            if (matchById != null)
-            {
-                return matchById.PointerLabel;
-            }
         }
 
         var match = portion.Items.FirstOrDefault(item => item.Pointer.Equals(pointer, StringComparison.OrdinalIgnoreCase));

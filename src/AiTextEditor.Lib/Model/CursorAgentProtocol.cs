@@ -12,7 +12,7 @@ public sealed record CursorAgentDecision(
 );
 
 public sealed record CursorAgentResultItem(
-    [property: JsonPropertyName("pointerId")] int PointerId,
+    [property: JsonPropertyName("pointer")] string Pointer,
     [property: JsonPropertyName("pointerLabel")] string? PointerLabel,
     [property: JsonPropertyName("excerpt")] string? Excerpt,
     [property: JsonPropertyName("reason")] string? Reason,
@@ -20,7 +20,7 @@ public sealed record CursorAgentResultItem(
 );
 
 public sealed record CursorAgentEvidence(
-    [property: JsonPropertyName("pointerId")] int PointerId,
+    [property: JsonPropertyName("pointer")] string Pointer,
     [property: JsonPropertyName("pointerLabel")] string? PointerLabel,
     [property: JsonPropertyName("excerpt")] string? Excerpt,
     [property: JsonPropertyName("reason")] string? Reason,
