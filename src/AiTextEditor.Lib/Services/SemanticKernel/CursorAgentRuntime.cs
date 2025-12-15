@@ -367,13 +367,12 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
     {
         var batch = new
         {
-            batchId = $"cursor:local:step-{state.Limits.Step}",
             firstBatch = state.Limits.Step == 1,
             lastBatch = !portion.HasMore,
             hasMore = portion.HasMore,
-            items = portion.Items.Select((item, idx) => new
+            items = portion.Items.Select((item, itemIndex) => new
             {
-                index = idx,
+                batchItemIndex = itemIndex,
                 pointer = item.Pointer,
                 type = item.Type,
                 markdown = item.Markdown
@@ -409,10 +408,10 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
         b.AppendLine("");
         b.AppendLine("Input you receive each step:");
         b.AppendLine("- Task snapshot (counts, progress, limits).");
-        b.AppendLine("- Batch JSON with: hasMore, firstBatch, lastBatch, items[]. Each item has index, pointer, type, markdown.");
+        b.AppendLine("- Batch JSON with: hasMore, firstBatch, lastBatch, items[]. Each item has batchItemIndex, pointer, type, markdown.");
         b.AppendLine("");
         b.AppendLine("Your job for THIS step:");
-        b.AppendLine("1) Read Batch JSON items in order index=0..N.");
+        b.AppendLine("1) Read Batch JSON items in order batchItemIndex=0..N.");
         b.AppendLine("2) If an item satisfies the Goal, immediately return decision=\"done\" with result:");
         b.AppendLine("   - result.pointer = that item.pointer");
         b.AppendLine("   - result.excerpt = short direct quote from item.markdown that contains the match (120..300 chars)");
@@ -448,7 +447,7 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
         b.AppendLine("- If decision is \"done\" but result is missing: this is INVALID. Never do that.");
         b.AppendLine("- If no match in this batch and hasMore=true: decision=\"continue\".");
         b.AppendLine("- If no match and hasMore=false (last batch): decision=\"not_found\".");
-        b.AppendLine("- Scan items strictly top-to-bottom by index. Stop at the FIRST valid match.");
+        b.AppendLine("- Scan items strictly top-to-bottom by batchItemIndex. Stop at the FIRST valid match.");
         b.AppendLine("- Prefer type=\"Paragraph\" over \"Heading\" unless the goal explicitly wants headings/titles.");
         b.AppendLine("");
         b.AppendLine("Excerpt rule (proof):");
@@ -688,6 +687,9 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
     {
         var snippet = Truncate(content, 1000);
         logger.LogDebug("cursor_agent_raw: step={Step}, snippet={Snippet}", step, snippet);
+        logger.LogDebug("cursor_agent_raw_len: step={Step}, len={Len}", step, content.Length);
+        logger.LogDebug("cursor_agent_raw_head: step={Step}, head={Head}", step, content[..Math.Min(300, content.Length)]);
+        logger.LogDebug("cursor_agent_raw_tail: step={Step}, tail={Tail}", step, content[^Math.Min(300, content.Length)..]);
     }
 
     private static string? Truncate(string? text, int maxLength)
