@@ -114,7 +114,6 @@ public sealed class CursorAgentRuntime
             WhyThis: agentResult?.Reasons, 
             Evidence: state.Evidence,
             Markdown: agentResult?.Markdown, 
-            Confidence: agentResult?.Confidence, 
             Reasons: agentResult?.Reasons);
     }
 
@@ -193,7 +192,7 @@ public sealed class CursorAgentRuntime
             updated = updated.WithProgress($"Found match: {label}");
             
             var markdown = TryFindMarkdown(command.Result.Pointer, lastPortion) ?? command.Result.Excerpt;
-            result = new AgentResult(label, markdown, command.Result.Score, command.Result.Reason, command.Result.Excerpt);
+            result = new AgentResult(label, markdown, command.Result.Reason, command.Result.Excerpt);
             evidenceToAdd.Add(command.Result);
         }
         else if (command.Decision == "done")
@@ -220,7 +219,7 @@ public sealed class CursorAgentRuntime
                 var pointer = command.NewEvidence[0].Pointer;
                 var markdown = TryFindMarkdown(pointer, lastPortion) ?? command.NewEvidence[0].Excerpt;
                 var label = TryFindPointerLabel(pointer, lastPortion) ?? pointer;
-                result = new AgentResult(label, markdown, command.NewEvidence[0].Score, command.NewEvidence[0].Reason, command.NewEvidence[0].Excerpt);
+                result = new AgentResult(label, markdown, command.NewEvidence[0].Reason, command.NewEvidence[0].Excerpt);
             }
         }
 
@@ -265,7 +264,6 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
                 WhyThis: agentResult?.Reasons, 
                 Evidence: state.Evidence,
                 Markdown: agentResult?.Markdown, 
-                Confidence: agentResult?.Confidence, 
                 Reasons: agentResult?.Reasons);
             return true;
         }
@@ -278,7 +276,6 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
                 WhyThis: agentResult?.Reasons, 
                 Evidence: state.Evidence,
                 Markdown: agentResult?.Markdown, 
-                Confidence: agentResult?.Confidence, 
                 Reasons: agentResult?.Reasons);
             return true;
         }
@@ -291,7 +288,6 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
                 WhyThis: agentResult?.Reasons, 
                 Evidence: state.Evidence,
                 Markdown: agentResult?.Markdown, 
-                Confidence: agentResult?.Confidence, 
                 Reasons: agentResult?.Reasons);
             return true;
         }
@@ -308,7 +304,6 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
             WhyThis: agentResult?.Reasons,
             Evidence: state.Evidence,
             Markdown: agentResult?.Markdown,
-            Confidence: agentResult?.Confidence,
             Reasons: agentResult?.Reasons);
     }
 
@@ -428,7 +423,6 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
         b.AppendLine("   - result.pointer = that item.pointer");
         b.AppendLine("   - result.excerpt = short direct quote from item.markdown that contains the match (120..300 chars)");
         b.AppendLine("   - result.reason = 1 short sentence why it matches");
-        b.AppendLine("   - result.score = 0.0..1.0");
         b.AppendLine("3) If no item matches:");
         b.AppendLine("   - if hasMore=true => decision=\"continue\"");
         b.AppendLine("   - else => decision=\"not_found\"");
@@ -450,8 +444,8 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
         b.AppendLine("Schema:");
         b.AppendLine("{");
         b.AppendLine("  \"decision\": \"continue|done|not_found\",");
-        b.AppendLine("  \"result\": {\"pointer\": \"...\", \"excerpt\": \"...\", \"reason\": \"...\", \"score\": 0.0} (only when decision=done),");
-        b.AppendLine("  \"newEvidence\": [{\"pointer\":\"...\",\"excerpt\":\"...\",\"reason\":\"...\",\"score\":0.0}],");
+        b.AppendLine("  \"result\": {\"pointer\": \"...\", \"excerpt\": \"...\", \"reason\": \"...\"} (only when decision=done),");
+        b.AppendLine("  \"newEvidence\": [{\"pointer\":\"...\",\"excerpt\":\"...\",\"reason\":\"...\"}],");
         b.AppendLine("  \"stateUpdate\": {\"found\": true|false, \"progress\": \"...\"}");
         b.AppendLine("}");
         b.AppendLine("");
@@ -638,13 +632,8 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
         var reason = element.TryGetProperty("reason", out var reasonElement) && reasonElement.ValueKind == JsonValueKind.String
             ? reasonElement.GetString()
             : null;
-        double? score = null;
-        if (element.TryGetProperty("score", out var scoreElement) && scoreElement.ValueKind == JsonValueKind.Number)
-        {
-            score = scoreElement.GetDouble();
-        }
 
-        return new EvidenceItem(pointer!, excerpt, reason, score);
+        return new EvidenceItem(pointer!, excerpt, reason);
     }
 
     private static string SanitizeJson(string json)
@@ -732,7 +721,7 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
         };
     }
 
-    private sealed record AgentResult(string SemanticPointer, string? Markdown, double? Confidence, string? Reasons, string? Excerpt);
+    private sealed record AgentResult(string SemanticPointer, string? Markdown, string? Reasons, string? Excerpt);
 
     private sealed record AgentCommand(string Decision, IReadOnlyList<EvidenceItem>? NewEvidence, EvidenceItem? Result, bool NeedMoreContext, TaskStateUpdate? StateUpdate)
     {

@@ -62,5 +62,4 @@ public sealed record CursorAgentResult(
 
     // Deprecated fields kept for backward compatibility if needed, or mapped to new ones
     string? Markdown = null,
-    double? Confidence = null,
     string? Reasons = null);

@@ -98,8 +98,7 @@ public class CursorAgentPlugin(
             {
                 result.State?.Found, 
                 result.State?.Progress,
-                result.State?.Limits,
-                result.State?.Evidence 
+                result.State?.Limits
             },
             result.SemanticPointerFrom,
             result.SemanticPointerTo,

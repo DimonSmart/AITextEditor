@@ -88,7 +88,7 @@ public sealed record TaskStateUpdate(
     string? Progress,
     TaskLimits? Limits);
 
-public sealed record EvidenceItem(string Pointer, string? Excerpt, string? Reason, double? Score);
+public sealed record EvidenceItem(string Pointer, string? Excerpt, string? Reason);
 
 public sealed class SessionStore
 {

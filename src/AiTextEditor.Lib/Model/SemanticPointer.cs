@@ -25,6 +25,16 @@ public class SemanticPointer
     /// </summary>
     public string? Label { get; }
 
+    /// <summary>
+    /// Returns a compact string representation suitable for LLM context (e.g. "25:1.1.1.p22").
+    /// </summary>
+    public string ToCompactString()
+    {
+        return !string.IsNullOrWhiteSpace(Label)
+            ? $"{Id}:{Label}"
+            : $"{Id}:p{Id}";
+    }
+
     public string Serialize()
     {
         return JsonSerializer.Serialize(this, SerializationOptions);

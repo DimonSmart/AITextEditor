@@ -15,16 +15,14 @@ public sealed record CursorAgentResultItem(
     [property: JsonPropertyName("pointer")] string Pointer,
     [property: JsonPropertyName("pointerLabel")] string? PointerLabel,
     [property: JsonPropertyName("excerpt")] string? Excerpt,
-    [property: JsonPropertyName("reason")] string? Reason,
-    [property: JsonPropertyName("score")] double? Score
+    [property: JsonPropertyName("reason")] string? Reason
 );
 
 public sealed record CursorAgentEvidence(
     [property: JsonPropertyName("pointer")] string Pointer,
     [property: JsonPropertyName("pointerLabel")] string? PointerLabel,
     [property: JsonPropertyName("excerpt")] string? Excerpt,
-    [property: JsonPropertyName("reason")] string? Reason,
-    [property: JsonPropertyName("score")] double? Score
+    [property: JsonPropertyName("reason")] string? Reason
 );
 
 public sealed record CursorAgentStateUpdate(

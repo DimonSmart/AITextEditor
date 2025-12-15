@@ -15,19 +15,10 @@ public sealed record CursorPortionView(IReadOnlyList<CursorItemView> Items, bool
             .Select(item => new CursorItemView(
                 item.Index,
                 item.Markdown,
-                BuildPointerLabel(item),
+                item.Pointer.ToCompactString(),
                 item.Type.ToString()))
             .ToList();
 
         return new CursorPortionView(items, portion.HasMore);
-    }
-
-    private static string BuildPointerLabel(LinearItem item)
-    {
-        var baseLabel = !string.IsNullOrWhiteSpace(item.Pointer.Label)
-            ? item.Pointer.Label!
-            : $"p{item.Index}";
-
-        return $"{item.Pointer.Id}:{baseLabel}";
     }
 }
