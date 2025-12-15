@@ -188,9 +188,11 @@ public sealed class CursorAgentRuntime
             updated = updated with { Found = true };
             summary ??= command.Result.Excerpt ?? command.Result.Pointer;
             summary = Truncate(summary, MaxSummaryLength);
-            updated = updated.WithProgress(summary ?? updated.Progress);
-            var markdown = TryFindMarkdown(command.Result.Pointer, lastPortion) ?? command.Result.Excerpt;
+            
             var label = TryFindPointerLabel(command.Result.Pointer, lastPortion) ?? command.Result.Pointer;
+            updated = updated.WithProgress($"Found match: {label}");
+            
+            var markdown = TryFindMarkdown(command.Result.Pointer, lastPortion) ?? command.Result.Excerpt;
             result = new AgentResult(label, markdown, command.Result.Score, command.Result.Reason, command.Result.Excerpt);
             evidenceToAdd.Add(command.Result);
         }
@@ -330,7 +332,7 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
         var snapshot = ProjectPortion(portion);
         updatedState = UpdateSeen(state, snapshot);
         lastPortion = snapshot;
-        var pointerLabel = snapshot.Items.FirstOrDefault()?.PointerLabel ?? "<none>";
+        var pointerLabel = snapshot.Items.FirstOrDefault()?.Pointer ?? "<none>";
         var snippet = snapshot.HasMore && snapshot.Items.Count > 0 ? Truncate(snapshot.Items[0].Markdown, 200) : string.Empty;
         var eventName = snapshot.HasMore ? "cursor_batch" : "cursor_batch_complete";
         logger.LogDebug("{Event}: count={Count}, hasMore={HasMore}, pointerLabel={PointerLabel}, snippet={Snippet}", eventName, snapshot.Items.Count, snapshot.HasMore, pointerLabel, snippet);
@@ -380,9 +382,8 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
             {
                 index = idx,
                 pointer = item.Pointer,
-                pointerLabel = item.PointerLabel,
                 type = item.Type,
-                text = item.Text
+                markdown = item.Markdown
             })
         };
 
@@ -411,25 +412,6 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
         return builder.ToString();
     }
 
-    private static string BuildTaskDefinitionPromptOLD(CursorAgentRequest request)
-    {
-        var builder = new StringBuilder();
-        builder.AppendLine($"Cursor: maxElements={request.Parameters.MaxElements}, maxBytes={request.Parameters.MaxBytes}, includeContent={request.Parameters.IncludeContent}.");
-        builder.AppendLine($"Goal: {request.TaskDescription}");
-        builder.AppendLine("Respond with a single Decision JSON object: decision (continue|done|not_found), optional result, newEvidence array, stateUpdate, needMoreContext flag.");
-        builder.AppendLine("You are processing one batch of a multi-step session. Treat Snapshot as cumulative state from previous steps.");
-        builder.AppendLine("Snapshot includes goal, evidenceCount, seenCount, progress, limits.");
-        builder.AppendLine("Do not treat this batch as an initial step unless Snapshot shows no prior progress; continue from the provided state.");
-        builder.AppendLine("Batch JSON containtBatch/lastBatch flags to help you decide whether to continue scanning or aggregate findings.");
-        builder.AppendLine("Deduplication: never return pointers already present in Snapshot.alreadyFound or Snapshot.seenTail. Use the earliest matching pointer in the batch.");
-        builder.AppendLine("Stop when decision is done or not_found.");
-        builder.AppendLine("Respect the first mention rule: Scan strictly from top to bottom. Prefer the first matching item in the current batch.");
-        builder.AppendLine("Excerpt: return a short window around the match (few nearby sentences) capped at 400 characters; avoid long summaries.");
-        builder.AppendLine("Do not keep a running text log of progress; report state via counters and concise reasons only.");
-
-        return builder.ToString();
-    }
-
     private static string BuildTaskDefinitionPrompt(CursorAgentRequest request)
     {
         var b = new StringBuilder();
@@ -438,13 +420,13 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
         b.AppendLine("");
         b.AppendLine("Input you receive each step:");
         b.AppendLine("- Task snapshot (counts, progress, limits).");
-        b.AppendLine("- Batch JSON with: hasMore, firstBatch, lastBatch, items[]. Each item has index, pointer, type, text.");
+        b.AppendLine("- Batch JSON with: hasMore, firstBatch, lastBatch, items[]. Each item has index, pointer, type, markdown.");
         b.AppendLine("");
         b.AppendLine("Your job for THIS step:");
         b.AppendLine("1) Read Batch JSON items in order index=0..N.");
         b.AppendLine("2) If an item satisfies the Goal, immediately return decision=\"done\" with result:");
         b.AppendLine("   - result.pointer = that item.pointer");
-        b.AppendLine("   - result.excerpt = short direct quote from item.text that contains the match (120..300 chars)");
+        b.AppendLine("   - result.excerpt = short direct quote from item.markdown that contains the match (120..300 chars)");
         b.AppendLine("   - result.reason = 1 short sentence why it matches");
         b.AppendLine("   - result.score = 0.0..1.0");
         b.AppendLine("3) If no item matches:");
@@ -456,27 +438,6 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
         b.AppendLine("");
         b.AppendLine("Do not output anything except the single JSON object.");
         return b.ToString();
-    }
-
-
-
-    private static string BuildAgentSystemPromptOLD()
-    {
-        var builder = new StringBuilder();
-        builder.AppendLine("You are CursorAgent. Reply with a single JSON Decision object, no code fences.");
-        builder.AppendLine("Decision schema: {\"decision\":\"continue|done|not_found\",\"newEvidence\":[...],\"stateUpdate\":{...},\"result\":{...},\"needMoreContext\":false}.");
-        builder.AppendLine("State lives outside the model. Do not echo goal/seen/limits back.");
-        builder.AppendLine("Each call is one step in a larger run: read Snapshot to understand prior findings and continue from that state without restarting.");
-        builder.AppendLine("Snapshot delivers goal, evidenceCount, seenCount, progress, limits, dedupRule.");
-        builder.AppendLine("Dedup rule: never repeat pointers from Snapshot.alreadyFound or Snapshot.seenTail.");
-        builder.AppendLine("First mention rule the batch from top to bottom. Stop at the VERY FIRST item that matches. Do not scan the rest of the batch for 'better' matches if a valid match is found early.");
-        builder.AppendLine("Type preference: When looking for content/mentions, prefer 'Paragraph' over 'Heading' unless the user asks for titles/headings.");
-        builder.AppendLine("Excerpt rule: Provide a brief nearby snippet capped at 500 characters; avoid paraphrasing and do not copy long spans. Always include the 'pointer'.");
-        builder.AppendLine("Stop-condition: set decision=done with result when goal is satisfied; use decision=not_found when exhausted.");
-        builder.AppendLine("Batch markers show whether this is the first batch or the last batch in the stream. Use them to decide whether to continue, aggregate, or conclude.");
-        builder.AppendLine("Response must be under 200 tokens. Do not paraphrase inputs or copy long spans; keep excerpts within 300-500 characters.");
-        builder.AppendLine("stateUpdate/progress fields: only counters and a brief reason; do not accumulate narrative text.");
-        return builder.ToString();
     }
 
 
@@ -503,7 +464,7 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
         b.AppendLine("- Prefer type=\"Paragraph\" over \"Heading\" unless the goal explicitly wants headings/titles.");
         b.AppendLine("");
         b.AppendLine("Excerpt rule (proof):");
-        b.AppendLine("- excerpt MUST be a short direct quote copied from item.text.");
+        b.AppendLine("- excerpt MUST be a short direct quote copied from item.markdown.");
         b.AppendLine("- excerpt MUST include the matched word/name.");
         b.AppendLine("- Keep excerpt 120..300 characters. Do NOT paraphrase.");
         b.AppendLine("");
@@ -721,7 +682,7 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
         }
 
         var match = portion.Items.FirstOrDefault(item => item.Pointer.Equals(pointer, StringComparison.OrdinalIgnoreCase));
-        return match?.PointerLabel;
+        return match?.Pointer;
     }
 
     private void LogCompletionSkeleton(int step, object? message)
