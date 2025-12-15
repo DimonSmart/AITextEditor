@@ -64,8 +64,15 @@ public sealed class CassetteHttpMessageHandler : DelegatingHandler
             Headers = response.Headers.ToDictionary(h => h.Key, h => h.Value.ToArray())
         };
 
-        Directory.CreateDirectory(_cassetteDirectory);
-        await SaveCassetteAsync(cassettePath, recording, cancellationToken).ConfigureAwait(false);
+        if (response.IsSuccessStatusCode)
+        {
+            Directory.CreateDirectory(_cassetteDirectory);
+            await SaveCassetteAsync(cassettePath, recording, cancellationToken).ConfigureAwait(false);
+        }
+        else
+        {
+            _output?.WriteLine($"[VCR] Response status code {response.StatusCode} indicates failure. Not recording.");
+        }
 
         return CreateResponse(recording);
     }
@@ -96,7 +103,12 @@ public sealed class CassetteHttpMessageHandler : DelegatingHandler
 
     private static Task SaveCassetteAsync(string cassettePath, CassetteRecording recording, CancellationToken cancellationToken)
     {
-        var json = JsonSerializer.Serialize(recording, new JsonSerializerOptions { WriteIndented = true });
+        var options = new JsonSerializerOptions 
+        { 
+            WriteIndented = true,
+            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        };
+        var json = JsonSerializer.Serialize(recording, options);
         return File.WriteAllTextAsync(cassettePath, json, cancellationToken);
     }
 
@@ -137,7 +149,8 @@ public sealed class CassetteHttpMessageHandler : DelegatingHandler
                         model = obj["model"]?.ToString(),
                         messages = obj["messages"],
                         tools = obj["tools"],
-                        tool_choice = obj["tool_choice"]
+                        tool_choice = obj["tool_choice"],
+                        options = obj["options"]
                     };
                     key = JsonSerializer.Serialize(canonical);
                 }

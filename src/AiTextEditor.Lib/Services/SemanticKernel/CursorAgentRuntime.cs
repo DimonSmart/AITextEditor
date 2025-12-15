@@ -407,7 +407,7 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
         return builder.ToString();
     }
 
-    private static string BuildTaskDefinitionPrompt(CursorAgentRequest request)
+    private static string BuildTaskDefinitionPromptOLD(CursorAgentRequest request)
     {
         var builder = new StringBuilder();
         builder.AppendLine($"Cursor: maxElements={request.Parameters.MaxElements}, maxBytes={request.Parameters.MaxBytes}, includeContent={request.Parameters.IncludeContent}.");
@@ -426,7 +426,37 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
         return builder.ToString();
     }
 
-    private static string BuildAgentSystemPrompt()
+    private static string BuildTaskDefinitionPrompt(CursorAgentRequest request)
+    {
+        var b = new StringBuilder();
+        b.AppendLine($"Cursor params: maxElements={request.Parameters.MaxElements}, maxBytes={request.Parameters.MaxBytes}, includeContent={request.Parameters.IncludeContent}.");
+        b.AppendLine($"Goal: {request.TaskDescription}");
+        b.AppendLine("");
+        b.AppendLine("Input you receive each step:");
+        b.AppendLine("- Task snapshot (counts, progress, limits).");
+        b.AppendLine("- Batch JSON with: hasMore, firstBatch, lastBatch, items[]. Each item has index, pointer, type, text.");
+        b.AppendLine("");
+        b.AppendLine("Your job for THIS step:");
+        b.AppendLine("1) Read Batch JSON items in order index=0..N.");
+        b.AppendLine("2) If an item satisfies the Goal, immediately return decision=\"done\" with result:");
+        b.AppendLine("   - result.pointer = that item.pointer");
+        b.AppendLine("   - result.excerpt = short direct quote from item.text that contains the match (120..300 chars)");
+        b.AppendLine("   - result.reason = 1 short sentence why it matches");
+        b.AppendLine("   - result.score = 0.0..1.0");
+        b.AppendLine("3) If no item matches:");
+        b.AppendLine("   - if hasMore=true => decision=\"continue\"");
+        b.AppendLine("   - else => decision=\"not_found\"");
+        b.AppendLine("");
+        b.AppendLine("Evidence:");
+        b.AppendLine("- newEvidence is optional. If you add it, use the same excerpt rule and keep it small (0..3 items).");
+        b.AppendLine("");
+        b.AppendLine("Do not output anything except the single JSON object.");
+        return b.ToString();
+    }
+
+
+
+    private static string BuildAgentSystemPromptOLD()
     {
         var builder = new StringBuilder();
         builder.AppendLine("You are CursorAgent. Reply with a single JSON Decision object, no code fences.");
@@ -444,6 +474,43 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
         builder.AppendLine("stateUpdate/progress fields: only counters and a brief reason; do not accumulate narrative text.");
         return builder.ToString();
     }
+
+
+    private static string BuildAgentSystemPrompt()
+    {
+        var b = new StringBuilder();
+        b.AppendLine("You are CursorAgent.");
+        b.AppendLine("Reply with exactly ONE JSON object. No code fences. No extra text.");
+        b.AppendLine("");
+        b.AppendLine("Schema:");
+        b.AppendLine("{");
+        b.AppendLine("  \"decision\": \"continue|done|not_found\",");
+        b.AppendLine("  \"result\": {\"pointer\": \"...\", \"excerpt\": \"...\", \"reason\": \"...\", \"score\": 0.0} (only when decision=done),");
+        b.AppendLine("  \"newEvidence\": [{\"pointer\":\"...\",\"excerpt\":\"...\",\"reason\":\"...\",\"score\":0.0}],");
+        b.AppendLine("  \"stateUpdate\": {\"found\": true|false, \"progress\": \"...\"}");
+        b.AppendLine("}");
+        b.AppendLine("");
+        b.AppendLine("Rules:");
+        b.AppendLine("- If you found a match: decision MUST be \"done\" AND result MUST be present.");
+        b.AppendLine("- If decision is \"done\" but result is missing: this is INVALID. Never do that.");
+        b.AppendLine("- If no match in this batch and hasMore=true: decision=\"continue\".");
+        b.AppendLine("- If no match and hasMore=false (last batch): decision=\"not_found\".");
+        b.AppendLine("- Scan items strictly top-to-bottom by index. Stop at the FIRST valid match.");
+        b.AppendLine("- Prefer type=\"Paragraph\" over \"Heading\" unless the goal explicitly wants headings/titles.");
+        b.AppendLine("");
+        b.AppendLine("Excerpt rule (proof):");
+        b.AppendLine("- excerpt MUST be a short direct quote copied from item.text.");
+        b.AppendLine("- excerpt MUST include the matched word/name.");
+        b.AppendLine("- Keep excerpt 120..300 characters. Do NOT paraphrase.");
+        b.AppendLine("");
+        b.AppendLine("stateUpdate.progress:");
+        b.AppendLine("- Very short: e.g. \"scanned_batch\", \"found_match\", \"no_match_continue\", \"no_match_last_batch\".");
+        b.AppendLine("- Do NOT write a narrative log.");
+        b.AppendLine("");
+        b.AppendLine("Keep the whole response short.");
+        return b.ToString();
+    }
+
 
     private static CursorPortionView ProjectPortion(CursorPortion portion) => CursorPortionView.FromPortion(portion);
 
@@ -719,7 +786,11 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
             Temperature = 0,
             TopP = 1,
             ResponseFormat = "json_object",
-            MaxTokens = DefaultResponseTokenLimit
+            MaxTokens = DefaultResponseTokenLimit,
+            ExtensionData = new Dictionary<string, object>
+            {
+                { "options", new { think = false } }
+            }
         };
     }
 

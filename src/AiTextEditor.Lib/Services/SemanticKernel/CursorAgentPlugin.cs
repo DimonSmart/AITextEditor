@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using AiTextEditor.Lib.Model;
 using AiTextEditor.Lib.Services;
@@ -17,7 +18,8 @@ public class CursorAgentPlugin(
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         WriteIndented = false,
-        DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
+        DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
+        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
     };
 
     private readonly DocumentContext documentContext = documentContext;
