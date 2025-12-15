@@ -365,13 +365,11 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
 
     private static string BuildBatchMessage(TaskState state, CursorPortionView portion)
     {
-        var firstBatch = state.Limits.Step == 1;
-        var lastBatch = !portion.HasMore;
         var batch = new
         {
             batchId = $"cursor:local:step-{state.Limits.Step}",
-            firstBatch,
-            lastBatch,
+            firstBatch = state.Limits.Step == 1,
+            lastBatch = !portion.HasMore,
             hasMore = portion.HasMore,
             items = portion.Items.Select((item, idx) => new
             {
@@ -385,14 +383,10 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
         var options = new JsonSerializerOptions
         {
             Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-            WriteIndented = true
+            WriteIndented = false
         };
 
-        var builder = new StringBuilder();
-        builder.AppendLine("Batch (JSON):");
-        builder.AppendLine($"batchPosition: {(firstBatch ? "first batch" : lastBatch ? "last batch" : "middle batch")}");
-        builder.AppendLine(JsonSerializer.Serialize(batch, options));
-        return builder.ToString();
+        return JsonSerializer.Serialize(batch, options);
     }
 
     private static string BuildSnapshotMessage(TaskState state)
@@ -716,7 +710,11 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
             MaxTokens = DefaultResponseTokenLimit,
             ExtensionData = new Dictionary<string, object>
             {
-                { "options", new { think = false } }
+                ["options"] = new Dictionary<string, object>
+                {
+                    ["think"] = false,
+                    ["num_predict"] = DefaultResponseTokenLimit,
+                }
             }
         };
     }
