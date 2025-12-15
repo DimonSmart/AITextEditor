@@ -61,7 +61,6 @@ public sealed class CursorAgentRuntime
 
         var cursor = new CursorStream(documentContext.Document, parameters);
         var cursorComplete = false;
-        int? firstItemIndex = null;
         string? summary = request.State?.Progress;
         CursorPortionView? lastPortion = null;
         AgentResult? agentResult = null;
@@ -85,18 +84,18 @@ public sealed class CursorAgentRuntime
                 continue;
             }
 
-            (state, firstItemIndex, summary, agentResult) = ApplyCommand(state, command, firstItemIndex, summary, lastPortion, agentResult);
+            (state, summary, agentResult) = ApplyCommand(state, command, summary, lastPortion, agentResult);
 
             if (command.NewEvidence?.Count > 0 && !string.IsNullOrWhiteSpace(targetSetId))
             {
-                var indices = MapEvidenceToIndices(command.NewEvidence, lastPortion);
-                if (indices.Count > 0)
+                var pointers = command.NewEvidence.Select(e => e.Pointer).ToList();
+                if (pointers.Count > 0)
                 {
-                    targetSetContext.Add(targetSetId!, indices);
+                    targetSetContext.Add(targetSetId!, pointers);
                 }
             }
 
-            if (ShouldStop(targetSetId, state, cursorComplete, firstItemIndex, summary, agentResult, out var completedResult))
+            if (ShouldStop(targetSetId, state, cursorComplete, summary, agentResult, out var completedResult))
             {
                 return completedResult;
             }
@@ -109,12 +108,11 @@ public sealed class CursorAgentRuntime
         }
 
         var overflowState = state.WithProgress(summary ?? state.Progress);
-        return new CursorAgentResult(false, "Max steps exceeded", firstItemIndex, summary, targetSetId, overflowState, 
-            PointerFrom: agentResult?.SemanticPointer, 
+        return new CursorAgentResult(false, "Max steps exceeded", summary, targetSetId, overflowState, 
+            SemanticPointerFrom: agentResult?.SemanticPointer,
             Excerpt: Truncate(agentResult?.Excerpt ?? agentResult?.Markdown, MaxExcerptLength), 
             WhyThis: agentResult?.Reasons, 
             Evidence: state.Evidence,
-            SemanticPointer: agentResult?.SemanticPointer, 
             Markdown: agentResult?.Markdown, 
             Confidence: agentResult?.Confidence, 
             Reasons: agentResult?.Reasons);
@@ -168,10 +166,9 @@ public sealed class CursorAgentRuntime
         return parsed?.WithRawContent(parsedFragment ?? content);
     }
 
-    private (TaskState State, int? FirstItemIndex, string? Summary, AgentResult? AgentResult) ApplyCommand(
+    private (TaskState State, string? Summary, AgentResult? AgentResult) ApplyCommand(
         TaskState state,
         AgentCommand command,
-        int? firstItemIndex,
         string? summary,
         CursorPortionView? lastPortion,
         AgentResult? agentResult)
@@ -191,7 +188,6 @@ public sealed class CursorAgentRuntime
             updated = updated with { Found = true };
             summary ??= command.Result.Excerpt ?? command.Result.Pointer;
             summary = Truncate(summary, MaxSummaryLength);
-            firstItemIndex ??= TryMapPointerToIndex(command.Result.Pointer, lastPortion);
             updated = updated.WithProgress(summary ?? updated.Progress);
             var markdown = TryFindMarkdown(command.Result.Pointer, lastPortion) ?? command.Result.Excerpt;
             var label = TryFindPointerLabel(command.Result.Pointer, lastPortion) ?? command.Result.Pointer;
@@ -217,7 +213,6 @@ public sealed class CursorAgentRuntime
         if (command.NewEvidence?.Count > 0)
         {
             evidenceToAdd.AddRange(command.NewEvidence);
-            firstItemIndex ??= TryMapPointerToIndex(command.NewEvidence[0].Pointer, lastPortion);
             if (command.Result == null)
             {
                 var pointer = command.NewEvidence[0].Pointer;
@@ -232,7 +227,7 @@ public sealed class CursorAgentRuntime
             updated = updated.WithEvidence(evidenceToAdd);
         }
 
-        return (updated, firstItemIndex, summary, result);
+        return (updated, summary, result);
     }
 
     private static TaskState ApplyStateUpdate(TaskState state, TaskStateUpdate? update)
@@ -252,22 +247,21 @@ public sealed class CursorAgentRuntime
         return updated;
     }
 
-private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplete, int? firstItemIndex, string? summary, AgentResult? agentResult, out CursorAgentResult result)
+private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplete, string? summary, AgentResult? agentResult, out CursorAgentResult result)
     {
         if (state.Found == true)
         {
-            result = BuildSuccess(targetSetId, firstItemIndex, summary ?? state.Progress, state, agentResult);
+            result = BuildSuccess(targetSetId, summary ?? state.Progress, state, agentResult);
             return true;
         }
 
         if (state.Found == false)
         {
-            result = new CursorAgentResult(false, summary ?? state.Progress, firstItemIndex, summary ?? state.Progress, targetSetId, state, 
-                PointerFrom: agentResult?.SemanticPointer, 
+            result = new CursorAgentResult(false, summary ?? state.Progress, summary ?? state.Progress, targetSetId, state, 
+                SemanticPointerFrom: agentResult?.SemanticPointer,
                 Excerpt: Truncate(agentResult?.Excerpt ?? agentResult?.Markdown, MaxExcerptLength), 
                 WhyThis: agentResult?.Reasons, 
                 Evidence: state.Evidence,
-                SemanticPointer: agentResult?.SemanticPointer, 
                 Markdown: agentResult?.Markdown, 
                 Confidence: agentResult?.Confidence, 
                 Reasons: agentResult?.Reasons);
@@ -276,12 +270,11 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
 
         if (state.Limits.Remaining <= 0)
         {
-            result = new CursorAgentResult(false, "TaskState limits reached", firstItemIndex, summary ?? state.Progress, targetSetId, state, 
-                PointerFrom: agentResult?.SemanticPointer, 
+            result = new CursorAgentResult(false, "TaskState limits reached", summary ?? state.Progress, targetSetId, state, 
+                SemanticPointerFrom: agentResult?.SemanticPointer,
                 Excerpt: Truncate(agentResult?.Excerpt ?? agentResult?.Markdown, MaxExcerptLength), 
                 WhyThis: agentResult?.Reasons, 
                 Evidence: state.Evidence,
-                SemanticPointer: agentResult?.SemanticPointer, 
                 Markdown: agentResult?.Markdown, 
                 Confidence: agentResult?.Confidence, 
                 Reasons: agentResult?.Reasons);
@@ -290,12 +283,11 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
 
         if (cursorComplete)
         {
-            result = new CursorAgentResult(false, state.Progress ?? "Cursor exhausted with no matc.Markdown, MaxExcerptLength)ursor exhausted with no match", firstItemIndex, summary ?? state.Progress, targetSetId, state, 
-                PointerFrom: agentResult?.SemanticPointer, 
+            result = new CursorAgentResult(false, state.Progress ?? "Cursor exhausted with no match", summary ?? state.Progress, targetSetId, state, 
+                SemanticPointerFrom: agentResult?.SemanticPointer,
                 Excerpt: agentResult?.Excerpt ?? agentResult?.Markdown, 
                 WhyThis: agentResult?.Reasons, 
                 Evidence: state.Evidence,
-                SemanticPointer: agentResult?.SemanticPointer, 
                 Markdown: agentResult?.Markdown, 
                 Confidence: agentResult?.Confidence, 
                 Reasons: agentResult?.Reasons);
@@ -306,14 +298,13 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
         return false;
     }
 
-    private static CursorAgentResult BuildSuccess(string? targetSetId, int? firstItemIndex, string? summary, TaskState state, AgentResult? agentResult)
+    private static CursorAgentResult BuildSuccess(string? targetSetId, string? summary, TaskState state, AgentResult? agentResult)
     {
-        return new CursorAgentResult(true, null, firstItemIndex, summary, targetSetId, state,
-            PointerFrom: agentResult?.SemanticPointer,
+        return new CursorAgentResult(true, null, summary, targetSetId, state,
+            SemanticPointerFrom: agentResult?.SemanticPointer,
             Excerpt: Truncate(agentResult?.Excerpt ?? agentResult?.Markdown, MaxExcerptLength),
             WhyThis: agentResult?.Reasons,
             Evidence: state.Evidence,
-            SemanticPointer: agentResult?.SemanticPointer,
             Markdown: agentResult?.Markdown,
             Confidence: agentResult?.Confidence,
             Reasons: agentResult?.Reasons);
@@ -356,10 +347,23 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
         return true;
     }
 
-    private static TaskState UpdateSeen(TaskState state, CursorPortionView portion)
+    private static TaskState UpdateSeen(TaskState state, CursorPortionView snapshot)
     {
-        var seenPointers = portion.Items.Select(item => item.Pointer);
-        return state.WithSeen(seenPointers);
+        var merged = new List<string>(state.Seen);
+        foreach (var item in snapshot.Items)
+        {
+            if (!merged.Any(x => x.Equals(item.Pointer, StringComparison.OrdinalIgnoreCase)))
+            {
+                merged.Add(item.Pointer);
+            }
+        }
+
+        if (merged.Count > state.Limits.MaxSeenTail)
+        {
+            merged.RemoveRange(0, merged.Count - state.Limits.MaxSeenTail);
+        }
+
+        return state with { Seen = merged };
     }
 
     private static string BuildBatchMessage(TaskState state, CursorPortionView portion)
@@ -698,17 +702,6 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
         });
     }
 
-    private static int? TryMapPointerToIndex(string pointer, CursorPortionView? portion)
-    {
-        if (portion == null)
-        {
-            return null;
-        }
-
-        var match = portion.Items.FirstOrDefault(item => item.Pointer.Equals(pointer, StringComparison.OrdinalIgnoreCase));
-        return match?.Index;
-    }
-
     private static string? TryFindMarkdown(string pointer, CursorPortionView? portion)
     {
         if (portion == null)
@@ -729,22 +722,6 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
 
         var match = portion.Items.FirstOrDefault(item => item.Pointer.Equals(pointer, StringComparison.OrdinalIgnoreCase));
         return match?.PointerLabel;
-    }
-
-    private IReadOnlyList<int> MapEvidenceToIndices(IReadOnlyList<EvidenceItem> evidence, CursorPortionView? portion)
-    {
-        if (portion == null)
-        {
-            return Array.Empty<int>();
-        }
-
-        var indices = evidence
-            .Select(item => TryMapPointerToIndex(item.Pointer, portion))
-            .Where(index => index.HasValue)
-            .Select(index => index!.Value)
-            .ToArray();
-
-        return indices;
     }
 
     private void LogCompletionSkeleton(int step, object? message)

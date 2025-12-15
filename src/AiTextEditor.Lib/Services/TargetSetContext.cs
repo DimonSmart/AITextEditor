@@ -5,7 +5,7 @@ namespace AiTextEditor.Lib.Services;
 
 public sealed class TargetSetContext
 {
-    private readonly ConcurrentDictionary<string, HashSet<int>> store = new(StringComparer.OrdinalIgnoreCase);
+    private readonly ConcurrentDictionary<string, HashSet<string>> store = new(StringComparer.OrdinalIgnoreCase);
 
     public string Create(string? humanReadableName = null)
     {
@@ -17,25 +17,25 @@ public sealed class TargetSetContext
         return id;
     }
 
-    public bool Add(string targetSetId, IEnumerable<int> indices)
+    public bool Add(string targetSetId, IEnumerable<string> pointers)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(targetSetId);
-        ArgumentNullException.ThrowIfNull(indices);
+        ArgumentNullException.ThrowIfNull(pointers);
 
         if (!store.TryGetValue(targetSetId, out var set))
         {
             return false;
         }
 
-        foreach (var index in indices)
+        foreach (var pointer in pointers)
         {
-            set.Add(index);
+            set.Add(pointer);
         }
 
         return true;
     }
 
-    public IReadOnlyList<int>? Get(string targetSetId)
+    public IReadOnlyList<string>? Get(string targetSetId)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(targetSetId);
 

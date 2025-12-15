@@ -36,25 +36,25 @@ public class CursorAgentPlugin(
     }
 
     [KernelFunction]
-    [Description("Add item indices to a target set.")]
+    [Description("Add item pointers to a target set.")]
     public string TargetSetAdd(
         [Description("Target set identifier.")] string targetSetId,
-        [Description("Indices to add.")] int[] itemIndices)
+        [Description("Pointers to add.")] string[] pointers)
     {
-        var added = documentContext.TargetSetContext.Add(targetSetId, itemIndices);
-        logger.LogInformation("target_set_add: {TargetSetId}, count={Count}, success={Success}", targetSetId, itemIndices.Length, added);
-        return JsonSerializer.Serialize(new { targetSetId, success = added, count = itemIndices.Length }, SerializerOptions);
+        var added = documentContext.TargetSetContext.Add(targetSetId, pointers);
+        logger.LogInformation("target_set_add: {TargetSetId}, count={Count}, success={Success}", targetSetId, pointers.Length, added);
+        return JsonSerializer.Serialize(new { targetSetId, success = added, count = pointers.Length }, SerializerOptions);
     }
 
     [KernelFunction]
-    [Description("Get all indices from a target set.")]
+    [Description("Get all pointers from a target set.")]
     public string TargetSetGet([Description("Target set identifier.")] string targetSetId)
     {
-        var indices = documentContext.TargetSetContext.Get(targetSetId)
+        var pointers = documentContext.TargetSetContext.Get(targetSetId)
                       ?? throw new InvalidOperationException($"Target set '{targetSetId}' not found.");
 
-        logger.LogInformation("target_set_get: {TargetSetId}, count={Count}", targetSetId, indices.Count);
-        return JsonSerializer.Serialize(new { targetSetId, itemIndices = indices }, SerializerOptions);
+        logger.LogInformation("target_set_get: {TargetSetId}, count={Count}", targetSetId, pointers.Count);
+        return JsonSerializer.Serialize(new { targetSetId, pointers }, SerializerOptions);
     }
 
     [KernelFunction]
@@ -92,7 +92,6 @@ public class CursorAgentPlugin(
         {
             result.Success,
             result.Reason,
-            result.FirstItemIndex,
             result.Summary,
             result.TargetSetId,
             State = new
@@ -102,8 +101,8 @@ public class CursorAgentPlugin(
                 result.State?.Limits,
                 result.State?.Evidence 
             },
-            result.PointerFrom,
-            result.PointerTo,
+            result.SemanticPointerFrom,
+            result.SemanticPointerTo,
             result.Excerpt,
             result.WhyThis,
             result.Evidence
@@ -128,7 +127,7 @@ public class CursorAgentPlugin(
     }
 
     private static CursorAgentResult CreateErrorResult(string reason, string? targetSetId = null)
-        => new(false, reason, null, null, targetSetId);
+        => new(false, reason, null, targetSetId);
 
     private static bool TryResolveMaxSteps(int? requestedSteps, out int resolvedSteps, out string? error)
     {
