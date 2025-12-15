@@ -185,15 +185,15 @@ public sealed class CursorAgentRuntime
         if (command.Result != null)
         {
             updated = updated with { Found = true };
-            summary ??= command.Result.Excerpt ?? command.Result.Pointer;
-            summary = Truncate(summary, MaxSummaryLength);
-            
+
             var label = TryFindPointerLabel(command.Result.Pointer, lastPortion) ?? command.Result.Pointer;
+            summary ??= $"Found match: {label}";
+            summary = Truncate(summary, MaxSummaryLength);
+
             updated = updated.WithProgress($"Found match: {label}");
-            
+
             var markdown = TryFindMarkdown(command.Result.Pointer, lastPortion) ?? command.Result.Excerpt;
             result = new AgentResult(label, markdown, command.Result.Reason, command.Result.Excerpt);
-            evidenceToAdd.Add(command.Result);
         }
         else if (command.Decision == "done")
         {
