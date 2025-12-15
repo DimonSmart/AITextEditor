@@ -293,10 +293,8 @@ public class MarkdownDocumentRepository
         public SemanticPointer NextPointer(int id)
         {
             paragraphCounter++;
-            var label = headingCounters.Count == 0
-                ? $"p{paragraphCounter}"
-                : $"{string.Join('.', headingCounters)}.p{paragraphCounter}";
-            return new SemanticPointer(id, label);
+            var prefix = headingCounters.Count > 0 ? string.Join('.', headingCounters) + "." : string.Empty;
+            return new SemanticPointer(id, $"{prefix}p{paragraphCounter}");
         }
 
         private void UpdateHeadingCounters(int headingLevel)

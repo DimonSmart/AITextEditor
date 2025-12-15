@@ -86,9 +86,22 @@ public sealed class CursorAgentRuntime
 
             (state, summary, agentResult) = ApplyCommand(state, command, summary, lastPortion, agentResult);
 
-            if (command.NewEvidence?.Count > 0 && !string.IsNullOrWhiteSpace(targetSetId))
+            if (!string.IsNullOrWhiteSpace(targetSetId))
             {
-                var pointers = command.NewEvidence.Select(e => e.Pointer).ToList();
+                var pointers = new List<string>();
+
+                if (command.Decision == "done" && command.Result != null)
+                {
+                    pointers.Add(command.Result.Pointer);
+                }
+
+                if (command.NewEvidence?.Count > 0)
+                {
+                    pointers.AddRange(command.NewEvidence.Select(e => e.Pointer));
+                }
+
+                pointers = pointers.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+
                 if (pointers.Count > 0)
                 {
                     targetSetContext.Add(targetSetId!, pointers);
@@ -182,26 +195,26 @@ public sealed class CursorAgentRuntime
         var result = agentResult;
         var evidenceToAdd = new List<EvidenceItem>();
 
-        if (command.Result != null)
+        if (command.Decision == "done")
         {
-            updated = updated with { Found = true };
-
-            var label = TryFindPointerLabel(command.Result.Pointer, lastPortion) ?? command.Result.Pointer;
-            summary ??= $"Found match: {label}";
-            summary = Truncate(summary, MaxSummaryLength);
-
-            updated = updated.WithProgress($"Found match: {label}");
-
-            var markdown = TryFindMarkdown(command.Result.Pointer, lastPortion) ?? command.Result.Excerpt;
-            result = new AgentResult(label, markdown, command.Result.Reason, command.Result.Excerpt);
-        }
-        else if (command.Decision == "done")
-        {
-            if (updated.Found != false)
+            if (command.Result == null)
+            {
+                updated = updated.WithProgress("invalid_done_missing_result");
+            }
+            else
             {
                 updated = updated with { Found = true };
+
+                var label = TryFindPointerLabel(command.Result.Pointer, lastPortion) ?? command.Result.Pointer;
+                summary ??= $"Found match: {label}";
+                summary = Truncate(summary, MaxSummaryLength);
+
+                updated = updated.WithProgress($"Found match: {label}");
+
+                var markdown = TryFindMarkdown(command.Result.Pointer, lastPortion) ?? command.Result.Excerpt;
+                result = new AgentResult(label, markdown, command.Result.Reason, command.Result.Excerpt);
+                evidenceToAdd.Add(command.Result);
             }
-            summary ??= updated.Progress;
         }
         else if (command.Decision == "not_found")
         {
@@ -280,8 +293,20 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
             return true;
         }
 
+        if (state.Evidence.Count >= state.Limits.MaxFound && state.Limits.MaxFound > 0)
+        {
+            result = BuildSuccess(targetSetId, summary ?? state.Progress, state, agentResult);
+            return true;
+        }
+
         if (cursorComplete)
         {
+            if (state.Evidence.Count > 0)
+            {
+                result = BuildSuccess(targetSetId, summary ?? state.Progress, state, agentResult);
+                return true;
+            }
+
             result = new CursorAgentResult(false, state.Progress ?? "Cursor exhausted with no match", summary ?? state.Progress, targetSetId, state, 
                 SemanticPointerFrom: agentResult?.SemanticPointer,
                 Excerpt: agentResult?.Excerpt ?? agentResult?.Markdown, 
@@ -396,7 +421,8 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
         builder.AppendLine($"progress: {state.Progress}");
         builder.AppendLine($"limits: step={state.Limits.Step}, maxSteps={state.Limits.MaxSteps}, remaining={state.Limits.Remaining}, maxFound={state.Limits.MaxFound}");
         builder.AppendLine("dedup: skip pointers from alreadyFound or seenTail.");
-        builder.AppendLine("first mention: stop at the first valid match in the batch.");
+        builder.AppendLine($"goal: collect up to maxFound matches across batches; continue until enough matches collected or cursor ends.");
+        builder.AppendLine($"collected: {state.Evidence.Count}/{state.Limits.MaxFound}");
         return builder.ToString();
     }
 
@@ -412,13 +438,14 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
         b.AppendLine("");
         b.AppendLine("Your job for THIS step:");
         b.AppendLine("1) Read Batch JSON items in order batchItemIndex=0..N.");
-        b.AppendLine("2) If an item satisfies the Goal, immediately return decision=\"done\" with result:");
-        b.AppendLine("   - result.pointer = that item.pointer");
-        b.AppendLine("   - result.excerpt = short direct quote from item.markdown that contains the match (120..300 chars)");
-        b.AppendLine("   - result.reason = 1 short sentence why it matches");
-        b.AppendLine("3) If no item matches:");
+        b.AppendLine("2) If an item satisfies the Goal, add it to newEvidence (max 3 per step).");
+        b.AppendLine("3) If collected matches (including newEvidence) >= maxFound:");
+        b.AppendLine("   - return decision=\"done\" with result = the last matched item.");
+        b.AppendLine("4) If collected < maxFound:");
         b.AppendLine("   - if hasMore=true => decision=\"continue\"");
-        b.AppendLine("   - else => decision=\"not_found\"");
+        b.AppendLine("   - if hasMore=false (end of stream):");
+        b.AppendLine("     - if you have collected ANY matches (now or before) => decision=\"done\" with result = last match.");
+        b.AppendLine("     - else => decision=\"not_found\"");
         b.AppendLine("");
         b.AppendLine("Evidence:");
         b.AppendLine("- newEvidence is optional. If you add it, use the same excerpt rule and keep it small (0..3 items).");
@@ -443,11 +470,12 @@ private bool ShouldStop(string? targetSetId, TaskState state, bool cursorComplet
         b.AppendLine("}");
         b.AppendLine("");
         b.AppendLine("Rules:");
-        b.AppendLine("- If you found a match: decision MUST be \"done\" AND result MUST be present.");
-        b.AppendLine("- If decision is \"done\" but result is missing: this is INVALID. Never do that.");
-        b.AppendLine("- If no match in this batch and hasMore=true: decision=\"continue\".");
-        b.AppendLine("- If no match and hasMore=false (last batch): decision=\"not_found\".");
-        b.AppendLine("- Scan items strictly top-to-bottom by batchItemIndex. Stop at the FIRST valid match.");
+        b.AppendLine("- You can find multiple matches. Add them to newEvidence.");
+        b.AppendLine("- If you reach maxFound limit: decision=\"done\" AND result MUST be the last match.");
+        b.AppendLine("- If you haven't reached limit and hasMore=true: decision=\"continue\".");
+        b.AppendLine("- If hasMore=false (last batch) and you have matches: decision=\"done\" with result.");
+        b.AppendLine("- If hasMore=false and NO matches ever: decision=\"not_found\".");
+        b.AppendLine("- Scan items strictly top-to-bottom by batchItemIndex.");
         b.AppendLine("- Prefer type=\"Paragraph\" over \"Heading\" unless the goal explicitly wants headings/titles.");
         b.AppendLine("");
         b.AppendLine("Excerpt rule (proof):");
