@@ -33,7 +33,24 @@ public static class TestLlmConfiguration
         var normalizedBaseUrl = NormalizeBaseUrl(baseUrl);
         var apiKey = Environment.GetEnvironmentVariable("LLM_API_KEY");
 
-        var handler = new CassetteHttpMessageHandler(output);
+        var ignoreSsl = Environment.GetEnvironmentVariable("LLM_IGNORE_SSL_ERRORS") == "true";
+        var innerHandler = new HttpClientHandler();
+        if (ignoreSsl)
+        {
+            innerHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+        }
+
+        HttpMessageHandler finalHandler = innerHandler;
+
+        var user = Environment.GetEnvironmentVariable("LLM_USERNAME");
+        var password = Environment.GetEnvironmentVariable("LLM_PASSWORD");
+
+        if (!string.IsNullOrEmpty(password))
+        {
+            finalHandler = new BasicAuthHandler(user ?? string.Empty, password, innerHandler);
+        }
+
+        var handler = new CassetteHttpMessageHandler(output, finalHandler);
         var client = new HttpClient(handler)
         {
             BaseAddress = new Uri(normalizedBaseUrl),
@@ -46,6 +63,23 @@ public static class TestLlmConfiguration
         }
 
         return (client, apiKey);
+    }
+
+    private sealed class BasicAuthHandler : DelegatingHandler
+    {
+        private readonly string headerValue;
+
+        public BasicAuthHandler(string user, string password, HttpMessageHandler innerHandler) : base(innerHandler)
+        {
+            var byteArray = System.Text.Encoding.UTF8.GetBytes($"{user}:{password}");
+            headerValue = Convert.ToBase64String(byteArray);
+        }
+
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            request.Headers.Authorization = new AuthenticationHeaderValue("Basic", headerValue);
+            return base.SendAsync(request, cancellationToken);
+        }
     }
 
     private static async Task AssertReachableAsync(HttpClient client, string? apiKey, ITestOutputHelper? output, CancellationToken cancellationToken)

@@ -6,6 +6,7 @@ using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 using System.Linq;
+using System.Net.Http.Headers;
 
 namespace AiTextEditor.Lib.Services.SemanticKernel;
 
@@ -15,9 +16,9 @@ public sealed class SemanticKernelEngine
 
     private readonly ILoggerFactory loggerFactory;
 
-    public SemanticKernelEngine(HttpClient httpClient, ILoggerFactory? loggerFactory = null)
+    public SemanticKernelEngine(HttpClient? httpClient = null, ILoggerFactory? loggerFactory = null)
     {
-        this.httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+        this.httpClient = httpClient ?? CreateHttpClient();
         this.loggerFactory = loggerFactory ?? CreateDefaultLoggerFactory();
     }
 
@@ -100,6 +101,48 @@ public sealed class SemanticKernelEngine
         context.UserMessages.Add(answer);
 
         return context;
+    }
+
+    private static HttpClient CreateHttpClient()
+    {
+        var ignoreSsl = Environment.GetEnvironmentVariable("LLM_IGNORE_SSL_ERRORS") == "true";
+        var handler = new HttpClientHandler();
+        if (ignoreSsl)
+        {
+            handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+        }
+
+        HttpMessageHandler finalHandler = handler;
+
+        var user = Environment.GetEnvironmentVariable("LLM_USERNAME");
+        var password = Environment.GetEnvironmentVariable("LLM_PASSWORD");
+
+        if (!string.IsNullOrEmpty(password))
+        {
+            finalHandler = new BasicAuthHandler(user ?? string.Empty, password, handler);
+        }
+
+        return new HttpClient(finalHandler)
+        {
+            Timeout = TimeSpan.FromMinutes(10)
+        };
+    }
+
+    private sealed class BasicAuthHandler : DelegatingHandler
+    {
+        private readonly string headerValue;
+
+        public BasicAuthHandler(string user, string password, HttpMessageHandler innerHandler) : base(innerHandler)
+        {
+            var byteArray = System.Text.Encoding.UTF8.GetBytes($"{user}:{password}");
+            headerValue = Convert.ToBase64String(byteArray);
+        }
+
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            request.Headers.Authorization = new AuthenticationHeaderValue("Basic", headerValue);
+            return base.SendAsync(request, cancellationToken);
+        }
     }
 
     private static ILoggerFactory CreateDefaultLoggerFactory()
