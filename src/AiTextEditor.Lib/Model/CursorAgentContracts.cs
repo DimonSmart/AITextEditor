@@ -7,7 +7,8 @@ public sealed record CursorAgentRequest(
     CursorParameters Parameters,
     string TaskDescription,
     int? MaxSteps = null,
-    TaskState? State = null);
+    CursorAgentState? State = null,
+    string? StartAfterPointer = null);
 
 public sealed record CursorAgentResult(
     /// <summary>
@@ -33,7 +34,7 @@ public sealed record CursorAgentResult(
     /// <summary>
     /// The final state of the agent task.
     /// </summary>
-    TaskState? State = null,
+    CursorAgentState? State = null,
 
     /// <summary>
     /// The starting semantic pointer of the found range.
@@ -59,6 +60,16 @@ public sealed record CursorAgentResult(
     /// List of evidence items found during the search.
     /// </summary>
     IReadOnlyList<EvidenceItem>? Evidence = null,
+
+    /// <summary>
+    /// Pointer to resume scanning after this run.
+    /// </summary>
+    string? NextAfterPointer = null,
+
+    /// <summary>
+    /// Whether the cursor stream is exhausted.
+    /// </summary>
+    bool CursorComplete = false,
 
     // Deprecated fields kept for backward compatibility if needed, or mapped to new ones
     string? Markdown = null,

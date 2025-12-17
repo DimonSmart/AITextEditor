@@ -5,17 +5,9 @@ namespace AiTextEditor.Lib.Model;
 
 public sealed record CursorAgentDecision(
     [property: JsonPropertyName("decision")] string Decision,
-    [property: JsonPropertyName("result")] CursorAgentResultItem? Result,
     [property: JsonPropertyName("newEvidence")] IReadOnlyList<CursorAgentEvidence>? NewEvidence,
-    [property: JsonPropertyName("stateUpdate")] CursorAgentStateUpdate? StateUpdate,
+    [property: JsonPropertyName("progress")] string? Progress,
     [property: JsonPropertyName("needMoreContext")] bool NeedMoreContext
-);
-
-public sealed record CursorAgentResultItem(
-    [property: JsonPropertyName("pointer")] string Pointer,
-    [property: JsonPropertyName("pointerLabel")] string? PointerLabel,
-    [property: JsonPropertyName("excerpt")] string? Excerpt,
-    [property: JsonPropertyName("reason")] string? Reason
 );
 
 public sealed record CursorAgentEvidence(
@@ -23,10 +15,4 @@ public sealed record CursorAgentEvidence(
     [property: JsonPropertyName("pointerLabel")] string? PointerLabel,
     [property: JsonPropertyName("excerpt")] string? Excerpt,
     [property: JsonPropertyName("reason")] string? Reason
-);
-
-public sealed record CursorAgentStateUpdate(
-    [property: JsonPropertyName("goal")] string? Goal,
-    [property: JsonPropertyName("found")] bool? Found,
-    [property: JsonPropertyName("progress")] string? Progress
 );
