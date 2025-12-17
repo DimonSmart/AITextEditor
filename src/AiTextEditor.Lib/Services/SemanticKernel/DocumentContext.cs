@@ -8,7 +8,5 @@ public class DocumentContext(LinearDocument document)
 {
     public LinearDocument Document { get; } = document;
 
-    public TargetSetContext TargetSetContext { get; } = new();
-
     public List<string> SpeechQueue { get; } = [];
 }

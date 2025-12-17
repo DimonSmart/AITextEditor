@@ -23,34 +23,35 @@ public sealed class CursorAgentRuntime
     private const int MaxSummaryLength = 500;
     private const int MaxExcerptLength = 1000;
     private const int DefaultResponseTokenLimit = 192;
+    private const int MaxElements = 50;
+    private const int MaxBytes = 32768;
+    private const bool IncludeContent = true;
 
     private readonly DocumentContext documentContext;
-    private readonly TargetSetContext targetSetContext;
     private readonly IChatCompletionService chatService;
     private readonly ILogger<CursorAgentRuntime> logger;
 
     public CursorAgentRuntime(
         DocumentContext documentContext,
-        TargetSetContext targetSetContext,
         IChatCompletionService chatService,
         ILogger<CursorAgentRuntime> logger)
     {
         this.documentContext = documentContext ?? throw new ArgumentNullException(nameof(documentContext));
-        this.targetSetContext = targetSetContext ?? throw new ArgumentNullException(nameof(targetSetContext));
         this.chatService = chatService ?? throw new ArgumentNullException(nameof(chatService));
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<CursorAgentResult> RunAsync(CursorAgentRequest request, string? targetSetId = null, CancellationToken cancellationToken = default)
+    public async Task<CursorAgentResult> RunAsync(CursorAgentRequest request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
-        var requestedSteps = request.MaxSteps.GetValueOrDefault(DefaultMaxSteps);
-        var maxSteps = requestedSteps > MaxStepsLimit ? MaxStepsLimit : requestedSteps;
+        var maxSteps = DefaultMaxSteps; // Hardcoded limit
         var agentSystemPrompt = BuildAgentSystemPrompt();
         var taskDefinitionPrompt = BuildTaskDefinitionPrompt(request);
 
-        var state = request.State ?? new CursorAgentState(Array.Empty<EvidenceItem>());
+        // Always start with empty state
+        var state = new CursorAgentState(Array.Empty<EvidenceItem>());
         state = state.WithEvidence(Array.Empty<EvidenceItem>(), DefaultMaxFound);
+        
         var afterPointer = request.StartAfterPointer;
         var cursorComplete = false;
         string? summary = null;
@@ -58,8 +59,8 @@ public sealed class CursorAgentRuntime
         string? stopReason = null;
         var stepsUsed = 0;
 
-        var parameters = new CursorParameters(request.Parameters.MaxElements, request.Parameters.MaxBytes, request.Parameters.IncludeContent, afterPointer);
-        var cursor = new CursorStream(documentContext.Document, parameters);
+        // Use hardcoded parameters
+        var cursor = new CursorStream(documentContext.Document, MaxElements, MaxBytes, IncludeContent, afterPointer);
 
         for (var step = 0; step < maxSteps; step++)
         {
@@ -98,15 +99,6 @@ public sealed class CursorAgentRuntime
 
             (state, summary) = ApplyCommand(state, command, summary, lastPortion);
 
-            if (!string.IsNullOrWhiteSpace(targetSetId) && command.NewEvidence?.Count > 0)
-            {
-                var pointers = command.NewEvidence.Select(e => e.Pointer).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-                if (pointers.Count > 0)
-                {
-                    targetSetContext.Add(targetSetId!, pointers);
-                }
-            }
-
             if (ShouldStop(command.Decision, cursorComplete, stepsUsed, maxSteps, out stopReason))
             {
                 break;
@@ -123,15 +115,14 @@ public sealed class CursorAgentRuntime
 
         stopReason ??= "max_steps";
         var finalCursorComplete = cursorComplete || string.Equals(stopReason, "cursor_complete", StringComparison.OrdinalIgnoreCase);
-        return await BuildResultByFinalizerAsync(request.TaskDescription, state, summary, targetSetId, stopReason, afterPointer, finalCursorComplete, stepsUsed, cancellationToken);
+        return await BuildResultByFinalizerAsync(request.TaskDescription, state, summary, stopReason, afterPointer, finalCursorComplete, stepsUsed, cancellationToken);
     }
 
     private async Task<CursorAgentResult> BuildResultByFinalizerAsync(
         string taskDescription,
         CursorAgentState state,
         string? summary,
-        string? targetSetId,
-        string stopReason,
+        string stopReason, // Removed targetSetId
         string? nextAfterPointer,
         bool cursorComplete,
         int stepsUsed,
@@ -139,15 +130,16 @@ public sealed class CursorAgentRuntime
     {
         if (state.Evidence.Count == 0)
         {
+            // Failure case
             return new CursorAgentResult(
                 false,
-                stopReason,
-                summary,
-                targetSetId,
-                state,
-                Evidence: state.Evidence,
-                NextAfterPointer: nextAfterPointer,
-                CursorComplete: cursorComplete);
+                summary ?? stopReason, // Use summary or stopReason as summary
+                null, // SemanticPointerFrom
+                null, // Excerpt
+                null, // WhyThis
+                state.Evidence,
+                nextAfterPointer,
+                cursorComplete);
         }
 
         var history = new ChatHistory();
@@ -165,47 +157,42 @@ public sealed class CursorAgentRuntime
         var parsed = ParseFinalizer(content);
         if (parsed == null || parsed.Decision == "not_found")
         {
-            return new CursorAgentResult(
+             return new CursorAgentResult(
                 false,
-                stopReason,
-                summary,
-                targetSetId,
-                state,
-                Evidence: state.Evidence,
-                NextAfterPointer: nextAfterPointer,
-                CursorComplete: cursorComplete);
+                summary ?? stopReason,
+                null,
+                null,
+                null,
+                state.Evidence,
+                nextAfterPointer,
+                cursorComplete);
         }
 
         if (parsed.Decision != "success" || string.IsNullOrWhiteSpace(parsed.SemanticPointerFrom) || !state.Evidence.Any(e => e.Pointer.Equals(parsed.SemanticPointerFrom, StringComparison.OrdinalIgnoreCase)))
         {
             logger.LogWarning("finalizer_pointer_missing_or_invalid");
-            return new CursorAgentResult(
+             return new CursorAgentResult(
                 false,
                 "finalizer_missing_pointer",
-                summary,
-                targetSetId,
-                state,
-                Evidence: state.Evidence,
-                NextAfterPointer: nextAfterPointer,
-                CursorComplete: cursorComplete);
+                null,
+                null,
+                null,
+                state.Evidence,
+                nextAfterPointer,
+                cursorComplete);
         }
 
         var finalSummary = string.IsNullOrWhiteSpace(parsed.Summary) ? summary : Truncate(parsed.Summary, MaxSummaryLength);
 
         return new CursorAgentResult(
             true,
-            null,
             finalSummary,
-            targetSetId,
-            state,
-            SemanticPointerFrom: parsed.SemanticPointerFrom,
-            Excerpt: Truncate(parsed.Excerpt, MaxExcerptLength),
-            WhyThis: parsed.WhyThis,
-            Evidence: state.Evidence,
-            NextAfterPointer: nextAfterPointer,
-            CursorComplete: cursorComplete,
-            Markdown: parsed.Markdown,
-            Reasons: parsed.WhyThis);
+            parsed.SemanticPointerFrom,
+            Truncate(parsed.Excerpt, MaxExcerptLength),
+            parsed.WhyThis,
+            state.Evidence,
+            nextAfterPointer,
+            cursorComplete);
     }
 
     private async Task<AgentCommand?> GetNextCommandAsync(string agentSystemPrompt, string taskDefinitionPrompt, string snapshotMessage, string batchMessage, CancellationToken cancellationToken, int step)
@@ -365,63 +352,55 @@ public sealed class CursorAgentRuntime
 
     private static string BuildTaskDefinitionPrompt(CursorAgentRequest request)
     {
-        var b = new StringBuilder();
-        b.AppendLine($"Cursor params: maxElements={request.Parameters.MaxElements}, maxBytes={request.Parameters.MaxBytes}, includeContent={request.Parameters.IncludeContent}.");
-        b.AppendLine($"Goal: {request.TaskDescription}");
-        b.AppendLine("");
-        b.AppendLine("Input you receive each step:");
-        b.AppendLine("- Task snapshot (evidenceCount, afterPointer, step, recent evidence pointers).");
-        b.AppendLine("- Batch JSON with: hasMore, firstBatch, lastBatch, items[]. Each item has batchItemIndex, pointer, type, markdown.");
-        b.AppendLine("");
-        b.AppendLine("Your job for THIS step:");
-        b.AppendLine("1) Read Batch JSON items in order batchItemIndex=0..N.");
-        b.AppendLine("2) If an item satisfies the Goal, add it to newEvidence (max 3 per step).");
-        b.AppendLine("3) decision rules:");
-        b.AppendLine("   - decision=\"continue\" when you need more batches.");
-        b.AppendLine("   - decision=\"done\" only when you believe the goal is satisfied based on evidence collected so far.");
-        b.AppendLine("   - decision=\"not_found\" only when this is the last batch (hasMore=false or cursorComplete=true) and no matches exist in any step.");
-        b.AppendLine("");
-        b.AppendLine("Evidence:");
-        b.AppendLine("- newEvidence contains only candidates from THIS step (0..3 items).");
-        b.AppendLine("- Do not pretend this is the final answer; another model will finalize after the scan phase.");
-        b.AppendLine("");
-        b.AppendLine("progress (optional): very short status for logging.");
-        b.AppendLine("Do not output anything except the single JSON object.");
-        return b.ToString();
-    }
+        var payload = new
+        {
+            type = "task",
+            goal = request.TaskDescription,
+            context = string.IsNullOrWhiteSpace(request.Context) ? null : request.Context
+        };
 
+        var options = new JsonSerializerOptions
+        {
+            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+            WriteIndented = false
+        };
+
+        return JsonSerializer.Serialize(payload, options);
+    }
 
     private static string BuildAgentSystemPrompt()
     {
         var b = new StringBuilder();
-        b.AppendLine("You are CursorAgent.");
-        b.AppendLine("Reply with exactly ONE JSON object. No code fences. No extra text.");
-        b.AppendLine("");
-        b.AppendLine("Schema:");
+        b.AppendLine("You are CursorAgent, a streaming batch scanner.");
+        b.AppendLine("You receive JSON user messages: task, snapshot, batch.");
+        b.AppendLine("Return exactly ONE JSON object and nothing else.");
+        b.AppendLine();
+
+        b.AppendLine("Output schema:");
         b.AppendLine("{");
         b.AppendLine("  \"decision\": \"continue|done|not_found\",");
-        b.AppendLine("  \"newEvidence\": [{\"pointer\":\"...\",\"excerpt\":\"...\",\"reason\":\"...\"}],");
-        b.AppendLine("  \"progress\": \"...\" // optional short log");
+        b.AppendLine("  \"newEvidence\": [{\"pointer\":\"...\",\"excerpt\":\"...\",\"reason\":\"...\"}]");
         b.AppendLine("}");
-        b.AppendLine("");
-        b.AppendLine("Rules:");
-        b.AppendLine("- Add up to 3 items to newEvidence when they look relevant.");
-        b.AppendLine("- decision=\"done\" when the goal is satisfied with collected evidence.");
-        b.AppendLine("- decision=\"continue\" when you need more context.");
-        b.AppendLine("- decision=\"not_found\" only if this is the end (hasMore=false or cursorComplete=true) and no matches exist.");
-        b.AppendLine("- Scan items strictly top-to-bottom by batchItemIndex.");
-        b.AppendLine("- Prefer type=\"Paragraph\" over \"Heading\" unless the goal explicitly wants headings/titles.");
-        b.AppendLine("");
-        b.AppendLine("Excerpt rule (proof):");
-        b.AppendLine("- excerpt MUST be a short direct quote copied from item.markdown.");
-        b.AppendLine("- excerpt MUST include the matched word/name.");
-        b.AppendLine("- Keep excerpt 120..300 characters. Do NOT paraphrase.");
-        b.AppendLine("");
-        b.AppendLine("stateUpdate.progress:");
-        b.AppendLine("- Very short: e.g. \"scanned_batch\", \"found_match\", \"no_match_continue\", \"no_match_last_batch\".");
-        b.AppendLine("- Do NOT write a narrative log.");
-        b.AppendLine("");
-        b.AppendLine("Keep the whole response short.");
+        b.AppendLine();
+
+        b.AppendLine("Evidence rules:");
+        b.AppendLine("- From the CURRENT batch only, BEST candidates.");
+        b.AppendLine("- Do NOT include everything, only the strongest candidates.");
+        b.AppendLine("- Each newEvidence.pointer MUST be copied exactly from batch.items[].pointer.");
+        b.AppendLine("- excerpt MUST be a direct contiguous substring from the same item's markdown.");
+        b.AppendLine("  Do not paraphrase. Do not add ellipses. Keep it short (about 60..220 chars).");
+        b.AppendLine("- reason: one short sentence why this candidate helps satisfy the goal.");
+        b.AppendLine();
+
+        b.AppendLine("Decision policy:");
+        b.AppendLine("- Default: decision=\"continue\".");
+        b.AppendLine("- decision=\"done\" ONLY when, using all scanned batches so far (previous + current),");
+        b.AppendLine("  the correct answer/selection is already determined and scanning further batches cannot change it.");
+        b.AppendLine("  If unseen future content could change the correct selection, keep scanning (continue).");
+        b.AppendLine("- decision=\"not_found\" ONLY when batch.lastBatch=true AND snapshot.evidenceCount=0 AND you found no candidates in the current batch.");
+        b.AppendLine();
+
+        b.AppendLine("Keep the response short.");
         return b.ToString();
     }
 

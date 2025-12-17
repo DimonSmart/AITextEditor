@@ -4,11 +4,9 @@ using System.Collections.Generic;
 namespace AiTextEditor.Lib.Model;
 
 public sealed record CursorAgentRequest(
-    CursorParameters Parameters,
     string TaskDescription,
-    int? MaxSteps = null,
-    CursorAgentState? State = null,
-    string? StartAfterPointer = null);
+    string? StartAfterPointer = null,
+    string? Context = null);
 
 public sealed record CursorAgentResult(
     /// <summary>
@@ -17,34 +15,14 @@ public sealed record CursorAgentResult(
     bool Success,
 
     /// <summary>
-    /// Reason for failure or completion.
-    /// </summary>
-    string? Reason,
-
-    /// <summary>
     /// A brief summary of the findings or the operation.
     /// </summary>
     string? Summary,
 
     /// <summary>
-    /// The ID of the target set where results were collected, if applicable.
-    /// </summary>
-    string? TargetSetId,
-
-    /// <summary>
-    /// The final state of the agent task.
-    /// </summary>
-    CursorAgentState? State = null,
-
-    /// <summary>
     /// The starting semantic pointer of the found range.
     /// </summary>
     string? SemanticPointerFrom = null,
-
-    /// <summary>
-    /// The ending semantic pointer of the found range.
-    /// </summary>
-    string? SemanticPointerTo = null,
 
     /// <summary>
     /// A text excerpt surrounding the match.
@@ -69,8 +47,4 @@ public sealed record CursorAgentResult(
     /// <summary>
     /// Whether the cursor stream is exhausted.
     /// </summary>
-    bool CursorComplete = false,
-
-    // Deprecated fields kept for backward compatibility if needed, or mapped to new ones
-    string? Markdown = null,
-    string? Reasons = null);
+    bool CursorComplete = false);

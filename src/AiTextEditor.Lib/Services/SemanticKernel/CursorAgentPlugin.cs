@@ -26,132 +26,31 @@ public class CursorAgentPlugin(
     private readonly CursorAgentRuntime cursorAgentRuntime = cursorAgentRuntime;
     private readonly ILogger<CursorAgentPlugin> logger = logger;
 
-    [KernelFunction]
-    [Description("Create a target set for collecting item indices.")]
-    public string TargetSetCreate([Description("Optional human-readable label.")] string? name = null)
-    {
-        var id = documentContext.TargetSetContext.Create(name);
-        logger.LogInformation("target_set_create: {TargetSetId}", id);
-        return JsonSerializer.Serialize(new { targetSetId = id }, SerializerOptions);
-    }
-
-    [KernelFunction]
-    [Description("Add item pointers to a target set.")]
-    public string TargetSetAdd(
-        [Description("Target set identifier.")] string targetSetId,
-        [Description("Pointers to add.")] string[] pointers)
-    {
-        var added = documentContext.TargetSetContext.Add(targetSetId, pointers);
-        logger.LogInformation("target_set_add: {TargetSetId}, count={Count}, success={Success}", targetSetId, pointers.Length, added);
-        return JsonSerializer.Serialize(new { targetSetId, success = added, count = pointers.Length }, SerializerOptions);
-    }
-
-    [KernelFunction]
-    [Description("Get all pointers from a target set.")]
-    public string TargetSetGet([Description("Target set identifier.")] string targetSetId)
-    {
-        var pointers = documentContext.TargetSetContext.Get(targetSetId)
-                      ?? throw new InvalidOperationException($"Target set '{targetSetId}' not found.");
-
-        logger.LogInformation("target_set_get: {TargetSetId}, count={Count}", targetSetId, pointers.Count);
-        return JsonSerializer.Serialize(new { targetSetId, pointers }, SerializerOptions);
-    }
-
-    [KernelFunction]
+    [KernelFunction("run_cursor_agent")]
     [Description("Launch a cursor agent with a concise system prompt.")]
     public async Task<string> RunCursorAgent(
-        [Description("Maximum items per portion.")] int maxElements,
-        [Description("Maximum bytes per portion.")] int maxBytes,
-        [Description("Include markdown content in responses.")] bool includeContent,
         [Description("Natural language task for the agent.")] string taskDescription,
-        [Description("Optional target set id for storing evidence.")] string? targetSetId = null,
-        [Description("Optional safety limit for steps.")] int? maxSteps = null,
-        [Description("Serialized CursorAgentState to resume from a previous step.")] CursorAgentState? state = null,
-        [Description("Pointer after which the cursor should start.")] string? startAfterPointer = null)
+        [Description("Pointer after which the cursor should start.")] string? startAfterPointer = null,
+        [Description("Context from previous run to resume.")] string? context = null)
     {
-        maxElements = Math.Clamp(maxElements, 1, CursorParameters.MaxElementsUpperBound);
-        maxBytes = Math.Clamp(maxBytes, 1, CursorParameters.MaxBytesUpperBound);
+        var request = new CursorAgentRequest(taskDescription, startAfterPointer, context);
+        var result = await cursorAgentRuntime.RunAsync(request);
 
-        ValidatePortionLimits(maxElements, maxBytes);
-        var parameters = new CursorParameters(maxElements, maxBytes, includeContent, startAfterPointer);
-
-        if (!TryResolveMaxSteps(maxSteps, out var resolvedSteps, out var stepsError))
-        {
-            var error = CreateErrorResult(stepsError!, targetSetId);
-            logger.LogWarning("run_cursor_agent_invalid_steps: {Error}", stepsError);
-            return JsonSerializer.Serialize(error, SerializerOptions);
-        }
-
-        var request = new CursorAgentRequest(parameters, taskDescription, resolvedSteps, state, startAfterPointer);
-        var result = await cursorAgentRuntime.RunAsync(request, targetSetId);
-
-        logger.LogInformation("run_cursor_agent: success={Success}, maxElements={MaxElements}, maxBytes={MaxBytes}, includeContent={IncludeContent}",
-            result.Success, parameters.MaxElements, parameters.MaxBytes, parameters.IncludeContent);
+        logger.LogInformation("run_cursor_agent: success={Success}", result.Success);
         
         // Create a lightweight result for the LLM to avoid token limit issues and distractions
         var lightweightResult = new
         {
             result.Success,
-            result.Reason,
             result.Summary,
-            result.TargetSetId,
             result.NextAfterPointer,
             result.CursorComplete,
-            State = new
-            {
-                EvidenceCount = result.State?.Evidence.Count
-            },
             result.SemanticPointerFrom,
-            result.SemanticPointerTo,
             result.Excerpt,
             result.WhyThis,
             result.Evidence
         };
 
         return JsonSerializer.Serialize(lightweightResult, SerializerOptions);
-    }
-
-    private static void ValidatePortionLimits(int maxElements, int maxBytes)
-    {
-        if (maxElements <= 0 || maxElements > CursorParameters.MaxElementsUpperBound)
-        {
-            throw new ArgumentOutOfRangeException(nameof(maxElements),
-                $"maxElements must be between 1 and {CursorParameters.MaxElementsUpperBound}.");
-        }
-
-        if (maxBytes <= 0 || maxBytes > CursorParameters.MaxBytesUpperBound)
-        {
-            throw new ArgumentOutOfRangeException(nameof(maxBytes),
-                $"maxBytes must be between 1 and {CursorParameters.MaxBytesUpperBound}.");
-        }
-    }
-
-    private static CursorAgentResult CreateErrorResult(string reason, string? targetSetId = null)
-        => new(false, reason, null, targetSetId);
-
-    private static bool TryResolveMaxSteps(int? requestedSteps, out int resolvedSteps, out string? error)
-    {
-        resolvedSteps = CursorAgentRuntime.DefaultMaxSteps;
-        error = null;
-
-        if (!requestedSteps.HasValue)
-        {
-            return true;
-        }
-
-        if (requestedSteps.Value <= 0)
-        {
-            error = $"maxSteps must be between 1 and {CursorAgentRuntime.MaxStepsLimit}.";
-            return false;
-        }
-
-        if (requestedSteps.Value > CursorAgentRuntime.MaxStepsLimit)
-        {
-            error = $"maxSteps must not exceed {CursorAgentRuntime.MaxStepsLimit}.";
-            return false;
-        }
-
-        resolvedSteps = requestedSteps.Value;
-        return true;
     }
 }

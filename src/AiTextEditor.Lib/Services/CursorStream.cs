@@ -10,18 +10,17 @@ public sealed class CursorStream
     private readonly LinearDocument document;
     private readonly CursorState state;
 
-    public CursorStream(LinearDocument document, CursorParameters parameters)
+    public CursorStream(LinearDocument document, int maxElements, int maxBytes, bool includeContent, string? startAfterPointer)
     {
         this.document = document ?? throw new ArgumentNullException(nameof(document));
-        ArgumentNullException.ThrowIfNull(parameters);
 
         var startIndex = 0;
-        if (!string.IsNullOrEmpty(parameters.StartAfterPointer))
+        if (!string.IsNullOrEmpty(startAfterPointer))
         {
             var foundIndex = -1;
             for (var i = 0; i < document.Items.Count; i++)
             {
-                if (document.Items[i].Pointer.Serialize() == parameters.StartAfterPointer)
+                if (document.Items[i].Pointer.Serialize() == startAfterPointer)
                 {
                     foundIndex = i;
                     break;
@@ -34,7 +33,7 @@ public sealed class CursorStream
             }
         }
 
-        state = new CursorState(parameters, startIndex);
+        state = new CursorState(maxElements, maxBytes, includeContent, startIndex);
     }
 
     public CursorPortion? NextPortion()
@@ -51,15 +50,15 @@ public sealed class CursorStream
         }
 
         var items = new List<LinearItem>();
-        var byteBudget = state.Parameters.MaxBytes;
-        var countBudget = state.Parameters.MaxElements;
+        var byteBudget = state.MaxBytes;
+        var countBudget = state.MaxElements;
         var nextIndex = state.CurrentIndex;
 
         while (IsWithinBounds(nextIndex))
         {
             var sourceItem = document.Items[nextIndex];
-            var projectedItem = state.Parameters.IncludeContent ? sourceItem : StripText(sourceItem);
-            var itemBytes = CalculateSize(projectedItem, state.Parameters.IncludeContent);
+            var projectedItem = state.IncludeContent ? sourceItem : StripText(sourceItem);
+            var itemBytes = CalculateSize(projectedItem, state.IncludeContent);
 
             if (items.Count >= countBudget) break;
             if (items.Count > 0 && byteBudget - itemBytes < 0) break;
@@ -73,7 +72,7 @@ public sealed class CursorStream
         if (items.Count == 0 && IsWithinBounds(nextIndex))
         {
             var sourceItem = document.Items[nextIndex];
-            var projectedItem = state.Parameters.IncludeContent ? sourceItem : StripText(sourceItem);
+            var projectedItem = state.IncludeContent ? sourceItem : StripText(sourceItem);
             items.Add(projectedItem);
             nextIndex = nextIndex + 1;
         }

@@ -5,13 +5,17 @@ namespace AiTextEditor.Lib.Services;
 
 public sealed class CursorState
 {
-    public CursorState(CursorParameters parameters, int startIndex)
+    public CursorState(int maxElements, int maxBytes, bool includeContent, int startIndex)
     {
-        Parameters = parameters ?? throw new ArgumentNullException(nameof(parameters));
+        MaxElements = maxElements;
+        MaxBytes = maxBytes;
+        IncludeContent = includeContent;
         CurrentIndex = startIndex;
     }
 
-    public CursorParameters Parameters { get; }
+    public int MaxElements { get; }
+    public int MaxBytes { get; }
+    public bool IncludeContent { get; }
 
     public int CurrentIndex { get; private set; }
 
