@@ -66,13 +66,14 @@ public class CursorAgentPlugin(
         [Description("Natural language task for the agent.")] string taskDescription,
         [Description("Optional target set id for storing evidence.")] string? targetSetId = null,
         [Description("Optional safety limit for steps.")] int? maxSteps = null,
-        [Description("Serialized TaskState to resume from a previous step.")] TaskState? state = null)
+        [Description("Serialized CursorAgentState to resume from a previous step.")] CursorAgentState? state = null,
+        [Description("Pointer after which the cursor should start.")] string? startAfterPointer = null)
     {
         maxElements = Math.Clamp(maxElements, 1, CursorParameters.MaxElementsUpperBound);
         maxBytes = Math.Clamp(maxBytes, 1, CursorParameters.MaxBytesUpperBound);
 
         ValidatePortionLimits(maxElements, maxBytes);
-        var parameters = new CursorParameters(maxElements, maxBytes, includeContent);
+        var parameters = new CursorParameters(maxElements, maxBytes, includeContent, startAfterPointer);
 
         if (!TryResolveMaxSteps(maxSteps, out var resolvedSteps, out var stepsError))
         {
@@ -81,7 +82,7 @@ public class CursorAgentPlugin(
             return JsonSerializer.Serialize(error, SerializerOptions);
         }
 
-        var request = new CursorAgentRequest(parameters, taskDescription, resolvedSteps, state);
+        var request = new CursorAgentRequest(parameters, taskDescription, resolvedSteps, state, startAfterPointer);
         var result = await cursorAgentRuntime.RunAsync(request, targetSetId);
 
         logger.LogInformation("run_cursor_agent: success={Success}, maxElements={MaxElements}, maxBytes={MaxBytes}, includeContent={IncludeContent}",
@@ -94,11 +95,11 @@ public class CursorAgentPlugin(
             result.Reason,
             result.Summary,
             result.TargetSetId,
+            result.NextAfterPointer,
+            result.CursorComplete,
             State = new
             {
-                result.State?.Found, 
-                result.State?.Progress,
-                result.State?.Limits
+                EvidenceCount = result.State?.Evidence.Count
             },
             result.SemanticPointerFrom,
             result.SemanticPointerTo,
