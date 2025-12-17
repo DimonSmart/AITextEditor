@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-842\",\"object\":\"chat.completion\",\"created\":1766011557,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of Professor Zvezdochkin in the text, excluding headers. The user provided a batch of text which is a paragraph from a story involving Znayka, Fuxiya, and Selyodka. \\n\\nFirst, I need to scan the paragraph for any mention of \\\"профессора Звёздочкина\\\". The paragraph talks about Znayka meeting scientists Fuxiya and Selyodka, but I don't see the name \\\"Звёздочкин\\\" here. The names mentioned are Fuxiya and Selyodka, but not Zvezdochkin. \\n\\nWait, maybe I should check again. The paragraph mentions \\\"учёными малышками Фуксией и Селёдочкой\\\" which translates to \\\"scientists Fuxiya and Selyodka\\\". There's no mention of Professor Zvezdochkin here. The user's context says to exclude headers, so maybe the first mention is in a later batch. Since the current batch doesn't have it, the decision should be \\\"continue\\\" because there might be more batches to check. The evidence count is zero, so no matches found here. Therefore, the correct JSON response would indicate no evidence found and continue scanning.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":811,\"completion_tokens\":280,\"total_tokens\":1091}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Wed, 17 Dec 2025 22:45:57 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

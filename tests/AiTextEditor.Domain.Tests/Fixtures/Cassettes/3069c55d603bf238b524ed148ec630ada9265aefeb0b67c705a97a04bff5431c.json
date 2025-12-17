@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-643\",\"object\":\"chat.completion\",\"created\":1766011529,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of Professor Zvezdokhin in the text, excluding headers. The user provided a batch of text which is a paragraph from a story. The paragraph talks about everyone being happy, Ponchik being the one who suffered, his actions with the costumes, and the result of his actions. \\n\\nFirst, I need to check if there's any mention of Professor Zvezdokhin here. The paragraph mentions Ponchik, but not the professor. The user's context says to exclude headers, but there are no headers in this batch. Since the paragraph doesn't mention the professor, there's no evidence here. The snapshot shows evidenceCount is 0, so the decision should be 'continue' because there's no match in this batch. The user might have more batches coming, so we can't decide 'done' yet. Also, since it's not the last batch, we keep scanning. The correct JSON would have decision 'continue' and no newEvidence.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":742,\"completion_tokens\":226,\"total_tokens\":968}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Wed, 17 Dec 2025 22:45:28 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

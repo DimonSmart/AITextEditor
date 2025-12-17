@@ -22,10 +22,10 @@ public sealed class CursorAgentRuntime
     private const int SnapshotEvidenceLimit = 5;
     private const int MaxSummaryLength = 500;
     private const int MaxExcerptLength = 1000;
-    private const int DefaultResponseTokenLimit = 192;
+    private const int DefaultResponseTokenLimit = 4000;
     private const int MaxElements = 50;
-    private const int MaxBytes = 32768;
-    private const bool IncludeContent = true;
+    private const int MaxBytes = 1024 * 2;
+    // private const bool IncludeContent = true;
 
     private readonly DocumentContext documentContext;
     private readonly IChatCompletionService chatService;
@@ -50,67 +50,60 @@ public sealed class CursorAgentRuntime
 
         // Always start with empty state
         var state = new CursorAgentState(Array.Empty<EvidenceItem>());
-        state = state.WithEvidence(Array.Empty<EvidenceItem>(), DefaultMaxFound);
         
         var afterPointer = request.StartAfterPointer;
-        var cursorComplete = false;
+        // var cursorComplete = false;
         string? summary = null;
-        CursorPortionView? lastPortion = null;
         string? stopReason = null;
         var stepsUsed = 0;
 
         // Use hardcoded parameters
-        var cursor = new CursorStream(documentContext.Document, MaxElements, MaxBytes, IncludeContent, afterPointer);
+        var cursor = new CursorStream(documentContext.Document, MaxElements, MaxBytes, afterPointer);
 
         for (var step = 0; step < maxSteps; step++)
         {
-            if (lastPortion == null)
+            var portion = cursor.NextPortion();
+            if (!portion.Items.Any())
             {
-                if (!TryHandleCursorNext(cursor, out lastPortion, ref afterPointer, ref cursorComplete))
-                {
-                    if (cursorComplete)
-                    {
-                        stopReason = "cursor_complete";
-                        break;
-                    }
-
-                    continue;
-                }
+                // cursorComplete = true;
+                stopReason = "cursor_complete";
+                break;
             }
 
+            var cursorPortionView = CursorPortionView.FromPortion(portion);
+            // var pointerLabel = snapshot.Items.FirstOrDefault()?.Pointer ?? "<none>";
+            // var snippet = snapshot.HasMore && snapshot.Items.Count > 0 ? Truncate(snapshot.Items[0].Markdown, 200) : string.Empty;
+            var eventName = cursorPortionView.HasMore ? "cursor_batch" : "cursor_batch_complete";
+            logger.LogDebug("{Event}: count={Count}, hasMore={HasMore}", eventName, cursorPortionView.Items.Count, cursorPortionView.HasMore);
+
+            // if (snapshot.Items.Count > 0)
+            // {
+            //     afterPointer = snapshot.Items[^1].Pointer;
+            // }
+            // 
+            // if (!portion.HasMore)
+            // {
+            //     cursorComplete = true;
+            // }
+
             var snapshotMessage = BuildSnapshotMessage(state, step, afterPointer);
-            var batchMessage = lastPortion != null ? BuildBatchMessage(lastPortion, step) : "No more content.";
+            var batchMessage = BuildBatchMessage(cursorPortionView, step);
 
             var command = await GetNextCommandAsync(agentSystemPrompt, taskDefinitionPrompt, snapshotMessage, batchMessage, cancellationToken, step);
             stepsUsed = step + 1;
 
             if (command == null)
             {
-                logger.LogWarning("Agent response malformed.");
-                if (cursorComplete)
-                {
-                    stopReason = "cursor_complete";
-                    break;
-                }
-
-                lastPortion = null;
-                continue;
+                logger.LogError("Agent response malformed.");
+                throw new InvalidOperationException("Agent response malformed.");
             }
 
-            (state, summary) = ApplyCommand(state, command, summary, lastPortion);
+            (state, summary) = ApplyCommand(state, command, summary, snapshot);
 
             if (ShouldStop(command.Decision, cursorComplete, stepsUsed, maxSteps, out stopReason))
             {
                 break;
             }
-
-            if (command.Decision == "continue")
-            {
-                lastPortion = null;
-                continue;
-            }
-
-            lastPortion = null;
         }
 
         stopReason ??= "max_steps";
@@ -207,6 +200,8 @@ public sealed class CursorAgentRuntime
             history.AddUserMessage(batchMessage);
         }
 
+        history.AddUserMessage("IMPORTANT: Scan the batch. If found, return decision='success' with evidence. Output the JSON command at the end.");
+
         var response = await chatService.GetChatMessageContentsAsync(history, CreateSettings(), cancellationToken: cancellationToken);
         var message = response.FirstOrDefault();
         var content = message?.Content ?? string.Empty;
@@ -262,46 +257,6 @@ public sealed class CursorAgentRuntime
 
         reason = string.Empty;
         return false;
-    }
-
-    private bool TryHandleCursorNext(CursorStream cursor, out CursorPortionView? lastPortion, ref string? afterPointer, ref bool cursorComplete)
-    {
-        lastPortion = null;
-
-        if (cursorComplete)
-        {
-            return false;
-        }
-
-        var portion = cursor.NextPortion();
-        if (portion == null)
-        {
-            cursorComplete = true;
-            return false;
-        }
-
-        var snapshot = ProjectPortion(portion);
-        lastPortion = snapshot;
-        var pointerLabel = snapshot.Items.FirstOrDefault()?.Pointer ?? "<none>";
-        var snippet = snapshot.HasMore && snapshot.Items.Count > 0 ? Truncate(snapshot.Items[0].Markdown, 200) : string.Empty;
-        var eventName = snapshot.HasMore ? "cursor_batch" : "cursor_batch_complete";
-        logger.LogDebug("{Event}: count={Count}, hasMore={HasMore}, pointerLabel={PointerLabel}, snippet={Snippet}", eventName, snapshot.Items.Count, snapshot.HasMore, pointerLabel, snippet);
-
-        if (snapshot.Items.Count > 0)
-        {
-            afterPointer = snapshot.Items[^1].Pointer;
-        }
-        else
-        {
-            cursorComplete = true;
-        }
-
-        if (!snapshot.HasMore)
-        {
-            cursorComplete = true;
-        }
-
-        return true;
     }
 
     private static string BuildBatchMessage(CursorPortionView portion, int step)
@@ -371,8 +326,10 @@ public sealed class CursorAgentRuntime
     private static string BuildAgentSystemPrompt()
     {
         var b = new StringBuilder();
-        b.AppendLine("You are CursorAgent, a streaming batch scanner.");
-        b.AppendLine("You receive JSON user messages: task, snapshot, batch.");
+        b.AppendLine("You are CursorAgent, an automated text scanning engine.");
+        b.AppendLine("Your ONLY job is to scan the provided 'batch' of text and identify matches for the 'task'.");
+        b.AppendLine("You MUST NOT answer the task question directly. You MUST NOT output natural language.");
+        b.AppendLine("You MUST output a JSON command to report findings.");
         b.AppendLine("Return exactly ONE JSON object and nothing else.");
         b.AppendLine();
 
@@ -384,12 +341,10 @@ public sealed class CursorAgentRuntime
         b.AppendLine();
 
         b.AppendLine("Evidence rules:");
-        b.AppendLine("- From the CURRENT batch only, BEST candidates.");
-        b.AppendLine("- Do NOT include everything, only the strongest candidates.");
-        b.AppendLine("- Each newEvidence.pointer MUST be copied exactly from batch.items[].pointer.");
-        b.AppendLine("- excerpt MUST be a direct contiguous substring from the same item's markdown.");
-        b.AppendLine("  Do not paraphrase. Do not add ellipses. Keep it short (about 60..220 chars).");
-        b.AppendLine("- reason: one short sentence why this candidate helps satisfy the goal.");
+        b.AppendLine("- From the CURRENT batch only.");
+        b.AppendLine("- pointer: The value of the 'pointer' field from the matching item.");
+        b.AppendLine("- excerpt: The value of the 'markdown' field from the matching item. DO NOT TRANSLATE. DO NOT PARAPHRASE.");
+        b.AppendLine("- reason: Explain why this is a match. Prefer narrative events over summaries.");
         b.AppendLine();
 
         b.AppendLine("Decision policy:");
@@ -400,7 +355,8 @@ public sealed class CursorAgentRuntime
         b.AppendLine("- decision=\"not_found\" ONLY when batch.lastBatch=true AND snapshot.evidenceCount=0 AND you found no candidates in the current batch.");
         b.AppendLine();
 
-        b.AppendLine("Keep the response short.");
+        b.AppendLine("IMPORTANT: You may briefly analyze the text (max 2 sentences), but you MUST output the JSON command at the end.");
+        b.AppendLine("Output ONLY valid JSON in the final block.");
         return b.ToString();
     }
 
@@ -425,6 +381,8 @@ public sealed class CursorAgentRuntime
         b.AppendLine("- semanticPointerFrom MUST be one of the evidence pointers for success.");
         b.AppendLine("- If nothing fits, return decision=\"not_found\".");
         b.AppendLine("- Keep excerpt concise and copied from evidence excerpts.");
+        b.AppendLine();
+        b.AppendLine("IMPORTANT: Do not use chain of thought. Do not explain. Do not output reasoning. Output ONLY valid JSON.");
         return b.ToString();
     }
 
@@ -444,8 +402,6 @@ public sealed class CursorAgentRuntime
         return builder.ToString();
     }
 
-
-    private static CursorPortionView ProjectPortion(CursorPortion portion) => CursorPortionView.FromPortion(portion);
 
     private AgentCommand? ParseCommand(string content, out string? parsedFragment, out bool multipleActions, out bool finishDetected)
     {
@@ -722,7 +678,7 @@ public sealed class CursorAgentRuntime
         {
             Temperature = 0,
             TopP = 1,
-            ResponseFormat = "json_object",
+            // ResponseFormat = "json_object",
             MaxTokens = DefaultResponseTokenLimit,
             ExtensionData = new Dictionary<string, object>
             {

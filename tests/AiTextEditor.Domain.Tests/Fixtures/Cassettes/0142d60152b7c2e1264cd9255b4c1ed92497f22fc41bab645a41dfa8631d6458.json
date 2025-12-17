@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-825\",\"object\":\"chat.completion\",\"created\":1766011544,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of Professor Zvezdokhin in the text, excluding headers. The user provided a batch of text which is a paragraph from a story involving Pechkin and a moth problem.\\n\\nFirst, I need to scan the given paragraph for any mention of \\\"профессора Звёздочкина\\\". The paragraph talks about Pechkin dealing with moths, the smell of naphthalene, and how others react to his smell. There's a mention of Pechkin's mother, but that's not relevant here. \\n\\nLooking through the text, the key part is: \\\"Пончик и сам пропах насквозь этим одуряющим запахом, но настолько привык к нему, что даже перестал замечать. Для других, однако же, этот запах был очень заметен.\\\" Then it mentions Pechkin's mother, but the paragraph doesn't mention Professor Zvezdokhin at all. \\n\\nSince the task is to find the first mention of Professor Zvezdokhin, and the current batch doesn't have that name, the evidence count remains zero. The decision should be \\\"continue\\\" because there might be more batches to check. The user's snapshot shows evidenceCount is 0, and the current batch hasn't found any mentions. So, the correct JSON response is to continue scanning.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":821,\"completion_tokens\":310,\"total_tokens\":1131}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Wed, 17 Dec 2025 22:45:43 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

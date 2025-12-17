@@ -1,18 +1,22 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using AiTextEditor.Lib.Model;
+using System.Text;
 
 namespace AiTextEditor.Lib.Services;
 
 public sealed class CursorStream
 {
     private readonly LinearDocument document;
-    private readonly CursorState state;
+    private readonly int maxElements;
+    private readonly int maxBytes;
+    private int currentIndex;
+    private bool isComplete;
+    private readonly bool includeContent = false;
 
-    public CursorStream(LinearDocument document, int maxElements, int maxBytes, bool includeContent, string? startAfterPointer)
+    public CursorStream(LinearDocument document, int maxElements, int maxBytes, string? startAfterPointer)
     {
         this.document = document ?? throw new ArgumentNullException(nameof(document));
+        this.maxElements = maxElements;
+        this.maxBytes = maxBytes;
 
         var startIndex = 0;
         if (!string.IsNullOrEmpty(startAfterPointer))
@@ -33,32 +37,27 @@ public sealed class CursorStream
             }
         }
 
-        state = new CursorState(maxElements, maxBytes, includeContent, startIndex);
+        currentIndex = startIndex;
     }
 
-    public CursorPortion? NextPortion()
+    public CursorPortion NextPortion()
     {
-        if (state.IsComplete)
+        if (isComplete || document.Items.Count == 0)
         {
-            return null;
-        }
-
-        if (document.Items.Count == 0)
-        {
-            state.MarkComplete();
-            return new CursorPortion(Array.Empty<LinearItem>(), false);
+            isComplete = true;
+            return new CursorPortion([], false);
         }
 
         var items = new List<LinearItem>();
-        var byteBudget = state.MaxBytes;
-        var countBudget = state.MaxElements;
-        var nextIndex = state.CurrentIndex;
+        var byteBudget = maxBytes;
+        var countBudget = maxElements;
+        var nextIndex = currentIndex;
 
         while (IsWithinBounds(nextIndex))
         {
             var sourceItem = document.Items[nextIndex];
-            var projectedItem = state.IncludeContent ? sourceItem : StripText(sourceItem);
-            var itemBytes = CalculateSize(projectedItem, state.IncludeContent);
+            var projectedItem = includeContent ? sourceItem : StripText(sourceItem);
+            var itemBytes = CalculateSize(projectedItem, includeContent);
 
             if (items.Count >= countBudget) break;
             if (items.Count > 0 && byteBudget - itemBytes < 0) break;
@@ -72,17 +71,17 @@ public sealed class CursorStream
         if (items.Count == 0 && IsWithinBounds(nextIndex))
         {
             var sourceItem = document.Items[nextIndex];
-            var projectedItem = state.IncludeContent ? sourceItem : StripText(sourceItem);
+            var projectedItem = includeContent ? sourceItem : StripText(sourceItem);
             items.Add(projectedItem);
             nextIndex = nextIndex + 1;
         }
 
-        state.Advance(nextIndex);
+        currentIndex = nextIndex;
         var hasMore = IsWithinBounds(nextIndex);
 
         if (!hasMore)
         {
-            state.MarkComplete();
+            isComplete = true;
         }
 
         return new CursorPortion(items, hasMore);

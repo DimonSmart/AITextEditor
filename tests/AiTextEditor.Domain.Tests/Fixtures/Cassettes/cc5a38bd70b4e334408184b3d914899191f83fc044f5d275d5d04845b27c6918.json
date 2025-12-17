@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-767\",\"object\":\"chat.completion\",\"created\":1766011501,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of Professor Zvezdokhin in the text, excluding headers. The user provided the first batch of text.\\n\\nLooking at the items in the batch, there's only one paragraph. The markdown content talks about Nезнайка's trip to the Sun City, changes in the Flower City, new buildings, and various vehicles. I need to check if \\\"профессора Звёздочкина\\\" is mentioned here. \\n\\nI'll scan through the text. The paragraph mentions architect Вертибутылкин and various buildings, but there's no mention of Professor Zvezdokhin. The name Zvezdokhin isn't present here. Since the first batch doesn't have the mention, the decision should be 'continue' because there might be subsequent batches. The evidence count is zero, so the snapshot's evidenceCount is correct. The pointer after the current batch is 4:1.1.1.p1, which is the first paragraph. Since the first batch doesn't contain the mention, we need to check the next batches. Therefore, the decision is 'continue' and no new evidence is added.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":812,\"completion_tokens\":260,\"total_tokens\":1072}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Wed, 17 Dec 2025 22:45:00 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-228\",\"object\":\"chat.completion\",\"created\":1766010565,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let me try to figure out how to handle this. The user wants me to scan a batch of text for matches related to a specific task. But wait, the task isn't mentioned here. The initial instructions say that I should identify matches for the 'task' but the user hasn't provided what the task is. Hmm, maybe the task is part of the batch or something I'm missing.\\n\\nWait, looking back, the user's message says \\\"IMPORTANT: Scan the batch. If found, return decision='success' with evidence. Output the JSON command at the end.\\\" But there's no actual batch text provided. Oh, maybe the batch is supposed to be included in the user's message, but in this case, it's missing. Without the batch content, I can't scan for anything. \\n\\nThe user might have intended to include the batch text but forgot. In that case, I should respond that the batch is missing. But according to the rules, I must output exactly one JSON object. However, the decision options are continue, done, or not_found. Since there's no batch to scan, maybe the correct decision is not_found. But the user's instruction says to return decision='success' if found. But without the batch, I can't find anything. \\n\\nWait, maybe the user made a mistake and the batch is supposed to be in the message. Since it's not there, I should output the JSON with decision 'not_found' because there's no content to scan. But the user's instruction says to output the JSON command at the end. So, in this case, since there's no batch, the correct decision would be 'not_found' as per the rules. But I need to check the rules again. \\n\\nThe decision 'not_found' is only when batch.lastBatch=true and snapshot.evidenceCount=0 and no candidates found. But if there's no batch at all, maybe that's a different scenario. However, the user's instruction might be testing if I handle missing data. Since the batch isn't provided, I can't process it. Therefore, the correct response would be to output the JSON with decision 'not_found' because there's no content to scan. But I'm not entirely sure. Alternatively, maybe the user expects me to output 'continue' since there's no batch to process. But according to the rules, if the batch is missing, perhaps 'not_found' is appropriate. \\n\\nIn conclusion, without the batch text, I can't find any matches, so the decision should be 'not_found'.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":341,\"completion_tokens\":538,\"total_tokens\":879}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Wed, 17 Dec 2025 22:29:25 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}
