@@ -1,5 +1,6 @@
 using AiTextEditor.Lib.Model;
 using AiTextEditor.Lib.Services;
+using AiTextEditor.Lib.Services.SemanticKernel;
 using AiTextEditor.Lib.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -10,7 +11,7 @@ using Microsoft.SemanticKernel.Connectors.OpenAI;
 using System.Linq;
 using System.Net.Http.Headers;
 
-namespace AiTextEditor.Lib.Services.SemanticKernel;
+namespace AiTextEditor.SemanticKernel;
 
 public sealed class SemanticKernelEngine
 {
@@ -36,8 +37,8 @@ public sealed class SemanticKernelEngine
 
         var builder = Kernel.CreateBuilder();
 
-        builder.Services.AddSingleton(documentContext);
-        builder.Services.AddSingleton<CursorAgentRuntime>();
+        builder.Services.AddSingleton<IDocumentContext>(documentContext);
+        builder.Services.AddSingleton<ICursorAgentRuntime, CursorAgentRuntime>();
         builder.Services.AddSingleton<ILoggerFactory>(loggerFactory);
         builder.Services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
         builder.Services.AddSingleton<FunctionInvocationLoggingFilter>();

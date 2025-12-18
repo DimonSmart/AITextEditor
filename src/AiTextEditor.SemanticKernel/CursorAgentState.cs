@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AiTextEditor.Lib.Model;
 
-namespace AiTextEditor.Lib.Services.SemanticKernel;
+namespace AiTextEditor.SemanticKernel;
 
 public sealed record CursorAgentState(IReadOnlyList<EvidenceItem> Evidence)
 {
@@ -27,5 +28,3 @@ public sealed record CursorAgentState(IReadOnlyList<EvidenceItem> Evidence)
         return this with { Evidence = merged };
     }
 }
-
-public sealed record EvidenceItem(string Pointer, string? Excerpt, string? Reason);

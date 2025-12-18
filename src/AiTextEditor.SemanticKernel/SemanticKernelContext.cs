@@ -1,6 +1,6 @@
 using AiTextEditor.Lib.Model;
 
-namespace AiTextEditor.Lib.Services.SemanticKernel;
+namespace AiTextEditor.SemanticKernel;
 
 public sealed class SemanticKernelContext
 {

@@ -1,5 +1,5 @@
 using AiTextEditor.Domain.Tests.Infrastructure;
-using AiTextEditor.Lib.Services.SemanticKernel;
+using AiTextEditor.SemanticKernel;
 using System.Globalization;
 using System.Text;
 using Xunit;

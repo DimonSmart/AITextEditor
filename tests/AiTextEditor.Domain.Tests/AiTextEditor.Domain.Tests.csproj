@@ -10,13 +10,13 @@
   <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="6.0.4" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
-    <PackageReference Include="Microsoft.SemanticKernel" Version="1.68.0" />
     <PackageReference Include="xunit" Version="2.9.3" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\AiTextEditor.Lib\AiTextEditor.Lib.csproj" />
+    <ProjectReference Include="..\..\src\AiTextEditor.SemanticKernel\AiTextEditor.SemanticKernel.csproj" />
   </ItemGroup>
 
   <ItemGroup>

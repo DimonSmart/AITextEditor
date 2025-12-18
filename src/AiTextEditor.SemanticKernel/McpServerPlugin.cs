@@ -1,9 +1,10 @@
 using System.Text;
 using AiTextEditor.Lib.Model;
+using AiTextEditor.Lib.Services;
 using Microsoft.SemanticKernel;
 using Microsoft.Extensions.Logging;
 
-namespace AiTextEditor.Lib.Services.SemanticKernel;
+namespace AiTextEditor.SemanticKernel;
 
 public sealed class McpServerPlugin
 {

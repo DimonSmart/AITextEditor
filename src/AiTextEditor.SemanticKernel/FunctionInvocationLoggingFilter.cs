@@ -7,7 +7,7 @@ using System.Text.Encodings.Web;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 
-namespace AiTextEditor.Lib.Services.SemanticKernel;
+namespace AiTextEditor.SemanticKernel;
 
 /// <summary>
 /// Logs kernel function calls (both manual and auto-invoked) with arguments and results.

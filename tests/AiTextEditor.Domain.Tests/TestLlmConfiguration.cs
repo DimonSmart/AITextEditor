@@ -1,7 +1,7 @@
 using System;
 using System.Net.Http.Headers;
 using AiTextEditor.Domain.Tests.Infrastructure;
-using AiTextEditor.Lib.Services.SemanticKernel;
+using AiTextEditor.SemanticKernel;
 using AiTextEditor.Lib.Infrastructure;
 using Microsoft.Extensions.Logging;
 using Xunit.Abstractions;

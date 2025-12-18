@@ -1,6 +1,6 @@
 using AiTextEditor.Lib.Model;
 using AiTextEditor.Lib.Services;
-using AiTextEditor.Lib.Services.SemanticKernel;
+using AiTextEditor.SemanticKernel;
 using Xunit;
 
 namespace AiTextEditor.Domain.Tests;
@@ -58,7 +58,8 @@ public class McpServerTests
         var targetSet = server.CreateTargetSet(document.Id, new[] { 2, 2, 5, -1 });
 
         Assert.Single(targetSet.Targets);
-        Assert.Equal("{\"Id\":3,\"Label\":\"1.p2\"}", targetSet.Targets[0].Pointer.Serialize());
+        Assert.Equal(3, targetSet.Targets[0].Pointer.Id);
+        Assert.Equal("1.p2", targetSet.Targets[0].Pointer.Label);
     }
 
     [Fact]
@@ -91,8 +92,10 @@ public class McpServerTests
 
         Assert.Equal(document.Id, targetSet.DocumentId);
         Assert.Equal(2, targetSet.Targets.Count);
-        Assert.Equal("{\"Id\":2,\"Label\":\"1.p1\"}", targetSet.Targets[0].Pointer.Serialize());
-        Assert.Equal("{\"Id\":3,\"Label\":\"1.p2\"}", targetSet.Targets[1].Pointer.Serialize());
+        Assert.Equal(2, targetSet.Targets[0].Pointer.Id);
+        Assert.Equal("1.p1", targetSet.Targets[0].Pointer.Label);
+        Assert.Equal(3, targetSet.Targets[1].Pointer.Id);
+        Assert.Equal("1.p2", targetSet.Targets[1].Pointer.Label);
     }
 
     [Fact]
