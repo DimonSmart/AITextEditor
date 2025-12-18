@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-440\",\"object\":\"chat.completion\",\"created\":1766077877,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Фуксии последнее упоминание находится в тексте:  \\n**\\\"Там он познакомился с учёными малышками Фуксией и Селёдочкой...\\\"**  \\nСемантический указатель: `8:1.1.1.p5`.\",\"reasoning\":\"Okay, the user asked for the last mention of \\\"Фуксии\\\" in the document. I used the CursorAgentPlugin to find it. The tool response came back with an excerpt where Фуксии is mentioned along with Знайка's space travel. The summary says it's the last mention. Now I need to present this in Russian, include the semantic pointer, and make sure not to add extra info. Let me check the tool response again to confirm the pointer and the excerpt. The pointer is 8:1.1.1.p5, and the excerpt mentions Фуксии as one of the scientists. So the answer should state that the last mention is in that paragraph, include the pointer, and translate the summary. Make sure the response is concise and only includes the relevant part.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":885,\"completion_tokens\":239,\"total_tokens\":1124}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 17:11:17 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

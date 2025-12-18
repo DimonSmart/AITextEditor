@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-224\",\"object\":\"chat.completion\",\"created\":1766067310,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"В книге профессор Звёздочкин впервые упоминается в абзаце с указателем **24:1.1.1.p21**. В тексте он описывается как действительный член академии астрономических наук, критикующий книгу Знайкина за научную необоснованность.\",\"reasoning\":\"Okay, the user asked where in the book the professor Zvёzdочкиn is first mentioned, excluding headers. I used the CursorAgentPlugin to run a cursor agent with the task to find the first mention. The response came back with a summary indicating that the first mention is in paragraph 24:1.1.1.p21. The excerpt shows that he's referred to as a real member of the astronomical sciences academy, criticizing Znaykin's book for lack of scientific basis. The answer should be in Russian, including the semantic pointer. So I need to present the location and the context from the evidence provided.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":908,\"completion_tokens\":223,\"total_tokens\":1131}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 14:15:09 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

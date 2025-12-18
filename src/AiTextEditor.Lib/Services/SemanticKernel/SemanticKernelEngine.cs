@@ -155,6 +155,7 @@ public sealed class SemanticKernelEngine
             builder.SetMinimumLevel(LogLevel.Trace);
             builder.AddConsole();
             builder.AddFilter<ConsoleLoggerProvider>(level => level >= LogLevel.Debug);
+            builder.AddFilter("Microsoft.SemanticKernel.Connectors.OpenAI.OpenAIChatCompletionService", LogLevel.Information);
             builder.AddProvider(new SimpleFileLoggerProvider("llm_debug.log"));
         });
     }

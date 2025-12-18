@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-886\",\"object\":\"chat.completion\",\"created\":1766067885,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of \\\"Пончик\\\" (Ponchik). The user provided a batch of paragraphs from a text, and I need to scan through them to find the earliest occurrence.\\n\\nFirst, I'll go through each paragraph in order, checking for the word \\\"Пончик\\\". Let's start with the first item. The first paragraph talks about lunar inhabitants and their move inside the Moon, but no mention of Ponchik. The second paragraph mentions Professor Zvezdочкин and his criticism of a book, but again, no Ponchik. The third paragraph discusses the academy's discussion of the book, still no sign. The fourth and fifth paragraphs are about the meeting starting, but nothing yet. \\n\\nContinuing to the sixth paragraph, the professor starts his speech. Wait, here's a line: \\\"– Дорогие друзья, разрешите заседание, посвящённое обсуждению Знайкиной книги, считать открытым.\\\" Still no Ponchik. Next, the professor talks about the book's content, pointing out errors. Then, Znayka responds, but the mention here is about the professor's arguments. \\n\\nLooking further, in paragraph 34, there's a mention of a bottle and water in zero gravity. Then in paragraph 35, the professor reacts to Znayka's analogy. Wait, none of these paragraphs mention Ponchik. \\n\\nWait, the user's snapshot shows recent evidence pointer \\\"6:1.1.1.p3\\\", which might be from a previous batch. But the current batch starts from pointer 23:1.1.1.p20. Since the task is to find the first mention, and none of the current batch's items mention Ponchik, the decision would be \\\"continue\\\" because there's no evidence here. However, the snapshot's evidenceCount is 1, but that's from a previous batch. Since the current batch doesn't have Ponchik, the answer should be \\\"not_found\\\" if there are no more batches. But the hasMoreBatches is true, so we need to continue scanning. Therefore, the correct decision is \\\"continue\\\" with no new evidence found in this batch.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2295,\"completion_tokens\":490,\"total_tokens\":2785}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 14:24:45 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

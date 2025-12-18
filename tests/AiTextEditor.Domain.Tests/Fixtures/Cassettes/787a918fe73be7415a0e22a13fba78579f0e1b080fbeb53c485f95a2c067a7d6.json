@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-457\",\"object\":\"chat.completion\",\"created\":1766068028,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Первое упоминание Пончика содержится в параграфе **6:1.1.1.p3**. В тексте говорится, что он был единственным, кто пострадал от изменений, и описывается его действия с костюмами: он утопил старые костюмы в реке и натаскал новые, что привело к хаосу в его комнате. \\n\\n**Семантический указатель:** 6:1.1.1.p3\",\"reasoning\":\"Okay, the user asked where Ponchik is first mentioned. I used the CursorAgentPlugin to find the first occurrence. The tool response shows that the first mention is in paragraph 6:1.1.1.p3. The summary says that Ponchik is the only one who suffered from the changes, and the excerpt describes his actions regarding the costumes. So the answer should be in that paragraph. I need to confirm that this is the first mention and then present the answer in Russian with the semantic pointer.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":842,\"completion_tokens\":230,\"total_tokens\":1072}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 14:27:08 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

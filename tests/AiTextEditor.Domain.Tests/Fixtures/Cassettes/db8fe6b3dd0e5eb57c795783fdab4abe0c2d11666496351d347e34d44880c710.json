@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-700\",\"object\":\"chat.completion\",\"created\":1766068655,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"success\\\",\\\"semanticPointerFrom\\\":\\\"31:1.1.1.p28\\\",\\\"whyThis\\\":\\\"Профессор Звёздочкин обращается к Знайке с вопросом, что является первым диалогом между ними.\\\",\\\"markdown\\\":\\\"– А вы будто болтались? – огрызнулся профессор.\\\",\\\"summary\\\":\\\"Первый диалог между профессором Звёздочкиным и Знайкой.\\\"}\",\"reasoning\":\"Okay, let's tackle this task. The user wants the first dialog between two named characters and their names. Looking at the evidence:\\n\\nFirst entry (Pointer 31:1.1.1.p28) has the professor addressing Znayka. The reason says it's the first dialogue. The excerpt shows the professor talking to Znayka. \\n\\nThe second entry (32:1.1.1.p29) is Znayka responding to the professor. So that's the second exchange.\\n\\nThe third entry (36:1.1.1.p33) is another dialogue between them, but since the first two are already there, this might be later. \\n\\nThe task is to find the first dialog. The first excerpt mentions the professor (Звёздочкин) and Znayka. The reason states it's the first dialogue between them. So the answer should be these two names. The semanticPointerFrom would be the first entry's pointer. The markdown is the excerpt from the first entry. The summary states it's the first dialog. So the JSON should reflect that.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":686,\"completion_tokens\":341,\"total_tokens\":1027}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 14:37:35 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

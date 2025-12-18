@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-744\",\"object\":\"chat.completion\",\"created\":1766067012,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Второе упоминание профессора Звёздочкина (исключая заголовки) находится в следующем абзаце:  \\n**\\\"Профессор Звёздочкин и предложил академии астрономических наук устроить обсуждение Знайкиной книги...\\\"**  \\nСемантический указатель: `25:1.1.1.p22`.\",\"reasoning\":\"Okay, the user is asking for the second mention of Professor Zvezdochkin in the book, excluding headers. Let me start by recalling the previous interaction. The user first asked about the second mention, and the assistant used the CursorAgentPlugin to find it. The response indicated that the second mention was about Zvezdochkin initiating the discussion of the book, and the pointer was 25:1.1.1.p22.\\n\\nNow, the user is following up, so I need to check if there's another mention after that. The tool response mentioned the next pointer as 35:1.1.1.p32, but the cursor isn't complete. Wait, the user is asking for the second occurrence, not the third. The first mention was in the initial search, and the second was found at 25:1.1.1.p22. But maybe there's another mention later? The tool response might have more evidence. Let me check the evidence provided. The evidence list only includes the 25:1.1.1.p22 excerpt, which is the second mention. The nextAfterPointer is 35:1.1.1.p32, but that might be for further searches. Since the user asked for the second mention, and the tool response already provided that, perhaps there's no need to continue. However, the user might be confirming or looking for more details. But according to the tool's response, the second mention is at 25:1.1.1.p22. So the answer should be that the second mention is in that paragraph, and the pointer is 25:1.1.1.p22. I should present this in Russian, including the semantic pointer.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":746,\"completion_tokens\":470,\"total_tokens\":1216}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 14:10:12 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

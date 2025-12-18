@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-456\",\"object\":\"chat.completion\",\"created\":1766070320,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Фуксия впервые упоминается в разделе **8:1.1.1.p5** как одна из учёных малышек, с которыми Знайка познакомился в Солнечном городе. В тексте говорится, что он вместе с Фуксией и Селёдочкой совершил межпланетное путешествие на Луну. \\n\\n**Семантический указатель:** 8:1.1.1.p5\",\"reasoning\":\"Okay, the user asked where Fuxia is first mentioned. I used the CursorAgentPlugin to run a cursor agent with the task of finding the first mention. The response came back with a summary stating that Fuxia is mentioned as one of the scientific little girls Znayka met in the Sun City. The evidence points to paragraph 8:1.1.1.p5. So, the answer should be in that section. I need to make sure to include the semantic pointer in the answer. Since the user wants the answer in Russian, I'll translate the summary and include the pointer.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":938,\"completion_tokens\":240,\"total_tokens\":1178}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 15:05:19 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

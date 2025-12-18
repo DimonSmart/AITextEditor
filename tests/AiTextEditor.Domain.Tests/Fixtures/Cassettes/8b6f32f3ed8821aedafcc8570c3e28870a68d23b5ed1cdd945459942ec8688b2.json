@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-640\",\"object\":\"chat.completion\",\"created\":1766067932,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of \\\"Пончик\\\" (which I know is a character from a Russian story, maybe \\\"Ponchik\\\" from the book by Kornei Chukovsky). The user provided a batch of paragraphs, and I need to scan through them to find the earliest occurrence.\\n\\nFirst, I'll go through each paragraph in order, checking for the word \\\"Пончик\\\". Let's start with the first item:\\n\\n36:1.1.1.p33: Talks about a bottle in space, Znayka, the Moon being hollow. No mention of Ponchik here.\\n\\n37:1.1.1.p34: Zvezdochkin asks why the Moon is hollow. Still no Ponchik.\\n\\n38:1.1.1.p35: The audience laughs, Znayka doesn't get upset. No.\\n\\n39:1.1.1.p36: Discusses the Moon cooling from the surface, liquid inside. Still nothing.\\n\\n40:1.1.1.p37: Someone says the Moon has liquid. Not Ponchik.\\n\\n41:1.1.1.p38: Znayka says it's liquid. No.\\n\\n42:1.1.1.p39: Zvezdochkin jokes about the Moon's hollow space. Still no.\\n\\n43:1.1.1.p40: Znayka explains the Moon's hollow center. Wait, the user's snapshot mentions \\\"6:1.1.1.p3\\\" as recent evidence, but that's probably from a different batch. The current batch starts at 36:1.1.1.p33. So I need to check all items here.\\n\\nContinuing through the rest:\\n\\n44:1.1.1.p41: Professor is annoyed. No.\\n\\n45:1.1.1.p42: Znayka explains cooling and hollow space. Still no Ponchik.\\n\\n46:1.1.1.p43: Someone agrees. No.\\n\\n47:1.1.1.p44: Crowd cheers. No.\\n\\n48:1.1.1.p45: More cheers. No.\\n\\n49:1.1.1.p46: Someone yells \\\"Doloy Zvezdochkina!\\\" Maybe a typo for Ponchik? But the name is different.\\n\\n50:1.1.1.p47: They throw Zvezdochkin off the tribune. Still no.\\n\\n51:1.1.1.p48: Znayka can't make a report. No.\\n\\n52:1.1.1.p49: They want him to talk about flying to the Moon. No.\\n\\n53:1.1.1.p50: They want about weightlessness. No.\\n\\n54:1.1.1.p51: Znayka talks about the rocket's speed and weightlessness. Still no.\\n\\n55:1.1.1.p52: Someone asks about feelings during flight. No.\\n\\nWait, none of these paragraphs mention \\\"Пончик\\\". The snapshot's recent evidence pointer is 6:1.1.1.p3, which might be from a previous batch. Since the current batch doesn't have any mention of Ponchik, but the task is to find the first occurrence, and the user's snapshot shows that there's already some evidence, maybe the first mention is in a previous batch. However, the current batch doesn't have it. So according to the rules, if the task depends on order and the current batch doesn't have it, we should continue scanning. But since the user's snapshot says evidenceCount is 1, maybe the first mention was in a previous batch. However, the current batch doesn't have it. Therefore, the decision should be \\\"continue\\\" because we need to check if there's any mention in the current batch. Since there isn't, we keep scanning. But the user's snapshot might have already found it in a previous batch. Wait, the user's input includes a snapshot with recentEvidencePointers [\\\"6:1.1.1.p3\\\"], which might be from a previous batch. But the current batch doesn't have that. So the current batch doesn't have the first mention. Therefore, the decision is \\\"continue\\\" because we need to check if there's any mention in the current batch. Since there isn't, we keep scanning. But the user's task is to find the first mention, so if the current batch doesn't have it, we can't set \\\"done\\\" yet. Hence, the correct decision is \\\"continue\\\".\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2456,\"completion_tokens\":1007,\"total_tokens\":3463}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 14:25:32 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

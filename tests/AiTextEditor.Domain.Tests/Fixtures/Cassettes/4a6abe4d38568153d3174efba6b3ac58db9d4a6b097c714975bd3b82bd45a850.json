@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-100\",\"object\":\"chat.completion\",\"created\":1766070635,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of Professor Zvezdokin. The user provided a batch of items, each with a pointer and markdown content. \\n\\nFirst, I need to scan through each item's markdown to see if \\\"профессора Звёздочкина\\\" appears. The decision is to continue scanning since the task involves finding the first occurrence, which depends on the order. The snapshot shows evidenceCount is 1, but the recentEvidencePointer is \\\"3:1.1.1\\\", which might be from a previous batch. However, the current batch's items start from pointer \\\"12:1.1.1.p9\\\" onwards.\\n\\nLooking through each paragraph:\\n\\n1. The first paragraph (12:1.1.1.p9) talks about Znayka's theory about the Moon's surface but doesn't mention Professor Zvezdokin.\\n2. The next paragraphs (13-22) discuss debates between volcanologists and meteoritologists, Znayka's theories, and his visit to the Moon. None of these mention the professor's name.\\n3. The last paragraph (22:1.1.1.p19) mentions Znayka publishing a book about lunar inhabitants, but again, no mention of the professor.\\n\\nSince none of the current batch's items mention Professor Zvezdokin, and the task requires the first occurrence, which might be in a subsequent batch, the decision should be \\\"continue\\\". The newEvidence array is empty because there's no relevant content here.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2080,\"completion_tokens\":338,\"total_tokens\":2418}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 15:10:34 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

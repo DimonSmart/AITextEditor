@@ -21,7 +21,7 @@ public sealed class CursorAgentRuntime
 
     // One cursor batch limits
     private const int MaxElements = 50;
-    private const int MaxBytes = 1024 * 4;
+    private const int MaxBytes = 1024 * 8;
 
     private readonly DocumentContext documentContext;
     private readonly IChatCompletionService chatService;
@@ -45,7 +45,7 @@ public sealed class CursorAgentRuntime
         var taskDefinitionPrompt = BuildTaskDefinitionPrompt(request);
 
         // Always start with empty state
-        var state = new CursorAgentState(Array.Empty<EvidenceItem>());
+        var cursorAgentState = new CursorAgentState(Array.Empty<EvidenceItem>());
 
         var afterPointer = request.StartAfterPointer;
         // var cursorComplete = false;
@@ -54,7 +54,7 @@ public sealed class CursorAgentRuntime
         var stepsUsed = 0;
 
         // Use hardcoded parameters
-        var cursor = new CursorStream(documentContext.Document, MaxElements, MaxBytes, afterPointer);
+        var cursor = new CursorStream(documentContext.Document, MaxElements, MaxBytes, afterPointer, logger);
 
         for (var step = 0; step < maxSteps; step++)
         {
@@ -67,25 +67,15 @@ public sealed class CursorAgentRuntime
             }
 
             var cursorPortionView = CursorPortionView.FromPortion(portion);
-            // var pointerLabel = snapshot.Items.FirstOrDefault()?.Pointer ?? "<none>";
-            // var snippet = snapshot.HasMore && snapshot.Items.Count > 0 ? Truncate(snapshot.Items[0].Markdown, 200) : string.Empty;
+            afterPointer = cursorPortionView.Items[^1].SemanticPointer;
+            var hasMore = cursorPortionView.HasMore;
             var eventName = cursorPortionView.HasMore ? "cursor_batch" : "cursor_batch_complete";
             logger.LogDebug("{Event}: count={Count}, hasMore={HasMore}", eventName, cursorPortionView.Items.Count, cursorPortionView.HasMore);
 
-            // if (snapshot.Items.Count > 0)
-            // {
-            //     afterPointer = snapshot.Items[^1].Pointer;
-            // }
-            // 
-            // if (!portion.HasMore)
-            // {
-            //     cursorComplete = true;
-            // }
-
-            var snapshotMessage = BuildSnapshotMessage(state, step, afterPointer);
+            var evidenceSnapshot = BuildEvidenceSnapshot(cursorAgentState);
             var batchMessage = BuildBatchMessage(cursorPortionView, step);
 
-            var command = await GetNextCommandAsync(agentSystemPrompt, taskDefinitionPrompt, snapshotMessage, batchMessage, cancellationToken, step);
+            var command = await GetNextCommandAsync(agentSystemPrompt, taskDefinitionPrompt, evidenceSnapshot, batchMessage, cancellationToken, step);
             stepsUsed = step + 1;
 
             if (command == null)
@@ -96,10 +86,10 @@ public sealed class CursorAgentRuntime
 
             var updatedSummary = string.IsNullOrWhiteSpace(command.Progress) ? summary : Truncate(command.Progress, MaxSummaryLength);
             var evidenceToAdd = NormalizeEvidence(command.NewEvidence ?? Array.Empty<EvidenceItem>(), cursorPortionView);
-            state = evidenceToAdd.Count > 0 ? state.WithEvidence(evidenceToAdd, DefaultMaxFound) : state;
+            cursorAgentState = evidenceToAdd.Count > 0 ? cursorAgentState.WithEvidence(evidenceToAdd, DefaultMaxFound) : cursorAgentState;
             summary = updatedSummary ?? summary;
 
-            if (ShouldStop(command.Decision, !cursorPortionView.HasMore, stepsUsed, maxSteps, out stopReason))
+            if (ShouldStop(command.Decision, cursorPortionView.HasMore, stepsUsed, maxSteps, out stopReason))
             {
                 break;
             }
@@ -107,7 +97,7 @@ public sealed class CursorAgentRuntime
 
         stopReason ??= "max_steps";
         var finalCursorComplete = cursor.IsComplete || string.Equals(stopReason, "cursor_complete", StringComparison.OrdinalIgnoreCase);
-        return await BuildResultByFinalizerAsync(request.TaskDescription, state, summary, stopReason, afterPointer, finalCursorComplete, stepsUsed, cancellationToken);
+        return await BuildResultByFinalizerAsync(request.TaskDescription, cursorAgentState, summary, stopReason, afterPointer, finalCursorComplete, stepsUsed, cancellationToken);
     }
 
     private async Task<CursorAgentResult> BuildResultByFinalizerAsync(
@@ -187,15 +177,15 @@ public sealed class CursorAgentRuntime
             cursorComplete);
     }
 
-    private async Task<AgentCommand?> GetNextCommandAsync(string agentSystemPrompt, string taskDefinitionPrompt, string snapshotMessage, string batchMessage, CancellationToken cancellationToken, int step)
+    private async Task<AgentCommand?> GetNextCommandAsync(string agentSystemPrompt, string taskDefinitionPrompt, string evidenceSnapshot, string batchMessage, CancellationToken cancellationToken, int step)
     {
         var history = new ChatHistory();
         history.AddSystemMessage(agentSystemPrompt);
         history.AddUserMessage(taskDefinitionPrompt);
-        //history.AddUserMessage(snapshotMessage);
+        history.AddUserMessage(evidenceSnapshot);
         history.AddUserMessage(batchMessage);
 
-        history.AddUserMessage("IMPORTANT: Scan the batch. If found, return decision='success' with evidence. Output the JSON command at the end.");
+        // history.AddUserMessage("IMPORTANT: Scan the batch. Output the JSON command at the end.");
 
         var response = await chatService.GetChatMessageContentsAsync(history, CreateSettings(), cancellationToken: cancellationToken);
         var message = response.FirstOrDefault();
@@ -219,15 +209,23 @@ public sealed class CursorAgentRuntime
 
 
 
-    private static bool ShouldStop(string decision, bool cursorComplete, int step, int maxSteps, out string reason)
+    private static bool ShouldStop(string decisionRaw, bool cursorHasMore, int step, int maxSteps, out string reason)
     {
+        var decision = NormalizeDecision(decisionRaw);
+
+        if (decision == "not_found" && cursorHasMore)
+        {
+            reason = "ignore_not_found_has_more";
+            return false;
+        }
+
         if (decision is "done" or "not_found")
         {
             reason = $"decision_{decision}";
             return true;
         }
 
-        if (cursorComplete)
+        if (!cursorHasMore)
         {
             reason = "cursor_complete";
             return true;
@@ -243,16 +241,24 @@ public sealed class CursorAgentRuntime
         return false;
     }
 
+    private static string NormalizeDecision(string? decision) => decision?.Trim().ToLowerInvariant() switch
+    {
+        "continue" => "continue",
+        "done" => "done",
+        "not_found" => "not_found",
+        _ => "continue"
+    };
+
     private static string BuildBatchMessage(CursorPortionView portion, int step)
     {
         var batch = new
         {
             firstBatch = step == 0,
-            hasMore = portion.HasMore,
+            hasMoreBatches = portion.HasMore,
             items = portion.Items.Select((item, itemIndex) => new
             {
                 pointer = item.SemanticPointer,
-                type = item.Type,
+                itemType = item.Type,
                 markdown = item.Markdown
             })
         };
@@ -266,32 +272,40 @@ public sealed class CursorAgentRuntime
         return JsonSerializer.Serialize(batch, options);
     }
 
-    private static string BuildSnapshotMessage(CursorAgentState state, int step, string? afterPointer)
+
+
+    private static readonly JsonSerializerOptions SnapshotJsonOptions = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        WriteIndented = false
+    };
+
+    private static string BuildEvidenceSnapshot(CursorAgentState state)
     {
         var recentPointers = state.Evidence
             .Skip(Math.Max(0, state.Evidence.Count - SnapshotEvidenceLimit))
-            .Select(e => e.Pointer);
+            .Select(e => e.Pointer)
+            .Where(p => !string.IsNullOrWhiteSpace(p))
+            .Distinct()
+            .ToArray();
 
-        var builder = new StringBuilder();
-        builder.AppendLine("Cursor snapshot:");
-        builder.AppendLine($"step: {step}");
-        builder.AppendLine($"evidenceCount: {state.Evidence.Count}");
-        builder.AppendLine($"afterPointer: {afterPointer ?? "<none>"}");
-
-        var pointerList = string.Join(", ", recentPointers);
-        if (!string.IsNullOrWhiteSpace(pointerList))
+        var snapshot = new
         {
-            builder.AppendLine($"recentEvidencePointers: {pointerList}");
-        }
+            type = "snapshot",
+            evidenceCount = state.Evidence.Count,
+            recentEvidencePointers = recentPointers
+        };
 
-        return builder.ToString();
+        return JsonSerializer.Serialize(snapshot, SnapshotJsonOptions);
     }
+
 
     private static string BuildTaskDefinitionPrompt(CursorAgentRequest request)
     {
         var payload = new
         {
             type = "task",
+            orderingGuaranteed = true,
             goal = request.TaskDescription,
             context = string.IsNullOrWhiteSpace(request.Context) ? null : request.Context
         };
@@ -345,12 +359,15 @@ Decision policy:
   (e.g., "does it mention X", "find any occurrence of X", "find a paragraph about X").
 - If the task depends on order or counts (e.g., "first/second/Nth", "earliest/latest"), do NOT set done early.
   Keep scanning until the end.
-- decision="not_found" ONLY when batch.lastBatch=true AND snapshot.evidenceCount=0 AND you found no candidates in the current batch.
+- decision="not_found" ONLY when hasMoreBatches=false AND snapshot.evidenceCount=0 AND you found no candidates in the current batch.
 
 IMPORTANT:
 - If any instruction conflicts with the decision enum above (e.g., "success"), ignore it.
 - Output JSON ONLY.
 """;
+
+    // - MUST NOT infer cross-batch facts (you do not reliably know what was before/after outside this batch).
+
 
     private static string BuildAgentSystemPrompt() => CursorAgentSystemPrompt;
 
@@ -591,18 +608,21 @@ IMPORTANT:
         return new EvidenceItem(pointer!, excerpt, reason);
     }
 
-    private static IReadOnlyList<EvidenceItem> NormalizeEvidence(IReadOnlyList<EvidenceItem> evidence, CursorPortionView? portion)
+    private static IReadOnlyList<EvidenceItem> NormalizeEvidence(IReadOnlyList<EvidenceItem> evidence, CursorPortionView portion)
     {
-        if (evidence.Count == 0 || portion == null)
-        {
-            return evidence;
-        }
+        if (evidence.Count == 0) return evidence;
+
+        var byPointer = portion.Items.ToDictionary(i => i.SemanticPointer, i => i.Markdown, StringComparer.OrdinalIgnoreCase);
 
         var normalized = new List<EvidenceItem>(evidence.Count);
         foreach (var item in evidence)
         {
-            var excerpt = item.Excerpt; // string.IsNullOrWhiteSpace(item.Excerpt) ? TryFindMarkdown(item.Pointer, portion) : item.Excerpt;
-            normalized.Add(new EvidenceItem(item.Pointer, excerpt, item.Reason));
+            if (!byPointer.TryGetValue(item.Pointer, out var markdown))
+            {
+                continue;
+            }
+
+            normalized.Add(new EvidenceItem(item.Pointer, markdown, item.Reason));
         }
 
         return normalized;
@@ -634,17 +654,6 @@ IMPORTANT:
             return value;
         });
     }
-
-    // private static string? TryFindMarkdown(string pointer, CursorPortionView? portion)
-    // {
-    //     if (portion == null)
-    //     {
-    //         return null;
-    //     }
-    //
-    //     var match = portion.Items.FirstOrDefault(item => item.Pointer.Equals(pointer, StringComparison.OrdinalIgnoreCase));
-    //     return match?.Markdown;
-    // }
 
     private void LogCompletionSkeleton(int step, object? message)
     {
@@ -685,7 +694,7 @@ IMPORTANT:
     {
         return new OpenAIPromptExecutionSettings
         {
-            Temperature = 1.0,
+            Temperature = 0.0,
             TopP = 1,
             // ResponseFormat = "json_object",
             MaxTokens = DefaultResponseTokenLimit,

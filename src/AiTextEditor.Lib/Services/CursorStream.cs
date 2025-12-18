@@ -1,4 +1,5 @@
 using AiTextEditor.Lib.Model;
+using Microsoft.Extensions.Logging;
 using System.Text;
 
 namespace AiTextEditor.Lib.Services;
@@ -13,11 +14,20 @@ public sealed class CursorStream
     private readonly bool includeContent = true;
     public bool IsComplete => isComplete;
 
-    public CursorStream(LinearDocument document, int maxElements, int maxBytes, string? startAfterPointer)
+    public CursorStream(LinearDocument document, int maxElements, int maxBytes, string? startAfterPointer, ILogger? logger = null)
     {
         this.document = document ?? throw new ArgumentNullException(nameof(document));
         this.maxElements = maxElements;
         this.maxBytes = maxBytes;
+
+        if (!string.IsNullOrEmpty(startAfterPointer))
+        {
+            if (!SemanticPointer.TryParse(startAfterPointer, out _))
+            {
+                logger?.LogWarning("Invalid pointer format: {Pointer}", startAfterPointer);
+                startAfterPointer = null;
+            }
+        }
 
         var startIndex = 0;
         if (!string.IsNullOrEmpty(startAfterPointer))
@@ -96,14 +106,13 @@ public sealed class CursorStream
         builder.Append(item.Type);
 
         builder.Append('|');
-        builder.Append(item.Pointer.Serialize());
+        builder.Append(item.Pointer.ToCompactString);
 
         if (includeContent)
         {
             builder.Append('|');
             builder.Append(item.Markdown);
             builder.Append('|');
-            builder.Append(item.Text);
         }
 
         return Encoding.UTF8.GetByteCount(builder.ToString());

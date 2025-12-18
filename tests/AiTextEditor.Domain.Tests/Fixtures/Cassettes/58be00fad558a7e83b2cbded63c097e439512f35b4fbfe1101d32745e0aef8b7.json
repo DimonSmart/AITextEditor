@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-284\",\"object\":\"chat.completion\",\"created\":1766070208,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"done\\\",\\\"newEvidence\\\":[{\\\"pointer\\\":\\\"8:1.1.1.p5\\\",\\\"excerpt\\\":\\\"Впрочем, главное было не это. Главное было то, что Знайка тоже побывал в Солнечном городе. Там он познакомился с учёными малышками Фуксией и Селёдочкой, которые в то время готовили свой второй полёт на Луну.\\\",\\\"reason\\\":\\\"Упоминается Фуксия как одна из учёных малышек, с которыми Знайка познакомился в Солнечном городе.\\\"}]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of Fuchsia. The user provided a batch of paragraphs from a story involving Znayka and his adventures. I need to scan each item in the batch to find where Fuchsia is mentioned for the first time.\\n\\nStarting with the first paragraph (pointer 8:1.1.1.p5). The markdown mentions \\\"учёными малышками Фуксией и Селёдочкой\\\" which translates to \\\"scientists little Fuchsia and Selodka\\\". So here, Fuchsia is mentioned as part of a pair. That seems like the first occurrence. \\n\\nI should check the other paragraphs to ensure there's no earlier mention, but since the first item is the earliest in the batch, and the task is about the first occurrence, this should be it. The reason is that the excerpt directly mentions Fuchsia in the context of meeting the scientists. No need to look further since the decision here is \\\"done\\\" because the task is to find any occurrence, not dependent on order. So the evidence is this paragraph pointing to Fuchsia's first mention.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1768,\"completion_tokens\":377,\"total_tokens\":2145}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 15:03:27 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

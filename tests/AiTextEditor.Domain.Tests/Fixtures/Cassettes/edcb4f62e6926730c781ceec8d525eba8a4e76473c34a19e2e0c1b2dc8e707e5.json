@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-897\",\"object\":\"chat.completion\",\"created\":1766067987,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of \\\"Пончик\\\" (Ponchik). The user provided a batch of items, and I need to scan through them to find the earliest occurrence.\\n\\nFirst, I'll go through each item in the batch. The snapshot shows that there's already some evidence, but the user wants the first mention. The recent evidence pointer is \\\"6:1.1.1.p3\\\", but I need to check if that's part of the current batch.\\n\\nLooking at the items, the pointers start from 74:1.1.1.p71 up to 86:1.2.1.p2. The snapshot's recent evidence might be from a previous batch, so I should focus on the current batch's items. \\n\\nI'll check each paragraph's markdown content for the word \\\"Пончик\\\". Starting with pointer 74:1.1.1.p71: the text mentions Звёздочкин but not Ponchik. Next, 75:1.1.1.p72 is \\\"Долой!\\\" – no. 76:1.1.1.p73 talks about Звёздочкина again. 77:1.1.1.p74 mentions Звёздочкин. 78:1.1.1.p75 has Звёздочкин. 79:1.1.1.p76 again Звёздочкин. 80:1.1.1.p77 still Звёздочкин. 81:1.1.1.p78 is about closing the meeting. 82:1.1.1.p79 mentions Звёздочкин again. \\n\\nMoving to the next chapter, pointer 83:1.2 is a heading. Then 84:1.2.1 is another heading. 85:1.2.1.p1 talks about the newspaper report and mentions Знайка but not Ponchik. The next paragraph, 86:1.2.1.p2 is truncated. \\n\\nNone of the current batch items mention \\\"Пончик\\\". The snapshot's evidence might be from a previous batch, but since the current batch doesn't have any mentions, the decision should be \\\"not_found\\\" because there's no evidence here. However, the user's snapshot shows evidenceCount=1, but maybe that's from a previous batch. Since the current batch has no Ponchik mentions, the correct decision is \\\"not_found\\\".\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1562,\"completion_tokens\":562,\"total_tokens\":2124}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 14:26:27 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

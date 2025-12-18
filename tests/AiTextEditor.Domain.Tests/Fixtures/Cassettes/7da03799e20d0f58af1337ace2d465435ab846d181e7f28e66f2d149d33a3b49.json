@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-941\",\"object\":\"chat.completion\",\"created\":1766067860,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of \\\"Пончик\\\" (which I know is a character from a Russian children's book, maybe \\\"Ponchik\\\" or \\\"Punchik\\\"). The user provided a batch of text items, each with a pointer and markdown content. \\n\\nFirst, I need to scan each item's markdown for the exact mention of \\\"Пончик\\\". The decision rules say to use only the current batch and not infer anything beyond it. Since the task is about the first occurrence, I have to check each item in order and stop at the first match.\\n\\nLooking at the items:\\n\\n1. The first paragraph (12:1.1.1.p9) talks about Знайка's theory about the Moon's surface but doesn't mention Ponчик.\\n2. The next paragraphs (13-22) discuss astronomers, volcanoes, meteorites, and Знайка's theories. I need to check each one. \\n3. The 20th item (20:1.1.1.p17) mentions \\\"блинстом\\\" which is a nickname for Знайка, but not Ponчик.\\n4. The 21st item (21:1.1.1.p18) talks about Знайка's book but again no Ponчик.\\n5. The 22nd item (22:1.1.1.p19) mentions \\\"лунатики\\\" but not Ponчик.\\n\\nWait, maybe I missed something. Let me check again. The user's snapshot shows recent evidence pointer \\\"6:1.1.1.p3\\\", but that's from a previous batch. The current batch starts at 12:1.1.1.p9. None of the current batch items mention \\\"Пончик\\\". \\n\\nSince the task is to find the first mention and the current batch doesn't have it, but there are more batches (hasMoreBatches is true), I should continue scanning. However, the user's snapshot might have evidence from previous batches, but the current batch doesn't have the mention. Therefore, the decision should be \\\"continue\\\" because the first mention might be in a subsequent batch.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2077,\"completion_tokens\":479,\"total_tokens\":2556}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 14:24:20 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-786\",\"object\":\"chat.completion\",\"created\":1766070153,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of \\\"Фуксия\\\" (Fuchsia). The user provided a batch of items, and I need to scan through them to find any occurrence of that name.\\n\\nFirst, I'll go through each item in the batch. The items are a mix of headings and paragraphs. The headings don't seem relevant since they're about chapters and sections. The paragraphs are the main content. \\n\\nLooking at the first paragraph (pointer 4:1.1.1.p1), it talks about Nезнайка's journey and the changes in the city. No mention of Фуксия here. The next paragraph (pointer 5:1.1.1.p2) mentions the clothing factory and various items, but again, no Фуксия. \\n\\nThe third paragraph (pointer 6:1.1.1.p3) discusses Ponчик's clothes and the moth problem. Still nothing. The fourth paragraph (pointer 7:1.1.1.p4) continues the story about Ponчик's smell and his isolation. Still no sign of Фуксия.\\n\\nWait, maybe I missed something. Let me check each paragraph again. The user's task is to find the first occurrence, so if there's no mention in this batch, the decision would be \\\"continue\\\" since there might be more batches. But the snapshot shows evidenceCount is 0, and the firstBatch is true with hasMoreBatches as true. So, even if this batch has no evidence, we need to keep scanning. Therefore, the correct decision here is \\\"continue\\\" because the first mention might be in a subsequent batch. The user hasn't provided any evidence in this batch, so the answer should indicate that the scan continues.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1975,\"completion_tokens\":382,\"total_tokens\":2357}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 15:02:33 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}
