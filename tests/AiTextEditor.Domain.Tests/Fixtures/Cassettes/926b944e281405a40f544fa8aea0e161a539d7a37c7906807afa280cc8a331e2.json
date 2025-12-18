@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-652\",\"object\":\"chat.completion\",\"created\":1766088488,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"В указанном абзаце (семантический указатель: **6:1.1.1.p3**) Пончик, выбрав потемней ночку, утопил старые костюмы в Огурцовой реке. Текст описывает, как он завязал костюмы в узел, вынес их тайком и утопил, после чего начал носить новые покупки.\",\"reasoning\":\"Okay, let's see. The user is asking in which paragraph Ponchik, choosing a darker night, drowned his old costumes in the Ogurcovka river. I need to find the specific paragraph from the document.\\n\\nFirst, I'll check the tool response provided. The summary mentions that Ponchik did this after choosing a darker night and the evidence points to pointer \\\"6:1.1.1.p3\\\". The excerpt there describes him tying up the old costumes, taking them out at night, and throwing them into the river. \\n\\nThe user wants the paragraph where this action happens. The tool's response already gives the pointer and the excerpt. So the answer should reference that paragraph, likely the third paragraph under section 1.1.1, and mention the semantic pointer. Since the user asked for the paragraph, I should present the relevant excerpt and note the pointer. Make sure to answer in Russian and include the semantic pointer as specified.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":910,\"completion_tokens\":298,\"total_tokens\":1208}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 20:08:07 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

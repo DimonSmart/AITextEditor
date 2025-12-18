@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-680\",\"object\":\"chat.completion\",\"created\":1766082483,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first dialog between two named characters and specify their names. The task is part of a batch processing scenario where I need to scan the current batch's items for evidence.\\n\\nFirst, I'll check the snapshot provided. The evidenceCount is 0, and recentEvidencePointers is empty. That means no matches have been found in previous batches, so I need to look through the current batch's items.\\n\\nLooking at the current batch, the items are a mix of headings and paragraphs. The user's task is about finding a dialog, so I should focus on paragraph items since headings are likely not containing dialogues. \\n\\nThe first paragraph (pointer 4:1.1.1.p1) starts with \\\"С тех пор как Незнайка совершил путешествие...\\\" which is a narrative, not a dialogue. The next paragraphs (4:1.1.1.p2, 4:1.1.1.p3, 4:1.1.1.p4) continue the story, describing events and characters like Пончик, but there's no direct dialogue here. \\n\\nI need to check if any of the paragraphs contain a dialogue between two named characters. The paragraphs mention characters like Незнайка, Кнопочки, Пачкули Пёстренького, and Пончик, but the text is all narrative. There's no direct speech or dialogue between any two characters named explicitly. \\n\\nSince the task requires a dialog between two named characters, and none of the current batch's items contain such a dialog, the newEvidence array should be empty. The decision would be \\\"continue\\\" because there's no evidence found in this batch, and the user might have more batches to process. \\n\\nI should make sure not to include any pointers from the recentEvidencePointers (which is empty here) and adhere to the rules of not adding duplicates. Since no valid evidence is found, the decision remains \\\"continue\\\".\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2315,\"completion_tokens\":423,\"total_tokens\":2738}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 18:28:03 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

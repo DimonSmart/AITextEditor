@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-256\",\"object\":\"chat.completion\",\"created\":1766082171,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"decision\\\": \\\"done\\\",\\n  \\\"newEvidence\\\": [\\n    {\\n      \\\"pointer\\\": \\\"25:1.1.1.p22\\\",\\n      \\\"excerpt\\\": \\\"Профессор Звёздочкин и предложил академии астрономических наук устроить обсуждение Знайкиной книги и разобрать её, как он выразился, по косточкам, с тем чтобы никому больше не повадно было такие книги писать. Академия дала согласие и послала приглашение Знайке. Знайка приехал, и обсуждение состоялось. Оно началось, как и полагается в таких случаях, с доклада, который вызвался сделать сам профессор Звёздочкин.\\\",\\n      \\\"reason\\\": \\\"Упоминается профессор Звёздочкин как инициатор обсуждения книги, что является второе упоминание.\\\"\\n    }\\n  ]\\n}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the second mention of Professor Zvezdochkin, excluding headers. The snapshot shows evidenceCount is 0, and recentEvidencePointers is empty. So, we need to look through the current batch's items.\\n\\nFirst, I'll go through each item's markdown content. The first mention of Professor Zvezdochkin is in item 24:1.1.1.p21. That's the first occurrence. Now, looking for the second. The next mention is in item 25:1.1.1.p22, where he proposes the discussion. Then, item 26:1.1.1.p23 mentions him again as he steps up to speak. Wait, but the task is for the second mention. So after the first in p21, the second would be in p22. But let me check again. \\n\\nWait, in p21, he's mentioned once. Then in p22, he's mentioned again. So that's the second occurrence. The next mentions in p23 and p24 are part of the discussion, but maybe they're not separate mentions. The key is to count each time his name appears. So the first is p21, the second is p22. So the newEvidence should include p22. The reason is that the excerpt mentions him proposing the discussion, which is a separate mention. So the JSON should have the pointer from p22, the excerpt, and the reason stating that he proposed the discussion. Since the task is to find the second mention, and the first was already counted in the snapshot's evidenceCount of 0, but since the snapshot's evidenceCount is 0, maybe the first mention is in this batch. Wait, the snapshot's evidenceCount is 0, meaning no previous matches. So in this batch, the first mention is in p21, and the second is in p22. So the newEvidence should include p22 as the second mention. Therefore, the decision would be \\\"done\\\" because we found the second mention. But wait, the task says \\\"second occurrence\\\", so if the first is in this batch, then the second is also here. So the newEvidence would have p22, and since the task is to find the second, and we found it, decision is done.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2649,\"completion_tokens\":727,\"total_tokens\":3376}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 18:22:51 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

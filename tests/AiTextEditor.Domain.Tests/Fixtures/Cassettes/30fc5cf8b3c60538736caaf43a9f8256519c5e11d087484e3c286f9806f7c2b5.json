@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-690\",\"object\":\"chat.completion\",\"created\":1766088415,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's tackle this query. The user is asking in which paragraph Ponchik, choosing a darker night, drowned his old costumes in the Ogurcovka River. First, I need to figure out how to approach this.\\n\\nThe user mentioned using the CursorAgentPlugin-run_cursor_agent function. So, I should use that tool to search through the document. The task is to find the specific paragraph where this event occurs. The function requires a taskDescription, which in this case is the user's question. Since there's no context provided from a previous run, the context parameter can be left out or set to an empty string. The startAfterPointer isn't specified either, so I'll omit that.\\n\\nI need to make sure the taskDescription is accurately phrased. The user's query is in Russian, so the task should be in Russian as well. The key elements here are Ponchik, a darker night, drowning old costumes, and the Ogurcovka River. The function will use these details to search the document.\\n\\nWait, the user wants the answer in Russian and includes the semantic pointer if applicable. So after finding the relevant paragraph, I should note the pointerLabel and pointer. But since I'm just making the tool call now, I need to structure the JSON correctly.\\n\\nLet me double-check the function parameters. The required parameter is taskDescription. The context and startAfterPointer are optional. So the tool call should have the taskDescription in Russian, describing the exact event the user is asking about. That should guide the cursor agent to the correct section of the document.\\n\",\"tool_calls\":[{\"id\":\"call_7l7zgrfe\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"CursorAgentPlugin-run_cursor_agent\",\"arguments\":\"{\\\"taskDescription\\\":\\\"Найдите абзац, где Пончик, выбрав потемней ночку, утопил старые костюмы в Огурцовой реке.\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":373,\"completion_tokens\":390,\"total_tokens\":763}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 20:06:55 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-140\",\"object\":\"chat.completion\",\"created\":1766082395,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of Professor Zvezdokhin in the text, excluding headers. The user provided a batch of paragraphs, and I need to scan through them.\\n\\nFirst, I'll go through each paragraph's markdown content. The pointers are like 12:1.1.1.p9, etc. The goal is to check if any of these paragraphs mention \\\"профессора Звёздочкина\\\" (Professor Zvezdokhin). \\n\\nLooking at the first paragraph (pointer 12:1.1.1.p9), the text talks about Znayka's theory about the Moon's surface but doesn't mention Professor Zvezdokhin. The next paragraphs (13-18) discuss astronomers and their theories, but again, no mention of the professor. \\n\\nParagraph 19 mentions Znayka being called a \\\"блинистом\\\" by others, but still no professor. Paragraph 20 talks about Znayka's theory and his trip to the Moon, but again, no reference to the professor. \\n\\nContinuing to paragraph 21, there's a mention of Znayka's book, but the professor isn't there. The last paragraph (22) discusses Znayka's realization about the Moon's history, but again, no mention of Professor Zvezdokhin. \\n\\nWait, maybe I missed something. Let me check again. All the paragraphs are about Znayka's theories and discussions with other scientists, but none of them mention Professor Zvezdokhin. The task says to exclude headers, so maybe the professor is mentioned in a paragraph that's not listed here? But according to the provided batch, there's no mention. \\n\\nSince the snapshot's evidenceCount is 0 and the current batch has no matches, the decision should be \\\"continue\\\" because there's no evidence found. However, the user's task might expect that the professor is mentioned somewhere, but based on the given data, there's no such mention. Therefore, the correct response is \\\"not_found\\\" because the batch doesn't contain the required evidence.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2408,\"completion_tokens\":463,\"total_tokens\":2871}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 18:26:35 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

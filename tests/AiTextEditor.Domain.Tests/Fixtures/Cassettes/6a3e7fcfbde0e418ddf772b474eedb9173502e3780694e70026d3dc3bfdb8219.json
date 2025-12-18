@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-249\",\"object\":\"chat.completion\",\"created\":1766082250,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"decision\\\": \\\"done\\\",\\n  \\\"newEvidence\\\": [\\n    {\\n      \\\"pointer\\\": \\\"6:1.1.1.p3\\\",\\n      \\\"excerpt\\\": \\\"Все были очень довольны. Единственным, кто пострадал на этом деле, оказался Пончик. Когда Пончик увидел, что теперь можно брать в магазине любую вещь, какая только могла понадобиться, он стал недоумевать: к чему ему вся та куча костюмов, которая накопилась у него дома.\\\",\\n      \\\"reason\\\": \\\"Упоминается Пончик как единственный, кто пострадал от изменений в городе, что соответствует задаче.\\\"\\n    }\\n  ]\\n}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of Пончик. The user provided a batch of items, and I need to scan through them to find the earliest occurrence.\\n\\nFirst, I'll look at the snapshot. The evidenceCount is 0, and there are no recentEvidencePointers, so no duplicates to avoid. The decision defaults to continue unless I find evidence.\\n\\nLooking at the items in the batch. The first item is a heading, then another heading, then another. The first paragraph (pointer 4:1.1.1.p1) talks about Незнайка's trip and other characters like Кнопочки and Пачкули Пёстренького. No mention of Пончик here.\\n\\nNext paragraph (pointer 5:1.1.1.p2) mentions the clothing factory and machines, but again, no Пончик.\\n\\nThird paragraph (pointer 6:1.1.1.p3) starts with \\\"Все были очень довольны. Единственным, кто пострадал на этом деле, оказался Пончик.\\\" Here's the first mention of Пончик. The reason is that he's the one who suffered from the changes. So this is the first occurrence. \\n\\nSince the task is to find the first mention, and this is the first instance in the batch, I should add this as newEvidence. The decision can be done because we found the first occurrence. The evidenceCount was 0, so adding this one meets the target of 1. Therefore, the decision is done.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2300,\"completion_tokens\":501,\"total_tokens\":2801}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 18:24:10 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

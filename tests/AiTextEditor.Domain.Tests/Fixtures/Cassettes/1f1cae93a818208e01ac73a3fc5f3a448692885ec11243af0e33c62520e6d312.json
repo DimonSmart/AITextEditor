@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-552\",\"object\":\"chat.completion\",\"created\":1766088573,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"decision\\\": \\\"success\\\",\\n  \\\"semanticPointerFrom\\\": \\\"10:1.1.1.p7\\\",\\n  \\\"whyThis\\\": \\\"Упоминается, что астрономы в Солнечном городе поссорились и разделились на вулканистов и метеоритчиков.\\\",\\n  \\\"markdown\\\": \\\"Многих учёных интересует вопрос, как образовались лунные кратеры, отчего они произошли, в Солнечном городе все астрономы даже поссорились между собой, стараясь разрешить этот сложный вопрос, и разделились на две половины. Одна половина утверждает, что лунные кратеры произошли от вулканов, другая половина говорит, что лунные кратеры – это следы от падения крупных метеоритов. Первую половину астрономов называют поэтому последователями вулканической теории, или попросту вулканистами, а вторую – последователями метеоритной теории, или метеоритчиками.\\\",\\n  \\\"summary\\\": \\\"Астрономы Солнечного города спорили о происхождении лунных кратеров, разделившись на вулканистов (теория вулканического происхождения) и метеоритчиков (теория падения метеоритов).\\\"\\n}\",\"reasoning\":\"Okay, let's tackle this query. The user is looking for a description where astronomers in the Solar City argued and split into volcanologists and meteorite theorists. \\n\\nFirst, I check the provided evidence. There's one entry with Pointer 10:1.1.1.p7. The Excerpt mentions that astronomers in the Solar City argued over the origin of lunar craters, splitting into two groups: those believing volcanoes caused them (volcanologists) and those thinking it was meteorites (meteorite theorists). The Reason field notes that this split is mentioned.\\n\\nThe task requires finding exactly this scenario. The evidence matches the query's requirements. Since the decision is \\\"success,\\\" the semanticPointerFrom must be one of the evidence pointers, which it is (10:1.1.1.p7). The markdown should be the exact excerpt. The summary needs to be concise, capturing the split and the theories. The \\\"whyThis\\\" explains why the evidence fits. Everything checks out, so the JSON response is correctly formatted.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":636,\"completion_tokens\":566,\"total_tokens\":1202}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 20:09:33 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

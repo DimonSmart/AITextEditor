@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-457\",\"object\":\"chat.completion\",\"created\":1766088358,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"done\\\",\\\"newEvidence\\\":[{\\\"pointer\\\":\\\"9:1.1.1.p6\\\",\\\"excerpt\\\":\\\"В свой телескоп Стекляшкин сумел разглядеть, что поверхность Луны не ровная, а гористая, причём многие горы на Луне не такие, как у нас на Земле, а почему-то круглые, вернее сказать – кольцеобразные. Эти кольцевые горы учёные называют лунными кратерами, или цирками. Чтобы понять, как выглядит такой лунный цирк, или кратер, вообразите себе огромное круглое поле, в поперечнике километров двадцать, тридцать, пятьдесят или даже сто, и представьте, что это огромное круглое поле окружено земляным валом или горой высотой всего в два или три километра, – вот и получится лунный цирк, или кратер.\\\",\\\"reason\\\":\\\"Описание лунного кратера как огромного круглого поля с земляным валом по краю присутствует в тексте.\\\"}]}\",\"reasoning\":\"Okay, let's tackle this query. The user wants to find a paragraph that describes a lunar crater as a huge round field with an earth embankment on the edge. The task is in Russian, so I need to make sure I understand the key terms.\\n\\nFirst, I'll look at the provided batch items. Each has a pointer, itemType, and markdown content. The snapshot shows evidenceCount is 0 and recentEvidencePointers is empty, so no previous matches to avoid.\\n\\nLooking at the paragraphs:\\n\\nParagraph 9:1.1.1.p6 mentions \\\"огромное круглое поле\\\" which translates to \\\"huge round field\\\" and \\\"земляным валом или горой\\\" which is \\\"earth embankment or hill\\\". That seems to match the task's description. The reason is that it directly describes the crater as a round field with an embankment. The other paragraphs discuss the crater's formation or other aspects, not the specific visual description asked for. So the correct pointer is 9:1.1.1.p6. Since this is the first match and the task doesn't require counting, the decision should be \\\"done\\\".\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2119,\"completion_tokens\":521,\"total_tokens\":2640}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 20:05:58 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

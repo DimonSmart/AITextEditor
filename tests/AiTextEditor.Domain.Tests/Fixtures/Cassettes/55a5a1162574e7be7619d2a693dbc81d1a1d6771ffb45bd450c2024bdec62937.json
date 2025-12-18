@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-937\",\"object\":\"chat.completion\",\"created\":1766088549,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"decision\\\": \\\"done\\\",\\n  \\\"newEvidence\\\": [\\n    {\\n      \\\"pointer\\\": \\\"10:1.1.1.p7\\\",\\n      \\\"excerpt\\\": \\\"Многих учёных интересует вопрос, как образовались лунные кратеры, отчего они произошли, в Солнечном городе все астрономы даже поссорились между собой, стараясь разрешить этот сложный вопрос, и разделились на две половины. Одна половина утверждает, что лунные кратеры произошли от вулканов, другая половина говорит, что лунные кратеры – это следы от падения крупных метеоритов. Первую половину астрономов называют поэтому последователями вулканической теории, или попросту вулканистами, а вторую – последователями метеоритной теории, или метеоритчиками.\\\",\\n      \\\"reason\\\": \\\"Упоминается, что астрономы в Солнечном городе поссорились и разделились на вулканистов и метеоритчиков.\\\"\\n    }\\n  ]\\n}\",\"reasoning\":\"Okay, let's tackle this. The task is to find a description where astronomers in the Solar City argued and split into volcanologists and meteorite theorists. The user provided a snapshot with evidenceCount 0 and no recent pointers, so we need to look through the current batch.\\n\\nLooking at the items, the third paragraph (pointer 10:1.1.1.p7) mentions that astronomers in the Solar City argued about the origin of lunar craters, splitting into two groups: those believing volcanoes caused them (volcanologists) and others thinking it was meteorites (meteorite theorists). That directly matches the task. The other paragraphs talk about the journey to the Moon and Znayka's theory, which aren't relevant here. So the correct pointer is 10:1.1.1.p7. The excerpt should be copied exactly, and the reason is that it states the astronomers argued and split into the two groups. Since this is the first match and the task doesn't require a count, decision should be \\\"done\\\".\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2119,\"completion_tokens\":498,\"total_tokens\":2617}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 20:09:09 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

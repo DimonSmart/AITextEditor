@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-260\",\"object\":\"chat.completion\",\"created\":1766088588,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"В документе указано, что описание этого события находится в следующем разделе:  \\n**10:1.1.1.p7**  \\nТам говорится, что астрономы Солнечного города спорили о происхождении лунных кратеров, разделившись на вулканистов (теория вулканического происхождения) и метеоритчиков (теория падения метеоритов).\",\"reasoning\":\"Okay, the user is asking where in the book it's described how the astronomers in the Solar City got into a fight and split into volcanologists and meteorite theorists. Let me check the tool response.\\n\\nThe tool response says that the summary is found in the excerpt provided, which mentions that the astronomers in the Solar City argued about the origin of lunar craters, splitting into two groups: volcanologists and meteorite theorists. The evidence points to the paragraph with pointer \\\"10:1.1.1.p7\\\". \\n\\nI need to confirm that this is the correct location. The user wants the answer in Russian and includes the semantic pointer. The answer should state that the description is found in the paragraph at pointer 10:1.1.1.p7, explaining the split into the two groups. Make sure not to add any extra information and strictly follow the document's content.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":870,\"completion_tokens\":297,\"total_tokens\":1167}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 20:09:48 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

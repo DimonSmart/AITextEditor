@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-490\",\"object\":\"chat.completion\",\"created\":1766087990,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, I need to find the first mention of Professor Zvezdochin in the document. The user also wants me to rewrite the paragraph, adding that the apple trees started to bloom at that moment.\\n\\nFirst, I'll use the CursorAgentPlugin to locate the first occurrence. The previous tool call showed that the first mention is in the document's header, specifically the section titled \\\"Как Знайка победил профессора Звёздочкина\\\" (How Znayka Defeated Professor Zvezdochin). The semantic pointer here is 3:1.1.1.\\n\\nNow, I need to find the actual paragraph under this heading. The nextAfterPointer from the previous response was 7:1.1.1.p4, but maybe I should check if the paragraph is right after the heading. Since the user mentioned adding about apple trees blooming, I should look for the paragraph that follows the heading.\\n\\nAssuming the paragraph starts at pointer 3:1.1.1.p4, I'll use the CursorAgentPlugin again with the task to retrieve that paragraph. Once I have the text, I'll edit it to include the detail about the apple trees. I need to make sure not to add any extra information beyond what's in the original paragraph. Let me structure the response in Russian as requested, including the semantic pointer.\\n\",\"tool_calls\":[{\"id\":\"call_2nvn7jlk\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"CursorAgentPlugin-run_cursor_agent\",\"arguments\":\"{\\\"context\\\":\\\"\\\",\\\"startAfterPointer\\\":\\\"3:1.1.1.p4\\\",\\\"taskDescription\\\":\\\"Найти первый абзац профессора Звёздочкина для редактирования\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":583,\"completion_tokens\":344,\"total_tokens\":927}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 19:59:49 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

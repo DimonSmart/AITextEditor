@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-974\",\"object\":\"chat.completion\",\"created\":1766088826,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"decision\\\": \\\"done\\\",\\n  \\\"newEvidence\\\": [\\n    {\\n      \\\"pointer\\\": \\\"8:1.1.1.p5\\\",\\n      \\\"excerpt\\\": \\\"Пробыв на Луне около четырёх часов, Знайка и его спутницы принуждены были поскорей отправиться в обратный путь, так как запасы воздуха были у них на исходе.\\\",\\n      \\\"reason\\\": \\\"Упоминается, что Знайка пробыл на Луне около четырёх часов и вернулся из-за исчерпания запасов воздуха.\\\"\\n    }\\n  ]\\n}\",\"reasoning\":\"Okay, let's tackle this. The task is to find a mention of Znayka staying on the Moon for about four hours and returning due to air supply issues. The context is a study of Znayka's lunar expedition.\\n\\nFirst, I need to scan the current batch's items. The snapshot shows evidenceCount is 0 and recentEvidencePointers is empty, so no previous matches. The decision should be continue unless we find evidence here.\\n\\nLooking at the first paragraph (8:1.1.1.p5), there's a part that says: \\\"Пробыв на Луне около четырёх часов, Знайка и его спутницы принуждены были поскорей отправиться в обратный путь, так как запасы воздуха были у них на исходе.\\\" This directly mentions staying four hours and leaving due to air issues. The pointer is 8:1.1.1.p5. Since it's not in recentEvidencePointers, it's a new match. The reason is that the excerpt states the duration and the reason for returning. So, newEvidence includes this pointer with the excerpt and reason. Since the task is to find any occurrence, finding one here allows setting decision to done. But wait, the task's orderingGuaranteed is true, but the goal doesn't specify order, just to find the mention. So once found, done is appropriate.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2133,\"completion_tokens\":441,\"total_tokens\":2574}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 20:13:46 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

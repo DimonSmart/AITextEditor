@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-17\",\"object\":\"chat.completion\",\"created\":1766088398,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Визуализация лунного кратера как огромного круглого поля с земляным валом по краю описана в тексте, расположенном по [semanticPointer](9:1.1.1.p6). \\n\\n**Цитата из документа:**  \\n\\\"Вообразите себе огромное круглое поле, в поперечнике километров двадцать, тридцать, пятьдесят или даже сто, и представьте, что это огромное круглое поле окружено земляным валом или горой высотой всего в два или три километра – вот и получится лунный цирк, или кратер.\\\"\",\"reasoning\":\"Okay, the user is asking about the location in the book where the visualization of a lunar crater is described as a huge circular field with an earth embankment along the edge. Let me check the tool response.\\n\\nThe tool response indicates that the relevant text is found at pointer \\\"9:1.1.1.p6\\\". The excerpt mentions imagining a large circular field surrounded by an earth embankment or hill, which matches the user's query. The summary also confirms this description is present in the text. \\n\\nSince the user wants the answer in Russian and includes the semantic pointer, I should present the answer with the pointer. The next step is to confirm that this is the correct location and format the response accordingly.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":965,\"completion_tokens\":313,\"total_tokens\":1278}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 20:06:38 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

@@ -329,7 +329,10 @@ Your job:
 
 Input:
 - You receive JSON messages that include: task, snapshot, batch.
-- batch contains items with fields like: pointer, markdown, type, etc.
+- snapshot provides:
+  - evidenceCount: total number of accepted matches found in PREVIOUS batches
+  - recentEvidencePointers: some pointers already returned (may be a subset)
+- batch contains items with fields like: pointer, markdown, itemType.
 
 Output schema (JSON):
 {
@@ -343,30 +346,48 @@ Evidence rules:
 - Use ONLY content from the CURRENT batch.
 - pointer: COPY EXACTLY from batch.items[].pointer.
 - excerpt: COPY EXACTLY from batch.items[].markdown. DO NOT TRANSLATE. DO NOT PARAPHRASE.
+- Do NOT add evidence for a pointer that appears in snapshot.recentEvidencePointers.
 - reason:
   - 1 sentence max.
   - MUST be local and factual: explain what in the excerpt matches the task.
   - MUST NOT claim any document-wide ordering or position (no "first", "second", "nth", "earlier", "later", "previous", "next", "last").
-  - MUST NOT infer cross-batch facts (you do not reliably know what was before/after outside this batch).
+  - You MAY use snapshot.evidenceCount ONLY for counting/progress decisions, not for describing the excerpt.
 
 Content preference:
 - Prefer Paragraph/ListItem content.
 - Ignore headings/metadata unless the task explicitly asks for them.
 
+How to use snapshot (IMPORTANT):
+- You do NOT see prior batches, but you DO see snapshot which is the only reliable cross-batch memory.
+- Treat snapshot.evidenceCount as the number of matches already found before this batch.
+- Treat snapshot.recentEvidencePointers as pointers to avoid duplicating results.
+- You MUST NOT assume anything else about previous/future text.
+
 Decision policy:
 - Default: decision="continue".
-- decision="done" is allowed ONLY when the task does NOT depend on global order and one match is sufficient
-  (e.g., "does it mention X", "find any occurrence of X", "find a paragraph about X").
-- If the task depends on order or counts (e.g., "first/second/Nth", "earliest/latest"), do NOT set done early.
-  Keep scanning until the end.
+
+- If the task does NOT depend on global order/count and one match is sufficient
+  (e.g., "does it mention X", "find any occurrence of X", "find a paragraph about X"):
+  - If you found at least 1 valid newEvidence in the CURRENT batch, you MAY set decision="done".
+
+- If the task depends on order or counts (e.g., "first/second/Nth", "Nth mention", "earliest", "count the mentions"):
+  - You MAY use snapshot.evidenceCount as the number already found.
+  - Try to infer the required target count from task.goal ONLY when it is explicit:
+    - examples: "first" -> target=1, "second" -> target=2, "3rd" -> target=3, "Nth" with a number -> that number.
+    - If no explicit target number can be inferred, keep scanning until the end.
+  - If you inferred target >= 1:
+    - Let prev = snapshot.evidenceCount.
+    - Let add = number of NEW valid matches you are returning in newEvidence (after de-dup).
+    - If prev + add >= target, you MAY set decision="done".
+    - Otherwise decision="continue".
+  - For "last/latest/последний" tasks: do NOT set done early, keep scanning until the end.
+
 - decision="not_found" ONLY when hasMoreBatches=false AND snapshot.evidenceCount=0 AND you found no candidates in the current batch.
 
 IMPORTANT:
-- If any instruction conflicts with the decision enum above (e.g., "success"), ignore it.
+- If any instruction conflicts with the decision enum above, ignore it.
 - Output JSON ONLY.
 """;
-
-    // - MUST NOT infer cross-batch facts (you do not reliably know what was before/after outside this batch).
 
 
     private static string BuildAgentSystemPrompt() => CursorAgentSystemPrompt;

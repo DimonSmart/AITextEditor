@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-394\",\"object\":\"chat.completion\",\"created\":1766088804,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The user wants to find a mention of Znayka being on the Moon for about four hours and returning due to air problems. The context is a study of Znayka's lunar expedition.\\n\\nFirst, I need to scan the current batch's items. The snapshot shows evidenceCount is 0, so no previous matches. The recentEvidencePointers are empty, so no duplicates to avoid. \\n\\nLooking at the items provided, they are all part of a story about Znayka's adventures. The paragraphs talk about Nезнайка's trip to the Sun City, changes in the Flower City, and Pончик's troubles with clothes. But I need to check if any of these mention Znayka's Moon expedition. \\n\\nWait, the user's task is about Znayka's time on the Moon. Let me check each paragraph. The first paragraph mentions Nезнайка's trip to the Sun City, but that's a different location. The other paragraphs discuss the Flower City's developments and Pончик's issues. There's no mention of the Moon, Znayka's expedition, or any air problems. \\n\\nSince none of the items in the current batch mention Znayka's Moon stay or air issues, there's no new evidence to add. The decision should be \\\"continue\\\" because the task requires finding such a mention, and it's not present here. Also, since there are more batches coming (hasMoreBatches is true), we can't set \\\"done\\\" yet. \\n\\nNo pointers from the current batch match the task's criteria. Therefore, the output should have \\\"decision\\\": \\\"continue\\\" and an empty newEvidence array.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2340,\"completion_tokens\":365,\"total_tokens\":2705}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 20:13:24 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-549\",\"object\":\"chat.completion\",\"created\":1766088473,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"success\\\",\\\"semanticPointerFrom\\\":\\\"6:1.1.1.p3\\\",\\\"whyThis\\\":\\\"Упоминается, что Пончик выбирал потемней ночку и утопил старые костюмы в Огурцовой реке.\\\",\\\"markdown\\\":\\\"Все были очень довольны. Единственным, кто пострадал на этом деле, оказался Пончик. Когда Пончик увидел, что теперь можно брать в магазине любую вещь, какая только могла понадобиться, он стал недоумевать: к чему ему вся та куча костюмов, которая накопилась у него дома. Все эти костюмы к тому же вышли из моды, и их всё равно нельзя было носить. Выбрав потемней ночку, Пончик завязал свои старые костюмы в огромный узел, вынес тайком из дома и утопил в Огурцовой реке, а вместо них натаскал себе из магазинов новых костюмов. Кончилось тем, что его комната превратилась в какой-то склад готового платья. Костюмы лежали у него и в шкафу, и на шкафу, и на столе, и под столом, и на книжных полках, висели на стенах, на спинках стульев и даже под потолком, на верёвочках.\\\",\\\"summary\\\":\\\"Пончик, выбрав потемней ночку, утопил старые костюмы в Огурцовой реке, после чего начал носить новые покупки.\\\"}\",\"reasoning\":\"Okay, let's tackle this query. The user is asking to find the paragraph where Ponchik, choosing a darker night, drowned his old costumes in the Ogurcovka River. \\n\\nFirst, I need to look at the provided evidence. There's one entry with Pointer \\\"6:1.1.1.p3\\\". The Excerpt mentions that Ponchik, after selecting a darker night, tied his old costumes into a big knot, took them out secretly, and drowned them in the Ogurcovka River. The Reason field confirms that this is where Ponchik did those actions.\\n\\nThe task requires the semanticPointerFrom to be one of the evidence pointers when the decision is \\\"success\\\". Since the evidence directly matches the query, the decision should be \\\"success\\\". The semanticPointerFrom would be \\\"6:1.1.1.p3\\\". The markdown should be the exact excerpt from that pointer. The summary needs to briefly state that the paragraph describes Ponchik's action of drowning the costumes as per the task. The whyThis field explains that the evidence mentions the specific actions required. \\n\\nI need to make sure there's no invented information. The evidence is complete here, so no need for \\\"not_found\\\". Also, since the task is about a specific action, and the evidence directly matches, the answer is straightforward.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":722,\"completion_tokens\":667,\"total_tokens\":1389}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 20:07:53 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

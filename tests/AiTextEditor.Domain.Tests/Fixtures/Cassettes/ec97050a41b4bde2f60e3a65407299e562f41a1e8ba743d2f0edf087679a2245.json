@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-682\",\"object\":\"chat.completion\",\"created\":1766081825,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"decision\\\": \\\"done\\\",\\n  \\\"newEvidence\\\": [\\n    {\\n      \\\"pointer\\\": \\\"8:1.1.1.p5\\\",\\n      \\\"excerpt\\\": \\\"Впрочем, главное было не это. Главное было то, что Знайка тоже побывал в Солнечном городе. Там он познакомился с учёными малышками Фуксией и Селёдочкой, которые в то время готовили свой второй полёт на Луну.\\\",\\n      \\\"reason\\\": \\\"Упоминает Фуксию как учёную малышку в Солнечном городе.\\\"\\n    }\\n  ]\\n}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of Fuchsia. The user provided a snapshot with evidenceCount 0 and empty recentEvidencePointers. The first batch has items with pointers from 8:1.1.1.p5 to 11:1.1.1.p8.\\n\\nLooking at the markdown content of each item. The first paragraph (8:1.1.1.p5) mentions \\\"учёными малышками Фуксией и Селёдочкой\\\" which translates to \\\"scientists little Fuchsia and Selodka\\\". So here, Фуксия is mentioned. Since the task is to find the first occurrence, and this is the first item in the batch, this should be the correct evidence. The reason is that it directly mentions Fuchsia. The other paragraphs don't mention her again. So the newEvidence should include this pointer and excerpt. Since the evidenceCount was 0, and this is the first match, the decision can be \\\"done\\\" because the task is to find the first mention.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2093,\"completion_tokens\":369,\"total_tokens\":2462}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 18:17:04 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

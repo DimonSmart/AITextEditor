@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-179\",\"object\":\"chat.completion\",\"created\":1766088334,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The user wants to find a paragraph that describes the visualization of a lunar crater as a huge round field with an earth embankment on the edge. The task is in Russian, so I need to make sure I understand the key terms.\\n\\nFirst, I'll look through the provided batch items. The items are paragraphs from a story, so I need to scan each paragraph's markdown content for any mention of a lunar crater or similar imagery. The key elements to look for are \\\"лунный кратер\\\" (lunar crater), \\\"огромного круглого поля\\\" (huge round field), and \\\"земляной вал по краю\\\" (earth embankment on the edge).\\n\\nLooking at the paragraphs:\\n\\nParagraph 4: Talks about the Sun City and buildings, but no mention of a crater.\\nParagraph 5: Discusses factories and clothing, not relevant.\\nParagraph 6: Pончик's clothes and moths, still no crater.\\nParagraph 7: More about Pончик's smell and his clothes, but again, no lunar crater.\\n\\nWait, none of the paragraphs mention a lunar crater. The task is to find a paragraph that describes such a visualization. Since the user's snapshot shows evidenceCount is 0 and recentEvidencePointers is empty, there's no prior matches. But in the current batch, none of the paragraphs seem to match the description. The story is about the Sun City and Pончик's clothes, not a lunar crater. Therefore, there's no evidence here. The decision should be \\\"not_found\\\" because the required content isn't present in the current batch, and there's no indication of more batches coming. But wait, the hasMoreBatches is true, so maybe there are more batches. However, the user's instruction says to only use the current batch. Since the current batch has no matches, and the task requires finding such a paragraph, the correct decision is \\\"not_found\\\".\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2326,\"completion_tokens\":419,\"total_tokens\":2745}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 20:05:34 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

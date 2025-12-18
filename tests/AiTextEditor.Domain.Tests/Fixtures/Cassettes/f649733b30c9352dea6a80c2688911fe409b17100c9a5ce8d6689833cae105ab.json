@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-163\",\"object\":\"chat.completion\",\"created\":1766089337,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"decision\\\": \\\"done\\\",\\n  \\\"newEvidence\\\": [\\n    {\\n      \\\"pointer\\\": \\\"11:1.1.1.p8\\\",\\n      \\\"excerpt\\\": \\\"Знайка, однако ж, не был согласен ни с вулканической, ни с метеоритной теорией. Ещё до путешествия на Луну он создал свою собственную теорию происхождения лунных кратеров. Однажды он вместе со Стекляшкиным наблюдал Луну в телескоп, и ему бросилось в глаза, что лунная поверхность очень похожа на поверхность хорошо пропечённого блина с его ноздреватыми дырками. После этого Знайка часто ходил на кухню и наблюдал, как пекутся блины. Он заметил, что пока блин жидкий, его поверхность совершенно гладкая, но по мере того как он подогревается на сковородке, на его поверхности начинают появляться пузырьки нагретого пара. Проступив на поверхность блина, пузырьки лопаются, в результате чего на блине образуются неглубокие дырки, которые так и остаются, когда тесто как следует пропечётся и потеряет вязкость.\\\",\\n      \\\"reason\\\": \\\"Упоминается сравнение лунной поверхности с хорошо пропечённым блином и описывается процесс образования пузырьков пара на поверхности блина.\\\"\\n    }\\n  ]\\n}\",\"reasoning\":\"Okay, let's tackle this query. The user wants to find a paragraph where Znayka compares the lunar surface to a well-baked blini and explains the bubbles. \\n\\nFirst, I need to scan through the provided batch items. The snapshot shows evidenceCount is 0, so no previous matches. The task is to find a specific comparison, so I need to look for mentions of blini (блины) and the explanation of bubbles.\\n\\nLooking at the items:\\n\\n- The first paragraph (8:1.1.1.p5) talks about Znayka's trip to the Moon but doesn't mention blini.\\n- The second (9:1.1.1.p6) discusses lunar craters but no blini here.\\n- The third (10:1.1.1.p7) talks about theories about craters' origins, still no blini.\\n- The fourth (11:1.1.1.p8) is promising. It mentions Znayka comparing the lunar surface to a well-baked blini with holes. Then he explains how bubbles form when the blini is cooked, which matches the task. \\n\\nSo, the relevant pointer is 11:1.1.1.p8. The excerpt includes both the comparison and the explanation of the bubbles. The reason is that the paragraph directly states the comparison and describes the bubble formation process. Since this is the only match and the task doesn't require counting, the decision should be \\\"done\\\".\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2121,\"completion_tokens\":680,\"total_tokens\":2801}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 20:22:17 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-986\",\"object\":\"chat.completion\",\"created\":1766089362,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"success\\\",\\\"semanticPointerFrom\\\":\\\"11:1.1.1.p8\\\",\\\"whyThis\\\":\\\"Упоминается сравнение лунной поверхности с хорошо пропечённым блином и описывается процесс образования пузырьков пара на поверхности блина.\\\",\\\"markdown\\\":\\\"Знайка, однако ж, не был согласен ни с вулканической, ни с метеоритной теорией. Ещё до путешествия на Луну он создал свою собственную теорию происхождения лунных кратеров. Однажды он вместе со Стекляшкиным наблюдал Луну в телескоп, и ему бросилось в глаза, что лунная поверхность очень похожа на поверхность хорошо пропечённого блина с его ноздреватыми дырками. После этого Знайка часто ходил на кухню и наблюдал, как пекутся блины. Он заметил, что пока блин жидкий, его поверхность совершенно гладкая, но по мере того как он подогревается на сковородке, на его поверхности начинают появляться пузырьки нагретого пара. Проступив на поверхность блина, пузырьки лопаются, в результате чего на блине образуются неглубокие дырки, которые так и остаются, когда тесто как следует пропечётся и потеряет вязкость.\\\",\\\"summary\\\":\\\"Знайка сравнивает лунную поверхность с хорошо пропечённым блином, объясняя образование пузырьков пара и их роль в формировании дырочек на поверхности.\\\"}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find a paragraph where Znayka compares the lunar surface to a well-cooked blini (pancake) and explains the bubbles of steam. \\n\\nFirst, I check the provided evidence. There's one entry with the pointer 11:1.1.1.p8. The excerpt mentions Znayka comparing the lunar surface to a well-cooked blini with holes like a pancake. It also describes how bubbles form and pop on the blini's surface, creating holes. The reason given matches the task's requirements.\\n\\nSince the evidence directly addresses both parts of the query—comparing the surface and explaining the steam bubbles—I can confirm this is the correct excerpt. The semanticPointerFrom should be the pointer from the evidence. The markdown is the excerpt itself. The summary should briefly state that Znayka made the comparison and explained the bubbles. The decision is \\\"success\\\" because the evidence fully meets the task.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":725,\"completion_tokens\":603,\"total_tokens\":1328}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 20:22:42 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

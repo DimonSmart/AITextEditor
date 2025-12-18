@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-454\",\"object\":\"chat.completion\",\"created\":1766089307,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this query. The user wants to find a paragraph where Znayka compares the lunar surface to a well-baked blini and explains the bubbles of steam. First, I need to scan through the provided batch items to see if any of the paragraphs match this description.\\n\\nLooking at the items, the first paragraph (pointer 4:1.1.1.p1) talks about the city's changes but doesn't mention the moon or blini. The second paragraph (pointer 5:1.1.1.p2) discusses the factory and clothing, which is unrelated. The third (pointer 6:1.1.1.p3) is about Ponchik's clothes, still not relevant. The fourth paragraph (pointer 7:1.1.1.p4) mentions the moth and the smell, but again, no lunar surface or blini comparison.\\n\\nSince none of the paragraphs in the current batch mention the lunar surface or blini, there's no evidence to add. The snapshot shows evidenceCount is 0, and the recentEvidencePointers are empty. The task requires finding a specific comparison, which isn't present here. Therefore, the decision should be \\\"continue\\\" because there's no new evidence found in this batch. The user might need to check subsequent batches for the required information.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2328,\"completion_tokens\":287,\"total_tokens\":2615}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 20:21:46 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

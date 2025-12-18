@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-551\",\"object\":\"chat.completion\",\"created\":1766082289,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Первое упоминание Пончика содержится в параграфе **6:1.1.1.p3** (семантический указатель: `6:1.1.1.p3`). В тексте говорится:  \\n_«Все были очень довольны. Единственным, кто пострадал на этом деле, оказался Пончик…»_  \\n\\nЭто место в документе впервые упоминает Пончика как персонажа, чьи действия и состояние становятся центральной темой сюжета.\",\"reasoning\":\"Okay, the user asked where Ponchik is first mentioned. I used the CursorAgentPlugin to run a cursor agent with the task of finding the first mention. The response came back with a summary indicating that Ponchik is mentioned as the only one who suffered from the city's changes. The evidence points to paragraph 6:1.1.1.p3. Let me check that excerpt again.\\n\\nThe excerpt says that everyone was happy, but Ponchik was the only one who suffered. It describes his confusion about the new clothes and how he ended up with a lot of clothes. This seems to be the first mention because it's the earliest paragraph in the document where Ponchik is introduced as the affected character. The nextAfterPointer is 7:1.1.1.p4, so the cursor would start after that, but the first mention is at 6:1.1.1.p3. The answer should include the semantic pointer and the Russian text from the excerpt. Since the user wants the answer in Russian, I'll translate the relevant part and include the pointer.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":846,\"completion_tokens\":363,\"total_tokens\":1209}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 18:24:49 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

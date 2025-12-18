@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-738\",\"object\":\"chat.completion\",\"created\":1766089379,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"В абзаце, начинающемся после семантического указателя **11:1.1.1.p8**, Знайка сравнивает лунную поверхность с хорошо пропечённым блином, объясняя образование пузырьков пара и их роль в формировании дырочек. Текст описывает, как пузырьки пара лопаются на поверхности блина, оставляя неглубокие дырки, что аналогично лунным кратерам.\",\"reasoning\":\"Okay, let's see. The user is asking in which paragraph Znayka compares the lunar surface to a well-cooked blini and explains the bubbles of steam. I need to find the specific paragraph in the document where this happens.\\n\\nFirst, I'll check the tool response provided. The summary mentions that Znayka compares the lunar surface to a well-cooked blini and explains the formation of steam bubbles. The evidence section has a pointer \\\"11:1.1.1.p8\\\" with the excerpt describing the comparison and the process of bubbles forming on the blini's surface. \\n\\nThe user wants the answer in Russian and includes the semantic pointer. The paragraph starts after the pointer \\\"11:1.1.1.p8\\\" and the semantic pointer from the response is \\\"11:1.1.1.p8\\\". So the answer should reference that pointer. The key points are the comparison to blini and the explanation of steam bubbles, which are both covered in the provided excerpt. I need to make sure the answer is concise and includes the pointer as specified.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":930,\"completion_tokens\":355,\"total_tokens\":1285}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 20:22:59 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

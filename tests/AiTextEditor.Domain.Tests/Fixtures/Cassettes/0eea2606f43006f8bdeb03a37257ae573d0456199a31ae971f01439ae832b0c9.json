@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-759\",\"object\":\"chat.completion\",\"created\":1766088683,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"В документе объяснение содержится в параграфе 4 раздела **7:1.1.1** (указатель: `7:1.1.1.p4`). Там указано, что Пончик использовал нафталин для борьбы с молью, что вызвало сильный запах, заставляющий хозяев открывать окна и двери для проветривания, а также вынуждающий их бежать от него.\",\"reasoning\":\"Okay, the user is asking where in the book it's explained why everyone ran away from Ponchik because of naphthalene and the hosts opened windows and doors. Let me recall the previous interaction. The assistant used the CursorAgentPlugin to find the relevant part. The tool response pointed to paragraph 4 of section 7:1.1.1, which discusses Ponchik using naphthalene to fight moths, causing a strong odor that made people dizzy and forced them to open windows. The summary mentions that the hosts opened windows and doors for ventilation, and people ran away due to the smell.\\n\\nNow, the user wants the answer in Russian, including the semantic pointer. The evidence from the tool response includes the pointer \\\"7:1.1.1.p4\\\" and the excerpt explaining the situation. So, the answer should reference that paragraph and explain the reason as per the book's content. Make sure not to add any extra info not in the document. Just confirm the location and the reason as per the provided evidence.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1052,\"completion_tokens\":329,\"total_tokens\":1381}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 20:11:23 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

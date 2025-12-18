@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-126\",\"object\":\"chat.completion\",\"created\":1766081902,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"success\\\",\\\"semanticPointerFrom\\\":\\\"8:1.1.1.p5\\\",\\\"whyThis\\\":\\\"Упоминает Фуксию как учёную малышку в Солнечном городе.\\\",\\\"markdown\\\":\\\"Впрочем, главное было не это. Главное было то, что Знайка тоже побывал в Солнечном городе. Там он познакомился с учёными малышками Фуксией и Селёдочкой, которые в то время готовили свой второй полёт на Луну. Знайка тоже включился в работу по постройке космической ракеты и, когда ракета была готова, совершил с Фуксией и Селёдочкой межпланетное путешествие. Прилетев на Луну, наши отважные путешественники обследовали один из небольших лунных кратеров в районе лунного Моря Ясности, побывали в пещере, которая находилась в центре этого кратера и произвели наблюдения над изменением силы тяжести. На Луне, как известно, сила тяжести значительно меньше, чем на Земле, и поэтому наблюдения над изменением силы тяжести имеют большое научное значение. Пробыв на Луне около четырёх часов, Знайка и его спутницы принуждены были поскорей отправиться в обратный путь, так как запасы воздуха были у них на исходе. Всем известно, что на Луне воздуха нет, и, чтоб не задохнуться, всегда надо брать с собой запас воздуха. В сгущённом виде, конечно.\\\",\\\"summary\\\":\\\"Фуксия упоминается как учёная малышка в Солнечном городе.\\\"}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first mention of Фуксия. The evidence provided has one entry with the pointer 8:1.1.1.p5. The excerpt mentions Фуксия as a young scientist in the Solar City. Since there's only one piece of evidence and it directly mentions Фуксия, that must be the first occurrence. The pointer is valid, so the decision is success. The markdown should be the excerpt's text. The summary just states that Фуксия is mentioned here. I need to make sure the semanticPointerFrom is one of the evidence pointers, which it is. No other entries are present, so no need to check for order or completeness. All set.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":754,\"completion_tokens\":585,\"total_tokens\":1339}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 18:18:22 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

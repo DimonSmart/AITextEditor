@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-221\",\"object\":\"chat.completion\",\"created\":1766088526,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find a description where astronomers in the Solar City quarreled and split into volcanologists and meteoritists. First, I need to scan the current batch's items for any mentions of such a conflict.\\n\\nLooking at the provided text, the items are headings and paragraphs from a story. The first few paragraphs talk about Nезнайка's travels, the city's developments, and Pончик's troubles. There's no mention of astronomers or a quarrel here. \\n\\nThe user's query is in Russian, so I need to check if any of the text mentions \\\"астрономы\\\" (astronomers), \\\"ссорились\\\" (quarreled), \\\"разделились\\\" (split), \\\"вулканисты\\\" (volcanologists), or \\\"метеоритчики\\\" (meteoritists). Scanning through the paragraphs, I don't see any of these terms. The story seems to be about the city's growth and Pончик's issues, not about a scientific dispute. \\n\\nSince there's no evidence in the current batch matching the task, the decision should be \\\"continue\\\" as there might be more batches. Also, the snapshot shows evidenceCount is 0, so no previous matches. Therefore, the correct output is to indicate no new evidence found and continue scanning.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2326,\"completion_tokens\":295,\"total_tokens\":2621}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 20:08:45 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

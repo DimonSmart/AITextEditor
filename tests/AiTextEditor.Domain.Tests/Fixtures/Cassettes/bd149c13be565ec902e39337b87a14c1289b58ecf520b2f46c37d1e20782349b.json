@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-354\",\"object\":\"chat.completion\",\"created\":1766082460,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"В книге профессор Звёздочкин впервые упоминается в тексте, начиная с семантического указателя **24:1.1.1.p21**. В этом месте он критикует Знайкину за необоснованную книгу, описывая его как \\\"доброго, но требовательного\\\" коротышку, непримиримого к фантазиям.\",\"reasoning\":\"Okay, the user is asking where in the book the professor Zvёzdочкиn is first mentioned, excluding the headings. Let me check the tool response.\\n\\nThe tool response says the first mention is in the text where he criticizes Znaykin's book. The evidence excerpt starts at pointer \\\"24:1.1.1.p21\\\". The summary mentions that the cursor started after that pointer. The nextAfterPointer is \\\"35:1.1.1.p32\\\", but the user just needs the first occurrence. \\n\\nI need to confirm that the answer is the paragraph cited in the evidence, which is at pointer 24:1.1.1.p21. The user wants the location in the book, so the answer should include the semantic pointer. Since the tool's response already provides the correct excerpt and the pointer, I can relay that information in Russian, making sure to include the semantic pointer as specified.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":881,\"completion_tokens\":311,\"total_tokens\":1192}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 18:27:39 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

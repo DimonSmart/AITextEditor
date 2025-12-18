@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-320\",\"object\":\"chat.completion\",\"created\":1766081498,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the last mention of \\\"Фуксии\\\" (Fuchsias). First, I need to scan through the current batch's items. The snapshot shows evidenceCount is 0 and recentEvidencePointers is empty, so no previous matches.\\n\\nLooking at the batch items, all the markdown content is in Russian. I need to check each paragraph and list item for the term \\\"Фуксии\\\". Let's go through each pointer:\\n\\n1. Pointer 1: Heading, but no text here.\\n2. Pointer 2: Another heading, same issue.\\n3. Pointer 3: Heading again, no content.\\n4. Pointer 4: Paragraph 1. The text talks about the Sun City and various buildings, but I don't see \\\"Фуксии\\\" here.\\n5. Pointer 5: Paragraph 2. Mentions a factory producing clothes, but again, no Fuchsias.\\n6. Pointer 6: Paragraph 3. Discusses Ponchik's clothes, but still no match.\\n7. Pointer 7: Paragraph 4. Talks about moths and the smell, but again, no mention of Фуксии.\\n\\nWait, maybe I missed something. Let me check again. All the paragraphs are about the Sun City, the factory, Ponchik's clothes, and the moth problem. The term \\\"Фуксии\\\" isn't appearing anywhere. Since the task is to find the last mention, but there are no mentions at all in this batch, the decision should be \\\"not_found\\\" because there's no evidence here. The user might have intended to include it in a later batch, but based on the current data, there's nothing. So the correct output is \\\"not_found\\\".\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2295,\"completion_tokens\":380,\"total_tokens\":2675}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 18:11:38 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}
