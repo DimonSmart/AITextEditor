@@ -18,6 +18,19 @@ Versioning, diffing, and long-running orchestration remain outside of the server
 ## Streaming navigation agent
 Long scans run through a streaming navigation agent that works in bounded batches instead of sending the full book to the LLM. The agent builds a local cursor inside a single `RunCursorAgent` call, streams items forward or backward with per-call limits, and finishes with a concise JSON action. See `docs/streaming-agent.md` for details on prompt shape and plugin functions.
 
+## Console demo
+Run the console sample with optional parameters for custom inputs:
+
+```bash
+dotnet run --project src/AiTextEditor.Console -- <input-path> <output-path> [scenario]
+```
+
+- `input-path` — markdown file to load (defaults to `sample.md`).
+- `output-path` — file that will receive the edited document (defaults to `sample_edited.md`).
+- `scenario` — optional identifier used for document and target set naming (defaults to `sample`).
+
+When running without arguments the demo reads `src/AiTextEditor.Console/sample.md` and writes the edited copy to `sample_edited.md` in the same folder.
+
 ## Running LLM-backed tests
 Functional and MCP integration tests call a live LLM endpoint. Configure the client through environment variables before running tests:
 
