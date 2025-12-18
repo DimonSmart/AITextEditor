@@ -38,6 +38,10 @@ public sealed class SemanticKernelEngine
         var builder = Kernel.CreateBuilder();
 
         builder.Services.AddSingleton<IDocumentContext>(documentContext);
+        builder.Services.AddSingleton<CursorAgentLimits>();
+        builder.Services.AddSingleton<ICursorAgentPromptBuilder, CursorAgentPromptBuilder>();
+        builder.Services.AddSingleton<ICursorAgentResponseParser, CursorAgentResponseParser>();
+        builder.Services.AddSingleton<ICursorEvidenceCollector, CursorEvidenceCollector>();
         builder.Services.AddSingleton<ICursorAgentRuntime, CursorAgentRuntime>();
         builder.Services.AddSingleton<ILoggerFactory>(loggerFactory);
         builder.Services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
