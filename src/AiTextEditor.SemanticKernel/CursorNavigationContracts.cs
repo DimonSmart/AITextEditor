@@ -1,4 +1,8 @@
-namespace AiTextEditor.Lib.Services.SemanticKernel;
+using System.Collections.Generic;
+using System.Linq;
+using AiTextEditor.Lib.Services;
+
+namespace AiTextEditor.SemanticKernel;
 
 public sealed record CursorItemView(string SemanticPointer, string Markdown, string Type);
 

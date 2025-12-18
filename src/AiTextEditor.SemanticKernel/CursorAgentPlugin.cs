@@ -3,17 +3,17 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 using AiTextEditor.Lib.Model;
 using AiTextEditor.Lib.Services;
+using AiTextEditor.Lib.Services.SemanticKernel;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 
-namespace AiTextEditor.Lib.Services.SemanticKernel;
+namespace AiTextEditor.SemanticKernel;
 
 public class CursorAgentPlugin(
-    DocumentContext documentContext,
-    CursorAgentRuntime cursorAgentRuntime,
+    IDocumentContext documentContext,
+    ICursorAgentRuntime cursorAgentRuntime,
     ILogger<CursorAgentPlugin> logger)
 {
-
     private static readonly JsonSerializerOptions SerializerOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
@@ -22,8 +22,8 @@ public class CursorAgentPlugin(
         Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
     };
 
-    private readonly DocumentContext documentContext = documentContext;
-    private readonly CursorAgentRuntime cursorAgentRuntime = cursorAgentRuntime;
+    private readonly IDocumentContext documentContext = documentContext;
+    private readonly ICursorAgentRuntime cursorAgentRuntime = cursorAgentRuntime;
     private readonly ILogger<CursorAgentPlugin> logger = logger;
 
     [KernelFunction("run_cursor_agent")]
@@ -37,7 +37,7 @@ public class CursorAgentPlugin(
         var result = await cursorAgentRuntime.RunAsync(request);
 
         logger.LogInformation("run_cursor_agent: success={Success}", result.Success);
-        
+
         // Create a lightweight result for the LLM to avoid token limit issues and distractions
         var lightweightResult = new
         {

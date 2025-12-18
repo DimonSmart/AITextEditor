@@ -1,4 +1,6 @@
 using AiTextEditor.Lib.Model;
+using AiTextEditor.Lib.Services;
+using AiTextEditor.Lib.Services.SemanticKernel;
 using DimonSmart.AiUtils;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel.ChatCompletion;
@@ -7,9 +9,9 @@ using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
-namespace AiTextEditor.Lib.Services.SemanticKernel;
+namespace AiTextEditor.SemanticKernel;
 
-public sealed class CursorAgentRuntime
+public sealed class CursorAgentRuntime : ICursorAgentRuntime
 {
     internal const int DefaultMaxSteps = 128;
     internal const int MaxStepsLimit = 512;
@@ -23,12 +25,12 @@ public sealed class CursorAgentRuntime
     private const int MaxElements = 50;
     private const int MaxBytes = 1024 * 8;
 
-    private readonly DocumentContext documentContext;
+    private readonly IDocumentContext documentContext;
     private readonly IChatCompletionService chatService;
     private readonly ILogger<CursorAgentRuntime> logger;
 
     public CursorAgentRuntime(
-        DocumentContext documentContext,
+        IDocumentContext documentContext,
         IChatCompletionService chatService,
         ILogger<CursorAgentRuntime> logger)
     {
@@ -380,7 +382,7 @@ Decision policy:
     - Let add = number of NEW valid matches you are returning in newEvidence (after de-dup).
     - If prev + add >= target, you MAY set decision="done".
     - Otherwise decision="continue".
-  - For "last/latest/последний" tasks: do NOT set done early, keep scanning until the end.
+  - For "last/latest/final" tasks: do NOT set done early, keep scanning until the end.
 
 - decision="not_found" ONLY when hasMoreBatches=false AND snapshot.evidenceCount=0 AND you found no candidates in the current batch.
 

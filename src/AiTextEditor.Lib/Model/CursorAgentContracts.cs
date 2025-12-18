@@ -1,4 +1,3 @@
-using AiTextEditor.Lib.Services.SemanticKernel;
 using System.Collections.Generic;
 
 namespace AiTextEditor.Lib.Model;
