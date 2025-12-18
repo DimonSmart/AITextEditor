@@ -1,8 +1,7 @@
-using System.Globalization;
-using System.Text;
-using AiTextEditor.Domain.Tests;
 using AiTextEditor.Domain.Tests.Infrastructure;
 using AiTextEditor.Lib.Services.SemanticKernel;
+using System.Globalization;
+using System.Text;
 using Xunit;
 using Xunit.Abstractions;
 

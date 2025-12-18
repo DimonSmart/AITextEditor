@@ -18,10 +18,11 @@ public sealed class CursorAgentRuntime
     private const int MaxSummaryLength = 500;
     private const int MaxExcerptLength = 1000;
     private const int DefaultResponseTokenLimit = 4000;
-    private const int MaxElements = 50;
-    private const int MaxBytes = 1024 * 2;
-    // private const bool IncludeContent = true;
 
+    // One cursor batch limits
+    private const int MaxElements = 50;
+    private const int MaxBytes = 1024 * 4;
+    
     private readonly DocumentContext documentContext;
     private readonly IChatCompletionService chatService;
     private readonly ILogger<CursorAgentRuntime> logger;
