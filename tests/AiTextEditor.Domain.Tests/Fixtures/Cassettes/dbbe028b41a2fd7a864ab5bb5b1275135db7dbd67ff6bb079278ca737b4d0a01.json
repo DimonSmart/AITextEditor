@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-755\",\"object\":\"chat.completion\",\"created\":1766017882,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Профессор Звёздочкин впервые упоминается в тексте [24:1.1.1.p21](24:1.1.1.p21) как действительный член академии астрономических наук, который критиковал книгу Знайкина. В этом же месте указывается, что он \\\"кипел от негодования\\\" из-за содержания произведения.\",\"reasoning\":\"Okay, the user is asking where in the book the professor Zvezdochkin is first mentioned, excluding the headings. Let me check the tool response.\\n\\nThe tool response says the first mention is in the text where he's referred to as a real member of the academy criticizing Znaykin's book. The semantic pointer is 24:1.1.1.p21. The excerpt mentions he's a member of the academy of astronomical sciences and criticized Znaykin's book. The next pointer is 25:1.1.1.p22, but the first occurrence is at p21. The user wants the first mention, so the answer should point to that paragraph. I need to make sure to include the semantic pointer in the answer and state it in Russian.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":947,\"completion_tokens\":270,\"total_tokens\":1217}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 00:31:22 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

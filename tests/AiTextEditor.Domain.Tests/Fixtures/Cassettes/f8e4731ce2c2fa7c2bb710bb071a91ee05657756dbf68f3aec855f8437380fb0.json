@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-376\",\"object\":\"chat.completion\",\"created\":1766017499,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"decision\\\": \\\"success\\\",\\n  \\\"semanticPointerFrom\\\": \\\"24:1.1.1.p21\\\",\\n  \\\"excerpt\\\": \\\"А действительный член академии астрономических наук профессор Звёздочкин, которому тоже случилось прочитать Знайкину книжку, просто кипел от негодования и говорил, что книга эта – вовсе не книга, а какая-то, как он выразился, чёртова чепуха.\\\",\\n  \\\"whyThis\\\": \\\"Профessor Звёздочкин впервые упоминается в тексте как действительный член академии, который критиковал книгу Знайкина.\\\",\\n  \\\"markdown\\\": \\\"А действительный член академии астрономических наук профессор Звёздочкин, которому тоже случилось прочитать Знайкину книжку, просто кипел от негодования и говорил, что книга эта – вовсе не книга, а какая-то, как он выразился, чёртова чепуха.\\\",\\n  \\\"summary\\\": \\\"Профессор Звёздочкин первым делом упоминается как член академии, высказывающий критику по поводу книги.\\\"\\n}\",\"reasoning\":\"Okay, let's see. The user wants the first mention of Professor Zvёzdotkin in the text, excluding headers. The evidence has two pointers. The first one, 24:1.1.1.p21, mentions him as a member of the academy, criticizing the book. The second, 25:1.1.1.p22, talks about him proposing the discussion. But the second entry's reason says it's the first mention. Wait, but the first excerpt mentions him as a member, so that's an earlier mention. However, the second pointer's reason claims it's the first. Wait, maybe the first pointer is earlier in the text. The user said to exclude headers, so the first excerpt is the first mention. But the second entry's reason says it's the first. Hmm, maybe the first pointer is the first occurrence. Wait, the user says to find the first mention. The first excerpt mentions him as a member, so that's the first time he's mentioned. The second excerpt is about him proposing the discussion, which would be later. Therefore, the first pointer is the correct one. But the second entry's reason says it's the first. Wait, maybe the first pointer is earlier in the text. Let me check the pointers. The first pointer is 24:1.1.1.p21, and the second is 25:1.1.1.p22. The numbers might indicate the order. So 24 comes before 25, so the first excerpt is earlier. Therefore, the first mention is in the first excerpt. So the decision should be success, semanticPointerFrom is 24:1.1.1.p21, excerpt is the first one, whyThis is that he's mentioned first, markdown is the excerpt, and summary is that he's first mentioned as a member.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":617,\"completion_tokens\":706,\"total_tokens\":1323}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 00:24:59 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

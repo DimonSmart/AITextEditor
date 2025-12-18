@@ -1,16 +1,11 @@
 using AiTextEditor.Lib.Model;
-using AiTextEditor.Lib.Services;
 using DimonSmart.AiUtils;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
-using System.Threading;
 
 namespace AiTextEditor.Lib.Services.SemanticKernel;
 
@@ -50,7 +45,7 @@ public sealed class CursorAgentRuntime
 
         // Always start with empty state
         var state = new CursorAgentState(Array.Empty<EvidenceItem>());
-        
+
         var afterPointer = request.StartAfterPointer;
         // var cursorComplete = false;
         string? summary = null;
@@ -98,16 +93,19 @@ public sealed class CursorAgentRuntime
                 throw new InvalidOperationException("Agent response malformed.");
             }
 
-            (state, summary) = ApplyCommand(state, command, summary, snapshot);
+            var updatedSummary = string.IsNullOrWhiteSpace(command.Progress) ? summary : Truncate(command.Progress, MaxSummaryLength);
+            var evidenceToAdd = NormalizeEvidence(command.NewEvidence ?? Array.Empty<EvidenceItem>(), cursorPortionView);
+            state = evidenceToAdd.Count > 0 ? state.WithEvidence(evidenceToAdd, DefaultMaxFound) : state;
+            summary = updatedSummary ?? summary;
 
-            if (ShouldStop(command.Decision, cursorComplete, stepsUsed, maxSteps, out stopReason))
+            if (ShouldStop(command.Decision, !cursorPortionView.HasMore, stepsUsed, maxSteps, out stopReason))
             {
                 break;
             }
         }
 
         stopReason ??= "max_steps";
-        var finalCursorComplete = cursorComplete || string.Equals(stopReason, "cursor_complete", StringComparison.OrdinalIgnoreCase);
+        var finalCursorComplete = cursor.IsComplete || string.Equals(stopReason, "cursor_complete", StringComparison.OrdinalIgnoreCase);
         return await BuildResultByFinalizerAsync(request.TaskDescription, state, summary, stopReason, afterPointer, finalCursorComplete, stepsUsed, cancellationToken);
     }
 
@@ -115,7 +113,7 @@ public sealed class CursorAgentRuntime
         string taskDescription,
         CursorAgentState state,
         string? summary,
-        string stopReason, // Removed targetSetId
+        string stopReason,
         string? nextAfterPointer,
         bool cursorComplete,
         int stepsUsed,
@@ -150,29 +148,29 @@ public sealed class CursorAgentRuntime
         var parsed = ParseFinalizer(content);
         if (parsed == null || parsed.Decision == "not_found")
         {
-             return new CursorAgentResult(
-                false,
-                summary ?? stopReason,
-                null,
-                null,
-                null,
-                state.Evidence,
-                nextAfterPointer,
-                cursorComplete);
+            return new CursorAgentResult(
+               false,
+               summary ?? stopReason,
+               null,
+               null,
+               null,
+               state.Evidence,
+               nextAfterPointer,
+               cursorComplete);
         }
 
         if (parsed.Decision != "success" || string.IsNullOrWhiteSpace(parsed.SemanticPointerFrom) || !state.Evidence.Any(e => e.Pointer.Equals(parsed.SemanticPointerFrom, StringComparison.OrdinalIgnoreCase)))
         {
             logger.LogWarning("finalizer_pointer_missing_or_invalid");
-             return new CursorAgentResult(
-                false,
-                "finalizer_missing_pointer",
-                null,
-                null,
-                null,
-                state.Evidence,
-                nextAfterPointer,
-                cursorComplete);
+            return new CursorAgentResult(
+               false,
+               "finalizer_missing_pointer",
+               null,
+               null,
+               null,
+               state.Evidence,
+               nextAfterPointer,
+               cursorComplete);
         }
 
         var finalSummary = string.IsNullOrWhiteSpace(parsed.Summary) ? summary : Truncate(parsed.Summary, MaxSummaryLength);
@@ -193,12 +191,8 @@ public sealed class CursorAgentRuntime
         var history = new ChatHistory();
         history.AddSystemMessage(agentSystemPrompt);
         history.AddUserMessage(taskDefinitionPrompt);
-        history.AddUserMessage(snapshotMessage);
-
-        if (!string.IsNullOrWhiteSpace(batchMessage))
-        {
-            history.AddUserMessage(batchMessage);
-        }
+        //history.AddUserMessage(snapshotMessage);
+        history.AddUserMessage(batchMessage);
 
         history.AddUserMessage("IMPORTANT: Scan the batch. If found, return decision='success' with evidence. Output the JSON command at the end.");
 
@@ -222,18 +216,7 @@ public sealed class CursorAgentRuntime
         return parsed?.WithRawContent(parsedFragment ?? content);
     }
 
-    private (CursorAgentState State, string? Summary) ApplyCommand(
-        CursorAgentState state,
-        AgentCommand command,
-        string? summary,
-        CursorPortionView? lastPortion)
-    {
-        var updatedSummary = string.IsNullOrWhiteSpace(command.Progress) ? summary : Truncate(command.Progress, MaxSummaryLength);
-        var evidenceToAdd = NormalizeEvidence(command.NewEvidence ?? Array.Empty<EvidenceItem>(), lastPortion);
-        var updated = evidenceToAdd.Count > 0 ? state.WithEvidence(evidenceToAdd, DefaultMaxFound) : state;
 
-        return (updated, updatedSummary ?? summary);
-    }
 
     private static bool ShouldStop(string decision, bool cursorComplete, int step, int maxSteps, out string reason)
     {
@@ -264,12 +247,10 @@ public sealed class CursorAgentRuntime
         var batch = new
         {
             firstBatch = step == 0,
-            lastBatch = !portion.HasMore,
             hasMore = portion.HasMore,
             items = portion.Items.Select((item, itemIndex) => new
             {
-                batchItemIndex = itemIndex,
-                pointer = item.Pointer,
+                pointer = item.SemanticPointer,
                 type = item.Type,
                 markdown = item.Markdown
             })
@@ -370,7 +351,6 @@ public sealed class CursorAgentRuntime
         b.AppendLine("{");
         b.AppendLine("  \"decision\": \"success|not_found\",");
         b.AppendLine("  \"semanticPointerFrom\": \"...\", // must come from evidence when success");
-        b.AppendLine("  \"excerpt\": \"...\",");
         b.AppendLine("  \"whyThis\": \"...\",");
         b.AppendLine("  \"markdown\": \"...\",");
         b.AppendLine("  \"summary\": \"...\"");
@@ -380,7 +360,6 @@ public sealed class CursorAgentRuntime
         b.AppendLine("- Use provided evidence only; do not invent new pointers.");
         b.AppendLine("- semanticPointerFrom MUST be one of the evidence pointers for success.");
         b.AppendLine("- If nothing fits, return decision=\"not_found\".");
-        b.AppendLine("- Keep excerpt concise and copied from evidence excerpts.");
         b.AppendLine();
         b.AppendLine("IMPORTANT: Do not use chain of thought. Do not explain. Do not output reasoning. Output ONLY valid JSON.");
         return b.ToString();
@@ -592,7 +571,7 @@ public sealed class CursorAgentRuntime
         var normalized = new List<EvidenceItem>(evidence.Count);
         foreach (var item in evidence)
         {
-            var excerpt = string.IsNullOrWhiteSpace(item.Excerpt) ? TryFindMarkdown(item.Pointer, portion) : item.Excerpt;
+            var excerpt = item.Excerpt; // string.IsNullOrWhiteSpace(item.Excerpt) ? TryFindMarkdown(item.Pointer, portion) : item.Excerpt;
             normalized.Add(new EvidenceItem(item.Pointer, excerpt, item.Reason));
         }
 
@@ -626,16 +605,16 @@ public sealed class CursorAgentRuntime
         });
     }
 
-    private static string? TryFindMarkdown(string pointer, CursorPortionView? portion)
-    {
-        if (portion == null)
-        {
-            return null;
-        }
-
-        var match = portion.Items.FirstOrDefault(item => item.Pointer.Equals(pointer, StringComparison.OrdinalIgnoreCase));
-        return match?.Markdown;
-    }
+   // private static string? TryFindMarkdown(string pointer, CursorPortionView? portion)
+   // {
+   //     if (portion == null)
+   //     {
+   //         return null;
+   //     }
+   //
+   //     var match = portion.Items.FirstOrDefault(item => item.Pointer.Equals(pointer, StringComparison.OrdinalIgnoreCase));
+   //     return match?.Markdown;
+   // }
 
     private void LogCompletionSkeleton(int step, object? message)
     {
@@ -676,7 +655,7 @@ public sealed class CursorAgentRuntime
     {
         return new OpenAIPromptExecutionSettings
         {
-            Temperature = 0,
+            Temperature = 1.0,
             TopP = 1,
             // ResponseFormat = "json_object",
             MaxTokens = DefaultResponseTokenLimit,

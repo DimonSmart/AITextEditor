@@ -10,7 +10,8 @@ public sealed class CursorStream
     private readonly int maxBytes;
     private int currentIndex;
     private bool isComplete;
-    private readonly bool includeContent = false;
+    private readonly bool includeContent = true;
+    public bool IsComplete => isComplete;
 
     public CursorStream(LinearDocument document, int maxElements, int maxBytes, string? startAfterPointer)
     {

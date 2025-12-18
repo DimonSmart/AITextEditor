@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-556\",\"object\":\"chat.completion\",\"created\":1766014936,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of Professor Zvezdokhin in the text, excluding headers. The user provided the first batch of items. Let me look through the items.\\n\\nThe only item in the first batch is a paragraph with pointer \\\"5:1.1.1.p2\\\". The markdown content talks about the inhabitants of the Sun City helping the little people from the Flower City with construction. It mentions Engineer Klyepka's project for a clothing factory but doesn't refer to Professor Zvezdokhin anywhere. There's no mention of a professor, let alone Zvezdokhin. \\n\\nSince the first batch doesn't have any evidence, the evidenceCount remains 0. The decision should be \\\"continue\\\" because there might be more batches coming. The user mentioned that scanning continues if the correct answer isn't determined yet. So, I need to output the JSON with decision \\\"continue\\\" and no new evidence.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":715,\"completion_tokens\":212,\"total_tokens\":927}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Wed, 17 Dec 2025 23:42:15 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

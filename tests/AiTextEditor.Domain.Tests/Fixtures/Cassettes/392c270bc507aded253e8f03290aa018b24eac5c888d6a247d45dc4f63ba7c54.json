@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-813\",\"object\":\"chat.completion\",\"created\":1766017073,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The user wants to find the first mention of Professor Zvezdotkin in the text, excluding headers. The current batch has three paragraphs. Let me check each one.\\n\\nThe first paragraph (17:1.1.1.p14) is a quote from meteorites, but there's no mention of a professor. The second (18:1.1.1.p15) talks about lunar craters and meteorite impacts, still no professor. The third (19:1.1.1.p16) mentions Znayka, who is a character in Soviet children's literature, but not Professor Zvezdotkin. None of these paragraphs reference the professor. Since there's no evidence here, the decision should be 'continue' as there might be more batches to check. Also, the user mentioned excluding headers, so any header text isn't considered. No matches found in this batch, so the output should reflect that.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":605,\"completion_tokens\":216,\"total_tokens\":821}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 00:17:53 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

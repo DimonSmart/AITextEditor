@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-549\",\"object\":\"chat.completion\",\"created\":1766017125,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's see. The user wants to find the first mention of Professor Zvezdokhina in the text, excluding headers. The current batch is the first one, and there's more batches coming. The task is to scan each batch until the first occurrence.\\n\\nLooking at the provided batch, the items array has one paragraph with pointer \\\"23:1.1.1.p20\\\". The markdown content talks about lunatics moving inside the Moon because the outer surface would get too hot. There's no mention of a professor here. The paragraph discusses the Moon's environment and the reasons for relocation, but no name like Zvezdokhina is present. \\n\\nSince the first batch doesn't have the mention, the decision should be \\\"continue\\\" to check subsequent batches. The newEvidence array remains empty because there's no match here. The user might have intended to include a mention in a later batch, so we need to keep scanning. No need to stop here since the answer isn't found yet.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":587,\"completion_tokens\":222,\"total_tokens\":809}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 00:18:45 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

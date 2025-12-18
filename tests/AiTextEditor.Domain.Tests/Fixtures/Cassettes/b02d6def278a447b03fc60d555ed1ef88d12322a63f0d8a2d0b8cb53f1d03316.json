@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-116\",\"object\":\"chat.completion\",\"created\":1766017084,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's see. The user wants to find the first mention of Professor Zvezdokin in the text, excluding headers. The current batch has items, and I need to check each one.\\n\\nLooking at the first item in the batch: the pointer is \\\"20:1.1.1.p17\\\", and the markdown text mentions \\\"Знайку\\\" being called a \\\"блинистом\\\" by volcanologists and meteoritologists. But wait, the task is about Professor Zvezdokin, not Znayka. The text here talks about Znayka, not Zvezdokin. So this isn't a match. \\n\\nSince the batch doesn't have any mention of Professor Zvezdokin, and there are more batches to come (hasMore is true), the decision should be \\\"continue\\\". The evidence array is empty because no matching text was found. So the JSON should reflect that no evidence was found in this batch, and we need to keep scanning.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":526,\"completion_tokens\":219,\"total_tokens\":745}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 00:18:03 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-950\",\"object\":\"chat.completion\",\"created\":1766017001,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's see. The user wants to find the first mention of Professor Zvezdochkin in the text, excluding headers. The current batch is the first one, and there's more data to come. The items in this batch include a paragraph with some discussion about lunar craters and two theories. I need to check if there's any mention of Professor Zvezdochkin here.\\n\\nLooking at the markdown excerpt: It talks about astronomers arguing over the origin of lunar craters, splitting into two groups—volcanic and meteorite theories. There's no mention of a professor, let alone Zvezdochkin. The pointers here are about paragraphs related to the crater theories. Since the task is to find the first occurrence, and this batch doesn't have it, I should continue scanning the next batches. The decision here is \\\"continue\\\" because the first mention might be in a later batch. Also, the user specified to exclude headers, so any section titles aren't considered. No evidence found in this batch, so newEvidence is empty. The decision remains continue as we need to check subsequent batches.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":606,\"completion_tokens\":238,\"total_tokens\":844}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 00:16:40 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

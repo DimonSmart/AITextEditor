@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-701\",\"object\":\"chat.completion\",\"created\":1766015095,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's see. The task is to find the first mention of Professor Zvezdokin in the text, excluding headers. The user provided the first batch of items. I need to scan through each item's markdown content to check if there's any mention of the professor.\\n\\nLooking at the first item in the batch, the markdown says: \\\"Но лунатики знали, что вечно так продолжаться не может, что со временем воздух вокруг Луны совсем рассеется...\\\" There's a mention of \\\"лунатики\\\" (lunatics) but no reference to Professor Zvezdokin. The paragraph talks about the Moon's atmosphere and people moving inside the Moon, but no professor is mentioned here. \\n\\nSince the first batch doesn't have any mention of the professor, the evidenceCount remains 0. The decision should be \\\"continue\\\" because there might be more batches to check. The user hasn't reached the last batch yet, so scanning should continue. The newEvidence array is empty because no matches were found. So the correct JSON response is to set decision to \\\"continue\\\" and newEvidence as an empty array.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":609,\"completion_tokens\":250,\"total_tokens\":859}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Wed, 17 Dec 2025 23:44:55 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

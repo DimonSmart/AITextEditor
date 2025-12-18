@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-932\",\"object\":\"chat.completion\",\"created\":1766017045,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let me tackle this problem step by step. The task is to find the first mention of Professor Zvezdochkin in the text, excluding headers. The user provided the first batch of items, which includes a paragraph with some markdown text.\\n\\nFirst, I need to scan through the items in the current batch. The only item here is a paragraph with the pointer \\\"12:1.1.1.p9\\\". The markdown content talks about the Moon's surface changing over time, mentioning things like molten lava, cooling, and lunar rings. However, there's no mention of a professor, let alone Professor Zvezdochkin. \\n\\nSince the task is to find the first occurrence, and the current batch doesn't have any references to the professor, I should check if there are more batches coming. The context indicates that there's more content (hasMore: true), so the scan isn't complete. Therefore, the decision should be to continue scanning the remaining batches. \\n\\nThe user emphasized not to answer directly and to output only the JSON command. So, the response should have a decision of \\\"continue\\\" because the required information hasn't been found yet, and there are more batches to process. The newEvidence array will be empty since no matches were found in the current batch.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":802,\"completion_tokens\":277,\"total_tokens\":1079}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 00:17:25 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

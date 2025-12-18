@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-804\",\"object\":\"chat.completion\",\"created\":1766017864,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\": \\\"success\\\", \\\"semanticPointerFrom\\\": \\\"24:1.1.1.p21\\\", \\\"whyThis\\\": \\\"Профessor Звёздочкин впервые упоминается в тексте как действительный член академии, который критиковал книгу Знайкина.\\\", \\\"markdown\\\": \\\"Первое упоминание профессора Звёздочкина в тексте (исключая заголовки) находится в абзаце с указателем 24:1.1.1.p21, где он описывается как действительный член академии астрономических наук, критиковавший книгу Знайкина.\\\", \\\"summary\\\": \\\"Профессор Звёздочкин впервые упоминается в тексте как действительный член академии, критиковавший книгу Знайкина.\\\"}\",\"reasoning\":\"Okay, let's tackle this. The user wants the first mention of Professor Zvezdочкин in the text, excluding headers. The evidence has two pointers. \\n\\nLooking at the first excerpt: it says \\\"действительный член академии астрономических наук профессор Звёздочкин\\\" and mentions he read a book to Znaykin. The reason states he's first mentioned as a member of the academy criticizing the book.\\n\\nThe second excerpt starts with \\\"Профессор Звёздочкин и предложил...\\\" which seems like the beginning of the text. The reason here says he's mentioned as the initiator of the discussion, and there's no prior mention indicated. \\n\\nWait, but the user said to exclude headers. The first pointer's excerpt is part of the text, not a header. The second pointer is the start of the text. But the first mention would be the first occurrence. However, the first excerpt's pointer is 24:1.1.1.p21, which might be an earlier part of the text. But the second pointer is 25:1.1.1.p22, which is the next paragraph. \\n\\nWait, the first excerpt's pointer is 24:1.1.1.p21, and the second is 25:1.1.1.p22. So the first mention is in p21. But the second excerpt starts with \\\"Профессор Звёздочкин и предложил...\\\" which might be the first mention. However, the first excerpt already refers to him as a member of the academy. \\n\\nWait, the first excerpt's reason says he's first mentioned as a member, and the second excerpt's reason says he's mentioned as the initiator. But the first occurrence is in the first excerpt. However, the user is asking for the first mention. So the first pointer (24:1.1.1.p21) is the first mention. But the second excerpt's pointer is the next paragraph. \\n\\nWait, the user wants the first occurrence. So the first pointer (24:1.1.1.p21) is the first mention. But the second excerpt's pointer (25:1.1.1.p22) might be the start of the text. Wait, maybe the pointers are ordered by their position in the text. If 24 is before 25, then the first mention is in 24:1.1.1.p21. But the second excerpt's reason says it's the start of the text. Wait, maybe the first mention is in the second excerpt. \\n\\nThis is confusing. Let me check again. The first excerpt's reason says he's first mentioned as a member of the academy, criticizing the book. The second excerpt's reason says he's mentioned as the initiator, and there's no prior mention. But if the second excerpt is the start of the text, then that's the first mention. But the first excerpt's pointer is 24:1.1.1.p21, which might be earlier in the text. \\n\\nWait, the user says to exclude headers. The first excerpt's pointer is part of the text, not a header. The second excerpt's pointer is the start of the text. But the first excerpt's pointer is 24, which might be a later part. Wait, maybe the pointers are structured as [chapter:section:paragraph]. So 24:1.1.1.p21 is chapter 24, section 1, paragraph 1.21? Or maybe it's a different structure. \\n\\nAlternatively, maybe the first mention is in the second excerpt because the first excerpt's pointer is part of a later paragraph. Wait, the user's evidence has two pointers. The first one's excerpt mentions him as a member, and the second one's excerpt starts with him proposing the discussion. The first excerpt's reason says he's first mentioned as a member, and the second's reason says there's no prior mention. So the first mention is in the first excerpt. Therefore, the correct pointer is 24:1.1.1.p21. But the user wants the first occurrence. \\n\\nWait, but the second excerpt's reason says \\\"в начале текста\\\" (at the beginning of the text), which would imply it's the first mention. However, the first excerpt's reason says it's the first mention. This is conflicting. \\n\\nWait, the first excerpt's reason says \\\"профессор Звёздочкин впервые упоминается в тексте как действительный член академии...\\\" which is the first mention. The second excerpt's reason says \\\"в начале текста\\\" but maybe it's not the first mention. So the first mention is in the first excerpt. Therefore, the correct pointer is 24:1.1.1.p21. But the user's task is to find the first mention. \\n\\nSo the answer should be the first excerpt's pointer. Therefore, the JSON should have decision: success, semanticPointerFrom: \\\"24:1.1.1.p21\\\", whyThis: \\\"Профessor Звёздочкин впервые упоминается в тексте как действительный член академии, который критиковал книгу Знайкина.\\\", markdown: \\\"Первое упоминание профессора Звёздочкина в тексте (исключая заголовки) находится в абзаце с указателем 24:1.1.1.p21, где он описывается как действительный член академии астрономических наук, критиковавший книгу Знайкина.\\\", summary: \\\"Профессор Звёздочкин впервые упоминается в тексте как действительный член академии, критиковавший книгу Знайкина.\\\"\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":600,\"completion_tokens\":1487,\"total_tokens\":2087}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 00:31:04 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

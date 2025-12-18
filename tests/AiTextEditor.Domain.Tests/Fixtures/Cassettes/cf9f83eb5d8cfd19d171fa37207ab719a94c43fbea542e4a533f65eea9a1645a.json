@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-49\",\"object\":\"chat.completion\",\"created\":1766014914,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of Professor Zvezdokhin in the text, excluding headers. The user provided the first batch of data. Let me look at the items.\\n\\nThe first item is a heading: \\\"# Часть I\\\". That's a header, so we skip it. The second item is another heading: \\\"## Глава первая\\\". Again, a header, so not relevant. The third item is a heading too: \\\"### Как Знайка победил профессора Звёздочкина\\\". Wait, this is a heading, but the markdown shows it's a third-level heading. The task says to exclude headers, so even though this heading mentions Professor Zvezdokhin, it's still a header. Therefore, it doesn't count. \\n\\nSince all items in this batch are headers and none of them are regular text mentions, the evidenceCount remains 0. The user hasn't provided any non-header content yet. So, the decision should be \\\"continue\\\" because there might be more batches coming. The snapshot shows hasMore is true, so we need to keep scanning. No evidence found in this batch, so newEvidence is empty. The decision is \\\"continue\\\".\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":489,\"completion_tokens\":269,\"total_tokens\":758}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Wed, 17 Dec 2025 23:41:54 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

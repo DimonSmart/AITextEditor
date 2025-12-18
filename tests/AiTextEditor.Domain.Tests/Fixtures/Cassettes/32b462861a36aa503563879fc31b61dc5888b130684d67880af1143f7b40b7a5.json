@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-293\",\"object\":\"chat.completion\",\"created\":1766015060,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's see. The task is to find the first mention of Professor Zvezdokin in the text, excluding headers. The user provided a batch of text with items. The current item has a pointer \\\"20:1.1.1.p17\\\" and the markdown content mentions vulcanologists and meteoritologists dismissing Znayka, calling him a \\\"блинистом\\\" (which translates to \\\"blini\\\" or pancake in Russian, probably a nickname). But the question is about Professor Zvezdokin, not Znayka. The excerpt here doesn't mention Zvezdokin at all. So, there's no match in this batch. The decision should be \\\"continue\\\" since there might be more batches to check. The evidence count is zero, so the snapshot's evidenceCount is already zero. Since the current batch doesn't have any mentions, the answer should be \\\"continue\\\" with no new evidence. Also, the user mentioned to not use natural language and output only JSON. So the correct JSON would have decision \\\"continue\\\" and an empty newEvidence array.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":548,\"completion_tokens\":241,\"total_tokens\":789}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Wed, 17 Dec 2025 23:44:19 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}
