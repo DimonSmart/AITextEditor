@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using Xunit.Abstractions;
+using AiTextEditor.Lib.Infrastructure;
 
 namespace AiTextEditor.Domain.Tests.Infrastructure;
 
@@ -12,7 +13,9 @@ internal static class TestLoggerFactory
         return LoggerFactory.Create(builder =>
         {
             builder.AddProvider(new TestOutputLoggerProvider(output));
-            builder.SetMinimumLevel(LogLevel.Information);
+            var logPath = Path.Combine(AppContext.BaseDirectory, "llm_debug.log");
+            builder.AddProvider(new SimpleFileLoggerProvider(logPath));
+            builder.SetMinimumLevel(LogLevel.Trace);
         });
     }
 

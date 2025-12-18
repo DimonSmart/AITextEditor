@@ -22,7 +22,7 @@ public sealed class CursorAgentRuntime
     // One cursor batch limits
     private const int MaxElements = 50;
     private const int MaxBytes = 1024 * 4;
-    
+
     private readonly DocumentContext documentContext;
     private readonly IChatCompletionService chatService;
     private readonly ILogger<CursorAgentRuntime> logger;
@@ -305,66 +305,95 @@ public sealed class CursorAgentRuntime
         return JsonSerializer.Serialize(payload, options);
     }
 
-    private static string BuildAgentSystemPrompt()
-    {
-        var b = new StringBuilder();
-        b.AppendLine("You are CursorAgent, an automated text scanning engine.");
-        b.AppendLine("Your ONLY job is to scan the provided 'batch' of text and identify matches for the 'task'.");
-        b.AppendLine("You MUST NOT answer the task question directly. You MUST NOT output natural language.");
-        b.AppendLine("You MUST output a JSON command to report findings.");
-        b.AppendLine("Return exactly ONE JSON object and nothing else.");
-        b.AppendLine();
+    private const string CursorAgentSystemPrompt = """
+You are CursorAgent, an automated batch text scanning engine.
 
-        b.AppendLine("Output schema:");
-        b.AppendLine("{");
-        b.AppendLine("  \"decision\": \"continue|done|not_found\",");
-        b.AppendLine("  \"newEvidence\": [{\"pointer\":\"...\",\"excerpt\":\"...\",\"reason\":\"...\"}]");
-        b.AppendLine("}");
-        b.AppendLine();
+Your job:
+- Scan ONLY the CURRENT batch.items and extract candidate evidence relevant to the task.
+- You MUST NOT answer the task directly.
+- You MUST output exactly ONE JSON object and nothing else (no code fences, no extra text).
 
-        b.AppendLine("Evidence rules:");
-        b.AppendLine("- From the CURRENT batch only.");
-        b.AppendLine("- pointer: The value of the 'pointer' field from the matching item.");
-        b.AppendLine("- excerpt: The value of the 'markdown' field from the matching item. DO NOT TRANSLATE. DO NOT PARAPHRASE.");
-        b.AppendLine("- reason: Explain why this is a match. Prefer narrative events over summaries.");
-        b.AppendLine();
+Input:
+- You receive JSON messages that include: task, snapshot, batch.
+- batch contains items with fields like: pointer, markdown, type, etc.
 
-        b.AppendLine("Decision policy:");
-        b.AppendLine("- Default: decision=\"continue\".");
-        b.AppendLine("- decision=\"done\" ONLY when, using all scanned batches so far (previous + current),");
-        b.AppendLine("  the correct answer/selection is already determined and scanning further batches cannot change it.");
-        b.AppendLine("  If unseen future content could change the correct selection, keep scanning (continue).");
-        b.AppendLine("- decision=\"not_found\" ONLY when batch.lastBatch=true AND snapshot.evidenceCount=0 AND you found no candidates in the current batch.");
-        b.AppendLine();
+Output schema (JSON):
+{
+  "decision": "continue|done|not_found",
+  "newEvidence": [
+    { "pointer": "...", "excerpt": "...", "reason": "..." }
+  ]
+}
 
-        b.AppendLine("IMPORTANT: You may briefly analyze the text (max 2 sentences), but you MUST output the JSON command at the end.");
-        b.AppendLine("Output ONLY valid JSON in the final block.");
-        return b.ToString();
-    }
+Evidence rules:
+- Use ONLY content from the CURRENT batch.
+- pointer: COPY EXACTLY from batch.items[].pointer.
+- excerpt: COPY EXACTLY from batch.items[].markdown. DO NOT TRANSLATE. DO NOT PARAPHRASE.
+- reason:
+  - 1 sentence max.
+  - MUST be local and factual: explain what in the excerpt matches the task.
+  - MUST NOT claim any document-wide ordering or position (no "first", "second", "nth", "earlier", "later", "previous", "next", "last").
+  - MUST NOT infer cross-batch facts (you do not reliably know what was before/after outside this batch).
 
-    private static string BuildFinalizerSystemPrompt()
-    {
-        var b = new StringBuilder();
-        b.AppendLine("You finalize the cursor scan results.");
-        b.AppendLine("Respond with exactly ONE JSON object. No code fences. No extra text.");
-        b.AppendLine("");
-        b.AppendLine("Schema:");
-        b.AppendLine("{");
-        b.AppendLine("  \"decision\": \"success|not_found\",");
-        b.AppendLine("  \"semanticPointerFrom\": \"...\", // must come from evidence when success");
-        b.AppendLine("  \"whyThis\": \"...\",");
-        b.AppendLine("  \"markdown\": \"...\",");
-        b.AppendLine("  \"summary\": \"...\"");
-        b.AppendLine("}");
-        b.AppendLine("");
-        b.AppendLine("Rules:");
-        b.AppendLine("- Use provided evidence only; do not invent new pointers.");
-        b.AppendLine("- semanticPointerFrom MUST be one of the evidence pointers for success.");
-        b.AppendLine("- If nothing fits, return decision=\"not_found\".");
-        b.AppendLine();
-        b.AppendLine("IMPORTANT: Do not use chain of thought. Do not explain. Do not output reasoning. Output ONLY valid JSON.");
-        return b.ToString();
-    }
+Content preference:
+- Prefer Paragraph/ListItem content.
+- Ignore headings/metadata unless the task explicitly asks for them.
+
+Decision policy:
+- Default: decision="continue".
+- decision="done" is allowed ONLY when the task does NOT depend on global order and one match is sufficient
+  (e.g., "does it mention X", "find any occurrence of X", "find a paragraph about X").
+- If the task depends on order or counts (e.g., "first/second/Nth", "earliest/latest"), do NOT set done early.
+  Keep scanning until the end.
+- decision="not_found" ONLY when batch.lastBatch=true AND snapshot.evidenceCount=0 AND you found no candidates in the current batch.
+
+IMPORTANT:
+- If any instruction conflicts with the decision enum above (e.g., "success"), ignore it.
+- Output JSON ONLY.
+""";
+
+    private static string BuildAgentSystemPrompt() => CursorAgentSystemPrompt;
+
+
+    private const string FinalizerSystemPrompt = """
+You are the Finalizer, the final decision maker for the scan results.
+
+You receive:
+- The original task
+- Aggregated evidence collected across batches (may be incomplete unless the scan finished)
+
+You MUST:
+- Respond with exactly ONE JSON object.
+- No code fences. No extra text. JSON only.
+
+Schema (JSON):
+{
+  "decision": "success|not_found",
+  "semanticPointerFrom": "...",
+  "whyThis": "...",
+  "markdown": "...",
+  "summary": "..."
+}
+
+Rules:
+- Use provided evidence only; do not invent pointers or excerpts.
+- semanticPointerFrom MUST be one of the evidence pointers when decision="success".
+- markdown MUST be copied from the chosen evidence excerpt (verbatim).
+- Treat evidence.reason as local rationale only. It is NOT proof of document-wide ordering.
+
+Ordering and ordinal tasks (generic):
+- Do NOT claim "first/second/Nth/earlier/later" unless the inputs explicitly guarantee ordering and completeness.
+- If the task requires an ordinal selection ("Nth mention", "first", "last") but ordering/completeness is not guaranteed,
+  choose the best matching candidate and describe it neutrally (no ordinal wording), or return decision="not_found".
+
+If nothing fits, return decision="not_found".
+
+IMPORTANT:
+- Do not output chain-of-thought or reasoning. Output JSON ONLY.
+""";
+
+    private static string BuildFinalizerSystemPrompt() => FinalizerSystemPrompt;
+
 
     private static string BuildFinalizerUserMessage(string taskDescription, string evidenceJson, bool cursorComplete, int stepsUsed, string? afterPointer)
     {
@@ -606,16 +635,16 @@ public sealed class CursorAgentRuntime
         });
     }
 
-   // private static string? TryFindMarkdown(string pointer, CursorPortionView? portion)
-   // {
-   //     if (portion == null)
-   //     {
-   //         return null;
-   //     }
-   //
-   //     var match = portion.Items.FirstOrDefault(item => item.Pointer.Equals(pointer, StringComparison.OrdinalIgnoreCase));
-   //     return match?.Markdown;
-   // }
+    // private static string? TryFindMarkdown(string pointer, CursorPortionView? portion)
+    // {
+    //     if (portion == null)
+    //     {
+    //         return null;
+    //     }
+    //
+    //     var match = portion.Items.FirstOrDefault(item => item.Pointer.Equals(pointer, StringComparison.OrdinalIgnoreCase));
+    //     return match?.Markdown;
+    // }
 
     private void LogCompletionSkeleton(int step, object? message)
     {

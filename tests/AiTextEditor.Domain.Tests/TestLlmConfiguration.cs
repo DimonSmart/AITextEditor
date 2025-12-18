@@ -2,6 +2,8 @@ using System;
 using System.Net.Http.Headers;
 using AiTextEditor.Domain.Tests.Infrastructure;
 using AiTextEditor.Lib.Services.SemanticKernel;
+using AiTextEditor.Lib.Infrastructure;
+using Microsoft.Extensions.Logging;
 using Xunit.Abstractions;
 
 namespace AiTextEditor.Domain.Tests;
@@ -51,7 +53,28 @@ public static class TestLlmConfiguration
         }
 
         var handler = new CassetteHttpMessageHandler(output, finalHandler);
-        var client = new HttpClient(handler)
+
+        ILogger logger;
+        if (output != null)
+        {
+            // Use the TestLoggerFactory which includes both XUnit output and File logging
+            var factory = TestLoggerFactory.Create(output);
+            logger = factory.CreateLogger<LlmRequestLoggingHandler>();
+        }
+        else
+        {
+            // Fallback to just file logging if no output helper is provided
+            using var factory = LoggerFactory.Create(builder => 
+            {
+                builder.AddProvider(new SimpleFileLoggerProvider("llm_debug.log"));
+                builder.SetMinimumLevel(LogLevel.Trace);
+            });
+            logger = factory.CreateLogger<LlmRequestLoggingHandler>();
+        }
+
+        var loggingHandler = new LlmRequestLoggingHandler(logger, handler);
+
+        var client = new HttpClient(loggingHandler)
         {
             BaseAddress = new Uri(normalizedBaseUrl),
             Timeout = TimeSpan.FromMinutes(60)

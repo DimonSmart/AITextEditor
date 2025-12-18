@@ -1,7 +1,9 @@
 using AiTextEditor.Lib.Model;
 using AiTextEditor.Lib.Services;
+using AiTextEditor.Lib.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
@@ -18,8 +20,8 @@ public sealed class SemanticKernelEngine
 
     public SemanticKernelEngine(HttpClient? httpClient = null, ILoggerFactory? loggerFactory = null)
     {
-        this.httpClient = httpClient ?? CreateHttpClient();
         this.loggerFactory = loggerFactory ?? CreateDefaultLoggerFactory();
+        this.httpClient = httpClient ?? CreateHttpClient(this.loggerFactory);
     }
 
     public async Task<SemanticKernelContext> RunAsync(string markdown, string userCommand)
@@ -101,7 +103,7 @@ public sealed class SemanticKernelEngine
         return context;
     }
 
-    private static HttpClient CreateHttpClient()
+    private static HttpClient CreateHttpClient(ILoggerFactory loggerFactory)
     {
         var ignoreSsl = Environment.GetEnvironmentVariable("LLM_IGNORE_SSL_ERRORS") == "true";
         var handler = new HttpClientHandler();
@@ -119,6 +121,9 @@ public sealed class SemanticKernelEngine
         {
             finalHandler = new BasicAuthHandler(user ?? string.Empty, password, handler);
         }
+
+        var logger = loggerFactory.CreateLogger<LlmRequestLoggingHandler>();
+        finalHandler = new LlmRequestLoggingHandler(logger, finalHandler);
 
         return new HttpClient(finalHandler)
         {
@@ -147,8 +152,10 @@ public sealed class SemanticKernelEngine
     {
         return LoggerFactory.Create(builder =>
         {
+            builder.SetMinimumLevel(LogLevel.Trace);
             builder.AddConsole();
-            builder.SetMinimumLevel(LogLevel.Debug);
+            builder.AddFilter<ConsoleLoggerProvider>(level => level >= LogLevel.Debug);
+            builder.AddProvider(new SimpleFileLoggerProvider("llm_debug.log"));
         });
     }
 
