@@ -1,7 +1,10 @@
 using AiTextEditor.Domain.Tests.Infrastructure;
 using AiTextEditor.SemanticKernel;
+using AiTextEditor.Lib.Model;
 using System.Globalization;
+using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -33,7 +36,7 @@ public class McpFunctionalTests
     [InlineData("В каком абзаце Знайка сравнивает лунную поверхность с хорошо пропечённым блином и объясняет пузырьки пара?", "1.1.1.p8")]
     [InlineData("Где впервые появляется профессор Звёздочкин, который “кипел от негодования”, и кратко описывается, какой он по характеру?", "1.1.1.p21")]
     [InlineData("В каком месте Знайка язвительно поддевает профессора фразой про то, что тому якобы приходилось болтаться в центре Луны?", "1.1.1.p27")]
-    public async Task CharacterMentionQuestions_ReturnExpectedPointer(string question, string expectedPointer)
+    public async Task CharacterMentionQuestions_ReturnExpectedPointer(string question, string expectedPointer, int tolerance = 0)
     {
         var markdown = LoadNeznaykaSample();
         using var httpClient = await TestLlmConfiguration.CreateVerifiedLlmClientAsync(output);
@@ -43,13 +46,13 @@ public class McpFunctionalTests
         var result = await engine.RunAsync(markdown, question);
         var answer = result.LastAnswer ?? string.Empty;
 
-        // SemanticPointerComparator.AssertPointerMatch(markdown, expectedPointer, answer);
+        var expected = new SemanticPointer(0, expectedPointer);
+        var matches = Regex.Matches(answer, @"\b\d+(?:\.\d+)*\.?p\d+\b", RegexOptions.IgnoreCase);
 
-        if (question.Contains("диалог"))
-        {
-            Assert.DoesNotContain("Alice", answer, StringComparison.OrdinalIgnoreCase);
-            Assert.DoesNotContain("Rabbit", answer, StringComparison.OrdinalIgnoreCase);
-        }
+        var found = matches.Select(m => new SemanticPointer(0, m.Value))
+                           .Any(p => p.IsCloseTo(expected, tolerance));
+
+        Assert.True(found, $"Expected pointer close to {expectedPointer} (tolerance {tolerance}) not found in answer: {answer}");
     }
 
     [Fact]
