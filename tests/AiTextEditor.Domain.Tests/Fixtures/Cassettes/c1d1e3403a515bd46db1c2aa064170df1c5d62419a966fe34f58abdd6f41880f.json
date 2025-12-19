@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-534\",\"object\":\"chat.completion\",\"created\":1766096837,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"success\\\",\\\"semanticPointerFrom\\\":\\\"4:1.1.1.p1\\\",\\\"whyThis\\\":\\\"Описаны два вращающихся здания на улице Колокольчиков: пятиэтажное с спиральным спуском и шестиэтажное с чёртовым колесом на крыше.\\\",\\\"markdown\\\":\\\"С тех пор как Незнайка совершил путешествие в Солнечный город, прошло два с половиной года... На улицах появилось множество автомобилей, спиралеходов, труболётов, авиагидромотоколясок, гусеничных вездеходов и других разных машин.\\\",\\\"summary\\\":\\\"Найдены описания двух вращающихся зданий на улице Колокольчиков: пятиэтажное с спиральным спуском и шестиэтажное с чёртовым колесом на крыше.\\\"}\",\"reasoning\":\"Okay, let's tackle this. The user is looking for a description of two rotating buildings on Kolokolchikov Street with a spiral descent and a devil's wheel on the roof.\\n\\nFirst, I check the provided evidence. There's one entry with Pointer \\\"4:1.1.1.p1\\\". The Excerpt mentions that on Kolokolchikov Street, two rotating buildings were constructed. The first is a five-story tower with a spiral descent and a swimming pool around it. The second is a six-story building with swinging balconies, a parachute tower, and a devil's wheel on the roof. The Reason field confirms these details match the task.\\n\\nI need to ensure the answer fits the schema. The decision should be \\\"success\\\" since the evidence directly addresses the query. The semanticPointerFrom must be one of the evidence pointers, so \\\"4:1.1.1.p1\\\" is correct. The markdown should be the exact excerpt. The summary should briefly state the findings. The whyThis field explains why the evidence is relevant. All parts align with the task, so the JSON should be correctly formatted without any extra text.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":814,\"completion_tokens\":447,\"total_tokens\":1261}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 22:27:17 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

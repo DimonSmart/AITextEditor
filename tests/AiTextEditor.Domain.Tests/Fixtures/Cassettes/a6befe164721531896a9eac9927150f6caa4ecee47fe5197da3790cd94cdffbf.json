@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-695\",\"object\":\"chat.completion\",\"created\":1766097062,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"В документе указано, что Знайка и его спутники пробыли на Луне около четырёх часов и были вынуждены вернуться из-за исчерпания запасов воздуха. Это упомянуто в предложении, расположенном по указателю **8:1.1.1.p5**.\",\"reasoning\":\"Okay, let's see. The user is asking where in the document it's mentioned that Znayka stayed on the Moon for about four hours and had to return urgently due to air supply issues.\\n\\nFirst, I need to recall the previous interaction. The user initially asked the question, and I used the CursorAgentPlugin to find the relevant section. The tool response indicated that the answer was found in the paragraph with pointer \\\"8:1.1.1.p5\\\". The excerpt mentions that Znayka and his companions had to leave the Moon after four hours because their air supply was running out.\\n\\nNow, the user hasn't asked a new question yet, but the assistant's last response was the tool's answer. Wait, looking back, the user's last message was the tool response, and the assistant needs to provide the final answer in Russian, including the semantic pointer.\\n\\nSo, the task is to present the answer in Russian, citing the semantic pointer. The answer should state that the information is found in the specified paragraph, which is pointed to by \\\"8:1.1.1.p5\\\". The key points are the four-hour stay and the air supply issue leading to the return.\\n\\nI need to make sure the answer is concise, in Russian, and includes the semantic pointer. Also, check if the pointerLabel is needed. The tool response included \\\"semanticPointerFrom\\\": \\\"8:1.1.1.p5\\\", so that's the correct pointer to include.\\n\\nNo other tools are needed here since the information was already retrieved. Just format the answer correctly.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1022,\"completion_tokens\":409,\"total_tokens\":1431}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 22:31:02 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-668\",\"object\":\"chat.completion\",\"created\":1766094135,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the last mention of \\\"Фуксии\\\". First, I need to scan through the provided batch items to locate any instances of this term. \\n\\nLooking at the snapshot, there's a recent evidence pointer \\\"8:1.1.1.p5\\\", but the user mentioned that we shouldn't consider pointers already in the recentEvidencePointers. So I'll focus on the current batch items.\\n\\nStarting from the first item in the batch, I'll check each paragraph's markdown content. The task is to find the last occurrence, so I'll go through each entry in order and note where \\\"Фуксии\\\" appears. \\n\\nWait, scanning through the paragraphs, I notice that \\\"Фуксии\\\" isn't mentioned in any of the provided texts. The closest mention is \\\"Звёздочкин\\\" and \\\"Знайка\\\", but not \\\"Фуксии\\\". Since the user's goal is to find the last mention, and there are no instances in the current batch, the decision should be \\\"not_found\\\". \\n\\nI need to make sure I didn't miss any entries. Let me double-check each paragraph. No, there's no mention of \\\"Фуксии\\\" here. Therefore, the correct output is \\\"not_found\\\" with no new evidence.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2353,\"completion_tokens\":289,\"total_tokens\":2642}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 21:42:15 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-405\",\"object\":\"chat.completion\",\"created\":1766095850,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"success\\\",\\\"semanticPointerFrom\\\":\\\"6:1.1.1.p3\\\",\\\"whyThis\\\":\\\"Пончик выбрал потемней ночку, чтобы утопить старые костюмы в Огурцовой реке.\\\",\\\"markdown\\\":\\\"Все были очень довольны. Единственным, кто пострадал на этом деле, оказался Пончик. Когда Пончик увидел, что теперь можно брать в магазине любую вещь, какая только могла понадобиться, он стал недоумевать: к чему ему вся та куча костюмов, которая накопилась у него дома. Все эти костюмы к тому же вышли из моды, и их всё равно нельзя было носить. Выбрав потемней ночку, Пончик завязал свои старые костюмы в огромный узел, вынес тайком из дома и утопил в Огурцовой реке, а вместо них натаскал себе из магазинов новых костюмов. Кончилось тем, что его комната превратилась в какой-то склад готового платья. Костюмы лежали у него и в шкафу, и на шкафу, и на столе, и под столом, и на книжных полках, висели на стенах, на спинках стульев и даже под потолком, на верёвочках.\\\",\\\"summary\\\":\\\"Пончик утопил старые костюмы в Огурцовой реке, выбрав потемней ночку, после того как они вышли из моды.\\\"}\",\"reasoning\":\"Okay, let's tackle this problem. The user is asking to find the paragraph where Ponchik, choosing a darker night, drowned his old costumes in the Ogurcovka River. \\n\\nFirst, I need to look at the evidence provided. The JSON object has a Pointer \\\"6:1.1.1.p3\\\", an Excerpt that describes Ponchik's actions. The Reason field states that Ponchik chose a darker night to drown the old costumes in the river. \\n\\nThe task requires confirming if the evidence matches the query. The excerpt mentions that Ponchik selected a darker night to tie up his old costumes, take them out secretly, and drown them in the Ogurcovka River. The Reason aligns with the task's condition. Since the evidence directly answers the query without needing additional information, the decision should be \\\"success\\\". The semanticPointerFrom is the Pointer from the evidence, the whyThis is the Reason, the markdown is the Excerpt, and the summary states the action taken.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":722,\"completion_tokens\":594,\"total_tokens\":1316}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 22:10:50 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

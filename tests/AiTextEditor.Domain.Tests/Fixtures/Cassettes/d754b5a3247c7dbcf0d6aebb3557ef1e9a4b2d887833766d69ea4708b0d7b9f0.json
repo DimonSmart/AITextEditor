@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-775\",\"object\":\"chat.completion\",\"created\":1766132815,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"done\\\",\\\"newEvidence\\\":[{\\\"pointer\\\":\\\"8:1.1.1.p5\\\",\\\"excerpt\\\":\\\"Впрочем, главное было не это. Главное было то, что Знайка тоже побывал в Солнечном городе. Там он познакомился с учёными малышками Фуксией и Селёдочкой, которые в то время готовили свой второй полёт на Луну.\\\",\\\"reason\\\":\\\"Упоминаются Фуксия и Селёдочка как учёные малышки в Солнечном городе.\\\"}]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of Фуксия and Селедочка in the text. The user provided a batch of items, each with a pointer, itemType, and markdown content. \\n\\nFirst, I need to scan through each item's markdown to look for the names Фуксия and Селедочка. Since the goal is the first occurrence, I'll check them in order.\\n\\nLooking at the first item (pointer 8:1.1.1.p5), the markdown mentions \\\"учёными малышками Фуксией и Селёдочкой\\\". That's the first instance. The names are there together, so this should be the evidence. \\n\\nI need to make sure not to include any pointers from the snapshot's recentEvidencePointers, but since the snapshot is empty, that's not an issue here. The excerpt should be exactly as it is, and the reason should be a single sentence explaining the match. \\n\\nSo the newEvidence array will have one entry with the pointer, excerpt, and reason. The decision is \\\"continue\\\" because there's more to check, but since this is the first and only mention in the provided batch, maybe \\\"done\\\" if there's no more batches. Wait, the input has hasMoreBatches as true, so maybe \\\"continue\\\". But the user's output schema allows \\\"done\\\" if all evidence is found. However, since there might be more batches, perhaps \\\"continue\\\" is safer. But according to the rules, if the current batch has the first mention, and the task is to find the first, then once found, maybe \\\"done\\\". Hmm. The evidenceCount in the snapshot is 0, so if this is the first, then \\\"done\\\" might be appropriate. But the user's example might have different logic. Let me check the rules again. The decision can be \\\"continue\\\", \\\"done\\\", or \\\"not_found\\\". Since the first mention is found, and the task is to find the first, once found, maybe \\\"done\\\". But the hasMoreBatches is true, so maybe the user expects to continue. However, the task is to find the first occurrence, so once found in the current batch, the answer is done. So the decision should be \\\"done\\\".\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1678,\"completion_tokens\":603,\"total_tokens\":2281}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 19 Dec 2025 08:26:55 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-707\",\"object\":\"chat.completion\",\"created\":1766096068,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find a description where astronomers in the Solar City argued and split into volcanologists and meteoritists. The user provided a batch of items with pointers and markdown content.\\n\\nFirst, I need to scan through the current batch's items. The snapshot shows some recent evidence pointers, but I must ignore those. The goal is to find evidence in the current batch only. \\n\\nLooking at the pointers from 74 to 86, most are paragraphs. The user mentioned \\\"астрономы в Солнечном городе поссорились и разделились на вулканистов и метеоритчиков.\\\" So, I need to check if any of these paragraphs mention astronomers arguing and splitting into those groups.\\n\\nStarting with pointer 74: It talks about Zvezdочкин and a commotion, but no mention of astronomers or splitting. Pointer 75: \\\"Долой!\\\" is a shout, maybe part of an argument, but not specific. Pointer 76: Two shorties dragging someone, but again, not the required info. \\n\\nPointer 79: Zvezdочкин is upset, but no split into groups. Pointer 80: He's still shouting, but no. Pointer 81: Closing the meeting. Pointer 82: Next day's newspaper reports. Wait, pointer 84 is a heading for chapter two, then pointer 85: The next day's report. But the user's task is about astronomers arguing and splitting into volcanologists and meteoritists. \\n\\nLooking through the paragraphs again, none of them mention volcanologists or meteoritists. The terms \\\"вулканисты\\\" and \\\"метеоритчики\\\" aren't present in the provided excerpts. The closest is pointer 75's \\\"Долой!\\\" which might be part of a conflict, but not the specific split into those groups. \\n\\nSince none of the current batch items mention the required terms, the decision would be \\\"not_found.\\\" The newEvidence array would be empty. So the output should be \\\"not_found\\\" with no new evidence entries.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1540,\"completion_tokens\":461,\"total_tokens\":2001}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 22:14:28 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

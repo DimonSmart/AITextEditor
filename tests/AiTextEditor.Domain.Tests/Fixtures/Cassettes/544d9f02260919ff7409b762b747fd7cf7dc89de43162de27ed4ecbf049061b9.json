@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-616\",\"object\":\"chat.completion\",\"created\":1766096360,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of Professor Zvezdokhin in the text, excluding headers. The user provided a batch of items with pointers, markdown content, and item types. \\n\\nFirst, I need to scan through each item in the batch. The snapshot shows evidenceCount is 0 and recentEvidencePointers is empty, so no previous matches to avoid.\\n\\nLooking at the items, the first few are headings, which we should ignore as per the task. Then there's a paragraph (pointer 4:1.1.1.p1) that mentions \\\"профессора Звёздочкина\\\" in the heading. Wait, no, the heading is part of the item with pointer 3:1.1.1, which is a heading. The task says to exclude headers, so that's not considered. \\n\\nNext, the paragraphs starting from 4:1.1.1.p1. Let me check each paragraph's markdown content. The first paragraph (4:1.1.1.p1) talks about Nезнайка's trip and the changes in the city, but doesn't mention Professor Zvezdokhin. The second paragraph (5:1.1.1.p2) mentions the factory built by engineer Клёпки, but no professor. The third (6:1.1.1.p3) is about Ponchik's clothes, still no mention. The fourth (7:1.1.1.p4) continues the Ponchik story, no professor here either.\\n\\nWait, the heading with pointer 3:1.1.1 is \\\"Как Знайка победил профессора Звёздочкина\\\", which translates to \\\"How Znayka defeated Professor Zvezdokhin\\\". But the task says to exclude headers. So even though this heading mentions the professor, it's a heading, so we can't use it. \\n\\nSo, in the current batch, there's no paragraph that mentions Professor Zvezdokhin. All the paragraphs don't have that name. Therefore, the answer should be \\\"not_found\\\" since there's no evidence in the current batch. The decision is \\\"not_found\\\" because the first mention isn't present here. The user might have more batches, but based on this batch, there's nothing.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1892,\"completion_tokens\":501,\"total_tokens\":2393}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 22:19:20 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

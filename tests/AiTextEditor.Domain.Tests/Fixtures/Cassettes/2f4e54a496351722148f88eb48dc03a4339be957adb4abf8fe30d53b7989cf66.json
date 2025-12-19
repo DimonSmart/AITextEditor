@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-904\",\"object\":\"chat.completion\",\"created\":1766094614,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"success\\\",\\\"semanticPointerFrom\\\":\\\"70:1.1.1.p67\\\",\\\"whyThis\\\":\\\"The second excerpt (pointer 70) is later in the document than the first (pointer 8), making it the last mention of Фуксии.\\\",\\\"markdown\\\":\\\"Кусочек Луны пошёл по рукам. Каждому хотелось поближе посмотреть на него. Пока коротышки разглядывали камень, передавая его из рук в руки, Знайка рассказывал, как они с Фуксией и Селёдочкой путешествовали по Луне и что там видели. Всем очень понравился Знайкин рассказ. Все остались очень довольны. Только профессор Звёздочкин был не очень доволен. Как только Знайка кончил свой рассказ и сошёл с трибуны, профессор Звёздочкин выскочил на трибуну и сказал:\\\",\\\"summary\\\":\\\"Last mention of Фуксии in the context of traveling to the Moon with Селёдочкой, found at pointer 70:1.1.1.p67.\\\"}\",\"reasoning\":\"Okay, let's tackle this task. The user wants the last mention of \\\"Фуксии\\\" from the provided evidence.\\n\\nFirst, I'll look at the evidence entries. There are two excerpts. The first one is from pointer 8:1.1.1.p5, mentioning Фуксия in the context of meeting scientists. The second is from 70:1.1.1.p67, which also mentions Фуксии along with Селёдочкой. \\n\\nNow, I need to determine which one is the last mention. The pointers are 8 and 70. Since 70 is a higher number than 8, that suggests the second excerpt comes later in the document. Therefore, the last mention is in the second excerpt. The markdown should be the exact text from that excerpt. The decision is success because both mentions are found, and the later one is selected. The summary notes the context and the pointer.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":965,\"completion_tokens\":470,\"total_tokens\":1435}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 21:50:14 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

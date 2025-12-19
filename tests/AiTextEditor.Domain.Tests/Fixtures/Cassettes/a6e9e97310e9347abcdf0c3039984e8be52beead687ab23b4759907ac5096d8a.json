@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-376\",\"object\":\"chat.completion\",\"created\":1766097562,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"В тексте Знайка язвительно отмечает это в диалоге:  \\n**«– Вы рассуждаете так, будто вам уже когда-нибудь приходилось болтаться в центре Луны!»**  \\nСемантический указатель: **30:1.1.1.p27**.\",\"reasoning\":\"Okay, let's tackle this query. The user is asking about a specific scene in the book where Znayka sarcastically comments on the professor's lack of experience in the center of the Moon. \\n\\nFirst, I need to recall the tools available. The CursorAgentPlugin-run_cursor_agent function is the key here. The user wants the exact location in the text, so I should use the semantic pointer provided in the tool response.\\n\\nLooking at the tool response, the first evidence points to pointer \\\"30:1.1.1.p27\\\" with the excerpt where Znayka says the professor hasn't bounced in the Moon's center. The second evidence is from pointer \\\"85:1.2.1.p1\\\", describing a cartoon of Znayka dangling in the Moon's center. \\n\\nThe user's question is about Znayka's sarcastic remark, so the first pointer is the direct quote. The second pointer is more about the cartoon depiction. Since the user asked for the place where Znayka makes the comment, the first pointer is the answer. But the tool response mentions both, so I need to check which one is the actual dialogue. \\n\\nThe first excerpt is a direct dialogue where Znayka says the professor hasn't bounced in the Moon's center. The second is a description of a cartoon. Therefore, the correct semantic pointer is \\\"30:1.1.1.p27\\\". The answer should include this pointer and the relevant excerpt in Russian.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1138,\"completion_tokens\":395,\"total_tokens\":1533}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 22:39:22 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

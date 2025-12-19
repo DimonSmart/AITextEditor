@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-199\",\"object\":\"chat.completion\",\"created\":1766095563,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of \\\"Пончик\\\" (Ponchik, which I know is a character from a Russian children's book, possibly \\\"Ponchik\\\" by Kornei Chukovsky). The user provided a batch of text items, each with a pointer and markdown content. The snapshot shows that there's already one piece of evidence, with pointer \\\"6:1.1.1.p3\\\", but since the current batch doesn't include that pointer, I need to focus on the current items.\\n\\nFirst, I need to scan each item in the current batch for any mention of \\\"Пончик\\\". Let me go through each paragraph:\\n\\n1. **23:1.1.1.p20**: Talks about lunatics moving inside the Moon. No mention of Ponchik.\\n2. **24:1.1.1.p21**: Discusses a book by Znayka, mentions Professor Zvezdochkin. No Ponchik here.\\n3. **25:1.1.1.p22**: Professor suggests a discussion on Znayka's book. Still no Ponchik.\\n4. **26:1.1.1.p23**: Professor Zvezdochkin starts the discussion. No.\\n5. **27:1.1.1.p24**: He opens the meeting. Still nothing.\\n6. **28:1.1.1.p25**: Professor starts his report. No mention.\\n7. **29:1.1.1.p26**: Znayka responds. No.\\n8. **30:1.1.1.p27**: Professor retorts. No.\\n9. **31:1.1.1.p28**: Znayka says he flew in a rocket. No.\\n10. **32:1.1.1.p29**: Professor questions about weightlessness. No.\\n11. **33:1.1.1.p30**: Znayka talks about the water in the bottle. Still no Ponchik.\\n\\nWait, none of these paragraphs mention \\\"Пончик\\\". The user's snapshot had an evidence pointer \\\"6:1.1.1.p3\\\", which isn't in the current batch. So maybe the current batch doesn't have any new evidence. But the task is to find the first mention. Since the current batch doesn't have any references to Ponchik, the answer would be \\\"not_found\\\". However, I need to make sure I didn't miss any mention. Let me check again. All the paragraphs are about the Moon, Znayka's book, the professor's discussion, and the water in the bottle. No Ponchik. Therefore, the correct decision is \\\"not_found\\\" because there's no evidence in the current batch. The user might have to check previous batches, but according to the rules, I can only use the current batch. So the output should be \\\"not_found\\\" with no new evidence.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2197,\"completion_tokens\":657,\"total_tokens\":2854}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 22:06:03 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

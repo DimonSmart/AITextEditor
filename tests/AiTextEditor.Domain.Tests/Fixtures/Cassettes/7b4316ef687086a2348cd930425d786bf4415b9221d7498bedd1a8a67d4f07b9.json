@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-337\",\"object\":\"chat.completion\",\"created\":1766097519,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"done\\\",\\\"newEvidence\\\":[{\\\"pointer\\\":\\\"85:1.2.1.p1\\\",\\\"excerpt\\\":\\\"– Вот когда полетишь на Луну, будешь выступать на трибуне, а сейчас пока посиди здесь на травке.\\\",\\\"reason\\\":\\\"Эксперт описывает карикатуру, где Знайка изображён в центре Луны, что подразумевает язвительное замечание о его положении.\\\"}]}\",\"reasoning\":\"Okay, let's tackle this query. The user is looking for a place in the text where Znayka sarcastically undermines Professor Zvezdokhinn with a phrase about the center of the Moon. The task is to find that specific instance.\\n\\nFirst, I need to check the current batch's items. The snapshot mentions that there's already one piece of evidence, with the pointer \\\"30:1.1.1.p27\\\". But since the user provided a different batch, I should focus on that. \\n\\nLooking through the batch items, the relevant part is in pointer 85:1.2.1.p1. The excerpt mentions a caricature where Znayka is depicted as helplessly dangling in the center of the Moon. The reason here is that the caricature shows Znayka in the Moon's center, which is a sarcastic jab. The key phrase here is \\\"в центре Луны\\\" (in the center of the Moon), which matches the task's requirement. \\n\\nI need to ensure that this pointer isn't in the recentEvidencePointers from the snapshot. The snapshot's recent pointer is \\\"30:1.1.1.p27\\\", which isn't the same as \\\"85:1.2.1.p1\\\". So, this is a new evidence point. \\n\\nThe reason should be concise, stating that the caricature shows Znayka in the Moon's center, which is the sarcastic remark. No mention of order or position, just the factual match. \\n\\nSo, the newEvidence array should include this pointer, excerpt, and reason. The decision here is \\\"continue\\\" because there's more to check, but since the user's batch doesn't have more items, maybe \\\"done\\\" or \\\"not_found\\\". Wait, the batch has items up to 86, but the relevant part is in 85. Since the user's task is to find that specific phrase, and we found it, the decision should be \\\"done\\\" or \\\"continue\\\". But according to the rules, if the evidence is found, it's \\\"done\\\". However, the initial snapshot had evidenceCount 1, and the current batch might have more. But in this case, the relevant excerpt is in 85:1.2.1.p1. So, the correct decision is \\\"done\\\" because the evidence is found. Wait, but the output schema says \\\"decision\\\" can be continue, done, or not_found. Since we found the evidence, it's \\\"done\\\". But maybe the user wants to continue scanning. Wait, the rules say to scan only the current batch. Since the current batch has the required excerpt, the decision is \\\"done\\\". But the initial snapshot's evidenceCount is 1, and the current batch's items might have more. However, the user's task is to find that specific instance, which we have. So, the answer should be \\\"done\\\" with the newEvidence entry.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1484,\"completion_tokens\":726,\"total_tokens\":2210}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 22:38:39 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

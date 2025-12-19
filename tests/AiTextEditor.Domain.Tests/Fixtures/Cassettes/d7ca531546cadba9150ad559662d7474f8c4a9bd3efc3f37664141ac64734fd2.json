@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-986\",\"object\":\"chat.completion\",\"created\":1766094885,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Первое упоминание Фуксии находится в тексте под указателем **8:1.1.1.p5**. В этом месте она представлена как учёная малышка, познакомившаяся с Знайкой в Солнечном городе. \\n\\n**Цитата из текста:**  \\n\\\"Там он познакомился с учёными малышками Фуксией и Селёдочкой, которые в то время готовили свой второй полёт на Луну.\\\"\\n\\nСемантический указатель: `8:1.1.1.p5`\",\"reasoning\":\"Okay, the user is asking where Fuchsia is first mentioned in the document. I need to use the CursorAgentPlugin-run_cursor_agent function to find the first occurrence. The function was called with the task to find the first mention of Fuchsia. The response from the tool indicates that the first mention is at pointer 8:1.1.1.p5. The summary says she's introduced as a young scientist who met Znayka in the Sun City. I should check if there's an earlier mention in the evidence provided. The evidence lists two pointers: 8:1.1.1.p5 and 70:1.1.1.p67. The first one is earlier, so that's the correct location. The answer should include the semantic pointer and the relevant excerpt in Russian.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1142,\"completion_tokens\":312,\"total_tokens\":1454}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 21:54:45 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-83\",\"object\":\"chat.completion\",\"created\":1766096801,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The user is looking for a description of two rotating buildings on Kolokolchikov Street with a spiral descent and a devil's wheel on the roof. The snapshot shows that there's already one piece of evidence, pointer 4:1.1.1.p1, but I need to check the current batch items.\\n\\nLooking at the batch items, they're all paragraphs from a story involving Znayka and his experiences. The first item (58:1.1.1.p55) talks about losing weight and feeling weightless, which might relate to zero gravity but not the buildings. The next items are about the characters reacting, some foot tapping, and then Znayka explaining the weightlessness. There's mention of a bottle with water and a rock from the Moon. \\n\\nWait, the task mentions two rotating buildings with a spiral descent and a devil's wheel. The current batch doesn't have any mention of buildings, streets, or specific structures like that. The story seems to be about space travel and weightlessness, not urban architecture. The only possible link is the Moon rock, but that's not related to the buildings described. Since none of the batch items mention the required elements, there's no new evidence to add. The decision should be 'not_found' because the current batch doesn't contain the needed information.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2225,\"completion_tokens\":296,\"total_tokens\":2521}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 22:26:41 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

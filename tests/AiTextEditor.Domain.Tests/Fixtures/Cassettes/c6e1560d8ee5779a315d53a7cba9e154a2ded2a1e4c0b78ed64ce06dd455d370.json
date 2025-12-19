@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-699\",\"object\":\"chat.completion\",\"created\":1766095886,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find a description where astronomers in the Solar City argued and split into volcanologists and meteoritologists. The user provided a batch of text with various pointers.\\n\\nFirst, I need to scan through the current batch items. The snapshot shows evidenceCount is 0 and recentEvidencePointers is empty, so there's nothing from previous batches. The batch has items starting from pointer 1:1 as a heading, then paragraphs 4:1.1.1.p1 to 7:1.1.1.p4.\\n\\nLooking at the paragraphs, the content talks about the Solar City, improvements made by the inhabitants, and Pончик's troubles with clothes. There's mention of architects and engineers, but no astronomers. The key here is to check if any part of the text mentions astronomers splitting into volcanologists and meteoritologists. \\n\\nParagraph 4 mentions the Solar City and various constructions, but no conflict or split. Paragraph 5 talks about industrial enterprises but not the required groups. Paragraph 6 and 7 are about Pончик's clothes and the mole problem. None of these paragraphs mention astronomers or any division between groups. \\n\\nSince there's no mention of astronomers or the specified split, the decision should be 'not_found'. The newEvidence array remains empty as there's no relevant content in the current batch.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1903,\"completion_tokens\":294,\"total_tokens\":2197}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 22:11:26 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

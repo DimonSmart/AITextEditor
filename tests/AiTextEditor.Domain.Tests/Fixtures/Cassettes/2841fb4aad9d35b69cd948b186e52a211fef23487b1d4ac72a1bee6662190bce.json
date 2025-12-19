@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-465\",\"object\":\"chat.completion\",\"created\":1766095621,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of \\\"Пончик\\\" (Ponchik, which I know is a character from a Russian story, maybe \\\"Ponchik and the Moon\\\" or something similar). The user provided a batch of text items, each with a pointer and markdown content. \\n\\nFirst, I need to scan through each item's markdown to see if \\\"Пончик\\\" is mentioned. The snapshot shows that there's already one piece of evidence, with pointer \\\"6:1.1.1.p3\\\", but since the user is asking for the first mention, I need to check if any of the current batch items mention Ponchik before that pointer.\\n\\nLooking at the items in the current batch, the pointers start from 58:1.1.1.p55 up to 73:1.1.1.p70. The snapshot's recentEvidencePointers include \\\"6:1.1.1.p3\\\", which seems to be from a previous batch. Since the current batch's items have higher pointers (like 58, 59, etc.), it's possible that the first mention in this batch is among these.\\n\\nNow, I'll go through each markdown entry:\\n\\n- 58:1.1.1.p55: Talks about losing weight, feeling like sitting down, but no mention of Ponchik.\\n- 59:1.1.1.p56: Corrupts shouting \\\"Rассказывайте!\\\" – no Ponchik.\\n- 60:1.1.1.p57: People stomping – still no.\\n- 61:1.1.1.p58: Znayka's story about weightlessness, water in a bottle, but no Ponchik.\\n- 62:1.1.1.p59: Question about the drink – no.\\n- 63:1.1.1.p60: Answer is water – no.\\n- 64:1.1.1.p61: Someone thinks it's citrus or kerosene – no.\\n- 65:1.1.1.p62: Laughter, then a question about bringing something from the Moon – no.\\n- 66:1.1.1.p63: \\\"Did you bring anything from the Moon?\\\" – no.\\n- 67:1.1.1.p64: Answer is a piece of the Moon – no.\\n- 68:1.1.1.p65: Znayka shows a rock from the Moon – no.\\n- 69:1.1.1.p66: Talks about the Moon's rocks, but no Ponchik.\\n- 70:1.1.1.p67: The rock goes around, Znayka's story, but no Ponchik.\\n- 71:1.1.1.p68: Professor's speech, but no.\\n- 72:1.1.1.p69: \\\"Doloy!\\\" – no.\\n- 73:1.1.1.p70: Professor talks about discussing the book – no.\\n\\nWait, none of these mention Ponchik. The snapshot's recentEvidencePointers include \\\"6:1.1.1.p3\\\", which might be from a previous batch. Since the current batch doesn't have any mention of Ponchik, the answer would be \\\"not_found\\\". But the user's task is to find the first mention, and if the current batch doesn't have it, then the decision is \\\"not_found\\\". However, maybe I missed something. Let me check again. All the markdowns here are about Znayka's story, the Moon, the rock, etc. No mention of Ponchik. Therefore, the correct decision is \\\"not_found\\\".\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2199,\"completion_tokens\":832,\"total_tokens\":3031}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 22:07:01 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

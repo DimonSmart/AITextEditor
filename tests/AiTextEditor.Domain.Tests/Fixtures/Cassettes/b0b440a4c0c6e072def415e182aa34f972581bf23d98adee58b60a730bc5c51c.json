@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-670\",\"object\":\"chat.completion\",\"created\":1766095475,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[{\\\"pointer\\\":\\\"6:1.1.1.p3\\\",\\\"excerpt\\\":\\\"Все были очень довольны. Единственным, кто пострадал на этом деле, оказался Пончик. Когда Пончик увидел, что теперь можно брать в магазине любую вещь, какая только могла понадобиться, он стал недоумевать: к чему ему вся та куча костюмов, которая накопилась у него дома. Все эти костюмы к тому же вышли из моды, и их всё равно нельзя было носить. Выбрав потемней ночку, Пончик завязал свои старые костюмы в огромный узел, вынес тайком из дома и утопил в Огурцовой реке, а вместо них натаскал себе из магазинов новых костюмов. Кончилось тем, что его комната превратилась в какой-то склад готового платья. Костюмы лежали у него и в шкафу, и на шкафу, и на столе, и под столом, и на книжных полках, висели на стенах, на спинках стульев и даже под потолком, на верёвочках.\\\",\\\"reason\\\":\\\"Упоминается Пончик как единственный, кто пострадал от изменений, и описываются его действия с костюмами.\\\"}]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of Ponchik. The user provided a batch of items with pointers and markdown content. I need to scan through these items to find where Ponchik is first mentioned.\\n\\nFirst, I'll check each item in the batch. The snapshot shows evidenceCount is 0, so no previous matches. The recentEvidencePointers are empty, so no duplicates to avoid. \\n\\nLooking at the items:\\n\\n1. The first item is a heading, doesn't mention Ponchik.\\n2. Second heading, still no mention.\\n3. Third heading, same here.\\n4. Paragraph 1: Talks about Nезнайка's trip, Kнопочки, Пачкули, but no Ponchik yet.\\n5. Paragraph 2: Mentions the tailor's factory, but no Ponchik.\\n6. Paragraph 3: Here's the key part. It says \\\"Пончик\\\" when talking about him being upset about the new clothes. This seems like the first mention because earlier paragraphs don't reference him. The paragraph mentions his actions regarding the clothes, which is the first instance in the text provided.\\n\\nSo the correct pointer is 6:1.1.1.p3. The excerpt is the entire paragraph. The reason is that it directly mentions Ponchik in the context of his actions related to the clothes. No earlier paragraphs mention him, so this is the first occurrence.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1877,\"completion_tokens\":649,\"total_tokens\":2526}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 22:04:35 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

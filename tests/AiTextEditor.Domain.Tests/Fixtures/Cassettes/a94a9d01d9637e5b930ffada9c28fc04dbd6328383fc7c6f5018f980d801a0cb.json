@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-299\",\"object\":\"chat.completion\",\"created\":1766095407,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"success\\\",\\\"semanticPointerFrom\\\":\\\"36:1.1.1.p33\\\",\\\"whyThis\\\":\\\"Второе упоминание профессора Звёздочкина в контексте обсуждения гипотезы о Луне\\\",\\\"markdown\\\":\\\"– Почему же не научно? – авторитетно ответил Знайка. – Когда бутылка свободно перемещается в межпланетном пространстве, она находится в состоянии невесомости и во всём уподобляется планете. Внутри её всё будет происходить так же, как внутри планеты, то есть внутри Луны, в том случае, конечно, если Луна изнутри пустая.\\\",\\\"summary\\\":\\\"Второе упоминание профессора Звёздочкина связано с его участием в дискуссии о гипотезе пустоты внутри Луны.\\\"}\",\"reasoning\":\"Okay, let's tackle this problem. The task is to find the second mention of Professor Zvezdochkin, excluding headers. The user provided evidence with several pointers, excerpts, and reasons.\\n\\nFirst, I need to go through each entry and count the mentions. Let's list them out:\\n\\n1. Pointer 25:1.1.1.p22 - Mentions Zvezdochkin proposing a discussion. That's the first mention.\\n2. Pointer 36:1.1.1.p33 - Talks about Zvezdochkin participating in a discussion about the Moon's interior. This is the second mention.\\n3. Pointer 71:1.1.1.p68 - Mentions Zvezdochkin again, but the reason says it's after the previous mention in the same document. So this would be the third.\\n4. Pointer 76:1.1.1.p73 - Mentions Zvezdochkin being dragged by shorties. Fourth mention.\\n5. Pointer 79:1.1.1.p76 - Another direct mention, so fifth.\\n\\nWait, but the task says to exclude headers. The user didn't mention headers in the evidence, so maybe the first mention is the first occurrence. The second mention would be the second one. Let me check again.\\n\\nLooking at the excerpts:\\n\\n- The first excerpt (25) starts with \\\"Профессор Звёздочкин и предложил...\\\" which is the first mention.\\n- The second excerpt (36) mentions Zvezdochkin participating in the discussion about the Moon's interior. That's the second mention.\\n- The third excerpt (71) mentions Zvezdochkin again, but the reason says it's after the previous mention. So that's the third.\\n- The fourth (76) and fifth (79) are later mentions.\\n\\nSo the second mention is at pointer 36:1.1.1.p33. The reason there is about Zvezdochkin participating in the discussion about the Moon's interior. The excerpt itself is the one that mentions him again. Therefore, the answer should be the second mention, which is the entry with pointer 36. The markdown should be the excerpt from that pointer. The decision is success because we found the second mention.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1051,\"completion_tokens\":701,\"total_tokens\":1752}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 22:03:27 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

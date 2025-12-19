@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-442\",\"object\":\"chat.completion\",\"created\":1766132861,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Фуксия и Селёдочка впервые упоминаются как учёные малышки в Солнечном городе, где знакомятся с Знайкой перед полётом на Луну. Их первое упоминание связано с подготовкой к второму полёту на Луну.  \\n\\n**Семантический указатель**: 8:1.1.1.p5\",\"reasoning\":\"Okay, the user asked about Fuchsia and Selodka, and where they are first mentioned. I used the CursorAgentPlugin to find the first occurrence. The tool response points to paragraph 8:1.1.1.p5. Let me check that excerpt again.\\n\\nThe excerpt says they are mentioned as \\\"учёными малышками\\\" (young scientists) in the Solar City, meeting with Znayka before the lunar flight. The first mention is in the context of their preparation for the second lunar flight. The key part is \\\"познакомился с учёными малышками Фуксией и Селёдочкой\\\" which translates to meeting Fuchsia and Selodka. The answer should include their first mention in the Solar City and the context of their lunar mission. I need to present this in Russian, include the semantic pointer, and make sure it's accurate based on the provided evidence.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":939,\"completion_tokens\":289,\"total_tokens\":1228}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 19 Dec 2025 08:27:41 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

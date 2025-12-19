@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-480\",\"object\":\"chat.completion\",\"created\":1766096462,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"decision\\\": \\\"continue\\\",\\n  \\\"newEvidence\\\": [\\n    {\\n      \\\"pointer\\\": \\\"24:1.1.1.p21\\\",\\n      \\\"excerpt\\\": \\\"А действительный член академии астрономических наук профессор Звёздочкин, которому тоже случилось прочитать Знайкину книжку, просто кипел от негодования и говорил, что книга эта – вовсе не книга, а какая-то, как он выразился, чёртова чепуха.\\\",\\n      \\\"reason\\\": \\\"Упоминается профессор Звёздочкин как действительный член академии астрономических наук, который прочитал книгу Знайки и выразил негодование.\\\"\\n    }\\n  ]\\n}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of Professor Zvezdochkin in the text, excluding headers. The user provided a batch of items, each with a pointer, itemType, and markdown content.\\n\\nFirst, I need to scan through each item's markdown content to find where Professor Zvezdochkin is mentioned for the first time. The snapshot shows evidenceCount is 0 and recentEvidencePointers is empty, so no previous matches to avoid.\\n\\nLooking at the items:\\n\\n- The first mention of \\\"профессор Звёздочкин\\\" is in item 24:1.1.1.p21. The excerpt there says, \\\"А действительный член академии астрономических наук профессор Звёздочкин, которому тоже случилось прочитать Знайкину книжку, просто кипел от негодования...\\\" This is the first occurrence in the batch. \\n\\nI need to check if there's an earlier mention. The previous items (23:1.1.1.p20 and 25:1.1.1.p22) don't mention him. So item 24 is the first. The reason is that it directly mentions his title and name, which matches the task. Since the user wants the first occurrence, this should be the correct evidence. No other items in the batch mention him earlier. So the newEvidence should include this pointer with the excerpt and reason.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2203,\"completion_tokens\":504,\"total_tokens\":2707}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 22:21:02 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

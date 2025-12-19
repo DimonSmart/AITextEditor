@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-846\",\"object\":\"chat.completion\",\"created\":1766095428,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Второе упоминание профессора Звёздочкина (исключая заголовки) находится в следующем месте текста:  \\n**36:1.1.1.p33**  \\n*«– Почему же не научно? – авторитетно ответил Знайка. – Когда бутылка свободно перемещается в межпланетном пространстве, она находится в состоянии невесомости и во всём уподобляется планете. Внутри её всё будет происходить так же, как внутри планеты, то есть внутри Луны, в том случае, конечно, если Луна изнутри пустая.»*  \\n\\nЭто упоминание связано с его участием в дискуссии о гипотезе пустоты внутри Луны.\",\"reasoning\":\"Okay, let's tackle this query. The user is asking for the second mention of Professor Zvezdochkin in the book, excluding headers. They want the location, so I need to use the CursorAgentPlugin-run_cursor_agent function.\\n\\nFirst, I'll check the tool response provided. The summary says the second mention is related to his participation in a discussion about the hypothesis of the Moon's interior. The evidence list has several pointers. Let me go through them one by one.\\n\\nThe first evidence is pointer 25:1.1.1.p22, which mentions Zvezdochkin proposing a discussion. That's the first mention. The next one is pointer 36:1.1.1.p33, which talks about him participating in the discussion about the Moon's interior. That seems like the second mention. The other pointers (71, 76, 79) are later and might be subsequent mentions. \\n\\nSo the answer should point to the excerpt at 36:1.1.1.p33, which is the second mention. I need to make sure it's not a header and that it's the correct one. The user wants the location, so including the semantic pointer is important. The answer in Russian should state the location and include the pointer.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1239,\"completion_tokens\":464,\"total_tokens\":1703}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 22:03:48 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

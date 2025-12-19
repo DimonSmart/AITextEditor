@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-201\",\"object\":\"chat.completion\",\"created\":1766094632,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Последнее упоминание Фуксии находится в тексте, где Знайка рассказывает о путешествии на Луну с Фуксией и Селёдочкой. \\n\\n**Семантический указатель:** 70:1.1.1.p67  \\n**Цитата:** \\\"Как они с Фуксией и Селёдочкой путешествовали по Луне и что там видели.\\\"\\n\\nЭтот фрагмент указан как последнее упоминание Фуксии в документе.\",\"reasoning\":\"Okay, the user asked for the last mention of \\\"Фуксии\\\" in the document. I used the CursorAgentPlugin to find it. The tool response showed two mentions. The first one is at pointer 8:1.1.1.p5, where Фуксии is mentioned along with Селёдочкой preparing for a lunar flight. The second mention is at pointer 70:1.1.1.p67, where Знайка talks about traveling to the Moon with Фуксией and Селёдочкой. The tool's summary says the second excerpt is later in the document, making it the last mention. So, I need to confirm that the second pointer is indeed the last occurrence. The user wants the last mention, so the answer should point to the second excerpt. The response should be in Russian, including the semantic pointer. Let me check if there are any other mentions, but the tool response only lists these two. Therefore, the correct answer is the one at pointer 70:1.1.1.p67.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1122,\"completion_tokens\":357,\"total_tokens\":1479}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 21:50:32 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

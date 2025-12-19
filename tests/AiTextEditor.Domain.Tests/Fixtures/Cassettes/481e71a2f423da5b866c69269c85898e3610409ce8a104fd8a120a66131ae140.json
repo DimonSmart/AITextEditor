@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-438\",\"object\":\"chat.completion\",\"created\":1766095266,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"decision\\\": \\\"continue\\\",\\n  \\\"newEvidence\\\": [\\n    {\\n      \\\"pointer\\\": \\\"71:1.1.1.p68\\\",\\n      \\\"excerpt\\\": \\\"– Дорогие друзья, нам всем было очень интересно послушать про Луну и про всё прочее, и я от имени всех собравшихся приношу сердечную благодарность знаменитому Знайке за его интересное и содержательное выступление. Однако… – сказал Звёздочкин и со строгим видом поднял кверху указательный палец.\\\",\\n      \\\"reason\\\": \\\"Упоминает профессора Звёздочкина после предыдущего его упоминания в этом же документе.\\\"\\n    }\\n  ]\\n}\",\"reasoning\":\"Okay, let's tackle this. The user wants to find the second mention of Professor Zvezdochkin, excluding headers. The snapshot shows that there are already 2 pieces of evidence, with pointers \\\"25:1.1.1.p22\\\" and \\\"36:1.1.1.p33\\\". But the current batch's items don't include those pointers. So I need to look through the current batch's items to find any mentions of Professor Zvezdochkin.\\n\\nLooking at the items in the batch, the first mention I see is in pointer 70:1.1.1.p67, where it says \\\"Только профессор Звёздочкин был не очень доволен.\\\" That's the first mention. Then, in pointer 71:1.1.1.p68, it starts with \\\"– Дорогие друзья, нам всем было очень интересно послушать про Луну и про всё прочее, и я от имени всех собравшихся приношу сердечную благодарность знаменитому Знайке за его интересное и содержательное выступление. Однако… – сказал Звёздочкин и со строгим видом поднял кверху указательный палец.\\\" Here, \\\"Звёздочкин\\\" is mentioned again. Since the user wants the second mention, this would be the second one. \\n\\nI need to check if there are any others, but the rest of the items don't mention him again. So the second mention is in pointer 71:1.1.1.p68. The excerpt is the paragraph starting with \\\"– Дорогие друзья...\\\" and the reason is that it mentions Professor Zvezdochkin again. Since the snapshot's recentEvidencePointers don't include this pointer, it's a new evidence. So the output should have this as newEvidence.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2225,\"completion_tokens\":588,\"total_tokens\":2813}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 22:01:06 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

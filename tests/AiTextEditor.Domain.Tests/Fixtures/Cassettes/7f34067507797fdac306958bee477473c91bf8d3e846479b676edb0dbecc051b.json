@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-664\",\"object\":\"chat.completion\",\"created\":1766095584,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of \\\"Пончик\\\" (Ponchik). The user provided a batch of items, each with a pointer and markdown content. The snapshot shows that there's already 1 piece of evidence, with the pointer \\\"6:1.1.1.p3\\\". But since the current batch's items start from pointer \\\"36:1.1.1.p33\\\", I need to check each item's markdown for the word \\\"Пончик\\\".\\n\\nLooking through each paragraph:\\n\\n- The first item (36:1.1.1.p33) talks about a bottle in space and a moon being hollow. No mention of Ponchik.\\n- The next ones discuss the moon's interior, cooling, and a hollow space. Still no Ponchik.\\n- The conversation between Znayka and others about the moon's structure. Still nothing.\\n- Later, there's a mention of someone shouting \\\"Долой Звёздочкина!\\\" and others cheering. Still no Ponchik.\\n- The last few paragraphs discuss the state of weightlessness and a rocket's speed. No Ponchik here either.\\n\\nWait, maybe I missed something. Let me check again. All the markdowns in the current batch are about the moon's structure, the cooling process, and the audience's reactions. There's no mention of Ponchik in any of these. The previous evidence pointer \\\"6:1.1.1.p3\\\" might be from a previous batch, but the current batch doesn't have any references to Ponchik. Therefore, there's no new evidence here. The decision should be \\\"not_found\\\" since the first mention isn't present in the current batch.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2358,\"completion_tokens\":377,\"total_tokens\":2735}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 22:06:24 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-958\",\"object\":\"chat.completion\",\"created\":1766096978,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find a mention of Znayka being on the Moon for about four hours and returning due to air problems. The context is a study of Znayka's lunar expedition.\\n\\nFirst, I need to scan through the provided batch items. The snapshot shows that there's already 1 piece of evidence, with pointer \\\"8:1.1.1.p5\\\". But since the user is asking for the current batch, I should focus on the items in the firstBatch which is false, so it's part of a larger set. However, the user provided the first batch's items, so I need to check those.\\n\\nLooking at the pointers from 36 to 57, all the paragraphs are part of the current batch. The user's instruction says to use only the current batch's content. The existing evidence pointer is from a previous batch, so I need to ignore that.\\n\\nNow, I need to look for any mention of Znayka's time on the Moon and the reason for returning. Let me go through each paragraph:\\n\\n- Paragraph 36: Talks about a bottle in space and weightlessness, but no mention of time or air issues.\\n- Paragraph 37: Discusses the Moon being hollow, but again, no time or air problems.\\n- Paragraph 38: People laugh, Znayka isn't bothered. No relevant info.\\n- Paragraph 39: Talks about the Moon's cooling and liquid inside. Still no time or air issues.\\n- Paragraph 40: Someone says the Moon has liquid, but again, not relevant.\\n- Paragraph 41: Znayka explains the Moon's hollow center. No time or air.\\n- Paragraph 42: Discussion about the Moon's hollow space. Still not relevant.\\n- Paragraph 43: Talks about cooling and contraction, leading to a hollow space. No time or air.\\n- Paragraph 44: Professor's reaction. Not relevant.\\n- Paragraph 45: Znayka's explanation about the Moon's structure. No time or air.\\n- Paragraph 46: Someone agrees. Not relevant.\\n- Paragraph 47: Crowd cheers, Znayka is taken to the tribune. No info on time or air.\\n- Paragraph 48: Crowd demands Znayka speak. No relevant info.\\n- Paragraph 49: Znayka can't make a report. Not relevant.\\n- Paragraph 50: Crowd asks about the Moon flight. Still no time or air.\\n- Paragraph 51: Znayka talks about weightlessness and the rocket's speed. No mention of his own time on the Moon.\\n- Paragraph 52: Someone asks about the Moon's state. Not relevant.\\n- Paragraph 53: Znayka explains weightlessness. No time or air issues.\\n\\nWait, maybe I missed something. Let me check again. The task is about Znayka's personal experience on the Moon. The paragraphs here are all about the Moon's structure and a debate between Znayka and Zvezdochkin. There's no mention of Znayka's time spent on the Moon or any air problems during his expedition. The only mention of time is in the context of the Moon's cooling process, not Znayka's personal experience.\\n\\nSince none of the current batch items mention Znayka's time on the Moon or air issues, the answer would be that there's no new evidence. The decision should be \\\"not_found\\\" because the required information isn't present in the current batch. The existing evidence from the snapshot is from a previous batch, and the current batch doesn't have any relevant content.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2398,\"completion_tokens\":785,\"total_tokens\":3183}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 22:29:38 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

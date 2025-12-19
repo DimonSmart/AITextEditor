@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-563\",\"object\":\"chat.completion\",\"created\":1766096114,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"В тексте упоминается, что астрономы в Солнечном городе разделились на вулканистов и метеоритчиков из-за спора о причинах образования лунных кратеров. Это описано в первом совпадающем абзаце, который начинается с указания **10:1.1.1.p7**. \\n\\n**Ответ:**  \\nВ разделе с указателем **10:1.1.1.p7** описано, что астрономы в Солнечном городе поссорились и разделились на вулканистов и метеоритчиков, утверждая разные теории о происхождении лунных кратеров.\",\"reasoning\":\"Okay, let's tackle this query. The user is asking where in the book it's described how astronomers in the Solar City argued and split into volcanologists and meteoritologists. \\n\\nFirst, I need to recall the previous interaction. The user asked the question, and I used the CursorAgentPlugin to find the relevant section. The tool response provided several pointers and excerpts. The key here is to identify the exact paragraph where the split is mentioned.\\n\\nLooking at the evidence from the tool response, the first excerpt at pointer \\\"10:1.1.1.p7\\\" clearly states that the astronomers in Solar City argued over the cause of lunar craters, splitting into two groups: volcanologists and meteoritologists. This seems to be the main point. The other pointers mention interactions and debates between the groups but don't describe the initial split. \\n\\nI should check if there's a more specific paragraph, but since the user asked for where it's described, the first excerpt is the primary source. The answer should include the semantic pointer from the tool response, which is \\\"10:1.1.1.p7\\\", and summarize the finding in Russian.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1535,\"completion_tokens\":419,\"total_tokens\":1954}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 22:15:14 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

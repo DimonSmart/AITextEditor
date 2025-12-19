@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-232\",\"object\":\"chat.completion\",\"created\":1766096435,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of Professor Zvezdokin in the text, excluding headers. The user provided a batch of items, each with a pointer, itemType, and markdown content. \\n\\nFirst, I need to scan through each item's markdown content for any reference to \\\"профессора Звёздочкина\\\" (Professor Zvezdokin). Since the task specifies to exclude headers, I'll focus on Paragraph and ListItem items, ignoring any headings.\\n\\nLooking at the items one by one:\\n\\n1. Item 12:1.1.1.p9 – Talks about Znayka's book about the Moon's surface. No mention of a professor.\\n2. Item 13:1.1.1.p10 – Mentions astronomers and vulcanologists laughing at Znayka's theory. Still no professor.\\n3. Item 14:1.1.1.p11 – Starts a quote from vulcanologists. No professor here.\\n4. Item 15:1.1.1.p12 – The quote continues, but still no mention of a professor.\\n5. Item 16:1.1.1.p13 – Znayka's response about volcanoes. No professor.\\n6. Item 17:1.1.1.p14 – Meteoritologists' quote. No professor.\\n7. Item 18:1.1.1.p15 – Their argument against volcanoes. Still no.\\n8. Item 19:1.1.1.p16 – Znayka's counter about meteorites. No.\\n9. Item 20:1.1.1.p17 – Vulcans and meteoritologists dismiss Znayka. No professor.\\n10. Item 21:1.1.1.p18 – Znayka visits the Moon and sees a crater. No mention of a professor.\\n11. Item 22:1.1.1.p19 – Znayka concludes about lunar inhabitants. Still no professor.\\n\\nWait, none of these items mention Professor Zvezdokin. The task says to exclude headers, but maybe there's a mention in a ListItem? Let me check again. All items are Paragraphs. The markdown content doesn't have any reference to the professor. The snapshot's evidenceCount is 0, and recentEvidencePointers is empty. Since there's no mention of Professor Zvezdokin in the current batch, the decision should be \\\"not_found\\\".\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1985,\"completion_tokens\":551,\"total_tokens\":2536}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 22:20:35 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

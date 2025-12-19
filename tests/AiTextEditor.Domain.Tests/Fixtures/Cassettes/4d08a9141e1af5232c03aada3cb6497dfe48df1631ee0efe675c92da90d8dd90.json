@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-142\",\"object\":\"chat.completion\",\"created\":1766096700,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"decision\\\": \\\"continue\\\",\\n  \\\"newEvidence\\\": [\\n    {\\n      \\\"pointer\\\": \\\"4:1.1.1.p1\\\",\\n      \\\"excerpt\\\": \\\"По проекту архитектора Вертибутылкина на улице Колокольчиков было построено даже два вертящихся здания. Одно пятиэтажное, башенного типа, со спиральным спуском и плавательным бассейном вокруг (спустившись по спиральному спуску, можно было нырять прямо в воду), другое шестиэтажное, с качающимися балконами, парашютной вышкой и чёртовым колесом на крыше.\\\",\\n      \\\"reason\\\": \\\"Описаны два вращающихся здания на улице Колокольчиков: пятиэтажное с спиральным спуском и шестиэтажное с чёртовым колесом на крыше.\\\"\\n    }\\n  ]\\n}\",\"reasoning\":\"Okay, let's tackle this. The user wants to find a description of two rotating buildings on Kolokolchikov Street with a spiral descent and a devil's wheel on the roof. The task is to scan the current batch's items for evidence.\\n\\nFirst, I'll look through the provided batch items. The relevant part is in pointer 4:1.1.1.p1. The excerpt mentions two rotating buildings on Kolokolchikov Street. The first building is five-story, tower-type, with a spiral descent and a swimming pool around it. The second is six-story with swinging balconies, a parachute tower, and a devil's wheel on the roof. That matches the task's requirements exactly. \\n\\nI need to check if this pointer is in the recentEvidencePointers from the snapshot. The snapshot has an empty recentEvidencePointers array, so it's safe to include. The reason should be concise, pointing out the specific details mentioned. No other items in the batch seem to relate to the task, so this is the only new evidence.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1903,\"completion_tokens\":452,\"total_tokens\":2355}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 22:25:00 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

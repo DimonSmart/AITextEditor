@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-917\",\"object\":\"chat.completion\",\"created\":1766096769,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The user wants to find a description of two rotating buildings on Kolokolchikov Street with a spiral descent and a devil's wheel on the roof. The snapshot shows that there's already one piece of evidence, pointer 4:1.1.1.p1, but I can't use that since it's in the recentEvidencePointers.\\n\\nLooking at the current batch items, I need to scan through each paragraph. The task mentions specific elements: two rotating buildings, spiral descent, and a devil's wheel on the roof. Let me check each entry.\\n\\nStarting with pointer 23:1.1.1.p20. It talks about lunar inhabitants and their movement inside the Moon. No mention of buildings or Kolokolchikov Street. Next, pointer 24:1.1.1.p21 discusses a book and Professor Zvezdochkin's criticism. Not relevant. Pointer 25:1.1.1.p22 is about the academy discussing the book. Still not related. \\n\\nPointer 26:1.1.1.p23 mentions a lecture hall and the professor's speech. No buildings here. Pointer 27:1.1.1.p24 is the professor opening the meeting. Not helpful. \\n\\nPointer 28:1.1.1.p25 has the professor's lecture. He talks about the Moon's interior and gravity, but no buildings. Pointer 29:1.1.1.p26 is Znayka's response. Still no. \\n\\nPointer 30:1.1.1.p27 is a back-and-forth between Znayka and the professor. No. Pointer 31:1.1.1.p28 mentions Znayka's experience in a rocket. Not related. \\n\\nPointer 32:1.1.1.p29 talks about the professor's reaction. Still nothing. Pointer 33:1.1.1.p30 is about the water in the bottle. Wait, here's a mention of a bottle and water behavior, but that's about physics, not buildings. \\n\\nPointer 34:1.1.1.p31 describes the water in the bottle during weightlessness. The water spreads evenly, which relates to gravity but not the buildings. \\n\\nPointer 35:1.1.1.p32 is the professor's sarcastic comment about comparing the bottle to a planet. Still no mention of buildings, streets, or the required elements. \\n\\nNone of the paragraphs in the current batch mention Kolokolchikov Street, rotating buildings, spiral descent, or a devil's wheel. The existing evidence was from a previous batch, and the current batch doesn't have any relevant content. So, the decision should be 'not_found' since there's no new evidence in the current batch that matches the task.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2223,\"completion_tokens\":623,\"total_tokens\":2846}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 22:26:09 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-177\",\"object\":\"chat.completion\",\"created\":1766102892,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"success\\\",\\\"semanticPointerFrom\\\":\\\"5:1.1.1.p2\\\",\\\"whyThis\\\":\\\"Парagraf упоминает производство резиновых лифчиков и зимних шуб из синтетического волокна, соответствующих требованиям задачи.\\\",\\\"markdown\\\":\\\"И это ещё не всё, конечно. Жители Солнечного города узнали, что коротышки из Цветочного города занялись строительством, и пришли к ним на помощь: помогли им построить несколько так называемых промышленных предприятий. По проекту инженера Клёпки была построена большая одёжная фабрика, которая выпускала множество самой разнообразной одежды, начиная с резиновых лифчиков и кончая зимними шубами из синтетического волокна. Теперь уже никому не приходилось корпеть с иголкой, чтобы сшить самые обыкновенные брюки или пиджак. На фабрике всё делали за коротышек машины. Готовая продукция, как и в Солнечном городе, развозилась по магазинам, и там уже каждый брал, что кому нужно было. Все заботы работников фабрики сводились к тому, чтобы придумывать новые фасоны одежды и следить, чтоб не производилось ничего такого, что не нравилось публике.\\\",\\\"summary\\\":\\\"Абзац перечисляет продукты одёжной фабрики, включая резиновые лифчики и зимние шубы из синтетического волокна.\\\"}\",\"reasoning\":\"Okay, let's tackle this. The user wants to find a paragraph that lists products from a clothing factory, specifically mentioning rubber bras and synthetic fiber winter coats.\\n\\nLooking at the provided evidence, there's one entry with Pointer \\\"5:1.1.1.p2\\\". The excerpt talks about a clothing factory producing various items, starting with rubber bras and ending with synthetic winter coats. The Reason field confirms it mentions both required products. \\n\\nSince the task is to find such a paragraph and the evidence directly matches the criteria, the decision should be \\\"success\\\". The semanticPointerFrom is the Pointer from the evidence. The markdown is the excerpt itself. The summary just states that the paragraph lists the required products. No other evidence is present, so no need to check further. Everything fits, so the answer is clear.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":742,\"completion_tokens\":565,\"total_tokens\":1307}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 19 Dec 2025 00:08:12 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

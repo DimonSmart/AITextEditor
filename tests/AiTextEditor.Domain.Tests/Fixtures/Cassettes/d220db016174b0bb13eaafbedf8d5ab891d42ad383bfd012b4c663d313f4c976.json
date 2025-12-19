@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-74\",\"object\":\"chat.completion\",\"created\":1766102798,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The user wants to find a paragraph that lists products from a clothing factory, including rubber bras and synthetic fiber winter coats. The snapshot shows that there's already one piece of evidence, but the pointer provided (5:1.1.1.p2) isn't in the current batch's items. So, I need to scan the current batch's items for any mentions of clothing products.\\n\\nLooking at the items in the current batch, all the pointers are from 12:1.1.1.p9 to 22:1.1.1.p19. The markdown content here is about the Moon's surface, volcanic theories, meteorite impacts, and the lunar inhabitants. There's a mention of \\\"кирпичной стены\\\" (brick wall) and \\\"стеклянные купола\\\" (glass domes), but nothing about clothing items like rubber bras or synthetic coats. The entire batch seems to be discussing lunar geology and theories, not a clothing factory. \\n\\nSince none of the current items mention the required products, the decision should be \\\"not_found\\\". There's no new evidence to add here. The user might need to check other batches or confirm if the context was correctly provided.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2016,\"completion_tokens\":272,\"total_tokens\":2288}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 19 Dec 2025 00:06:38 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

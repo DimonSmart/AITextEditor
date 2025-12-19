@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-659\",\"object\":\"chat.completion\",\"created\":1766096875,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\": \\\"not_found\\\", \\\"newEvidence\\\": []}\",\"reasoning\":\"Okay, let's tackle this. The user wants to find a mention of Znayka being on the Moon for about four hours and returning due to air problems. The context is a study of Znayka's lunar expedition.\\n\\nFirst, I need to scan the current batch's items. The snapshot shows evidenceCount is 0, so no previous matches. The recentEvidencePointers are empty, so no pointers to exclude. \\n\\nLooking at the batch items, they are all part of a story about Znayka's expedition. Let me check each paragraph. \\n\\nThe first paragraph (4:1.1.1.p1) talks about Nезнайка's trip to the Sun City and other events in the Flower City. No mention of the Moon or Znayka's time there. \\n\\nThe second paragraph (5:1.1.1.p2) mentions the Sun City's industries and a clothing factory. Still no relevant info. \\n\\nThird paragraph (6:1.1.1.p3) is about Ponchik's clothes and the moth problem. Not related. \\n\\nFourth paragraph (7:1.1.1.p4) continues Ponchik's story, the smell, and people avoiding him. Still nothing about Znayka's lunar expedition. \\n\\nWait, the task is about Znayka's expedition, but the provided text doesn't mention the Moon or any issues with air. All the paragraphs are about the Flower City and Sun City, Ponchik's clothes, etc. There's no mention of Znayka being on the Moon, his duration, or air problems. \\n\\nSince none of the current batch items have the required information, the decision should be \\\"not_found\\\". The newEvidence array would be empty. So the output is {\\\"decision\\\": \\\"not_found\\\", \\\"newEvidence\\\": []}.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1917,\"completion_tokens\":399,\"total_tokens\":2316}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 22:27:55 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

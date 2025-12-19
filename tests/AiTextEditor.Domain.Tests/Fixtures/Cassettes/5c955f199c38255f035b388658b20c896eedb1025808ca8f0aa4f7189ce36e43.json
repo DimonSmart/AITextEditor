@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-833\",\"object\":\"chat.completion\",\"created\":1766095107,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[{\\\"pointer\\\":\\\"25:1.1.1.p22\\\",\\\"excerpt\\\":\\\"Профессор Звёздочкин и предложил академии астрономических наук устроить обсуждение Знайкиной книги и разобрать её, как он выразился, по косточкам, с тем чтобы никому больше не повадно было такие книги писать.\\\",\\\"reason\\\":\\\"Профессор Звёздочкин предложил организовать обсуждение Знайкиной книги.\\\"}]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the second mention of Professor Zvezdochkin, excluding headers. The user provided a batch of items, each with a pointer and markdown content.\\n\\nFirst, I need to scan through each item's markdown to find mentions of Professor Zvezdochkin. The snapshot shows evidenceCount is 0 and recentEvidencePointers is empty, so no previous matches to exclude.\\n\\nLooking at the items:\\n\\n- Item 24: Mentions Professor Zvezdochkin once, talking about his reaction to the book.\\n- Item 25: He proposes an academic discussion, so that's another mention.\\n- Item 28: He's giving a lecture, so that's a third mention. Wait, but the task is for the second mention. Wait, let me check again.\\n\\nWait, the user wants the second occurrence. Let me count:\\n\\nFirst mention is in item 24 (paragraph p21). Then item 25 (p22) mentions him again. So that's the second. Then item 28 (p25) is another mention. But the task is to find the second, so maybe item 25 is the second. Wait, need to check each mention.\\n\\nWait, let me go through each paragraph:\\n\\n- p21: \\\"А действительный член академии астрономических наук профессор Звёздочкин...\\\" – first mention.\\n- p22: \\\"Профессор Звёздочкин и предложил...\\\" – second mention.\\n- p25: \\\"профессор Звёздочкин громко откашлялся...\\\" – third mention.\\n- p28: \\\"профессор Звёздочкин\\\" again – fourth?\\n\\nWait, the task is to find the second mention. So the first is in p21, the second in p22. But the user's instruction says to exclude headers, which these are paragraphs, so they're okay. So the second mention is in p22. But the user's example output might have different pointers. Wait, the user's input has items with pointers like 23:1.1.1.p20, etc. So the second mention is in item 25 (pointer 25:1.1.1.p22)? Wait, the pointer for p22 is 25:1.1.1.p22. So that's the second mention. Then the third is in p25 (pointer 26:1.1.1.p23?), no, wait:\\n\\nLooking at the items:\\n\\n- 24:1.1.1.p21: first mention.\\n- 25:1.1.1.p22: second mention.\\n- 26:1.1.1.p23: third mention? Or maybe not. Wait, the pointer for p23 is 26:1.1.1.p23. But the markdown there is about him stepping up to speak. So that's another mention. So the second mention is in p22. So the answer should include that. But the user's task says to find the second occurrence. So the first is in p21, the second in p22. Therefore, the newEvidence should include the pointer 25:1.1.1.p22. But wait, the user's example output might have different pointers. Let me check again.\\n\\nWait, the items are:\\n\\n- 23:1.1.1.p20: not relevant.\\n- 24:1.1.1.p21: first mention.\\n- 25:1.1.1.p22: second mention.\\n- 26:1.1.1.p23: third mention.\\n- etc.\\n\\nSo the second mention is in 25:1.1.1.p22. Therefore, the newEvidence should include that pointer. The reason would be that the excerpt mentions Professor Zvezdochkin proposing an academic discussion. So the JSON should have that pointer, excerpt, and reason. Also, check if any other mentions are present. But since the task is to find the second, and the first is in p21, the second is in p22. So the output should have that.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2200,\"completion_tokens\":1047,\"total_tokens\":3247}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 21:58:27 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

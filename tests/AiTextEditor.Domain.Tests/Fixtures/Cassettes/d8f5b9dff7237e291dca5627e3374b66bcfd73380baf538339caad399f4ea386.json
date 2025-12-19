@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-456\",\"object\":\"chat.completion\",\"created\":1766095708,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[{\\\"pointer\\\":\\\"6:1.1.1.p3\\\",\\\"excerpt\\\":\\\"Все были очень довольны. Единственным, кто пострадал на этом деле, оказался Пончик. Когда Пончик увидел, что теперь можно брать в магазине любую вещь, какая только могла понадобиться, он стал недоумевать: к чему ему вся та куча костюмов, которая накопилась у него дома. Все эти костюмы к тому же вышли из моды, и их всё равно нельзя было носить. Выбрав потемней ночку, Пончик завязал свои старые костюмы в огромный узел, вынес тайком из дома и утопил в Огурцовой реке, а вместо них натаскал себе из магазинов новых костюмов. Кончилось тем, что его комната превратилась в какой-то склад готового платья.\\\",\\\"reason\\\":\\\"Пончик выбрал потемней ночку, чтобы утопить старые костюмы в Огурцовой реке.\\\"}]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find a paragraph where Ponchik, choosing a darker night, drowned his old costumes in the Ogurcovka River. The user provided a batch of items with pointers and markdown content.\\n\\nFirst, I need to scan through the current batch's items. The snapshot shows evidenceCount is 0, so no previous matches. The recentEvidencePointers are empty, so no duplicates to avoid.\\n\\nLooking at the items, the relevant part is likely in the Paragraph items. The Heading items can be ignored unless the task mentions them, which it doesn't. \\n\\nItem 6:1.1.1.p3's markdown mentions Ponchik choosing a darker night to tie his old costumes into a big knot, take them out secretly, and drown them in Ogurcovka River. That's exactly what the task asks for. The reason is straightforward: the excerpt directly states the action matching the task. \\n\\nI need to make sure the pointer is exactly as in the batch. The excerpt is copied verbatim. The reason is a single sentence, factual, without any claims about order or position. \\n\\nNo other paragraphs mention drowning costumes in the river. So the newEvidence should include this pointer, excerpt, and the reason based on the content.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1900,\"completion_tokens\":540,\"total_tokens\":2440}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 22:08:28 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-26\",\"object\":\"chat.completion\",\"created\":1766102747,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"В абзаце, указанном semantic pointer **11:1.1.1.p8**, Знайка сравнивает лунную поверхность с хорошо пропечённым блином, описывая образование пузырьков пара. В тексте говорится, что лунная поверхность похожа на блин с ноздреватыми дырками, а пузырьки пара, образующиеся на поверхности блина, лопаются, оставляя следы в виде дырок. Это прямо отвечает на вопрос.\",\"reasoning\":\"Okay, let's tackle this query. The user is asking in which paragraph Znayka compares the lunar surface to a well-cooked pancake and explains the bubbles of steam. \\n\\nFirst, I need to recall the previous interaction. The user asked about the specific paragraph where Znayka makes this comparison and explains the steam bubbles. The assistant used the CursorAgentPlugin to find the relevant text. The tool response provided three evidence points with pointers.\\n\\nLooking at the first evidence, pointer 11:1.1.1.p8, the excerpt mentions Znayka comparing the lunar surface to a well-cooked pancake with holes from bubbles. It also describes how the bubbles form and pop on the pancake, creating holes. This seems to directly answer the user's question. The second pointer, 12:1.1.1.p9, talks about the Moon's surface as a viscous substance with gas bubbles, but it's more about the cooling process rather than the pancake comparison. The third pointer, 45:1.1.1.p42, compares the Moon's internal cavity to a bubble in a bottle, which is a different context.\\n\\nSo the correct paragraph is the first one, pointer 11:1.1.1.p8. The user's answer should reference this pointer and the excerpt provided. The assistant needs to confirm that this is the correct location where both the comparison and the explanation of steam bubbles are present.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1699,\"completion_tokens\":437,\"total_tokens\":2136}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 19 Dec 2025 00:05:47 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

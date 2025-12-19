@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-492\",\"object\":\"chat.completion\",\"created\":1766089396,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, the user is asking where in the document it's listed that the clothing factory produced everything, from rubber bras to synthetic fur coats. Let me think about how to approach this.\\n\\nFirst, I need to use the tools provided. The CursorAgentPlugin-run_cursor_agent function is available. The task is to find the specific paragraph mentioning the factory's wide range of products. Since the user mentioned \\\"одёжная фабрика\\\" (clothing factory), I should look for sections discussing the factory's product range.\\n\\nI should start by checking the table of contents or any headings related to the factory's operations. But since the user wants the first paragraph that matches, not the heading, I need to search through the text. The function requires a taskDescription, so I'll set the task to find the paragraph mentioning the factory's production of various items, including rubber bras and synthetic fur coats.\\n\\nI don't have a previous context, so the context parameter can be empty. The startAfterPointer is optional, but since the user hasn't specified a starting point, I'll omit it. The taskDescription should be clear and specific to locate the correct section.\\n\\nI'll call the function with the taskDescription in Russian, as the user expects the answer in Russian. The function should return the relevant paragraph with the pointerLabel if applicable. Once I get the result, I'll present the answer in Russian, including the semantic pointer if found.\\n\",\"tool_calls\":[{\"id\":\"call_ah0cvfm8\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"CursorAgentPlugin-run_cursor_agent\",\"arguments\":\"{\\\"context\\\":\\\"\\\",\\\"startAfterPointer\\\":\\\"\\\",\\\"taskDescription\\\":\\\"Найти абзац, где перечисляются продукты одёжной фабрики, включая резиновые лифчики и зимние шубы из синтетического волокна\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":386,\"completion_tokens\":381,\"total_tokens\":767}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 20:23:16 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

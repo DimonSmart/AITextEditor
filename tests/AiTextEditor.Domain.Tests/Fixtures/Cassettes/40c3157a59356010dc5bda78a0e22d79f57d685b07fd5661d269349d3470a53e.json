@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-129\",\"object\":\"chat.completion\",\"created\":1766102666,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The user wants to find a paragraph where Znayka compares the lunar surface to a well-baked blini (which is a type of Russian pancake) and explains the bubbles of steam. \\n\\nFirst, I need to look through the provided batch items. The snapshot shows that there are 3 pieces of evidence already found, and the recent pointers are 11:1.1.1.p8, 12:1.1.1.p9, and 45:1.1.1.p42. But the current batch starts from pointer 58:1.1.1.p55 onwards. So I need to check each paragraph in this batch.\\n\\nLooking at the paragraphs:\\n\\n- The first one (58) talks about losing weight and feeling like sitting down, but no mention of the moon or blini.\\n- Paragraph 59 is a dialogue where the shorties ask Znayka to continue, but again, no relevant info.\\n- Paragraph 60 is where Znayka explains his experience in zero gravity, mentioning that objects float and water forms bubbles. Wait, here's a part about water forming bubbles when the bottle is turned upside down. But the user's task mentions comparing the lunar surface to a blini and explaining the bubbles. This paragraph talks about bubbles in water, but not the lunar surface. Maybe the bubbles are part of the comparison? Let me check again.\\n\\nWait, the task says \\\"сравнивает лунную поверхность с хорошо пропечённым блином и объясняет пузырьки пара\\\" – so Znayka compares the lunar surface to a well-baked blini and explains the steam bubbles. The paragraph in 60 mentions that water forms bubbles when the bottle is turned upside down, but that's about water in zero gravity. There's no mention of the lunar surface or blini here. \\n\\nLooking further, paragraph 69 mentions a piece of the Moon and how it's a rock, but again, no comparison to blini. The other paragraphs are dialogues or reactions. \\n\\nWait, maybe I missed something. Let me check again. The user's task is about a comparison to a blini and explaining steam bubbles. The only mention of bubbles is in paragraph 60, but that's about water in space, not the lunar surface. There's no mention of blini or the lunar surface comparison here. \\n\\nSo, none of the current batch items seem to have the required content. The existing evidence pointers from the snapshot might be from previous batches, but the current batch doesn't have any matches. Therefore, the decision should be \\\"not_found\\\" because the required evidence isn't present in the current batch.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2251,\"completion_tokens\":587,\"total_tokens\":2838}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 19 Dec 2025 00:04:26 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

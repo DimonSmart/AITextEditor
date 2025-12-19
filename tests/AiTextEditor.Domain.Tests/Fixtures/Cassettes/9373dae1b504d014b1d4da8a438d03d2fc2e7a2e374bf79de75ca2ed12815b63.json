@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-842\",\"object\":\"chat.completion\",\"created\":1766132846,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"success\\\",\\\"semanticPointerFrom\\\":\\\"8:1.1.1.p5\\\",\\\"whyThis\\\":\\\"Упоминаются Фуксия и Селёдочка как учёные малышки в Солнечном городе.\\\",\\\"markdown\\\":\\\"Там он познакомился с учёными малышками Фуксией и Селёдочкой, которые в то время готовили свой второй полёт на Луну.\\\",\\\"summary\\\":\\\"Фуксия и Селёдочка упоминаются как учёные малышки в Солнечном городе, знакомясь с Знайкой перед полётом на Луну.\\\"}\",\"reasoning\":\"Okay, let's tackle this problem. The task is to find the first mention of Фуксия and Селедочка in the text. The evidence provided has one entry with the pointer 8:1.1.1.p5. The excerpt mentions that Знайка met the scientists Фуксия and Селедочка in the Solar City while preparing their second flight to the Moon. \\n\\nFirst, I need to check if this is the first occurrence. Since there's only one entry in the evidence, and the pointer points to a specific location in the text, it's likely that this is the first mention. The reason given in the evidence states they are mentioned as scientists in the Solar City. \\n\\nThe user wants the first occurrence, and since there's no other evidence provided, this must be the correct pointer. The markdown should be the excerpt provided. The decision is success because the evidence directly mentions both names. The semanticPointerFrom is the given pointer, and the summary states they are mentioned as scientists in the Solar City.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":774,\"completion_tokens\":359,\"total_tokens\":1133}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 19 Dec 2025 08:27:26 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

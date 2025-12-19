@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-459\",\"object\":\"chat.completion\",\"created\":1766096630,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"done\\\",\\\"newEvidence\\\":[{\\\"pointer\\\":\\\"70:1.1.1.p67\\\",\\\"excerpt\\\":\\\"Кусочек Луны пошёл по рукам. Каждому хотелось поближе посмотреть на него. Пока коротышки разглядывали камень, передавая его из рук в руки, Знайка рассказывал, как они с Фуксией и Селёдочкой путешествовали по Луне и что там видели. Всем очень понравился Знайкин рассказ. Все остались очень довольны. Только профессор Звёздочкин был не очень доволен.\\\",\\\"reason\\\":\\\"Упоминается профессор Звёздочкин в тексте, что соответствует задаче.\\\"}]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of Professor Zvezdochkin in the text, excluding headers. The user provided a batch of items, each with a pointer and markdown content. \\n\\nFirst, I need to scan through each item's markdown to look for any reference to \\\"профессор Звёздочкин\\\". The snapshot shows that there are already 2 pieces of evidence, but the recent pointers are 24:1.1.1.p21 and 37:1.1.1.p34. However, the current batch starts from pointer 58:1.1.1.p55 onwards. Since the task is to find the first occurrence, I need to check each item in order.\\n\\nLooking at the items in the batch:\\n\\n- The first item (58:1.1.1.p55) is a paragraph about losing weight sensations. No mention of the professor here.\\n- The next items (59:1.1.1.p56, 60:1.1.1.p57, 61:1.1.1.p58) discuss the characters' reactions and the weightlessness. Still no professor.\\n- Item 62:1.1.1.p62 mentions a short person guessing about citrus or kerosene. Not relevant.\\n- Item 63:1.1.1.p63 asks if they brought something from the Moon. Still no.\\n- Item 64:1.1.1.p64 talks about bringing a piece of the Moon. Not the professor.\\n- Item 65:1.1.1.p65 mentions Znayka showing a moon rock. No professor here.\\n- Item 66:1.1.1.p66 is about the moon rock being passed around. Still no.\\n- Item 67:1.1.1.p67 describes the moon rock and Znayka's story. The professor isn't mentioned yet.\\n- Finally, item 70:1.1.1.p67 (wait, the pointer here is 70:1.1.1.p67? Wait, looking back, the items are numbered 58 to 73. Let me check again.\\n\\nWait, looking at the items provided:\\n\\nThe items start with pointer 58:1.1.1.p55, then 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73. \\n\\nLooking at each markdown:\\n\\n- Item 70:1.1.1.p67's markdown says: \\\"Только профессор Звёздочкин был не очень доволен.\\\" That's the first mention of Professor Zvezdochkin. \\n\\nSo the pointer is 70:1.1.1.p67. The excerpt is the entire paragraph where it mentions the professor. The reason is that the excerpt directly mentions \\\"профессор Звёздочкин\\\" which matches the task. Since the snapshot's recent pointers don't include this one, it's a new evidence. The decision would be to continue because there might be more, but since the task is to find the first occurrence, once found, maybe done? Wait, the task says \\\"найти первое упоминание\\\", so once found, the answer is done. But according to the rules, the output should be a JSON with decision as continue or done. Since the user might have more batches, but the current batch has the first mention, so the decision would be done. But the user's input has hasMoreBatches: true, so maybe continue. Wait, the rules say to output exactly one JSON. The task is to find the first mention. If in the current batch, the first mention is found, then the decision is done. But the user might have more batches, but the current batch's items are processed. Since the first occurrence is in this batch, the answer is done. But the output should be \\\"done\\\" if the first occurrence is found. However, the user's instruction says to output exactly one JSON. So the correct approach is to check if the first occurrence is in the current batch. Since in the current batch, the first mention is at pointer 70:1.1.1.p67, then the decision is done. But the user might have more batches, but the task is to find the first occurrence. So the answer is done. However, the output should be \\\"done\\\" if the first occurrence is found. Therefore, the newEvidence includes the pointer 70:1.1.1.p67 with the excerpt and reason. The decision is done.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2228,\"completion_tokens\":1209,\"total_tokens\":3437}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 22:23:50 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

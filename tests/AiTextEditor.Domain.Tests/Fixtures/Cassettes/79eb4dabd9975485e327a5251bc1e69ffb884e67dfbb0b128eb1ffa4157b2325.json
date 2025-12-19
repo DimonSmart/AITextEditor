@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-791\",\"object\":\"chat.completion\",\"created\":1766094781,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of \\\"Фуксия\\\" (Fuksiya). The user provided a batch of items, each with a pointer and markdown content. The snapshot shows that there's already 1 piece of evidence, with the pointer \\\"8:1.1.1.p5\\\", but that's from a previous batch. The current batch starts from pointer \\\"36:1.1.1.p33\\\" onwards.\\n\\nFirst, I need to scan through each item in the current batch to see if \\\"Фуксия\\\" is mentioned. Let me go through each paragraph:\\n\\n1. **36:1.1.1.p33**: Talks about a bottle in space, but no mention of Фуксия.\\n2. **37:1.1.1.p34**: Zvezdochkin mentions the moon being hollow, still no Фуксия.\\n3. **38:1.1.1.p35**: The audience laughs, but nothing about Фуксия.\\n4. **39:1.1.1.p36**: Discusses the moon's cooling from the surface, not Фуксия.\\n5. **40:1.1.1.p37**: Someone says the moon is liquid, still no.\\n6. **41:1.1.1.p38**: Znayka mentions liquid, but not Фуксия.\\n7. **42:1.1.1.p39**: Zvezdochkin jokes about the moon's hollow, no.\\n8. **43:1.1.1.p40**: Znayka talks about cooling and contraction, no mention.\\n9. **44:1.1.1.p41**: Professor is annoyed, not relevant.\\n10. **45:1.1.1.p42**: Znayka explains the moon's cavity, still no.\\n11. **46:1.1.1.p43**: Someone agrees, but no Фуксия.\\n12. **47:1.1.1.p44**: Crowd cheers, no.\\n13. **48:1.1.1.p45**: More cheers, nothing.\\n14. **49:1.1.1.p46**: Crowd demands a speech, no.\\n15. **50:1.1.1.p47**: Someone yells \\\"Doloy Zvezdochkina!\\\", still no.\\n16. **51:1.1.1.p48**: Zvezdochkin is dragged away, no.\\n17. **52:1.1.1.p49**: Crowd wants Znayka to speak, no.\\n18. **53:1.1.1.p50**: Znayka can't speak, no.\\n19. **54:1.1.1.p51**: Crowd asks about lunar flight, no.\\n20. **55:1.1.1.p52**: Znayka talks about weightlessness, still no.\\n\\nWait, none of these paragraphs mention \\\"Фуксия\\\". The user's task is to find the first occurrence, but in the current batch, there's no mention. The previous evidence was from a different batch (pointer 8:1.1.1.p5), which isn't in the current batch. Since the current batch doesn't have any references to Фуксия, the decision should be \\\"not_found\\\". Also, the user's snapshot shows that the previous evidence was already counted, but since the current batch doesn't have any new evidence, the answer is \\\"not_found\\\".\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2358,\"completion_tokens\":808,\"total_tokens\":3166}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 21:53:01 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

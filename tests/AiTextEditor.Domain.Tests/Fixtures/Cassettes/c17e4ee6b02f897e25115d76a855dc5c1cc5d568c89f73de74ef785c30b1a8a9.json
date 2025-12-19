@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-87\",\"object\":\"chat.completion\",\"created\":1766095062,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the second mention of Professor Zvezdokin, excluding headers. The user provided a batch of items, each with a pointer, itemType, and markdown content. \\n\\nFirst, I need to scan through each item's markdown content for any references to Professor Zvezdokin. Since the snapshot shows evidenceCount is 0 and recentEvidencePointers is empty, there are no previous matches to exclude.\\n\\nLooking at the markdown texts:\\n\\n1. The first paragraph mentions Znayka (Знайка) discussing the Moon's surface, but no professor.\\n2. The next paragraphs talk about astronomers, volcanologists, and meteoritologists, but no mention of a professor.\\n3. The 16th item mentions Znayka arguing against volcanologists, but again, no professor.\\n4. The 18th item refers to meteoritologists, but not the professor.\\n5. The 21st item talks about Znayka visiting the Moon and seeing a crater, but no professor here.\\n6. The 22nd item mentions Znayka publishing a book about lunar inhabitants, but again, no professor.\\n\\nWait, maybe I missed something. Let me check again. The task is about Professor Zvezdokin, but the provided texts only mention Znayka, a character discussing lunar theories. There's no mention of a professor named Zvezdokin in any of the markdown contents. \\n\\nSince the task is to find the second mention, but there are no instances of the professor's name in the current batch, the correct decision would be \\\"not_found\\\". The user might have a typo or confusion between Znayka and Zvezdokin. But based on the given data, there's no evidence of Professor Zvezdokin. Therefore, the output should indicate that no new evidence was found.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1982,\"completion_tokens\":402,\"total_tokens\":2384}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 21:57:42 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

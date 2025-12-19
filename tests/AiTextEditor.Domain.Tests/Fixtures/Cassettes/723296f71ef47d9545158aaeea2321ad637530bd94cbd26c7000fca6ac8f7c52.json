@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-830\",\"object\":\"chat.completion\",\"created\":1765979870,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, the user is asking where in the book the professor Zvezdochkin is first mentioned, excluding the headings. Let me think about how to approach this.\\n\\nFirst, I need to use the tools provided. The available function is run_cursor_agent, which requires a taskDescription. The task is to find the first mention of Professor Zvezdochkin in the text, not in the headings. \\n\\nSince the user wants the first occurrence in the text, I should instruct the cursor agent to search for the earliest instance. The function parameters include taskDescription, which should be a natural language task. So the taskDescription would be something like \\\"Find the first mention of Professor Zvezdochkin in the text, excluding headings.\\\"\\n\\nI don't have any context from a previous run, so the context parameter can be empty. The startAfterPointer isn't needed here because we want to start from the beginning. \\n\\nI need to make sure that the agent looks through the document's content, not just the headings. The answer should include the semantic pointer if applicable. Once the agent finds the relevant paragraph, I'll present the answer in Russian, including the pointer if there is one.\\n\",\"tool_calls\":[{\"id\":\"call_0aq33jql\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"CursorAgentPlugin-run_cursor_agent\",\"arguments\":\"{\\\"context\\\":\\\"\\\",\\\"startAfterPointer\\\":\\\"\\\",\\\"taskDescription\\\":\\\"Найти первое упоминание профессора Звёздочкина в тексте (исключая заголовки)\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":368,\"completion_tokens\":305,\"total_tokens\":673}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Wed, 17 Dec 2025 13:57:50 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

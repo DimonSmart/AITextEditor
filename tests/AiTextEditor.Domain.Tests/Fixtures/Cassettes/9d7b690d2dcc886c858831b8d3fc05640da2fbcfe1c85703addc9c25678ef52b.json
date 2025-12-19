@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-451\",\"object\":\"chat.completion\",\"created\":1766096026,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[{\\\"pointer\\\":\\\"51:1.1.1.p48\\\",\\\"excerpt\\\":\\\"– Пусть Знайка делает доклад! – кричали вокруг. – Долой Звёздочкина!\\\",\\\"reason\\\":\\\"The crowd explicitly demands Znayka speak while calling for Zvёzdochkin's removal, indicating a factional split between supporters of Znayka and opponents of Zvёzdochkin.\\\"}]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find a description where astronomers in the Solar City argued and split into volcanists and meteoritists. The user provided a batch of items with pointers and markdown content. \\n\\nFirst, I need to scan through each item in the batch. The pointers in the snapshot's recentEvidencePointers are already excluded, so I should check if any of the current items' pointers are in that list. The pointers here start from 36:1.1.1.p33 up to 57:1.1.1.p54. The recent ones are 14,15,17,18,20, which aren't in the current batch, so no need to exclude them here.\\n\\nLooking at the markdown content. The key is to find mentions of astronomers arguing and splitting into two groups: volcanists and meteoritists. Let me go through each paragraph:\\n\\n- Paragraph 36: Discussion about the Moon being hollow. No mention of argument or split.\\n- Paragraph 37: Zvezdochkin agrees but questions why the Moon is hollow. Still just a discussion, no split yet.\\n- Paragraph 38: Audience laughs, Znayka continues. No conflict here.\\n- Paragraph 39: Znayka explains the Moon's formation. Still one side.\\n- Paragraph 40: Someone interrupts, says the Moon has liquid. Znayka agrees. Still one side.\\n- Paragraph 42: Zvezdochkin jokes about the Moon's hollow space. Still just a debate.\\n- Paragraph 43: Znayka explains the cooling process leading to a hollow center. No split yet.\\n- Paragraph 44: Professor is annoyed. Still one side.\\n- Paragraph 45: Audience agrees with Znayka. No conflict.\\n- Paragraph 46: Someone agrees. Still one side.\\n- Paragraph 47: Crowd starts shouting \\\"Verno!\\\" and \\\"Doloy Zvezdochkina!\\\" Wait, here's a conflict. The audience is reacting negatively to Zvezdochkin. But does this mention splitting into groups? The crowd is cheering for Znayka and against Zvezdochkin. Maybe the split is between supporters of Znayka (volcanists?) and Zvezdochkin (meteoritists?).\\n\\nWait, the task mentions \\\"astronomers in Solar City\\\" arguing and splitting into volcanists and meteoritists. The current batch's content shows a debate between Znayka and Zvezdochkin, with the audience supporting Znayka and shouting \\\"Doloy Zvezdochkina!\\\" (Down with Zvezdochkin). This suggests a split between those supporting Znayka (maybe volcanists) and those supporting Zvezdochkin (meteoritists). \\n\\nLooking at the exact excerpt: \\\"И сейчас же со всех сторон раздались крики: – Верно! Правильно! Молодец, Знайка! Ура! Все захлопали в ладоши. Кто-то крикнул: – Долой Звёздочкина! С сейчас же двое коротышек схватили Звёздочкина – один за шиворот, другой за ноги – и стащили его с трибуны. Несколько коротышек подхватили Знайку на руки и потащили к трибуне.\\\" This shows the crowd is against Zvezdochkin and for Znayka. So the split is between supporters of Znayka (volcanists) and Zvezdochkin (meteoritists). \\n\\nThe pointer here is 47:1.1.1.p45. The excerpt includes the crowd's reaction, which indicates the split. The reason is that the audience is divided, supporting Znayka and opposing Zvezdochkin, leading to a split into two groups. \\n\\nCheck if this pointer is in the recentEvidencePointers. The recent ones are 14,15,17,18,20. 47 isn't there, so it's valid. So the newEvidence should include this pointer with the excerpt and reason.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2434,\"completion_tokens\":1016,\"total_tokens\":3450}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 18 Dec 2025 22:13:46 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}
