@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-914\",\"object\":\"chat.completion\",\"created\":1766352294,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[{\\\"pointer\\\":\\\"71:1.1.1.p69\\\",\\\"excerpt\\\":\\\"– Однако… – повторил, повышая голос, профессор Звёздочкин. – Однако мы собрались здесь вовсе не для того, чтоб про Луну слушать, а для того, чтоб обсудить Знайкину книжку, а поскольку книжку не обсудили, то, значит, не выполнили того, что было намечено, а раз не выполнили того, что было намечено, то надо будет всё-таки выполнить, а раз надо будет всё-таки выполнить, то придётся все-таки выполнить и подвергнуть рассмотрению…\\\",\\\"reason\\\":\\\"Excerpt directly mentions профессор Звёздочкин.\\\"}]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the second mention of профессора Звёздочкина, excluding headers. The user provided a snapshot with evidenceCount 3 and recentEvidencePointers including \\\"70:1.1.1.p67\\\" and others. Wait, the recentEvidencePointers are [\\\"24:1.1.1.p21\\\",\\\"44:1.1.1.p41\\\",\\\"50:1.1.1.p47\\\"], but the current batch items start from pointer 58. So the previous matches are from earlier batches. The current batch's items start at 58, so I need to check if any of the current items mention профессора Звёздочкин.\\n\\nLooking through the current batch items:\\n\\n- Pointer 58: Talks about losing weight, no mention.\\n- 59: Corrupts shouting, no.\\n- 60: No.\\n- 61: Mentions Знайка's experience, but not Звёздочкин.\\n- 62: No.\\n- 63: No.\\n- 64: No.\\n- 65: No.\\n- 66: No.\\n- 67: No.\\n- 68: No.\\n- 69: No.\\n- 70: Here, \\\"профессор Звёздочкин был не очень доволен.\\\" That's the first mention in this batch. But the snapshot's recentEvidencePointers include 70:1.1.1.p67? Wait, the snapshot's recentEvidencePointers are [\\\"24:1.1.1.p21\\\",\\\"44:1.1.1.p41\\\",\\\"50:1.1.1.p47\\\"], which are from previous batches. So the current batch's pointer 70 is a new one. So this is the first mention in the current batch. But the task is to find the second mention overall, excluding headers. Since the snapshot's evidenceCount is 3, which might include previous mentions. But the user's task says to exclude headers, so maybe the previous mentions are already accounted for. However, the current batch's pointer 70 is the first mention here. Then, looking further, pointer 71: \\\"профессор Звёздочкин\\\" again. That's the second mention in the current batch. So the newEvidence should include pointer 71. Let me check the excerpt for pointer 71: \\\"– Однако… – повторил, повышая голос, профессор Звёздочкин. – Однако мы собрались здесь вовсе не для того, чтоб про Луну слушать, а для того, чтоб обсудить Знайкину книжку...\\\" So the excerpt here mentions профессор Звёздочкин. Since the previous evidenceCount was 3, and the user is looking for the second mention (excluding headers), but the current batch's pointer 70 is the first mention here, and pointer 71 is the second. Therefore, the newEvidence should include pointer 71. The reason would be that the excerpt directly mentions профессора Звёздочкина. Also, check if pointer 70 is already in the recentEvidencePointers. The recentEvidencePointers in the snapshot are [\\\"24:1.1.1.p21\\\",\\\"44:1.1.1.p41\\\",\\\"50:1.1.1.p47\\\"], so pointer 70 isn't there. Therefore, the newEvidence would be pointer 71. So the decision is to continue, and newEvidence includes pointer 71 with the excerpt and reason.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2345,\"completion_tokens\":990,\"total_tokens\":3335}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 21 Dec 2025 21:24:54 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

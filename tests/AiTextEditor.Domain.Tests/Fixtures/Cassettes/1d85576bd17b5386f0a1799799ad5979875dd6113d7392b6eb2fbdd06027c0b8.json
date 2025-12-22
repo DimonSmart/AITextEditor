@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-148\",\"object\":\"chat.completion\",\"created\":1766352025,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, the user is asking for the second mention of Professor Zvezdokhin in the book, excluding headers. Let me start by creating a cursor to search for mentions of him. I'll use the mcp-create_cursor function with the description specifying to exclude headers. Now, the cursor is created. Next, I need to run the agent to find the first mention. After that, I'll iterate again to find the second mention. I have to make sure that each iteration checks the next portion of the document. If the first mention is found, the second one should be in the subsequent items. I'll keep track of the pointers and stop once the second mention is located.\\n\",\"tool_calls\":[{\"id\":\"call_o161gyz1\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"mcp-run_agent\",\"arguments\":\"{\\\"cursorName\\\":\\\"search_cursor\\\",\\\"taskDescription\\\":\\\"Find the first mention of профессора Звёздочкина (excluding headers)\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":870,\"completion_tokens\":190,\"total_tokens\":1060}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 21 Dec 2025 21:20:24 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

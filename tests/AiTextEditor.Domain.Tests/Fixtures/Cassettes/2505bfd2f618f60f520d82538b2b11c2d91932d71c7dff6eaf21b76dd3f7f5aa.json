@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-249\",\"object\":\"chat.completion\",\"created\":1766332083,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find mentions of \\\"профессора Звёздочкина\\\" excluding headers. The user provided a batch of items, each with a pointer, itemType, and markdown content. \\n\\nFirst, I need to scan through each item's markdown to see if \\\"профессора Звёздочкина\\\" is mentioned. Since the itemType includes Paragraph and ListItem, I should focus on those. The snapshot shows evidenceCount is 0 and recentEvidencePointers is empty, so there's no prior evidence to exclude.\\n\\nLooking at the first paragraph (8:1.1.1.p5), the text talks about Знайка and his trip to the Moon, meeting Фуксией and Селёдочкой. No mention of Звёздочкин here. \\n\\nNext, paragraph 9:1.1.1.p6 mentions Стекляшкин, an astronomer, but not Звёздочкин. \\n\\nParagraph 10:1.1.1.p7 discusses a debate among astronomers in the Solar City about the origin of lunar craters. Again, no Звёздочкин. \\n\\nThe last paragraph (11:1.1.1.p8) talks about Знайка's theory and his observations with Стекляшкин. Still, no mention of Звёздочкин. \\n\\nWait, maybe I missed something. Let me check again. All the paragraphs mention characters like Знайка, Стекляшкин, Фуксией, Селёдочкой, but not Звёздочкин. The task is to exclude headers, but none of the items here are headers. \\n\\nSince none of the markdown content in the current batch mentions \\\"профессора Звёздочкина\\\", the decision should be \\\"not_found\\\". There's no new evidence to add here. The output should reflect that no relevant mentions were found in the current batch.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1671,\"completion_tokens\":427,\"total_tokens\":2098}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 21 Dec 2025 15:48:03 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

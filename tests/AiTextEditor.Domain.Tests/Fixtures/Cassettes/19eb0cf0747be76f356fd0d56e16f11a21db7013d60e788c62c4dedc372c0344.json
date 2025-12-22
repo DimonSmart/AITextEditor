@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-102\",\"object\":\"chat.completion\",\"created\":1766352421,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Второе упоминание профессора Звёздочкина (исключая заголовки) находится в следующем фрагменте текста:  \\n**Pointer: 44:1.1.1.p41**  \\n*Excerpt: – Надо полагать, знаю, – сердито буркнул профессор.*  \\n\\nЭто прямое упоминание происходит после первого упоминания в параграфе 21.\",\"reasoning\":\"Okay, let's see. The user is asking for the second mention of Professor Zvezdokhin in the book, excluding headers. \\n\\nFirst, I created a cursor to search for mentions of Professor Zvezdokhin. Then, I ran the agent to find the first mention, which was in paragraph 21. The next step was to find the second mention. When I ran the agent again, the response included several pointers. The first excerpt after the initial one was pointer 44, which has the line \\\"– Надо полагать, знаю, – сердито буркнул профессор.\\\" That seems like the second mention. But wait, the user wants the second mention, so maybe the first one was the first mention, and the next ones are subsequent. However, the user is asking for the second mention, so the answer should be the first excerpt in the second run, which is pointer 44. But the user might be considering the first mention as the first occurrence, so the second would be the next one. Let me check the excerpts again. The first mention was in paragraph 21, then the next ones are 44, 50, 71, 77. So the second mention would be pointer 44. But the user might be counting the first mention as the first, so the second is the next one. Therefore, the answer is pointer 44:1.1.1.p41.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1738,\"completion_tokens\":423,\"total_tokens\":2161}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 21 Dec 2025 21:27:01 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

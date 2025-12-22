@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-885\",\"object\":\"chat.completion\",\"created\":1766349755,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, the user is asking for the second mention of Professor Zvezdokhin in the book, excluding headers. Let me start by creating a cursor to find all mentions. I used the mcp-create_cursor function with the description looking for \\\"профессора Звёздочкина\\\" and named it search_cursor. The response said the cursor was created.\\n\\nNow, I need to run the agent to get the first mention. I'll call mcp-run_agent with the cursor name and a task to find the first mention. Once I get that, I can note the pointer and then continue searching for the next one. But wait, the user wants the second mention, so after finding the first, I should continue the cursor to get the next one. Let me make sure to iterate correctly, using the cursor to keep track. If the first result is found, the next run should give the second. I need to check each result as it comes and stop once the second one is found. Also, ensure that the pointers are correctly tracked and that headers are excluded as per the user's request. Let me proceed step by step.\\n\",\"tool_calls\":[{\"id\":\"call_zrace7er\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"mcp-run_agent\",\"arguments\":\"{\\\"cursorName\\\":\\\"search_cursor\\\",\\\"taskDescription\\\":\\\"Find the first mention of профессора Звёздочкина (исключая заголовки)\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":776,\"completion_tokens\":286,\"total_tokens\":1062}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 21 Dec 2025 20:42:34 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

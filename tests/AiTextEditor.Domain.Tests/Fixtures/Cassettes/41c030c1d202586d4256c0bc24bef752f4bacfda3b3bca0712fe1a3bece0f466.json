@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-837\",\"object\":\"chat.completion\",\"created\":1766353563,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[{\\\"pointer\\\":\\\"25:1.1.1.p22\\\",\\\"excerpt\\\":\\\"Профессор Звёздочкин и предложил академии астрономических наук устроить обсуждение Знайкиной книги и разобрать её, как он выразился, по косточкам, с тем чтобы никому больше не повадно было такие книги писать. Академия дала согласие и послала приглашение Знайке. Знайка приехал, и обсуждение состоялось. Оно началось, как и полагается в таких случаях, с доклада, который вызвался сделать сам профессор Звёздочкин.\\\",\\\"reason\\\":\\\"The excerpt mentions профессор Звёздочкин proposing an academic discussion, which is the second occurrence in this batch.\\\"}]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants the second mention of профессора Звёздочкина, excluding headers. The snapshot shows evidenceCount is 0, so we need to find the second occurrence in the current batch.\\n\\nLooking at the items, each paragraph's markdown is checked. The first mention is in item 24:1.1.1.p21, where he's introduced. That's the first mention. Then, item 25:1.1.1.p22 mentions him again, which would be the second. But wait, the user said to exclude headers, and these are paragraphs, so they're okay. \\n\\nWait, the task says \\\"second mention\\\", so after the first one in p21, the next one is in p22. But let me check all items to make sure. The next mentions are in p23, p25, etc. But the second mention would be the first after the initial one. So the first is in p21, the second in p22. But the user's snapshot has evidenceCount 0, meaning previous batches had none. So in the current batch, the first mention is the first occurrence, and the second is the next one. So the answer should include the second mention, which is in p22. But need to confirm that there's no other mention before that. Let me scan each item:\\n\\n- p21: first mention\\n- p22: second mention\\n- p23: third?\\nWait, the task is to find the second mention. So in the current batch, the first mention is in p21, the second is in p22. So the newEvidence should include p22's excerpt. But need to check if there's any other mention in the same batch that could be the second. Let me check all items again. The first mention is in p21, then p22, p23, p25, etc. So the second mention is p22. Therefore, the newEvidence should have the pointer from p22 and the excerpt. The reason is that the excerpt mentions профессор Звёздочкин again, which is the second time in this batch.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2370,\"completion_tokens\":668,\"total_tokens\":3038}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 21 Dec 2025 21:46:03 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

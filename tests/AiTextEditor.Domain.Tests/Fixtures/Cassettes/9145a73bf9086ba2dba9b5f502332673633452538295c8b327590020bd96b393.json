@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-996\",\"object\":\"chat.completion\",\"created\":1766351324,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[{\\\"pointer\\\":\\\"42:1.1.1.p39\\\",\\\"excerpt\\\":\\\"– Вот видите, сами говорите – жидкость, – усмехнулся Звёздочкин. – Откуда же в Луне взялась пустота, если там была жидкость, садовая вы голова?\\\",\\\"reason\\\":\\\"Excerpt directly mentions \\\\\\\"Звёздочкин\\\\\\\", matching the task's focus on Professor Zvezdokhin.\\\"}]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of Professor Zvezdokhin, excluding headers. The user provided a batch of items, each with a pointer and markdown content. \\n\\nFirst, I need to scan through each item's markdown to look for any mention of \\\"Professor Zvezdokhin.\\\" Since the goal is the first occurrence, I'll start from the beginning of the batch.\\n\\nLooking at the pointers, the first few entries are 39:1.1.1.p36 to 44:1.1.1.p41. Let me check each one:\\n\\n- Pointer 39: Mentions \\\"Звёздочкин\\\" in the middle of a sentence. Wait, the task is about Professor Zvezdokhin. The name here is \\\"Звёздочкин,\\\" which might be the same as Professor Zvezdokhin. But I need to confirm if this is the first mention. The snapshot's recentEvidencePointers include \\\"24:1.1.1.p21,\\\" but that's from a previous batch. Since the current batch starts at pointer 39, I need to check if any of these entries mention the professor.\\n\\nContinuing through the pointers:\\n\\n- Pointer 42: \\\"Звёздочкин\\\" is mentioned again. But wait, the user's snapshot has evidenceCount 1, and the recent pointer is 24:1.1.1.p21. However, the current batch's items start at 39, so maybe the first mention in this batch is at pointer 42. But wait, the task says to find the first mention overall, not just in the current batch. However, the user's instruction says to scan only the current batch. Wait, the input includes a snapshot with recentEvidencePointers, but the current batch's items are the ones to check. The user's instruction says to use only the current batch's content. So even if there was a mention in a previous batch (like 24:1.1.1.p21), the current batch's items are the ones to check for new evidence.\\n\\nWait, the task is to find the first mention of Professor Zvezdokhin. The snapshot's evidenceCount is 1, which might mean that in previous batches, there was one match. But the current batch's items are the ones to scan now. So I need to check the current batch's items for any mention of Professor Zvezdokhin, and if found, add them as new evidence. However, the user's instruction says to scan only the current batch. So even if the snapshot has a pointer, the current batch's items are the ones to check.\\n\\nLooking through the current batch's items:\\n\\n- Pointer 42: \\\"Звёздочкин\\\" is mentioned. The markdown here is: \\\"– Вот видите, сами говорите – жидкость, – усмехнулся Звёздочкин. – Откуда же в Луне взялась пустота, если там была жидкость, садовая вы голова?\\\" So here, \\\"Звёздочкин\\\" is mentioned. Since the task is to find the first mention, and this is the first occurrence in the current batch, this would be the new evidence. However, the user's snapshot has a recentEvidencePointer of 24:1.1.1.p21, which might be from a previous batch. But the current batch's items start at 39, so the first mention in this batch is at pointer 42. Therefore, the new evidence would be pointer 42. But wait, the user's instruction says to scan only the current batch. So even if there was a mention in a previous batch, the current batch's items are the ones to check. Therefore, the first mention in the current batch is pointer 42. So the newEvidence would include that. However, the user's task is to find the first mention overall, but the instruction says to scan only the current batch. Wait, the task's goal is to find the first mention of Professor Zvezdokhin, but the user's instruction says to scan only the current batch. So if the current batch has the first mention, then that's the one. Otherwise, if the previous batches have it, but the current batch doesn't, then the decision would be 'done' or 'not_found'. But in this case, the current batch's items include pointer 42, which mentions \\\"Звёздочкин\\\". So that's the first mention in this batch. Therefore, the newEvidence would be that pointer. The reason would be that the excerpt mentions \\\"Звёздочкин\\\", which is the professor's name. So the JSON should have decision 'continue' or 'done'? Wait, the evidenceCount in the snapshot is 1, which might mean that in previous batches, there was one match. But the current batch's items may have more. However, the task is to find the first mention. If the current batch's items have the first mention, then that's the one. But if the previous batches already have it, then the current batch's items may not have it. However, the user's instruction says to scan only the current batch. So regardless of previous batches, we check the current batch. So in this case, the current batch's items include pointer 42, which mentions \\\"Звёздочкин\\\". Therefore, the newEvidence would be that pointer. The decision would be 'continue' if there are more items to check, but since the user's input has hasMoreBatches as true, but the current batch's items are being processed. Wait, the output schema's decision can be 'continue', 'done', or 'not_found'. If the current batch has new evidence, then decision is 'continue' because there might be more batches. But if the current batch is the last one, then 'done'. However, the input has hasMoreBatches: true, so the current batch is not the last. Therefore, the decision would be 'continue' if there's new evidence. So the newEvidence would be the pointer 42, and the decision is 'continue'.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2115,\"completion_tokens\":1423,\"total_tokens\":3538}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 21 Dec 2025 21:08:44 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

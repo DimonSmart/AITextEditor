@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-486\",\"object\":\"chat.completion\",\"created\":1766352049,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants the first mention of профессора Звёздочкина, excluding headers. The snapshot shows evidenceCount is 0 and recentEvidencePointers is empty, so we need to find the first occurrence in the current batch.\\n\\nLooking at the batch items, the first entry is a heading, so that's skipped. The next items are paragraphs. The third item is a heading again, but the fourth item is a paragraph. Let me check the markdown of each paragraph.\\n\\nThe first paragraph (4:1.1.1.p1) mentions Незнайка's trip to the Sun City, but no Звёздочкин. The second paragraph (5:1.1.1.p2) talks about the Sun City's developments, still no mention. The third paragraph (6:1.1.1.p3) mentions Пончик and his clothes, but not Звёздочкин. The fourth paragraph (7:1.1.1.p4) continues about Пончик's problem with moths and the smell. \\n\\nWait, none of the paragraphs mention профессора Звёздочкина. The heading 3:1.1.1 is about how Знайка defeated профессора Звёздочкина, but that's a heading, and the task says to exclude headers. So the first mention in the content is actually in the heading, but since headers are excluded, maybe there's no evidence here. But the user's task says to find the first mention excluding headers. Since none of the paragraphs mention him, maybe the answer is not found. But wait, the heading is part of the content? Wait, the task says to exclude headers, so even if the heading mentions him, it's not considered. So in this batch, there's no mention in the paragraphs. Therefore, the decision should be not_found. But wait, the heading 3:1.1.1 is a heading, so it's excluded. So the answer is not_found. But the user's task might have the first mention in a later batch. Since the current batch has no evidence, the output should be not_found.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1895,\"completion_tokens\":470,\"total_tokens\":2365}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 21 Dec 2025 21:20:49 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

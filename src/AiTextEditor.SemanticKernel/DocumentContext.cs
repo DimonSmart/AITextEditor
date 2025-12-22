@@ -6,7 +6,7 @@ namespace AiTextEditor.SemanticKernel;
 
 public class DocumentContext(LinearDocument document) : IDocumentContext
 {
-    public LinearDocument Document { get; } = document ?? throw new ArgumentNullException(nameof(document));
+    public LinearDocument Document { get; } = document;
 
-    public IList<string> SpeechQueue { get; } = new List<string>();
+    public IList<string> SpeechQueue { get; } = [];
 }

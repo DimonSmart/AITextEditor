@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-419\",\"object\":\"chat.completion\",\"created\":1766332703,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, the user is asking where in the book the professor Zvezdochkin is first mentioned, excluding headings. Let me think about how to approach this.\\n\\nFirst, I need to create a cursor to search for mentions of \\\"профессор Звёздочкин\\\". The function mcp-create_cursor seems right for this. I'll set the name to something like \\\"search_cursor\\\" and the description to look for that name. Since the user wants the first occurrence, I shouldn't specify a startAfterPointer unless needed.\\n\\nOnce the cursor is created, I should run the agent to iterate through the document. Using mcp-run_agent with the cursor name. The agent will check each part of the document. I need to stop as soon as the first mention is found. If the cursor finds it, the response will include the pointerLabel and the text. If not, after checking all, I'll have to say it's not found.\\n\\nWait, the user said to exclude headings. So when the agent returns a match, I need to ensure that the match is not a heading. The function's response will include the pointerLabel and the text. If the text is part of the content, not a heading, then that's the answer. If the first match is a heading, I might need to continue searching, but the user specified to exclude headings, so maybe the first occurrence in the text is what's needed.\\n\\nSo, the steps are: create the cursor, run the agent, check the result. If found, return the pointer and the text. If not, after the cursor is done, say it's not found.\\n\",\"tool_calls\":[{\"id\":\"call_yaob214n\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"mcp-create_cursor\",\"arguments\":\"{\\\"description\\\":\\\"Find mentions of \\\\\\\"профессор Звёздочкин\\\\\\\" (excluding headings)\\\",\\\"name\\\":\\\"search_cursor\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":682,\"completion_tokens\":381,\"total_tokens\":1063}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 21 Dec 2025 15:58:23 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

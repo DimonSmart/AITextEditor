@@ -6,19 +6,24 @@ namespace AiTextEditor.Lib.Services;
 
 public sealed class CursorStream
 {
-    private readonly LinearDocument document;
-    private readonly int maxElements;
-    private readonly int maxBytes;
-    private int currentIndex;
-    private bool isComplete;
-    private readonly bool includeContent = true;
-    public bool IsComplete => isComplete;
+    private readonly LinearDocument _linearDocument;
+    private readonly int _maxElements;
+    private readonly int _maxBytes;
+    private readonly ILogger? _logger;
+    private readonly string? _filterDescription;
+    private int _currentIndex;
+    private bool _isComplete;
+    private readonly bool _includeContent = true;
+    public bool IsComplete => _isComplete;
+    public string? FilterDescription => _filterDescription;
 
-    public CursorStream(LinearDocument document, int maxElements, int maxBytes, string? startAfterPointer, ILogger? logger = null)
+    public CursorStream(LinearDocument document, int maxElements, int maxBytes, string? startAfterPointer = null, string? filterDescription = null, ILogger? logger = null)
     {
-        this.document = document ?? throw new ArgumentNullException(nameof(document));
-        this.maxElements = maxElements;
-        this.maxBytes = maxBytes;
+        _linearDocument = document;
+        _maxElements = maxElements;
+        _maxBytes = maxBytes;
+        _filterDescription = filterDescription;
+        _logger = logger;
 
         if (!string.IsNullOrEmpty(startAfterPointer))
         {
@@ -48,27 +53,29 @@ public sealed class CursorStream
             }
         }
 
-        currentIndex = startIndex;
+        _currentIndex = startIndex;
     }
 
     public CursorPortion NextPortion()
     {
-        if (isComplete || document.Items.Count == 0)
+        _logger?.LogInformation("CursorStream.NextPortion: currentIndex={CurrentIndex}, isComplete={IsComplete}", _currentIndex, _isComplete);
+
+        if (_isComplete || _linearDocument.Items.Count == 0)
         {
-            isComplete = true;
+            _isComplete = true;
             return new CursorPortion([], false);
         }
 
         var items = new List<LinearItem>();
-        var byteBudget = maxBytes;
-        var countBudget = maxElements;
-        var nextIndex = currentIndex;
+        var byteBudget = _maxBytes;
+        var countBudget = _maxElements;
+        var nextIndex = _currentIndex;
 
         while (IsWithinBounds(nextIndex))
         {
-            var sourceItem = document.Items[nextIndex];
-            var projectedItem = includeContent ? sourceItem : StripText(sourceItem);
-            var itemBytes = CalculateSize(projectedItem, includeContent);
+            var sourceItem = _linearDocument.Items[nextIndex];
+            var projectedItem = _includeContent ? sourceItem : StripText(sourceItem);
+            var itemBytes = CalculateSize(projectedItem, _includeContent);
 
             if (items.Count >= countBudget) break;
             if (items.Count > 0 && byteBudget - itemBytes < 0) break;
@@ -81,18 +88,20 @@ public sealed class CursorStream
 
         if (items.Count == 0 && IsWithinBounds(nextIndex))
         {
-            var sourceItem = document.Items[nextIndex];
-            var projectedItem = includeContent ? sourceItem : StripText(sourceItem);
+            var sourceItem = _linearDocument.Items[nextIndex];
+            var projectedItem = _includeContent ? sourceItem : StripText(sourceItem);
             items.Add(projectedItem);
             nextIndex = nextIndex + 1;
         }
 
-        currentIndex = nextIndex;
+        _logger?.LogInformation("CursorStream.NextPortion: advancing from {CurrentIndex} to {NextIndex}. Items count: {Count}", _currentIndex, nextIndex, items.Count);
+
+        _currentIndex = nextIndex;
         var hasMore = IsWithinBounds(nextIndex);
 
         if (!hasMore)
         {
-            isComplete = true;
+            _isComplete = true;
         }
 
         return new CursorPortion(items, hasMore);
@@ -106,7 +115,7 @@ public sealed class CursorStream
         builder.Append(item.Type);
 
         builder.Append('|');
-        builder.Append(item.Pointer.ToCompactString);
+        builder.Append(item.Pointer.ToCompactString());
 
         if (includeContent)
         {
@@ -125,6 +134,6 @@ public sealed class CursorStream
 
     private bool IsWithinBounds(int index)
     {
-        return index >= 0 && index < document.Items.Count;
+        return index >= 0 && index < _linearDocument.Items.Count;
     }
 }

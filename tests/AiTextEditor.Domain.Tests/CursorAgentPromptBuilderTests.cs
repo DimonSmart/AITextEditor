@@ -1,5 +1,6 @@
 using System.Text.Json;
 using AiTextEditor.Lib.Model;
+using AiTextEditor.Lib.Services;
 using AiTextEditor.SemanticKernel;
 using Xunit;
 

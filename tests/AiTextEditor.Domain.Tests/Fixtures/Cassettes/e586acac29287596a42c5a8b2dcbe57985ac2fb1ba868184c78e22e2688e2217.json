@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-314\",\"object\":\"chat.completion\",\"created\":1766351495,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first mention of \\\"профессор Звёздочкин\\\" in the text, excluding headers. The snapshot shows evidenceCount is 0 and recentEvidencePointers is empty, so we need to look through the current batch.\\n\\nLooking at the batch items, the first few are headings, which we can ignore. The next item is a paragraph (pointer 4:1.1.1.p1) which mentions \\\"профессор Звёздочкина\\\" in the heading of the section. Wait, but the task says to exclude headers. Wait, the pointer 3:1.1.1 is a heading with \\\"Как Знайка победил профессора Звёздочкина\\\". But the task says to exclude headers, so that's not considered. Then, in the paragraph pointers, the first mention is in pointer 3:1.1.1, but that's a heading. Wait, maybe I'm confused. Let me check again.\\n\\nWait, the user's task says to exclude headers, so any mention in headers (like the heading \\\"Как Знайка победил профессора Звёздочкина\\\") should not be counted. The actual paragraphs: looking through the markdown content. The first paragraph (pointer 4:1.1.1.p1) doesn't mention him. The second paragraph (pointer 5:1.1.1.p2) also doesn't. The third (6:1.1.1.p3) and fourth (7:1.1.1.p4) also don't. Wait, but the heading pointer 3:1.1.1 is a heading, so even though it mentions him, it's excluded. So maybe there's no mention in the current batch? But the user's input includes that heading. Wait, the task is to find the first mention in the text, excluding headers. So if the heading is part of the text, but the task says to exclude headers, then the mention in the heading isn't counted. Therefore, in the current batch, there's no mention of профессор Звёздочкин in the paragraphs. So the answer would be \\\"not_found\\\". But wait, maybe I'm missing something. Let me check again. The heading is part of the text, but the task says to exclude headers. So the mention in the heading isn't considered. Therefore, in the current batch, there's no mention in the paragraphs. Hence, the decision is \\\"not_found\\\".\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1902,\"completion_tokens\":546,\"total_tokens\":2448}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 21 Dec 2025 21:11:35 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

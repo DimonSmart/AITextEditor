@@ -3,7 +3,7 @@ using AiTextEditor.Lib.Services;
 
 Console.WriteLine("--- MCP Linear Document Demo ---");
 
-var server = new McpServer();
+var server = new EditorSession();
 var inputPath = args.Length > 0 ? args[0] : "sample.md";
 var outputPath = args.Length > 1 ? args[1] : "sample_edited.md";
 var scenario = args.Length > 2 ? args[2] : "sample";

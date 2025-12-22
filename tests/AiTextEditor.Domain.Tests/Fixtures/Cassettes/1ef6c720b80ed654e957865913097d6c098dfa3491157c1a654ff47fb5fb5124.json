@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-940\",\"object\":\"chat.completion\",\"created\":1766332773,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find mentions of \\\"профессор Звёздочкин\\\" excluding headings. First, I need to check the current batch's items. The snapshot shows evidenceCount is 0 and recentEvidencePointers is empty, so there's nothing from previous batches to exclude.\\n\\nLooking through each item's markdown content. The first paragraph talks about Знайка and his theories about the Moon's surface, but no mention of профессор Звёздочкин. The next paragraphs discuss astronomers, volcanologists, meteoritologists, and their reactions to Знайка's theories. Still, no sign of the professor. \\n\\nContinuing through the items, the paragraphs mention Знайка's book and his journey to the Moon, but again, no reference to профессор Звёздочкин. All the discussions are about lunar craters, theories, and the Moon's history. The term \\\"профессор Звёздочкин\\\" isn't appearing anywhere in the provided texts. \\n\\nSince none of the items in the current batch contain the required mention, the decision should be \\\"not_found\\\". There's no need to list new evidence because the task's keyword isn't present here. The answer must be a JSON object with \\\"decision\\\" as \\\"not_found\\\" and an empty \\\"newEvidence\\\" array.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2165,\"completion_tokens\":297,\"total_tokens\":2462}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 21 Dec 2025 15:59:33 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

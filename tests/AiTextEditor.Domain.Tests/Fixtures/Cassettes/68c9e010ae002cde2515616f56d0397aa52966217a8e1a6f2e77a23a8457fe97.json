@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-937\",\"object\":\"chat.completion\",\"created\":1766361429,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[{\\\"pointer\\\":\\\"24:1.1.1.p21\\\",\\\"excerpt\\\":\\\"А действительный член академии астрономических наук профессор Звёздочкин, которому тоже случилось прочитать Знайкину книжку, просто кипел от негодования и говорил, что книга эта – вовсе не книга, а какая-то, как он выразился, чёртова чепуха.\\\",\\\"reason\\\":\\\"The excerpt directly mentions профессор Звёздочкин in the context of reacting to Знайкина's book.\\\"}]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of профессор Звёздочкин. The user provided a batch of items, each with a pointer, itemType, and markdown content. \\n\\nFirst, I need to scan each item's markdown for the exact mention of \\\"профессор Звёздочкин\\\". Since the ordering is guaranteed, the first occurrence in the batch is the answer.\\n\\nLooking at the items one by one:\\n\\n- The first item (24:1.1.1.p21) mentions \\\"профессор Звёздочкин\\\" in the middle of the paragraph. That seems like the first occurrence. I should check if there's any earlier mention, but since the batch starts here and the snapshot has zero evidence, this must be the first.\\n\\nI need to extract the pointer, the exact excerpt, and a reason. The reason should be a single sentence stating that the excerpt mentions the professor. Also, ensure the pointer is exactly as given. No need to check other items since the first one is the correct one.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2359,\"completion_tokens\":371,\"total_tokens\":2730}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 21 Dec 2025 23:57:09 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

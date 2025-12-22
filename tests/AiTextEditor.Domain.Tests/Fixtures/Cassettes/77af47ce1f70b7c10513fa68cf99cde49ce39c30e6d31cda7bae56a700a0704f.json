@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-220\",\"object\":\"chat.completion\",\"created\":1766352564,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"decision\\\": \\\"continue\\\",\\n  \\\"newEvidence\\\": [\\n    {\\n      \\\"pointer\\\": \\\"42:1.1.1.p39\\\",\\n      \\\"excerpt\\\": \\\"– Вот видите, сами говорите – жидкость, – усмехнулся Звёздочкин. – Откуда же в Луне взялась пустота, если там была жидкость, садовая вы голова?\\\",\\n      \\\"reason\\\": \\\"Упоминание профессора Звёздочкина в контексте обсуждения структуры Луны.\\\"\\n    }\\n  ]\\n}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of Professor Zvezdochkin, excluding headers. The user provided a batch of items, each with a pointer and markdown content. \\n\\nFirst, I need to scan through each item's markdown to see where \\\"Звёздочкин\\\" is mentioned. The snapshot shows that there's already one piece of evidence, with pointer \\\"24:1.1.1.p21\\\", but that's from a previous batch. The current batch's items start from pointer \\\"39:1.1.1.p36\\\" onwards.\\n\\nLooking through each paragraph:\\n\\n- The first mention in the current batch is in pointer 42:1.1.1.p39. The excerpt there is: \\\"– Вот видите, сами говорите – жидкость, – усмехнулся Звёздочкин. – Откуда же в Луне взялась пустота, если там была жидкость, садовая вы голова?\\\" Here, \\\"Звёздочкин\\\" is mentioned, and it's a direct reference. Since the task is to find the first occurrence, this seems like the earliest in the current batch. \\n\\nI need to check if there's any earlier mention in the current batch. The previous pointers in the batch are 39 to 41, but those don't mention Zvezdochkin. The next one is 42, which does. So this is the first occurrence in the current batch. \\n\\nThe reason for including this excerpt is that it directly mentions Professor Zvezdochkin in the context of the discussion about the Moon's structure. The user wants the first mention, so this should be the correct evidence. Also, the snapshot's recentEvidencePointers include \\\"24:1.1.1.p21\\\", which is from a previous batch, so we don't need to consider that here. \\n\\nTherefore, the newEvidence should include pointer 42:1.1.1.p39 with the excerpt and the reason that it's the first mention in the current batch where he is referenced.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2139,\"completion_tokens\":587,\"total_tokens\":2726}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 21 Dec 2025 21:29:24 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

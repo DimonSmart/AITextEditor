@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-864\",\"object\":\"chat.completion\",\"created\":1766350050,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of профессора Звёздочкина, excluding headers. The user provided a batch of items, each with a pointer and markdown content. \\n\\nFirst, I need to scan through each item's markdown to see where \\\"профессора Звёздочкина\\\" is mentioned. The snapshot shows that there's already one piece of evidence with pointer \\\"24:1.1.1.p21\\\", but since the current batch doesn't include that pointer, I can ignore it.\\n\\nLooking at the items in the current batch:\\n\\n- Pointer 44:1.1.1.p41 has \\\"– Надо полагать, знаю, – сердито буркнул профессор.\\\" Here, \\\"профессор\\\" is mentioned, but the full name \\\"профессора Звёздочкина\\\" isn't there. Wait, the task says to exclude headers, but this is a paragraph. However, the name might be mentioned here. Wait, the user's example in the snapshot had a pointer that was in the previous batch, but the current batch's items start from 39:1.1.1.p36 onwards. \\n\\nWait, looking at pointer 42:1.1.1.p39: \\\"– Вот видите, сами говорите – жидкость, – усмехнулся Звёздочкин. – Откуда же в Луне взялась пустота, если там была жидкость, садовая вы голова?\\\" Here, \\\"Звёздочкин\\\" is mentioned, but the full name with \\\"профессора\\\" isn't present. \\n\\nWait, pointer 44:1.1.1.p41: \\\"– Надо полагать, знаю, – сердито буркнул профессор.\\\" This mentions \\\"профессор\\\" but not \\\"профессора Звёздочкина\\\". \\n\\nWait, maybe I missed something. Let me check again. The task is to find the first mention of \\\"профессора Звёздочкина\\\" (excluding headers). The user's example in the snapshot had a pointer that was in the previous batch, but the current batch's items start from 39:1.1.1.p36. \\n\\nLooking through all the pointers again:\\n\\n- Pointer 42:1.1.1.p39: \\\"Звёздочкин\\\" is mentioned, but not with \\\"профессора\\\".\\n- Pointer 44:1.1.1.p41: \\\"профессор\\\" is mentioned, but not \\\"профессора Звёздочкина\\\".\\n- Pointer 45:1.1.1.p42: \\\"профессор\\\" is mentioned again, but not the full name.\\n- Pointer 51:1.1.1.p48: \\\"Звёздочкина\\\" is mentioned, but again without \\\"профессора\\\".\\n\\nWait, maybe there's a mention in pointer 42:1.1.1.p39 where \\\"Звёздочкин\\\" is mentioned, but the full name with \\\"профессора\\\" isn't there. The task is to find the first mention of \\\"профессора Звёздочкина\\\", so the full name. \\n\\nLooking through all the items again, I don't see any mention of \\\"профессора Звёздочкина\\\" in the current batch. The closest is \\\"Звёздочкин\\\" without the \\\"профессора\\\" part. Therefore, there's no new evidence in the current batch. \\n\\nBut the user's snapshot has evidenceCount 1, and the recentEvidencePointers include \\\"24:1.1.1.p21\\\". Since the current batch doesn't have that pointer, maybe the answer is \\\"not_found\\\" because there's no new mention in this batch. However, the user's instruction says to use only the current batch. If there's no mention, then the decision is \\\"not_found\\\". But wait, maybe I missed something. Let me check once more.\\n\\nWait, pointer 42:1.1.1.p39: \\\"Звёздочкин\\\" is mentioned, but not with \\\"профессора\\\". The task is to find the first mention of \\\"профессора Звёздочкина\\\", so the full name. Since none of the current batch items have that exact phrase, the answer would be \\\"not_found\\\". However, the user's example in the snapshot had a pointer that was in the previous batch, but the current batch's items don't include that. Therefore, the correct decision is \\\"not_found\\\" because there's no new evidence in the current batch.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2132,\"completion_tokens\":1022,\"total_tokens\":3154}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 21 Dec 2025 20:47:30 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

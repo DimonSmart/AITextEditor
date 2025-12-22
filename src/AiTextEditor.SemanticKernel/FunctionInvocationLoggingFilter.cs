@@ -28,7 +28,7 @@ public sealed class FunctionInvocationLoggingFilter : IFunctionInvocationFilter,
 
     public FunctionInvocationLoggingFilter(ILogger<FunctionInvocationLoggingFilter> logger)
     {
-        this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        this.logger = logger;
     }
 
     public async Task OnFunctionInvocationAsync(FunctionInvocationContext context, Func<FunctionInvocationContext, Task> next)

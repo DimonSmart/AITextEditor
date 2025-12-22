@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using AiTextEditor.Lib.Model;
+using AiTextEditor.Lib.Services;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 
 namespace AiTextEditor.SemanticKernel;
@@ -165,6 +166,12 @@ Evidence rules:
   - MUST be local and factual: explain what in the excerpt matches the task.
   - MUST NOT claim any document-wide ordering or position (no "first", "second", "nth", "earlier", "later", "previous", "next", "last").
   - You MAY use snapshot.evidenceCount ONLY for counting/progress decisions, not for describing the excerpt.
+
+Scanning Strategy:
+- READ THE FULL TEXT of each item. Mentions may be buried in the middle of long paragraphs.
+- Report ALL matches found in the batch. Do not try to filter for "the second one" yourself. The agent needs all candidates to count correctly.
+- Do not skip items just because they don't look like the "answer". Report ALL matches.
+- If a paragraph contains multiple mentions, report it once as evidence. The counting logic will handle the rest.
 
 Content preference:
 - Prefer Paragraph/ListItem content.

@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-909\",\"object\":\"chat.completion\",\"created\":1766353151,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of \\\"профессор Звёздочкин\\\". The user provided a batch of items, each with a pointer and markdown content. The snapshot shows that there's already one piece of evidence with pointer \\\"3:1.1.1\\\", but since the current batch doesn't include that pointer, I need to focus on the current items.\\n\\nLooking through the batch items, none of the pointers match \\\"3:1.1.1\\\", so I can ignore that. Now, I need to check each item's markdown for the mention of \\\"профессор Звёздочкин\\\". \\n\\nStarting with the first item (12:1.1.1.p9), the text talks about Знайка and the Moon's surface but doesn't mention Звёздочкин. The next items (13:1.1.1.p10 to 23:1.1.1.p20) continue discussing Знайка's theories, volcanic activity, meteorites, and the lunar inhabitants. None of these paragraphs mention \\\"профессор Звёздочкин\\\". \\n\\nSince the task is to find the first mention and there's no occurrence in the current batch, the decision should be \\\"not_found\\\". The newEvidence array remains empty because there's no relevant content here. The snapshot's recentEvidencePointers don't affect this batch since the pointers aren't present. So, the output is \\\"not_found\\\" with no new evidence.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2180,\"completion_tokens\":333,\"total_tokens\":2513}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 21 Dec 2025 21:39:10 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

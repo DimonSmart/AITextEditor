@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-623\",\"object\":\"chat.completion\",\"created\":1766351468,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, I need to find where Professor Zvezdochkin is first mentioned in the book, excluding headers. The user already created a cursor named 'search_cursor' with the description looking for mentions of Professor Zvezdochkin. Now, I should run the agent on this cursor to get the first occurrence.\\n\\nUsing the mcp-run_agent function with the cursor name 'search_cursor' and a task description to find the first mention. The agent will iterate through the document, and since we want the first mention, we stop at the first result. If the cursor returns a pointer, that's the location. If not, check if there are more pages. But since the user wants the first mention, once we get the first pointer, we can stop and provide that as the answer.\\n\",\"tool_calls\":[{\"id\":\"call_ma58p7r4\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"mcp-run_agent\",\"arguments\":\"{\\\"cursorName\\\":\\\"search_cursor\\\",\\\"taskDescription\\\":\\\"Find the first mention of профессор Звёздочкин in the text (excluding headers)\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":811,\"completion_tokens\":213,\"total_tokens\":1024}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 21 Dec 2025 21:11:08 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

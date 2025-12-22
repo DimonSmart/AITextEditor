@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-630\",\"object\":\"chat.completion\",\"created\":1766352609,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[{\\\"pointer\\\":\\\"76:1.1.1.p73\\\",\\\"excerpt\\\":\\\"Двое коротышек снова бросились на трибуну, один схватил Звёздочкина за шиворот, другой за ноги, и поволокли его прямо на улицу. Там его посадили в скверике на траву и сказали:\\\",\\\"reason\\\":\\\"Упоминается Звёздочкин в контексте действия, не являясь заголовком.\\\"}]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of Professor Zvezdochkin, excluding headers. The user provided a snapshot with three previous evidence pointers, so I need to make sure not to include those. The current batch has several paragraphs.\\n\\nLooking at the items, the first mention would be the earliest occurrence in the batch. The pointers in the batch start from 76:1.1.1.p73. Let me check each paragraph. \\n\\nThe first paragraph (76) mentions Zvezdochkin being dragged out. The next ones (77, 78) continue the story. The key is to find the first mention. The first instance is in paragraph 76, where he's being dragged by the little guys. That's the first time he's mentioned. The other paragraphs in the batch might have more mentions, but the first one is in 76. Since the snapshot's recent pointers are 73, 39, 67, which are from previous batches, the current batch's first mention is 76. So the new evidence should be pointer 76's excerpt. The reason is that it directly mentions Zvezdochkin in the context of the story. I need to make sure not to include any headers, and the excerpt is exactly as provided. The decision here is to continue since there might be more mentions, but the first one is found.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1421,\"completion_tokens\":424,\"total_tokens\":1845}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 21 Dec 2025 21:30:09 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

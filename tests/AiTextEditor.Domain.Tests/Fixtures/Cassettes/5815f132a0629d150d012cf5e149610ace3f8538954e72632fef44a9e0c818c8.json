@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-826\",\"object\":\"chat.completion\",\"created\":1766353186,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"decision\\\": \\\"continue\\\",\\n  \\\"newEvidence\\\": [\\n    {\\n      \\\"pointer\\\": \\\"24:1.1.1.p21\\\",\\n      \\\"excerpt\\\": \\\"Эта Знайкина книжка наделала много шума. Все коротышки с увлечением читали её. Многие учёные хвалили эту книжку за то, что она интересно написана, но всё же высказывали недовольство тем, что она научно не обоснована. А действительный член академии астрономических наук профессор Звёздочкин, которому тоже случилось прочитать Знайкину книжку, просто кипел от негодования и говорил, что книга эта – вовсе не книга, а какая-то, как он выразился, чёртова чепуха. Этот профессор Звёздочкин был не то чтобы какой-нибудь очень сердитый субъект. Нет, он был довольно добрый коротышка, но очень, как бы это сказать, требовательный, непримиримый. Во всяком деле он ценил больше всего точность, порядок и терпеть не мог никаких фантазий, то есть выдумок.\\\",\\n      \\\"reason\\\": \\\"Упоминается профессор Звёздочкин как действительный член академии астрономических наук, реагирующий на Знайкину книжку.\\\"\\n    }\\n  ]\\n}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of профессор Звёздочкин. The user provided a batch of items, each with a pointer and markdown content. The snapshot shows that there's already 1 piece of evidence, with the pointer \\\"3:1.1.1\\\". But the user wants the first mention, so I need to check the current batch items.\\n\\nLooking at the items, the first occurrence of профессор Звёздочкин is in the first paragraph (pointer 24:1.1.1.p21). The excerpt there mentions \\\"действительный член академии астрономических наук профессор Звёздочкин\\\". That's the first time he's mentioned. The other mentions in later paragraphs are subsequent, so they shouldn't be considered here. Since the snapshot's recentEvidencePointers include \\\"3:1.1.1\\\", which might be a previous batch's evidence, but the current batch's first mention is at 24:1.1.1.p21. So the newEvidence should include that pointer and the excerpt. The reason is that the excerpt directly mentions профессор Звёздочкин for the first time. The decision here is to continue because there might be more mentions, but the first one is found. Wait, but the snapshot's evidenceCount is 1, but the user's task is to find the first mention. Since the current batch's first mention is in 24:1.1.1.p21, which hasn't been included in the recentEvidencePointers (which has \\\"3:1.1.1\\\"), so it's a new evidence. Therefore, the output should have decision \\\"continue\\\" and the newEvidence with the pointer 24:1.1.1.p21 and the excerpt. The reason is that the excerpt mentions профессор Звёздочкин for the first time.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2268,\"completion_tokens\":774,\"total_tokens\":3042}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 21 Dec 2025 21:39:46 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

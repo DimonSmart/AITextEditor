@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-766\",\"object\":\"chat.completion\",\"created\":1766351183,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first mention of Professor Zvezdokhin, excluding headers. The snapshot shows evidenceCount is 0 and recentEvidencePointers is empty, so we need to look through the current batch.\\n\\nLooking at the items, the first entry is a heading, so that's skipped. The next items are paragraphs. The third item is another heading, so skip that too. The fourth item is a paragraph with the markdown: \\\"Как Знайка победил профессора Звёздочкина\\\". Wait, that's a heading? No, the itemType is Paragraph. Wait, no, looking back, the third item is a heading with \\\"### Как Знайка победил профессора Звёздочкина\\\", which is a heading, so that's excluded. Then the fourth item is a paragraph. Wait, the pointer 4:1.1.1.p1 is a paragraph. Let me check each item.\\n\\nWait, the items are:\\n\\n1. Heading (ignored)\\n2. Heading (ignored)\\n3. Heading (ignored)\\n4. Paragraph: \\\"С тех пор как Незнайка совершил путешествие...\\\"\\n5. Paragraph: \\\"И это ещё не всё...\\\"\\n6. Paragraph: \\\"Все были очень довольны...\\\"\\n7. Paragraph: \\\"От такого обилия шерстяных изделий...\\\"\\n\\nWait, none of these paragraphs mention Professor Zvezdokhin. Wait, but the third item is a heading with \\\"Как Знайка победил профессора Звёздочкина\\\". The heading's markdown is \\\"Как Знайка победил профессора Звёздочкина\\\". The task says to exclude headers, so that heading is not considered. So the first mention in the content would be in the paragraphs. But looking through the paragraphs, none of them mention Professor Zvezdokhin. Wait, maybe I missed something. Let me check again.\\n\\nWait, the third item is a heading, so it's excluded. The fourth item is a paragraph. The markdown there starts with \\\"С тех пор как Незнайка совершил путешествие...\\\" which doesn't mention the professor. The fifth paragraph talks about the city's changes, the sixth about Pончик's clothes, and the seventh about the moth problem. None of these mention Professor Zvezdokhin. So maybe there's no mention in this batch. But the task says to find the first mention, so if there's none in this batch, the decision would be \\\"not_found\\\". But wait, the user's input includes the first batch, and the snapshot has evidenceCount 0. So maybe the first mention is in a later batch. But since the current batch has no mentions, the answer would be \\\"not_found\\\". However, the user's instruction says to scan only the current batch. So if there's no mention here, the decision is \\\"not_found\\\". But wait, maybe I missed a paragraph. Let me check again. The fourth paragraph's markdown: \\\"С тех пор как Незнайка совершил путешествие в Солнечный город, прошло два с половиной года...\\\" No mention. The fifth paragraph: \\\"Жители Солнечного города узнали, что коротышки из Цветочного города занялись строительством, и пришли к ним на помощь...\\\" No. The sixth: \\\"Все были очень довольны. Единственным, кто пострадал на этом деле, оказался Пончик...\\\" No. The seventh: \\\"От такого обилия шерстяных изделий в доме развелась моль...\\\" No. So no mentions in the current batch. Therefore, the decision is \\\"not_found\\\".\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1886,\"completion_tokens\":803,\"total_tokens\":2689}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 21 Dec 2025 21:06:23 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

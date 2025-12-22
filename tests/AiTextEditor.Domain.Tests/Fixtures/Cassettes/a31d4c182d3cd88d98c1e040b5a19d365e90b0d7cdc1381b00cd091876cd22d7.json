@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-671\",\"object\":\"chat.completion\",\"created\":1766350331,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants the first mention of \\\"профессор Звёздочкин\\\" in the text, excluding headings. The snapshot shows evidenceCount is 0 and recentEvidencePointers is empty, so we need to look through the current batch.\\n\\nLooking at the items provided, each has a pointer and markdown content. The task is to find the first occurrence of \\\"профессор Звёздочкин\\\" in the markdown fields. Let me check each paragraph:\\n\\nFirst item (8:1.1.1.p5) talks about Знайка and his trip to the Moon, mentions Фуксией and Селёдочкой, but no Звёздочкин. \\n\\nSecond item (9:1.1.1.p6) mentions Стекляшкин, an astronomer, but again, no Звёздочкин.\\n\\nThird item (10:1.1.1.p7) discusses debates among astronomers about the origin of lunar craters. Still no mention of Звёздочкин.\\n\\nFourth item (11:1.1.1.p8) talks about Знайка's theory and his observations with Стекляшкин. Still no Звёздочкин here.\\n\\nWait, none of the paragraphs mention \\\"профессор Звёздочкин\\\". The task says to exclude headings, but all the items here are paragraphs. Since there's no mention of Звёздочкин in any of the provided items, the answer should be \\\"not_found\\\". The user might have expected a match, but based on the given data, there's no evidence. So the decision is \\\"not_found\\\" with no new evidence.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1691,\"completion_tokens\":375,\"total_tokens\":2066}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 21 Dec 2025 20:52:11 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

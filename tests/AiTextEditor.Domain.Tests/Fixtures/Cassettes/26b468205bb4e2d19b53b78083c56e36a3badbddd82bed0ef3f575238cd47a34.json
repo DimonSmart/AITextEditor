@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-131\",\"object\":\"chat.completion\",\"created\":1766332718,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, I need to find where Professor Zvezdokhin is first mentioned in the book, excluding headings. The user already created a cursor named search_cursor to look for mentions of \\\"профессор Звёздочкин\\\". Now, I should run the agent on that cursor to get the results.\\n\\nFirst, I'll call mcp-run_agent with the cursorName \\\"search_cursor\\\". This will start iterating through the document. The response might give me the first occurrence. If the cursor returns a result, I need to check if it's a heading or not. Since the user specified to exclude headings, I have to make sure the answer is from the actual text content. If the first result is a heading, I need to continue searching until I find the first paragraph mention. \\n\\nWait, the user said \\\"исключая заголовки\\\", so headings are metadata. The answer should be the first paragraph that mentions him. If the cursor's first result is a heading, I should keep running the agent until the next portion of the document. But the tool response might already have the first mention. Let me check the tool response. The assistant's previous step created the cursor, and now the user's response says the cursor is created. So the next step is to run the agent on that cursor. Once the agent runs, it will return the first occurrence. If it's a heading, I need to continue. But maybe the first mention is in the text. Let me proceed with running the agent.\\n\",\"tool_calls\":[{\"id\":\"call_ejh7s0r8\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"mcp-run_agent\",\"arguments\":\"{\\\"cursorName\\\":\\\"search_cursor\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":743,\"completion_tokens\":334,\"total_tokens\":1077}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 21 Dec 2025 15:58:37 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

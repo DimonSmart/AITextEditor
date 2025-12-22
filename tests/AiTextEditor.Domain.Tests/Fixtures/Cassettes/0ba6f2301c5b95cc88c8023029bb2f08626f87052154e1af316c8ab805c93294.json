@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-844\",\"object\":\"chat.completion\",\"created\":1766332913,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\": \\\"continue\\\", \\\"newEvidence\\\": []}\",\"reasoning\":\"Okay, let's tackle this. The task is to find mentions of \\\"профессор Звёздочкин\\\" excluding headings. The user provided a batch of items, each with a pointer and markdown content. \\n\\nFirst, I need to scan each item's markdown for the exact phrase \\\"профессор Звёздочкин\\\". Let me go through each entry one by one.\\n\\nLooking at pointer 44:1.1.1.p41, the markdown says \\\"– Надо полагать, знаю, – сердито буркнул профессор.\\\" Here, \\\"профессор\\\" is mentioned, but the full name \\\"профессор Звёздочкин\\\" isn't there. Wait, maybe I missed something. Let me check again. No, this line just says \\\"профессор\\\" without the surname.\\n\\nNext, pointer 51:1.1.1.p48: \\\"Сейчас же двое коротышек схватили Звёздочкина – один за шиворот, другой за ноги – и стащили его с трибуны.\\\" Here, \\\"Звёздочкина\\\" is mentioned, but not with \\\"профессор\\\".\\n\\nWait, maybe there's another mention. Let me check all the paragraphs again. \\n\\nLooking at pointer 42:1.1.1.p39: \\\"– Вот видите, сами говорите – жидкость, – усмехнулся Звёздочкин. – Откуда же в Луне взялась пустота, если там была жидкость, садовая вы голова?\\\" Here, \\\"Звёздочкин\\\" is mentioned, but again, not with \\\"профессор\\\".\\n\\nWait, maybe the name is mentioned in another part. Let me check all the items again. \\n\\nWait, in pointer 44:1.1.1.p41, the markdown is \\\"– Надо полагать, знаю, – сердито буркнул профессор.\\\" So here, \\\"профессор\\\" is mentioned, but the surname isn't. However, the task says to exclude headings, so maybe this is a mention of the professor. But the full name is \\\"профессор Звёздочкин\\\". Wait, maybe the name is mentioned in another part. Let me check again.\\n\\nWait, perhaps I missed a mention. Let me go through each item again:\\n\\n- 39:1.1.1.p36: No mention.\\n- 40:1.1.1.p37: No.\\n- 41:1.1.1.p38: No.\\n- 42:1.1.1.p39: \\\"Звёздочкин\\\" is mentioned, but not with \\\"профессор\\\".\\n- 43:1.1.1.p40: No.\\n- 44:1.1.1.p41: \\\"профессор\\\" is mentioned, but not the full name.\\n- 45:1.1.1.p42: No.\\n- 46:1.1.1.p43: No.\\n- 47:1.1.1.p44: No.\\n- 48:1.1.1.p45: No.\\n- 49:1.1.1.p46: No.\\n- 50:1.1.1.p47: No.\\n- 51:1.1.1.p48: \\\"Звёздочкина\\\" is mentioned, but not with \\\"профессор\\\".\\n- 52:1.1.1.p49: No.\\n- 53:1.1.1.p50: No.\\n- 54:1.1.1.p51: No.\\n- 55:1.1.1.p52: No.\\n- 56:1.1.1.p53: No.\\n- 57:1.1.1.p54: No.\\n\\nWait, maybe there's a mention in the markdown of \\\"профессор Звёздочкин\\\" as a full name. Let me check again. \\n\\nLooking at pointer 44:1.1.1.p41: \\\"– Надо полагать, знаю, – сердито буркнул профессор.\\\" Here, \\\"профессор\\\" is mentioned, but the surname isn't. However, in the previous batch, the recentEvidencePointers include \\\"33:1.1.1.p30\\\" etc., but the current batch's items don't have the full name. Wait, maybe the name is mentioned in another way. \\n\\nWait, perhaps the name is mentioned in the markdown of pointer 42:1.1.1.p39: \\\"– Вот видите, сами говорите – жидкость, – усмехнулся Звёздочкин.\\\" Here, \\\"Звёздочкин\\\" is mentioned, but not with \\\"профессор\\\". \\n\\nHmm, maybe there's no mention of \\\"профессор Звёздочкин\\\" in the current batch. The task says to exclude headings, so if the name is only mentioned as \\\"Звёздочкин\\\" without \\\"профессор\\\", it's not a match. \\n\\nWait, but the user's snapshot has recentEvidencePointers including \\\"33:1.1.1.p30\\\" etc., which might be from previous batches. The current batch's items don't have the full name. Therefore, there's no new evidence in this batch. So the decision would be \\\"continue\\\" or \\\"done\\\"? Wait, the evidenceCount in the snapshot is 12, and the recentEvidencePointers are a subset. If the current batch doesn't have any new mentions, then the decision is \\\"continue\\\" because there might be more batches. But according to the input, hasMoreBatches is true, so we need to check if there's any new evidence. Since there's none, the decision is \\\"continue\\\" with newEvidence as empty. Wait, but the output requires newEvidence to be an array. So if there's no new evidence, the array is empty. Therefore, the decision is \\\"continue\\\" and newEvidence is empty. But the user's instruction says to output exactly one JSON object. So the correct response would be {\\\"decision\\\": \\\"continue\\\", \\\"newEvidence\\\": []}.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2158,\"completion_tokens\":1395,\"total_tokens\":3553}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 21 Dec 2025 16:01:53 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

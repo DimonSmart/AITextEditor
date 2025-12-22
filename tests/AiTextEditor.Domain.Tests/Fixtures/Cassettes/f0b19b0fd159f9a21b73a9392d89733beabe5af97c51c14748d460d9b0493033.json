@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-812\",\"object\":\"chat.completion\",\"created\":1766350077,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"decision\\\": \\\"continue\\\",\\n  \\\"newEvidence\\\": [\\n    {\\n      \\\"pointer\\\": \\\"70:1.1.1.p67\\\",\\n      \\\"excerpt\\\": \\\"Только профессор Звёздочкин был не очень доволен. Как только Знайка кончил свой рассказ и сошёл с трибуны, профессор Звёздочкин выскочил на трибуну и сказал:\\\",\\n      \\\"reason\\\": \\\"Упоминание профессора Звёздочкина в тексте без заголовка, соответствует задаче.\\\"\\n    }\\n  ]\\n}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of профессора Звёздочкина, excluding headers. The user provided a batch of items, each with a pointer and markdown content. \\n\\nFirst, I need to scan through each item's markdown to see where \\\"профессора Звёздочкина\\\" is mentioned. The snapshot shows that there's already one piece of evidence with pointer \\\"24:1.1.1.p21\\\", but since the current batch doesn't include that pointer, I should focus on the new items.\\n\\nLooking at the items in the batch, starting from pointer 58:1.1.1.p55. The first mention I see is in pointer 70:1.1.1.p67. The markdown there says: \\\"Только профессор Звёздочкин был не очень доволен.\\\" That's the first occurrence in this batch. \\n\\nI need to check if there's an earlier mention in the current batch. Scanning through the previous pointers (58 to 69), none of them mention профессора Звёздочкина. The next one is 70, which is the first mention. \\n\\nSince the task is to find the first mention, and the snapshot's recentEvidencePointers include 24:1.1.1.p21, which isn't in this batch, the new evidence here is pointer 70:1.1.1.p67. The excerpt is the sentence where he's mentioned as not being very satisfied. The reason is that this is the first mention in the current batch's content. \\n\\nI should make sure not to include any headers and that the excerpt is exactly as provided. The decision here is to continue because there might be more mentions, but the first one is found here. So the JSON should have \\\"continue\\\" and the newEvidence array with the pointer, excerpt, and reason.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2329,\"completion_tokens\":547,\"total_tokens\":2876}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 21 Dec 2025 20:47:57 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

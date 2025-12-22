@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-813\",\"object\":\"chat.completion\",\"created\":1766332134,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find mentions of \\\"профессора Звёздочкина\\\" excluding headers. First, I need to check the current batch's items. The snapshot shows evidenceCount is 0 and recentEvidencePointers is empty, so there's nothing from previous batches to exclude.\\n\\nLooking through each item's markdown content. The first paragraph talks about Знайка and his book about the Moon's surface, but no mention of Звёздочкин. The next paragraphs discuss astronomers and volcanologists, but again, no Звёздочкин. The same goes for the rest of the paragraphs. \\n\\nWait, maybe I missed something. Let me scan again. The user mentioned \\\"профессора Звёздочкина\\\" which is \\\"Professor Zvezdokhin\\\". The provided text mentions \\\"Знайка\\\" (which is a character, maybe a nickname) but no Звёздочкин. All the discussions are about lunar theories, volcanoes, meteorites, and the lunar inhabitants. There's no reference to a professor by that name. \\n\\nSince none of the items in the current batch mention \\\"профессора Звёздочкина\\\", the decision should be \\\"not_found\\\". The newEvidence array would be empty. I need to make sure not to include any pointers from recentEvidencePointers, but since the snapshot is empty, that's not an issue here. So the final output is decision: \\\"not_found\\\" and no new evidence.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2163,\"completion_tokens\":328,\"total_tokens\":2491}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 21 Dec 2025 15:48:54 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

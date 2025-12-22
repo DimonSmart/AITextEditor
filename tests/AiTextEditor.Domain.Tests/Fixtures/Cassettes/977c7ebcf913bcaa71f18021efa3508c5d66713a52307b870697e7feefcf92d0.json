@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-955\",\"object\":\"chat.completion\",\"created\":1766352855,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"decision\\\": \\\"continue\\\",\\n  \\\"newEvidence\\\": [\\n    {\\n      \\\"pointer\\\": \\\"50:1.1.1.p47\\\",\\n      \\\"excerpt\\\": \\\"– Долой Звёздочкина!\\\",\\n      \\\"reason\\\": \\\"Excerpt directly mentions профессора Звёздочкина in a conversational context.\\\"\\n    }\\n  ]\\n}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the second mention of профессора Звёздочкина, excluding headers. The snapshot shows that there's already one evidence pointer: \\\"25:1.1.1.p22\\\". But wait, looking at the current batch items, none of the pointers match that. The first mention in the batch is at pointer 44:1.1.1.p41, where someone says \\\"– Надо полагать, знаю, – сердито буркнул профессор.\\\" That's the first mention. Then, later in pointer 50:1.1.1.p47, there's \\\"– Долой Звёздочкина!\\\" which is the second mention. So the new evidence should be pointer 50:1.1.1.p47. The reason is that the excerpt directly mentions Звёздочкина in the context of the task. I need to make sure not to include any headers and that the pointer isn't in the recentEvidencePointers. Since 50 isn't in the recent list, it's valid. The decision is to continue because there might be more mentions, but according to the batch, this is the second one. Wait, the snapshot's evidenceCount is 1, so this would be the second. But the task says to exclude headers, and the excerpt here is a paragraph, so it's okay. So the newEvidence array should have this pointer and excerpt.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2128,\"completion_tokens\":400,\"total_tokens\":2528}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 21 Dec 2025 21:34:15 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

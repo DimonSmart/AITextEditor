@@ -47,3 +47,10 @@ public sealed record CursorAgentResult(
     /// Whether the cursor stream is exhausted.
     /// </summary>
     bool CursorComplete = false);
+
+public sealed record CursorAgentStepResult(
+    string Decision,
+    IReadOnlyList<EvidenceItem>? NewEvidence,
+    string? Progress,
+    bool NeedMoreContext,
+    bool HasMore);

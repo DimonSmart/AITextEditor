@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-581\",\"object\":\"chat.completion\",\"created\":1766353532,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants the second mention of \\\"профессора Звёздочкина\\\" excluding headers. First, I need to scan through the provided batch items to find any mentions of this professor. \\n\\nLooking at the items, none of the paragraphs directly mention \\\"профессора Звёздочкина\\\". The text talks about Знайка and various theories about the Moon, but there's no reference to Звёздочкин. The snapshot shows evidenceCount is 0, and recentEvidencePointers is empty, so no previous matches to exclude.\\n\\nSince the task is to find the second mention, but there are no mentions in the current batch, the decision should be \\\"not_found\\\". The newEvidence array will be empty because there are no relevant pointers. I need to make sure not to include any pointers from the snapshot's recentEvidencePointers, but since there are none, that's not an issue here. So the final output is \\\"not_found\\\" with no new evidence.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2282,\"completion_tokens\":226,\"total_tokens\":2508}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 21 Dec 2025 21:45:32 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

@@ -11,7 +11,7 @@ public class McpServerTests
     [Fact]
     public void LoadDocument_AllowsExplicitId()
     {
-        var server = new McpServer();
+        var server = new EditorSession();
 
         var document = server.LoadDocument("# Title", "custom-id");
 
@@ -22,7 +22,7 @@ public class McpServerTests
     [Fact]
     public void GetDocument_ReturnsNullForUnknownId()
     {
-        var server = new McpServer();
+        var server = new EditorSession();
 
         Assert.Null(server.GetDocument("missing"));
     }
@@ -30,7 +30,7 @@ public class McpServerTests
     [Fact]
     public void GetItems_ThrowsWhenDocumentMissing()
     {
-        var server = new McpServer();
+        var server = new EditorSession();
 
         Assert.Throws<InvalidOperationException>(() => server.GetItems("absent"));
     }
@@ -38,7 +38,7 @@ public class McpServerTests
     [Fact]
     public void GetItems_ReturnsLinearItems()
     {
-        var server = new McpServer();
+        var server = new EditorSession();
         var document = server.LoadDocument("# Title\n\nParagraph");
 
         var items = server.GetItems(document.Id);
@@ -52,7 +52,7 @@ public class McpServerTests
     [Fact]
     public void CreateTargetSet_FiltersDuplicatesAndOutOfRange()
     {
-        var server = new McpServer();
+        var server = new EditorSession();
         var document = server.LoadDocument("# Title\n\nFirst paragraph\n\nSecond paragraph");
 
         var targetSet = server.CreateTargetSet(document.Id, new[] { 2, 2, 5, -1 });
@@ -65,7 +65,7 @@ public class McpServerTests
     [Fact]
     public void ApplyOperations_ReindexesAndUpdatesSource()
     {
-        var server = new McpServer();
+        var server = new EditorSession();
         var document = server.LoadDocument("# Title\n\nParagraph");
         var replacement = document.Items[0] with
         {
@@ -85,7 +85,7 @@ public class McpServerTests
     [Fact]
     public void CreateTargetSet_UsesLinearDocumentItems()
     {
-        var server = new McpServer();
+        var server = new EditorSession();
         var document = server.LoadDocument("# Title\n\nParagraph one\n\nParagraph two");
 
         var targetSet = server.CreateTargetSet(document.Id, new[] { 1, 2 }, "command", "label");
@@ -101,7 +101,7 @@ public class McpServerTests
     [Fact]
     public void LoadDefaultDocument_EnablesParameterlessOperations()
     {
-        var server = new McpServer();
+        var server = new EditorSession();
 
         var document = server.LoadDefaultDocument("# Title\n\nParagraph one");
         var items = server.GetItems();
@@ -122,7 +122,7 @@ public class McpServerTests
     [Fact]
     public void TargetSetLifecycle_AllowsQueryingAndDeletion()
     {
-        var server = new McpServer();
+        var server = new EditorSession();
         var firstDocument = server.LoadDocument("# First\n\nParagraph one");
         var secondDocument = server.LoadDocument("# Second\n\nParagraph two");
 
@@ -153,7 +153,7 @@ public class McpServerTests
     [Fact]
     public void DeleteTargetSet_ReturnsFalseForUnknownId()
     {
-        var server = new McpServer();
+        var server = new EditorSession();
 
         Assert.False(server.DeleteTargetSet("missing"));
     }
@@ -161,7 +161,7 @@ public class McpServerTests
     [Fact]
     public void ApplyOperations_ThrowsForUnknownTargetPointer()
     {
-        var server = new McpServer();
+        var server = new EditorSession();
         var document = server.LoadDocument("# Title\n\nParagraph");
 
         var invalidPointer = new SemanticPointer(999, null);

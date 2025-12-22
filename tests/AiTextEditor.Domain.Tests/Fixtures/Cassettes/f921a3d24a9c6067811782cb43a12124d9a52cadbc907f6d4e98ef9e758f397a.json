@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-930\",\"object\":\"chat.completion\",\"created\":1766352068,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\": \\\"not_found\\\", \\\"newEvidence\\\": []}\",\"reasoning\":\"Okay, let's tackle this task. The user wants the first mention of \\\"профессора Звёздочкина\\\" excluding headers. The snapshot shows evidenceCount is 0 and recentEvidencePointers is empty, so we need to look through the current batch items.\\n\\nLooking at the items provided, each has a pointer and markdown content. The task is to find the first occurrence of \\\"профессора Звёздочкина\\\" in the markdown fields. Let me check each paragraph:\\n\\nThe first item (8:1.1.1.p5) talks about Знайка and his trip to the Sun City, meeting Фуксией and Селёдочкой. No mention of Звёздочкина here.\\n\\nThe second item (9:1.1.1.p6) mentions Стекляшкин, an astronomer, but not Звёздочкина.\\n\\nThird item (10:1.1.1.p7) discusses debates among astronomers in Sun City about the origin of lunar craters. Still no Звёздочкина.\\n\\nFourth item (11:1.1.1.p8) talks about Знайка's theory and his observations with Стекляшкин. Again, no Звёздочкина.\\n\\nWait, none of the items mention \\\"профессора Звёздочкина\\\". The user's task is to find the first mention, but in the current batch, there's no such mention. The evidenceCount is 0, and the recentEvidencePointers are empty. Since the current batch doesn't have any matches, the decision should be \\\"not_found\\\". The newEvidence array would be empty. So the output is {\\\"decision\\\": \\\"not_found\\\", \\\"newEvidence\\\": []}.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1688,\"completion_tokens\":385,\"total_tokens\":2073}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 21 Dec 2025 21:21:08 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using AiTextEditor.Lib.Model;
+using AiTextEditor.Lib.Services;
 
 namespace AiTextEditor.SemanticKernel;
 

@@ -279,7 +279,7 @@ public class MarkdownDocumentRepository
 
     private sealed class LinearParsingState
     {
-        private readonly List<int> headingCounters = new();
+        private readonly List<int> headingCounters = [];
         private int paragraphCounter = 0;
 
         public SemanticPointer EnterHeading(int id, int headingLevel)

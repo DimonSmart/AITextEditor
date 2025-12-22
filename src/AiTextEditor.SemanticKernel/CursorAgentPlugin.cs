@@ -26,7 +26,7 @@ public class CursorAgentPlugin(
     private readonly ICursorAgentRuntime cursorAgentRuntime = cursorAgentRuntime;
     private readonly ILogger<CursorAgentPlugin> logger = logger;
 
-    [KernelFunction("run_cursor_agent")]
+    //[KernelFunction("run_cursor_agent")]
     [Description("Launch a cursor agent with a concise system prompt.")]
     public async Task<string> RunCursorAgent(
         [Description("Natural language task for the agent.")] string taskDescription,

@@ -30,13 +30,36 @@ public sealed class CursorAgentRuntime : ICursorAgentRuntime
         CursorAgentLimits limits,
         ILogger<CursorAgentRuntime> logger)
     {
-        this.documentContext = documentContext ?? throw new ArgumentNullException(nameof(documentContext));
-        this.chatService = chatService ?? throw new ArgumentNullException(nameof(chatService));
-        this.promptBuilder = promptBuilder ?? throw new ArgumentNullException(nameof(promptBuilder));
-        this.responseParser = responseParser ?? throw new ArgumentNullException(nameof(responseParser));
-        this.evidenceCollector = evidenceCollector ?? throw new ArgumentNullException(nameof(evidenceCollector));
-        this.limits = limits ?? throw new ArgumentNullException(nameof(limits));
-        this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        this.documentContext = documentContext;
+        this.chatService = chatService;
+        this.promptBuilder = promptBuilder;
+        this.responseParser = responseParser;
+        this.evidenceCollector = evidenceCollector;
+        this.limits = limits;
+        this.logger = logger;
+    }
+
+    public async Task<CursorAgentStepResult> RunStepAsync(CursorAgentRequest request, CursorPortionView portion, CursorAgentState state, int step, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        ArgumentNullException.ThrowIfNull(portion);
+        ArgumentNullException.ThrowIfNull(state);
+
+        var agentSystemPrompt = promptBuilder.BuildAgentSystemPrompt();
+        var taskDefinitionPrompt = promptBuilder.BuildTaskDefinitionPrompt(request);
+
+        var evidenceSnapshot = promptBuilder.BuildEvidenceSnapshot(state);
+        var batchMessage = promptBuilder.BuildBatchMessage(portion, step);
+
+        var command = await GetNextCommandAsync(agentSystemPrompt, taskDefinitionPrompt, evidenceSnapshot, batchMessage, cancellationToken, step);
+
+        if (command == null)
+        {
+            logger.LogError("Agent response malformed.");
+            throw new InvalidOperationException("Agent response malformed.");
+        }
+
+        return new CursorAgentStepResult(command.Decision, command.NewEvidence, command.Progress, command.NeedMoreContext, portion.HasMore);
     }
 
     public async Task<CursorAgentResult> RunAsync(CursorAgentRequest request, CancellationToken cancellationToken = default)
@@ -53,7 +76,7 @@ public sealed class CursorAgentRuntime : ICursorAgentRuntime
         string? stopReason = null;
         var stepsUsed = 0;
 
-        var cursor = new CursorStream(documentContext.Document, limits.MaxElements, limits.MaxBytes, afterPointer, logger);
+        var cursor = new CursorStream(documentContext.Document, limits.MaxElements, limits.MaxBytes, afterPointer, request.Context ?? string.Empty, logger);
 
         for (var step = 0; step < maxSteps; step++)
         {

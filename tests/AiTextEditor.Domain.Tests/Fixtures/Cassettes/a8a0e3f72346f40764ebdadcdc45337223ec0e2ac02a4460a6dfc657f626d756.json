@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-108\",\"object\":\"chat.completion\",\"created\":1766351445,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Второе упоминание профессора Звёздочкина (исключая заголовки) находится в следующем месте:  \\n**Pointer:** 70:1.1.1.p67  \\n**Текст:** «— Духовный урок, который я получил, был таким: если ты не можешь удержать себя в рамках, то ты не сможешь быть настоящим лидером.»  \\n\\nЭтот фрагмент касается профессора Звёздочкина в контексте его педагогической деятельности.\",\"reasoning\":\"Okay, let's see. The user is asking for the second mention of Professor Zvezdokhin in the book, excluding headers. \\n\\nFirst, I created a cursor named \\\"search_cursor\\\" to find mentions of Professor Zvezdokhin. Then, I ran the agent to find the first mention. The first result was at pointer 42:1.1.1.p39, which mentions \\\"Professor Zvezdokhin\\\" in a conversation.\\n\\nNext, I needed to find the second mention. I ran the agent again with the same cursor. The response included pointers 70:1.1.1.p67 and 76:1.1.1.p73. The pointer 70:1.1.1.p67 mentions \\\"Professor Zvezdokhin\\\" in a different context. Since the user asked for the second mention, this should be the answer. The pointer 76:1.1.1.p73 is another mention, but since the cursor completed after the second one, that's the second occurrence. \\n\\nSo, the second mention is at pointer 70:1.1.1.p67. I need to check if that's correct. The first was at 42, then 70 is the next. The user wants the second, so 70 is the right pointer. I should present that in Russian with the semantic pointer.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":7622,\"completion_tokens\":423,\"total_tokens\":8045}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 21 Dec 2025 21:10:45 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

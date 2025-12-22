@@ -4,7 +4,7 @@ namespace AiTextEditor.SemanticKernel;
 
 public sealed class SemanticKernelContext
 {
-    public List<string> UserMessages { get; } = new();
+    public List<string> UserMessages { get; } = [];
 
     public string? LastDocumentSnapshot { get; set; }
 

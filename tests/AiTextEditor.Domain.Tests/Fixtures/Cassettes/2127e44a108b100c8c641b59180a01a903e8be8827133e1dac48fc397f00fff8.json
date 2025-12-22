@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-954\",\"object\":\"chat.completion\",\"created\":1766351800,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's see. The user is asking where in the book the professor Zvezdochkin is first mentioned, excluding headers. So, I need to find the first occurrence of his name in the text.\\n\\nFirst, I created a cursor named \\\"search_cursor\\\" to look for mentions of \\\"профессор Звёздочкин\\\" in the text, not just headers. Then, I ran the agent to find the first mention. The response from the tool gave three pointers, but the first one is at 24:1.1.1.p21. The excerpt there talks about someone named Zvezdochkin, but the text is a bit cryptic. The second pointer is at 70:1.1.1.p67, which mentions \\\"профессор Звёздочкин\\\" directly. Wait, the third pointer's excerpt has a dialogue that mentions \\\"профессор Звёздочкин\\\" as well. But the user wants the first mention. \\n\\nWait, the first pointer's excerpt mentions \\\"профессор Звёздочкин\\\" in the context of a story, but the text is in Cyrillic and might be a bit confusing. The second pointer's excerpt is more direct, but the third one is a dialogue that clearly refers to him. However, the tool's response says \\\"HasMore\\\": false, meaning there are no more entries. But the first mention is at pointer 24:1.1.1.p21. However, the user wants the first occurrence. Let me check the excerpts again. The first excerpt mentions \\\"профессор Звёздочкин\\\" in a story context, but the text is a bit unclear. The second excerpt is a direct mention, but the third is a dialogue. Wait, the first pointer's excerpt has \\\"профессор Звёздочкин\\\" in the text, but the user wants the first mention. So the first occurrence is at 24:1.1.1.p21. But the user might be looking for the first mention in the text, not the first pointer. Wait, the first pointer is the earliest in the document. So the answer should be the first pointer's excerpt. But the user wants the first mention, so the first occurrence in the text. The first pointer's excerpt mentions \\\"профессор Звёздочкин\\\" in the context of a story, but the text is in Cyrillic. The user might need the exact paragraph. So the answer is the first pointer's excerpt, which is at 24:1.1.1.p21. But the user might want the first mention in the text, so the first occurrence. Therefore, the answer is the first pointer's excerpt, which is the first mention. So the final answer is the first pointer's excerpt, which is at 24:1.1.1.p21.\\n\",\"tool_calls\":[{\"id\":\"call_h2dfeyyk\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"mcp-create_targets\",\"arguments\":\"{\\\"label\\\":\\\"первое упоминание профессора Звёздочкин\\\",\\\"pointers\\\":[\\\"24:1.1.1.p21\\\"]}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":5840,\"completion_tokens\":658,\"total_tokens\":6498}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 21 Dec 2025 21:16:40 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

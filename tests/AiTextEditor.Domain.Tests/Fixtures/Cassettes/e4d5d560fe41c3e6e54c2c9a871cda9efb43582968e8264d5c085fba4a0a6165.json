@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-939\",\"object\":\"chat.completion\",\"created\":1766352492,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first mention of Professor Zvezdokin, excluding headers. The context is about mentions of this professor, so I need to look through the provided batch items.\\n\\nFirst, I'll check each paragraph's markdown content. The snapshot shows evidenceCount is 0, and recentEvidencePointers is empty, so no previous matches to avoid. \\n\\nLooking at the first item, pointer 8:1.1.1.p5. The markdown mentions \\\"Знайка\\\" and other characters like Фуксия and Селёдочка, but no Professor Zvezdokin. \\n\\nNext, pointer 9:1.1.1.p6 talks about Стекляшкин, an astronomer, but again, not Zvezdokin. \\n\\nThen, pointer 10:1.1.1.p7 mentions \\\"в Солнечном городе\\\" and discusses astronomers arguing about lunar craters. Still no mention of the professor. \\n\\nThe last item, pointer 11:1.1.1.p8, continues the story of Знайка and Стекляшкин observing the Moon. Still no sign of Professor Zvezdokin. \\n\\nWait, maybe I missed something. Let me scan again. All the paragraphs discuss Знайка, Фуксия, Селёдочка, Стекляшкин, but no mention of Professor Zvezdokin. The task is to find the first occurrence, but none of the provided items have that name. So, the answer should be \\\"not_found\\\" since there's no evidence in the current batch. The user might have intended to include it in a later batch, but based on the given data, it's not present.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1703,\"completion_tokens\":381,\"total_tokens\":2084}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 21 Dec 2025 21:28:11 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

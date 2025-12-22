@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-900\",\"object\":\"chat.completion\",\"created\":1766361230,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first mention of \\\"профессор Звёздочкин\\\" in the provided batch. First, I need to scan through each item in the batch to check if this name appears.\\n\\nLooking at the first item, pointer 8:1.1.1.p5, the markdown text talks about Знайка and his trip to the Sun City, meeting scientists like Фуксия and Селёдочка. There's no mention of профессор Звёздочкин here.\\n\\nNext, pointer 9:1.1.1.p6 mentions Знайка returning to the Flower City and talking about his trip. The astronomer Стекляшкин is mentioned, but not Звёздочкин. \\n\\nMoving to pointer 10:1.1.1.p7, the text discusses the debate among scientists about the origin of lunar craters. The names mentioned are astronomers in the Sun City, but again, no Звёздочкин. \\n\\nFinally, pointer 11:1.1.1.p8 talks about Знайка's own theory and his observations with Стекляшкин. Still, no sign of профессор Звёздочкин. \\n\\nNone of the items in the current batch mention профессор Звёздочкин. The snapshot shows evidenceCount is 0, and recentEvidencePointers is empty. Since the task is to find the first mention, and there's none in this batch, the decision should be \\\"not_found\\\". The newEvidence array will be empty because there are no matches. I need to make sure not to include any pointers from the snapshot's recentEvidencePointers, but since there are none, it's okay. So the output is decision: \\\"not_found\\\" and newEvidence as an empty list.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1779,\"completion_tokens\":405,\"total_tokens\":2184}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 21 Dec 2025 23:53:49 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

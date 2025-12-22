@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-187\",\"object\":\"chat.completion\",\"created\":1766353304,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"В книге профессор Звёздочкин впервые упоминается в тексте, а не в заголовке. Первое упоминание содержится в следующем абзаце:\\n\\n**Показать цитату**  \\n\\\"Эта Знайкина книжка наделала много шума... А действительный член академии астрономических наук профессор Звёздочкин, которому тоже случилось прочитать Знайкину книжку, просто кипел от негодования...\\\"\\n\\n**Семантический указатель**: 24:1.1.1.p21\",\"reasoning\":\"Okay, let's see. The user is asking where in the book the professor Zvezdochkin is first mentioned, excluding headers. So, I need to find the first occurrence of his name in the text, not in any heading.\\n\\nFirst, I called the mcp-create_cursor function with the description \\\"Mentions of профессор Звёздочкин\\\" and named it search_cursor. Then, I used mcp-run_agent to find the first mention. The response from the tool gave three pointers. \\n\\nThe first pointer is a heading: \\\"Как Знайка победил профессора Звёздочкина\\\". The user specified to exclude headers, so this might not be the answer. The second pointer is at 24:1.1.1.p21, which has a paragraph where the professor is mentioned as a member of the academy. The third pointer is at 70:1.1.1.p67, where he's mentioned again in a different context.\\n\\nSince the user wants the first mention excluding headers, the heading (pointer 3) is out. The next is the paragraph in pointer 24. Even though there's another mention in pointer 70, the first occurrence in the text (excluding headers) is at 24:1.1.1.p21. So the answer should be that the first mention is in that paragraph, and the pointer is 24:1.1.1.p21.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1508,\"completion_tokens\":462,\"total_tokens\":1970}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 21 Dec 2025 21:41:44 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

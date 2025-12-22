@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-168\",\"object\":\"chat.completion\",\"created\":1766349921,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of профессора Звёздочкина, excluding headers. The user provided a batch of paragraphs, and I need to scan through them.\\n\\nFirst, I'll go through each item in the batch. The pointers are from 12:1.1.1.p9 to 23:1.1.1.p20. Each has a markdown content. I need to check if any of these mention профессора Звёздочкина. \\n\\nLooking at the first paragraph (12:1.1.1.p9), it talks about Знайка and his book about the Moon's surface. No mention of Звёздочкин here. The next paragraphs (13-18) discuss astronomers and their theories, but again, no Звёздочкин. \\n\\nParagraph 19 mentions Знайка being called a \\\"блинист\\\" by others, but still no Звёздочкин. Paragraph 20 refers to Знайка being called a \\\"блинист\\\" and the others dismissing him. Still no. \\n\\nParagraph 21 talks about Знайка's visit to the Moon and the \\\"лунные коротышки\\\" (lunarians). Wait, the task is about профессора Звёздочкина, not Знайка. So maybe I missed something. Let me check again. \\n\\nWait, the task is to find the first mention of профессора Звёздочкина. But in all the provided paragraphs, the name Звёздочкин isn't mentioned. The only names are Знайка and лунатики. So maybe there's no mention here. \\n\\nBut the user's snapshot has evidenceCount 0 and recentEvidencePointers empty. So if there's no mention in the current batch, the decision should be \\\"not_found\\\". However, the user might have intended that the first mention is in a later batch. But according to the input, this is the first batch. So the answer would be that there's no evidence here. \\n\\nWait, but the task says \\\"excluding headers\\\", so maybe the headers are the titles. But in the provided items, all are paragraphs. So perhaps there's no mention of Звёздочкин in this batch. Therefore, the correct decision is \\\"not_found\\\".\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2188,\"completion_tokens\":518,\"total_tokens\":2706}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 21 Dec 2025 20:45:21 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

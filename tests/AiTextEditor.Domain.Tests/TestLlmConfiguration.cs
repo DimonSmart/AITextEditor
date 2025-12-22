@@ -77,7 +77,7 @@ public static class TestLlmConfiguration
         var client = new HttpClient(loggingHandler)
         {
             BaseAddress = new Uri(normalizedBaseUrl),
-            Timeout = TimeSpan.FromMinutes(60)
+            Timeout = TimeSpan.FromMinutes(5)
         };
 
         if (!string.IsNullOrWhiteSpace(apiKey))

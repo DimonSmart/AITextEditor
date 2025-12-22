@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-977\",\"object\":\"chat.completion\",\"created\":1766352084,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of профессора Звёздочкина, excluding headers. The snapshot shows evidenceCount is 0 and recentEvidencePointers is empty, so we need to look through the current batch items.\\n\\nLooking at the items provided, none of the paragraphs mention профессора Звёздочкина. The content discusses Знайка's theories about the Moon's surface and the lunar craters, but there's no reference to Звёздочкин. The user might have a typo or maybe the name is misspelled. Since the task specifies to exclude headers, I should check if any headers were present, but the items are all paragraphs. \\n\\nSince there's no mention of профессора Звёздочкина in any of the provided items, the correct decision is \\\"not_found\\\". The newEvidence array should be empty because there's no relevant content. I need to make sure not to include any pointers from the snapshot's recentEvidencePointers, but since the snapshot is empty, that's not an issue here. The answer should be a JSON object with decision \\\"not_found\\\" and an empty newEvidence array.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2180,\"completion_tokens\":262,\"total_tokens\":2442}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 21 Dec 2025 21:21:23 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

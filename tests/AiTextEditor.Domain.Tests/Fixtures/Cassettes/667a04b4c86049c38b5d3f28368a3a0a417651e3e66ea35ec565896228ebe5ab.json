@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-243\",\"object\":\"chat.completion\",\"created\":1766332738,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find mentions of \\\"профессор Звёздочкин\\\" excluding headings. The snapshot shows evidenceCount is 0 and recentEvidencePointers is empty, so we need to look through the current batch.\\n\\nLooking at the items, the first few are headings, which we should ignore. The third item is a heading too: \\\"Как Знайка победил профессора Звёздочкина\\\". Wait, the task says to exclude headings, so even though it mentions the professor, it's a heading, so we can't include it. \\n\\nNext, the paragraphs. The first paragraph (4:1.1.1.p1) talks about Незнайка's trip and the changes in the city, but no mention of the professor. The second paragraph (5:1.1.1.p2) mentions the factory built by инженера Клёпки, but again, no professor. The third paragraph (6:1.1.1.p3) is about Пончик and his clothes, still no mention. The fourth paragraph (7:1.1.1.p4) continues the story of Пончик's smell problem, but again, no professor.\\n\\nWait, the heading \\\"Как Знайка победил профессора Звёздочкина\\\" is a heading, so even though it mentions the professor, it's excluded. So there's no mention in the paragraphs either. Therefore, the answer should be \\\"not_found\\\" since there's no evidence in the current batch. The user might have expected the heading to count, but the rules say to exclude headings. So the correct decision is \\\"not_found\\\".\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1880,\"completion_tokens\":368,\"total_tokens\":2248}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 21 Dec 2025 15:58:57 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

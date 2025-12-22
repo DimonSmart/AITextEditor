@@ -30,10 +30,18 @@ public sealed class SemanticKernelEngine
         ArgumentException.ThrowIfNullOrWhiteSpace(markdown);
         ArgumentException.ThrowIfNullOrWhiteSpace(userCommand);
 
+        var context = new SemanticKernelContext
+        {
+            LastCommand = userCommand
+        };
+
         var repository = new MarkdownDocumentRepository();
         var document = repository.LoadFromMarkdown(markdown);
 
         var documentContext = new DocumentContext(document);
+
+        var mcpServer = new EditorSession();
+        mcpServer.LoadDefaultDocument(markdown);
 
         var builder = Kernel.CreateBuilder();
 
@@ -63,12 +71,38 @@ public sealed class SemanticKernelEngine
             endpoint: new Uri(endpoint),
             httpClient: httpClient);
 
-        builder.Plugins.AddFromType<CursorAgentPlugin>();
+        //builder.Plugins.AddFromType<CursorAgentPlugin>();
+        //var mcpPlugin = new McpServerPlugin(mcpServer, context, loggerFactory.CreateLogger<McpServerPlugin>());
+        //builder.Plugins.AddFromObject(mcpPlugin, "mcp");
 
         var kernel = builder.Build();
         var functionLogger = kernel.Services.GetRequiredService<FunctionInvocationLoggingFilter>();
         kernel.FunctionInvocationFilters.Add(functionLogger);
         kernel.AutoFunctionInvocationFilters.Add(functionLogger);
+
+        var cursorAgentRuntime = kernel.Services.GetRequiredService<ICursorAgentRuntime>();
+        var limits = kernel.Services.GetRequiredService<CursorAgentLimits>();
+        var cursorRegistry = new CursorRegistry();
+
+        var editorPlugin = new EditorPlugin(
+            mcpServer,
+            context,
+            loggerFactory.CreateLogger<EditorPlugin>());
+        kernel.Plugins.AddFromObject(editorPlugin, "editor");
+
+        var cursorPlugin = new CursorPlugin(
+            mcpServer,
+            cursorRegistry,
+            limits,
+            loggerFactory.CreateLogger<CursorPlugin>());
+        kernel.Plugins.AddFromObject(cursorPlugin, "cursor");
+
+        var agentPlugin = new AgentPlugin(
+            cursorRegistry,
+            cursorAgentRuntime,
+            limits,
+            loggerFactory.CreateLogger<AgentPlugin>());
+        kernel.Plugins.AddFromObject(agentPlugin, "agent");
 
         var logger = loggerFactory.CreateLogger<SemanticKernelEngine>();
         logger.LogInformation("Kernel built with model {ModelId} at {Endpoint}", modelId, endpoint);
@@ -78,9 +112,15 @@ public sealed class SemanticKernelEngine
         history.AddSystemMessage(
             """
             You are a QA assistant for a markdown book that is already loaded into the available kernel functions. Always use the tools to inspect the document instead of world knowledge. Preferred workflow:
-            - For location questions, call run_cursor_agent with a precise task and include the pointerLabel (and pointer) in the summary. Treat headings as metadata; when the user asks about mentions in the text, return the first paragraph/list item that matches, not the heading.
+            - For location questions, create a cursor using `create_cursor` (e.g. name="search_cursor", description="Mentions of..."), then iterate using `run_agent` (e.g. cursorName="search_cursor", taskDescription="Find the first mention...").
+            - Continue iterating as long as the decision is "continue" OR ("not_found" AND hasMore=true).
+            - Stop ONLY when decision is "done" OR "cursor_complete" OR ("not_found" AND hasMore=false).
+            - Include the pointerLabel (and pointer) in the summary. Treat headings as metadata; when the user asks about mentions in the text, return the first paragraph/list item that matches, not the heading.
             - Never invent content; if the book lacks the answer, reply that it is not found in the document.
             - Stop as soon as you have the relevant paragraph; do not iterate over the entire cursor without a reason.
+            - Be careful with counting mentions: a single paragraph (evidence item) may contain MULTIPLE mentions. You MUST read the excerpt text to count them. Do NOT assume 1 evidence item = 1 mention. If the first item contains 2 mentions, then the 'second mention' is in the first item.
+            - The tool output is a list of evidence items. Item 1 is NOT necessarily Mention 1. Item 1 might contain Mention 1 AND Mention 2.
+            - CHECK PREVIOUS EVIDENCE: The answer might be in a paragraph you found in a previous step. If Paragraph A has 2 mentions, and you found Paragraph A in Step 1 (for "first mention"), then for "second mention" you should look at Paragraph A again (from your history), NOT just the new output from the tool.
             Return the final answer in Russian and include the semantic pointer when applicable.
             """);
         history.AddUserMessage(userCommand);
@@ -98,11 +138,7 @@ public sealed class SemanticKernelEngine
         var answer = result.FirstOrDefault()?.Content ?? string.Empty;
         logger.LogInformation("LLM answer: {Answer}", TruncateForLog(answer));
 
-        var context = new SemanticKernelContext
-        {
-            LastCommand = userCommand,
-            LastAnswer = answer
-        };
+        context.LastAnswer = answer;
         context.UserMessages.Add(answer);
 
         return context;

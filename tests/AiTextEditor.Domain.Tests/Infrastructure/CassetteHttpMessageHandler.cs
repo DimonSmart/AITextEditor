@@ -171,5 +171,5 @@ public class CassetteRecording
     public HttpStatusCode StatusCode { get; set; }
     public required string Body { get; set; }
     public required string ContentType { get; set; }
-    public Dictionary<string, string[]> Headers { get; set; } = new();
+    public Dictionary<string, string[]> Headers { get; set; } = [];
 }
