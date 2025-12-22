@@ -51,6 +51,8 @@ public sealed class SemanticKernelEngine
         builder.Services.AddSingleton<ICursorAgentResponseParser, CursorAgentResponseParser>();
         builder.Services.AddSingleton<ICursorEvidenceCollector, CursorEvidenceCollector>();
         builder.Services.AddSingleton<ICursorAgentRuntime, CursorAgentRuntime>();
+        builder.Services.AddSingleton<IQueryCursorRegistry, QueryCursorRegistry>();
+        builder.Services.AddSingleton<IQueryCursorAgentRuntime, QueryCursorAgentRuntime>();
         builder.Services.AddSingleton<ILoggerFactory>(loggerFactory);
         builder.Services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
         builder.Services.AddSingleton<FunctionInvocationLoggingFilter>();
@@ -74,6 +76,9 @@ public sealed class SemanticKernelEngine
         //builder.Plugins.AddFromType<CursorAgentPlugin>();
         //var mcpPlugin = new McpServerPlugin(mcpServer, context, loggerFactory.CreateLogger<McpServerPlugin>());
         //builder.Plugins.AddFromObject(mcpPlugin, "mcp");
+        builder.Plugins.AddFromType<CursorAgentPlugin>();
+        builder.Plugins.AddFromType<QueryCursorCreationPlugin>();
+        builder.Plugins.AddFromType<QueryCursorAgentPlugin>();
 
         var kernel = builder.Build();
         var functionLogger = kernel.Services.GetRequiredService<FunctionInvocationLoggingFilter>();
