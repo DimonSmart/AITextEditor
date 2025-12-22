@@ -19,14 +19,14 @@ public class CursorStreamTests
         var repository = new MarkdownDocumentRepository();
         var document = repository.LoadFromMarkdownFile(filePath);
         
-        var cursor = new CursorStream(document, maxElements: 10, maxBytes: 10000);
+        var cursorStream = new CursorStream(document, maxElements: 10, maxBytes: 10000);
 
         var readItems = new List<LinearItem>();
 
         // Act
-        while (!cursor.IsComplete)
+        while (!cursorStream.IsComplete)
         {
-            var portion = cursor.NextPortion();
+            var portion = cursorStream.NextPortion();
             readItems.AddRange(portion.Items);
         }
 

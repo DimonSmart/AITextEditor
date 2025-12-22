@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AiTextEditor.Lib.Model;
+using AiTextEditor.Lib.Services;
 using AiTextEditor.Lib.Services.SemanticKernel;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel.ChatCompletion;
