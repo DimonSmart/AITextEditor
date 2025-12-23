@@ -59,7 +59,7 @@ public sealed class CursorAgentRuntime : ICursorAgentRuntime
             throw new InvalidOperationException("Agent response malformed.");
         }
 
-        return new CursorAgentStepResult(command.Decision, command.NewEvidence, command.Progress, command.NeedMoreContext, portion.HasMore);
+        return new CursorAgentStepResult(command.Action, command.BatchFound, command.NewEvidence, command.Progress, command.NeedMoreContext, portion.HasMore);
     }
 
     public async Task<CursorAgentResult> RunAsync(CursorAgentRequest request, CancellationToken cancellationToken = default)
@@ -111,7 +111,7 @@ public sealed class CursorAgentRuntime : ICursorAgentRuntime
             cursorAgentState = evidenceCollector.AppendEvidence(cursorAgentState, cursorPortionView, command.NewEvidence ?? Array.Empty<EvidenceItem>(), limits.DefaultMaxFound);
             summary = updatedSummary ?? summary;
 
-            if (ShouldStop(command.Decision, cursorPortionView.HasMore, stepsUsed, maxSteps, out stopReason))
+            if (ShouldStop(command.Action, cursorPortionView.HasMore, stepsUsed, maxSteps, out stopReason))
             {
                 break;
             }
@@ -221,9 +221,10 @@ public sealed class CursorAgentRuntime : ICursorAgentRuntime
         if (parsed != null)
         {
             logger.LogDebug(
-                "cursor_agent_parsed: step={Step}, decision={Decision}, finishFound={Finish}, parsedAction={ParsedAction}",
+                "cursor_agent_parsed: step={Step}, action={Action}, batchFound={BatchFound}, finishFound={Finish}, parsedAction={ParsedAction}",
                 step,
-                parsed.Decision,
+                parsed.Action,
+                parsed.BatchFound,
                 finishDetected,
                 Truncate(parsedFragment ?? string.Empty, 500));
         }
@@ -231,19 +232,13 @@ public sealed class CursorAgentRuntime : ICursorAgentRuntime
         return parsed?.WithRawContent(parsedFragment ?? content);
     }
 
-    private static bool ShouldStop(string decisionRaw, bool cursorHasMore, int step, int maxSteps, out string reason)
+    private static bool ShouldStop(string actionRaw, bool cursorHasMore, int step, int maxSteps, out string reason)
     {
-        var decision = NormalizeDecision(decisionRaw);
+        var action = NormalizeAction(actionRaw);
 
-        if (decision == "not_found" && cursorHasMore)
+        if (action == "stop")
         {
-            reason = "ignore_not_found_has_more";
-            return false;
-        }
-
-        if (decision is "done" or "not_found")
-        {
-            reason = $"decision_{decision}";
+            reason = "agent_stopped";
             return true;
         }
 
@@ -263,11 +258,10 @@ public sealed class CursorAgentRuntime : ICursorAgentRuntime
         return false;
     }
 
-    private static string NormalizeDecision(string? decision) => decision?.Trim().ToLowerInvariant() switch
+    private static string NormalizeAction(string? action) => action?.Trim().ToLowerInvariant() switch
     {
+        "stop" => "stop",
         "continue" => "continue",
-        "done" => "done",
-        "not_found" => "not_found",
         _ => "continue"
     };
 

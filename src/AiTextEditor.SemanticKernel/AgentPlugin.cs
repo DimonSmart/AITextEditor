@@ -51,7 +51,8 @@ public sealed class AgentPlugin(
                 else
                 {
                     lastResult = new CursorAgentStepResult(
-                        lastResult.Decision,
+                        lastResult.Action,
+                        lastResult.BatchFound,
                         aggregatedEvidence,
                         lastResult.Progress,
                         lastResult.NeedMoreContext,
@@ -79,13 +80,12 @@ public sealed class AgentPlugin(
 
             if (actualMaxEvidenceCount.HasValue && aggregatedEvidence.Count >= actualMaxEvidenceCount.Value)
             {
-                lastResult = new CursorAgentStepResult("done", result.NewEvidence, result.Progress, result.NeedMoreContext, result.HasMore);
+                lastResult = new CursorAgentStepResult("stop", true, result.NewEvidence, result.Progress, result.NeedMoreContext, result.HasMore);
                 break;
             }
 
             bool shouldContinue = 
-                (string.Equals(result.Decision, "continue", StringComparison.OrdinalIgnoreCase) || 
-                 string.Equals(result.Decision, "not_found", StringComparison.OrdinalIgnoreCase)) &&
+                string.Equals(result.Action, "continue", StringComparison.OrdinalIgnoreCase) &&
                 result.HasMore;
 
             if (!shouldContinue)
@@ -99,7 +99,8 @@ public sealed class AgentPlugin(
         if (lastResult != null)
         {
             lastResult = new CursorAgentStepResult(
-                lastResult.Decision,
+                lastResult.Action,
+                lastResult.BatchFound,
                 aggregatedEvidence,
                 lastResult.Progress,
                 lastResult.NeedMoreContext,
@@ -108,7 +109,7 @@ public sealed class AgentPlugin(
         }
 
         var sb = new StringBuilder();
-        sb.AppendLine($"Decision: {lastResult?.Decision ?? "unknown"}");
+        sb.AppendLine($"Action: {lastResult?.Action ?? "unknown"}");
         
         if (aggregatedEvidence.Any())
         {

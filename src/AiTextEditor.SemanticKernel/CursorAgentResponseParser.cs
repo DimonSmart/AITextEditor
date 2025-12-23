@@ -36,7 +36,7 @@ public sealed class CursorAgentResponseParser : ICursorAgentResponseParser
         }
 
         multipleActions = commands.Count > 1;
-        var finish = commands.FirstOrDefault(command => command.Decision is "done" or "not_found");
+        var finish = commands.FirstOrDefault(command => command.Action == "stop");
         finishDetected = finish != null;
 
         var selected = finish ?? commands[0];
@@ -111,13 +111,36 @@ public sealed class CursorAgentResponseParser : ICursorAgentResponseParser
         {
             using var document = JsonDocument.Parse(content);
             var root = document.RootElement;
-            var decision = root.TryGetProperty("decision", out var decisionElement) && decisionElement.ValueKind == JsonValueKind.String
-                ? decisionElement.GetString()
+            var action = root.TryGetProperty("action", out var actionElement) && actionElement.ValueKind == JsonValueKind.String
+                ? actionElement.GetString()
                 : null;
 
-            if (string.IsNullOrWhiteSpace(decision))
+            // Fallback for legacy/hallucinated "decision"
+            if (string.IsNullOrWhiteSpace(action))
+            {
+                var decision = root.TryGetProperty("decision", out var decisionElement) && decisionElement.ValueKind == JsonValueKind.String
+                    ? decisionElement.GetString()
+                    : null;
+
+                if (!string.IsNullOrWhiteSpace(decision))
+                {
+                    action = decision switch
+                    {
+                        "done" => "stop",
+                        _ => "continue"
+                    };
+                }
+            }
+
+            if (string.IsNullOrWhiteSpace(action))
             {
                 return null;
+            }
+
+            var batchFound = false;
+            if (root.TryGetProperty("batchFound", out var batchFoundElement))
+            {
+                batchFound = batchFoundElement.ValueKind == JsonValueKind.True;
             }
 
             var newEvidence = root.TryGetProperty("newEvidence", out var evidenceElement) && evidenceElement.ValueKind == JsonValueKind.Array
@@ -132,7 +155,7 @@ public sealed class CursorAgentResponseParser : ICursorAgentResponseParser
 
             var needMoreContext = root.TryGetProperty("needMoreContext", out var needElement) && needElement.ValueKind == JsonValueKind.True;
 
-            return new AgentCommand(decision!, newEvidence, progress, needMoreContext) { RawContent = content };
+            return new AgentCommand(action!, batchFound, newEvidence, progress, needMoreContext) { RawContent = content };
         }
         catch (Exception)
         {
@@ -212,7 +235,7 @@ public sealed class CursorAgentResponseParser : ICursorAgentResponseParser
     }
 }
 
-public sealed record AgentCommand(string Decision, IReadOnlyList<EvidenceItem>? NewEvidence, string? Progress, bool NeedMoreContext)
+public sealed record AgentCommand(string Action, bool BatchFound, IReadOnlyList<EvidenceItem>? NewEvidence, string? Progress, bool NeedMoreContext)
 {
     public string? RawContent { get; init; }
 

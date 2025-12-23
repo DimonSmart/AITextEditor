@@ -16,13 +16,26 @@ public class CursorAgentResponseParserTests
         var result = parser.ParseCommand(content, out var parsedFragment, out var multipleActions, out var finishDetected);
 
         Assert.NotNull(result);
-        Assert.Equal("continue", result!.Decision);
+        Assert.Equal("continue", result!.Action);
         Assert.False(multipleActions);
         Assert.False(finishDetected);
         Assert.Equal("p1", result.NewEvidence![0].Pointer);
         Assert.Equal("line1\nline2", result.NewEvidence![0].Excerpt);
         Assert.Equal("keep going", result.Progress);
         Assert.Contains("\\n", parsedFragment, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void ParseCommand_HandlesNewSchema()
+    {
+        var content = "{\"action\":\"stop\",\"batchFound\":true,\"newEvidence\":[]}";
+
+        var result = parser.ParseCommand(content, out var parsedFragment, out var multipleActions, out var finishDetected);
+
+        Assert.NotNull(result);
+        Assert.Equal("stop", result!.Action);
+        Assert.True(result.BatchFound);
+        Assert.True(finishDetected);
     }
 
     [Fact]

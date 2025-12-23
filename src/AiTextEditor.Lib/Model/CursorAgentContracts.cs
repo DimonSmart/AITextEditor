@@ -50,7 +50,8 @@ public sealed record CursorAgentResult(
     bool CursorComplete = false);
 
 public sealed record CursorAgentStepResult(
-    string Decision,
+    string Action,
+    bool BatchFound,
     IReadOnlyList<EvidenceItem>? NewEvidence,
     string? Progress,
     bool NeedMoreContext,

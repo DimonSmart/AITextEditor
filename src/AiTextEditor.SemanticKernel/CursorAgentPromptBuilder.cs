@@ -151,7 +151,8 @@ Input:
 
 Output schema (JSON):
 {
-  "decision": "continue|done|not_found",
+  "action": "continue|stop",
+  "batchFound": true|false,
   "newEvidence": [
     { "pointer": "...", "excerpt": "...", "reason": "..." }
   ]
@@ -173,7 +174,9 @@ Scanning Strategy:
 - Report ALL matches found in the batch. Do not try to filter for "the second one" yourself. The agent needs all candidates to count correctly.
 - Do not skip items just because they don't look like the "answer". Report ALL matches.
 - If a paragraph contains multiple mentions, report it once as evidence. The counting logic will handle the rest.
-- If 'maxEvidenceCount' is provided in the task and you have found enough evidence (snapshot.evidenceCount + newEvidence.length >= maxEvidenceCount), set decision="done".
+- If 'maxEvidenceCount' is provided in the task and you have found enough evidence (snapshot.evidenceCount + newEvidence.length >= maxEvidenceCount), set action="stop".
+- If you have NOT found enough evidence yet, set action="continue".
+- Set batchFound=true if you found ANY new evidence in this batch, otherwise false.
 
 Content preference:
 - Prefer Paragraph/ListItem content.
