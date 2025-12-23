@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-439\",\"object\":\"chat.completion\",\"created\":1766434434,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's see. The user is asking where Professor Zvezdochkin is first mentioned in the book, excluding headers. The assistant created a cursor to find paragraphs with 'профессор Звёздочкин' and ran the agent to get the first occurrence. The response came back with a pointer 3:1.1.1 and the excerpt \\\"### Как Знайка победил профессора Звёздочкина\\\". \\n\\nWait, the user said to exclude headers, but the excerpt here starts with ###, which looks like a header. The assistant needs to check if this is actually a header or part of the main text. Since the cursor was set to filter paragraphs containing the name, maybe the header is part of the document's structure. However, the user specified to exclude headers, so the assistant should look for the next occurrence.\\n\\nThe status says there are more items available, so the agent should run again to find the next paragraph that mentions the professor without being a header. The assistant needs to make sure the found paragraph is part of the main text, not a heading. If the next item is a regular paragraph, then that's the answer. Otherwise, continue searching.\\n\",\"tool_calls\":[{\"id\":\"call_2p8ziis5\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"agent-run_agent\",\"arguments\":\"{\\\"cursorName\\\":\\\"search_cursor\\\",\\\"maxEvidenceCount\\\":1,\\\"taskDescription\\\":\\\"Find the first non-header mention of профессор Звёздочкин\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1484,\"completion_tokens\":298,\"total_tokens\":1782}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 20:13:54 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

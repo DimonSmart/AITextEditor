@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-208\",\"object\":\"chat.completion\",\"created\":1766418221,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's tackle this query. The user wants the first dialog between two named characters and their names. First, I need to figure out how to approach this using the provided tools.\\n\\nThe tools include creating a cursor to scan the document. Since the user is asking for the first occurrence, I should create a cursor that filters for dialogues involving two named characters. The filterDescription needs to be stateless, so maybe look for lines that start with a character's name followed by a dialogue tag.\\n\\nWait, the cursor's filter must be per-element, so perhaps the filterDescription should check if a paragraph contains a dialogue where two characters are mentioned by name. But how to structure that? Maybe the filter can look for lines that have two names in a dialogue format, like \\\"John: Hello, Mary.\\\" \\n\\nBut the exact structure of the document isn't known. The user mentioned using the tools to inspect the document, so I need to create a cursor that scans for such dialogues. The taskDescription for the agent would be to find the first dialogue between two named characters. \\n\\nI should start by creating a cursor with a filter that identifies dialogues. Then, run the agent on that cursor to get the first occurrence. The agent will return evidence items, and I need to check each paragraph to see if it's a dialogue between two named characters. Once found, extract their names and the dialog.\\n\\nBut how to handle the filterDescription? Maybe the filter can look for lines that start with a name followed by a colon and then a dialogue, and then another name. But since the cursor can't track counters, it's a per-portion check. So the filter might not be perfect, but the agent can process the portions and find the first occurrence.\\n\\nSo first, create a cursor named \\\"dialogue_cursor\\\" with a filterDescription that looks for dialogues. Then run the agent with taskDescription to find the first such dialogue. The agent will return evidence items, and I can check each one's text to confirm it's a dialogue between two named characters. Once found, extract the names and the dialog.\\n\",\"tool_calls\":[{\"id\":\"call_rl623c5p\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_cursor\",\"arguments\":\"{\\\"filterDescription\\\":\\\"Identifies paragraphs containing direct dialogue between two named characters (e.g., 'Alice: Hello, Bob.'), focusing on named entities in a conversational context.\\\",\\\"name\\\":\\\"dialogue_cursor\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1133,\"completion_tokens\":493,\"total_tokens\":1626}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 15:43:41 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-995\",\"object\":\"chat.completion\",\"created\":1766432627,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first dialog between two named characters, and the context is lines with exactly two character names followed by dialogue markers. The maxEvidenceCount is 1, so we need to find the first occurrence.\\n\\nLooking at the provided batch items, there are two paragraphs. The first paragraph (pointer 8:1.1.1.p5) mentions Znayka meeting Fuxiya and Selodka, but there's no dialogue here. The second paragraph (pointer 9:1.1.1.p6) talks about Znayka's return and his stories, but again, no direct dialogue between two characters. \\n\\nWait, maybe I missed something. Let me check again. The first paragraph has Znayka interacting with Fuxiya and Selodka, but the dialogue markers aren't present. The second paragraph doesn't have any dialogue either. Since the task requires exactly two character names followed by dialogue markers, and neither of these paragraphs have that structure, there's no evidence here. \\n\\nSo the decision should be \\\"not_found\\\" because there's no matching evidence in the current batch. The user might need to check subsequent batches for the required dialogue.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1315,\"completion_tokens\":264,\"total_tokens\":1579}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 19:43:46 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

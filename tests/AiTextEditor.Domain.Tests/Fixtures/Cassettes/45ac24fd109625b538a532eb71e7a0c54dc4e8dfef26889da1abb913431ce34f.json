@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-503\",\"object\":\"chat.completion\",\"created\":1766421949,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's see. The user wants the first dialogue between two named characters and their names. The previous attempts had errors, so I need to adjust.\\n\\nFirst, I created a cursor called dialogue_cursor with a filter for direct dialogue between two named characters. Then, I tried running the agent but got an error. Maybe the filter description wasn't specific enough or there was an issue with the cursor creation.\\n\\nI tried again with dialogue_cursor_v2, adjusting the filter description to include examples like \\\"Alice says to Bob: Hello\\\" and \\\"John: Hi, Mary.\\\" The cursor was created successfully. Now, I need to run the agent again with maxEvidenceCount set to 1 to get the first occurrence.\\n\\nWait, the user mentioned \\\"direct dialogue,\\\" so maybe the previous filter didn't capture that. The new filter includes \\\"says to\\\" which might help. Let me run the agent now, ensuring the task description is clear. If the agent finds a match, the evidence item should have the dialogue and the character names. I'll check the response and extract the names from the dialogue.\\n\",\"tool_calls\":[{\"id\":\"call_294uzdgt\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"agent-run_agent\",\"arguments\":\"{\\\"cursorName\\\":\\\"dialogue_cursor_v2\\\",\\\"maxEvidenceCount\\\":1,\\\"taskDescription\\\":\\\"Locate the first instance of a dialogue segment featuring two explicitly named characters in a conversational format\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1364,\"completion_tokens\":279,\"total_tokens\":1643}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 16:45:49 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

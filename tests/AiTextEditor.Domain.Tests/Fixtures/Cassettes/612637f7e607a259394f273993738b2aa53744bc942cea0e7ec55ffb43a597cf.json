@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-628\",\"object\":\"chat.completion\",\"created\":1766436153,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, the user wants the first dialogue between two named characters. I created a cursor for paragraphs with dialogue markers and ran the agent, but it didn't find anything in the first batch. Since there are more items available, I need to continue scanning. Let me call the agent again with the same cursor to check the next portion of the document. I'll keep doing this until I find the first mention or confirm it's not there.\\n\",\"tool_calls\":[{\"id\":\"call_je6wzd38\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"agent-run_agent\",\"arguments\":\"{\\\"cursorName\\\":\\\"dialogue_cursor\\\",\\\"maxEvidenceCount\\\":1,\\\"taskDescription\\\":\\\"Find the first dialogue between two named characters\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1432,\"completion_tokens\":133,\"total_tokens\":1565}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 20:42:33 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-438\",\"object\":\"chat.completion\",\"created\":1766513274,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"We need to output JSON with decision and newEvidence. Task: \\\"Find last mention of Фуксии\\\" context: paragraph contains Фуксии. We must scan current batch items for mention of \\\"Фуксии\\\". Items contain Russian sentences, none contain the word \\\"Фуксии\\\". So no new evidence. decision? Since hasMoreBatches true, and we haven't found evidence, we continue. decision \\\"continue\\\". newEvidence empty array.\\n\\nCheck snapshot recentEvidencePointers includes \\\"8:1.1.1.p5\\\". We must not include that.\\n\\nThus output.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":770,\"completion_tokens\":138,\"total_tokens\":908}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:07:53 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

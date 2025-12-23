@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-429\",\"object\":\"chat.completion\",\"created\":1766417667,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[{\\\"pointer\\\":\\\"29:1.1.1.p29\\\",\\\"excerpt\\\":\\\"– Вы рассуждаете так, будто вам уже когда-нибудь приходилось болтаться в центре Луны!\\\",\\\"reason\\\":\\\"Znayka mocks the professor's claim about hanging around the Moon's center with sarcastic remarks.\\\"}]}\",\"reasoning\":\"Okay, let's tackle this query. The user wants the first mention of Znayka's sarcastic remark about the professor's claim regarding hanging around the Moon's center. \\n\\nFirst, I need to scan through the provided batch items. The task specifies that the evidence must be from the current batch, and I shouldn't consider previous evidence. The snapshot shows evidenceCount is 0, so no prior matches.\\n\\nLooking at each paragraph:\\n\\n- The first mention of Znayka's remark is in paragraph 29:1.1.1.p29. Here, after the professor's statement, Znayka says, \\\"– Вы рассуждаете так, будто вам уже когда-нибудь приходилось болтаться в центре Луны!\\\" This is a sarcastic remark because he's mocking the professor's claim about hanging around the Moon's center. The key part is \\\"болтаться в центре Луны,\\\" which directly relates to the professor's assertion about being pulled to the Moon's center. \\n\\nI need to check if there's an earlier mention. The previous paragraphs discuss the professor's lecture but don't have Znayka's sarcastic response. So paragraph 29 is the first instance. The excerpt should be exact, so I'll take the entire paragraph's markdown. The reason is that Znayka's comment directly addresses the professor's claim about hanging around the Moon's center with sarcasm.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2425,\"completion_tokens\":385,\"total_tokens\":2810}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 15:34:27 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

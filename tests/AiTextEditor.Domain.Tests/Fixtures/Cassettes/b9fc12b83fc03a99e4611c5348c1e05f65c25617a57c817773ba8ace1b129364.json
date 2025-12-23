@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-464\",\"object\":\"chat.completion\",\"created\":1766426051,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The goal is to detect the first instance of dialogue involving two distinct named characters in the same sentence. The context mentions that it could be direct or indirect, like \\\"Alice says to Bob...\\\" or \\\"John asked Mary...\\\". The example given includes sentences with two named entities in a conversational context.\\n\\nLooking at the provided batch, there's only one item, which is a paragraph. The paragraph is in Russian, so I need to check if there's any dialogue mentioned here. Let me read through the text again.\\n\\nThe paragraph talks about the residents of the Sunny City helping the little people from the Flower City with their construction projects. It mentions Engineer Klyepka's project for a large clothing factory. There's a mention of machines doing the work, but no direct dialogue. The sentences are descriptive, explaining what happened without any conversation between characters. \\n\\nI need to check if there's any indirect dialogue, like someone asking or stating something. The text says \\\"По проекту инженера Клёпки была построена...\\\" which translates to \\\"According to the project of Engineer Klyepka...\\\" That's a statement, not a dialogue. There's no mention of two named characters interacting in a sentence. \\n\\nSince the task requires two distinct named characters in the same sentence with dialogue, and the provided paragraph doesn't have any such instances, the decision should be \\\"not_found\\\". The newEvidence array remains empty because there's no matching content. The evidenceCount is 0, and since maxEvidenceCount is 1, but no evidence was found, the decision is \\\"not_found\\\".\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":937,\"completion_tokens\":346,\"total_tokens\":1283}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 17:54:11 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

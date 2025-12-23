@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-592\",\"object\":\"chat.completion\",\"created\":1766416856,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, the user is asking where Ponchik is first mentioned in the book. Let me think about how to approach this.\\n\\nFirst, I need to use the tools provided. The cursor-create_cursor function can help create a cursor to search through the document. The task is to find the first mention of Ponchik, so the filterDescription should look for instances of that name. I'll set up the cursor with a filter to detect \\\"Ponchik\\\" and then use run_agent to process the document portions. Since it's the first mention, I'll set maxEvidenceCount to 1 to stop after finding the first occurrence. I need to make sure the cursor is created correctly and then run the agent to get the result. If found, I'll return the pointer and the paragraph where it's mentioned. If not, I'll inform the user it's not in the document.\\n\",\"tool_calls\":[{\"id\":\"call_4dsts4fd\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_cursor\",\"arguments\":\"{\\\"filterDescription\\\":\\\"mentions of 'Ponchik'\\\",\\\"maxEvidenceCount\\\":1,\\\"name\\\":\\\"search_cursor\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1118,\"completion_tokens\":227,\"total_tokens\":1345}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 15:20:56 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-879\",\"object\":\"chat.completion\",\"created\":1766426266,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's tackle this query. The user wants to find the first dialog between two named characters and name them. First, I need to figure out how to approach this using the provided tools.\\n\\nThe tools available include creating a cursor to scan the document, running an agent to process the cursor, and other functions. Since the user is asking about dialogues between named characters, I should create a cursor that filters for dialogues where both participants are named.\\n\\nWait, the cursor's filter needs to be stateless. So maybe I can set the filterDescription to look for lines that start with a character's name followed by another name, indicating a dialogue. But how to ensure both are named? Maybe check if both names are present in the text and are part of a dialogue.\\n\\nAlternatively, the filter could look for lines that have two names, possibly separated by a colon or a dialogue tag. But since the exact format isn't known, the filter might need to be more general. The agent will then process these filtered items to find the first occurrence.\\n\\nI should create a cursor with a filter that identifies potential dialogues. Then, run the agent to find the first dialogue where both characters are named. The task description for the agent would be to find the first such dialogue. Once found, extract the names from the dialogue line.\\n\\nBut how to handle the cursor creation? The filterDescription should be a stateless condition. Maybe something like \\\"lines containing at least two names, possibly indicating a dialogue.\\\" Then, the agent can process these lines to find the first valid dialogue.\\n\\nWait, the user might have a specific format for dialogues, like \\\"John: Hello, Mary.\\\" So the filter could look for lines with a colon and two names. But without knowing the exact format, the filter might need to be more general. The agent can then check each line for two named entities.\\n\\nSo, first, create a cursor with a filter that looks for lines with two names. Then, run the agent to find the first occurrence. The agent's task is to find the first dialogue where two named characters are mentioned. Once found, extract the names and return them.\\n\",\"tool_calls\":[{\"id\":\"call_sgye9u7z\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_cursor\",\"arguments\":\"{\\\"filterDescription\\\":\\\"Lines containing at least two named characters in a dialogue format\\\",\\\"maxBytes\\\":1048576,\\\"name\\\":\\\"dialogue_cursor\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1188,\"completion_tokens\":493,\"total_tokens\":1681}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 17:57:46 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

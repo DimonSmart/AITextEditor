@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-423\",\"object\":\"chat.completion\",\"created\":1766516483,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The user wants me to find all mentions of 'Фуксии' in the current batch. First, I need to check each item in the batch's items array. \\n\\nLooking at the first item with pointer 54:1.1.1.p51, the markdown is about flying to the Moon. No mention of Фуксии here. The next item, 55:1.1.1.p52, talks about weightlessness. Still nothing. The third item, 56:1.1.1.p53, discusses the physics of space travel, including weightlessness and acceleration. Again, no Фуксии.\\n\\nWait, the snapshot's recentEvidencePointers includes \\\"8:1.1.1.p5\\\", but that's from a previous batch. The current batch doesn't have any items with Фуксии. So, there are no new evidence pointers to add. The decision should be \\\"not_found\\\" since there's no match in the current batch. Also, the maxEvidenceCount is 10, but since evidenceCount was 1 and no new ones found, it's still below max. But the task requires finding all mentions, and none are present here. So the output is newEvidence empty and decision not_found.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1001,\"completion_tokens\":287,\"total_tokens\":1288}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 19:01:23 GMT"
+    ]
+  }
+}

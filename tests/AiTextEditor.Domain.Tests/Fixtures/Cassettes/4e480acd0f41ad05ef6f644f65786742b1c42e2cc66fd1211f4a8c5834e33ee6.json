@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-340\",\"object\":\"chat.completion\",\"created\":1766513308,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Последнее упоминание Фуксии находится в пункте\u202F5 раздела\u202F1\u202Fглавы\u202F1 (указатель\u202F8:1.1.1.p5):\\n\\n\\u003e *…Знайка тоже включился в работу по постройке космической ракеты и, когда ракета была готова, совершил с **Фуксией** и Селёдочкой межпланетное путешествие…*\",\"reasoning\":\"We have first evidence pointer 8:1.1.1.p5. That might be the last mention? Need to ensure there is no later mention beyond that pointer. The cursor continued and found no new evidence, implying no later mention. So answer: show last mention snippet and pointer. Provide in Russian.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1345,\"completion_tokens\":165,\"total_tokens\":1510}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:08:27 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

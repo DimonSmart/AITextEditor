@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-48\",\"object\":\"chat.completion\",\"created\":1766513342,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Первое упоминание профессора Звёздочкина (не считая заголовков) встречается в абзаце с семантическим указателем **24:1.1.1.p21**.\",\"reasoning\":\"The agent returned multiple evidence items, showing paragraph pointers. We need the first mention of professor Звёздочкин, excluding headings. The evidence list is ordered as encountered in document traversal. The first pointer is 24:1.1.1.p21. That likely is the first occurrence. Need to answer in Russian and include the semantic pointer.\\n\\nThus answer: first mention at pointer 24:1.1.1.p21.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1398,\"completion_tokens\":146,\"total_tokens\":1544}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:09:01 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-930\",\"object\":\"chat.completion\",\"created\":1766509887,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[{\\\"pointer\\\":\\\"6:1.1.1.p3\\\",\\\"excerpt\\\":\\\"Все были очень довольны. Единственным, кто пострадал на этом деле, оказался Пончик. Когда Пончик увидел, что теперь можно брать в магазине любую вещь, какая только могла понадобиться, он стал недоумевать: к чему ему вся та куча костюмов, которая накопилась у него дома. Все эти костюмы к тому же вышли из моды, и их всё равно нельзя было носить. Выбрав потемней ночку, Пончик завязал свои старые костюмы в огромный узел, вынес тайком из дома и утопил в Огурцовой реке, а вместо них натаскал себе из магазинов новых костюмов. Кончилось тем, что его комната превратилась в какой-то склад готового платья. Костюмы лежали у него и в шкафу, и на шкафу, и на столе, и под столом, и на книжных полках, висели на стенах, на спинках стульев и даже под потолком, на верёвочках.\\\",\\\"reason\\\":\\\"Упоминание Пончика как единственного, кто пострадал в ситуации.\\\"}]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first mention of \\\"Пончик\\\" in the provided batch. The snapshot shows that evidenceCount is 0 and recentEvidencePointers is empty, so we need to look through the current batch items.\\n\\nFirst, I'll go through each item's markdown content. The first item has the pointer \\\"6:1.1.1.p3\\\" and the markdown mentions \\\"Пончик\\\" in the sentence: \\\"Единственным, кто пострадал на этом деле, оказался Пончик.\\\" That's a direct mention, so this should be the first evidence. \\n\\nThe second item's markdown starts with \\\"От такого обилия шерстяных изделий...\\\" and mentions Пончик again, but since the first occurrence is already found, this might be the second mention. However, the task is to find the first mention, so the first item is the key here. \\n\\nI need to check if there are any other mentions in the first item. The paragraph talks about Пончик's actions, but the first mention is when he's identified as the one who suffered. Since the task is to find the first occurrence, this is the correct excerpt. \\n\\nThe reason for including this evidence is that the excerpt directly mentions \\\"Пончик\\\" in the context of the story. The pointer is exactly as provided, and the excerpt is copied verbatim. Since the snapshot's evidenceCount is 0, adding this will set the decision to \\\"continue\\\" unless maxEvidenceCount is reached, but since it's null, we just need to report the first occurrence.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1269,\"completion_tokens\":675,\"total_tokens\":1944}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 17:11:27 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

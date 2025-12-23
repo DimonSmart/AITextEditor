@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-7\",\"object\":\"chat.completion\",\"created\":1766513350,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"We need to find first occurrence of name \\\"Фуксия\\\" and \\\"Селедочка\\\". Scan current batch items. Two items paragraphs. Do they contain those names? First paragraph about Ponchik, no. Second also no. So no matches in current batch. Decision? Since no evidence found, and there are more batches, we continue. newEvidence empty.\\n\\nOutput JSON with decision \\\"continue\\\".\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1222,\"completion_tokens\":105,\"total_tokens\":1327}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:09:09 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

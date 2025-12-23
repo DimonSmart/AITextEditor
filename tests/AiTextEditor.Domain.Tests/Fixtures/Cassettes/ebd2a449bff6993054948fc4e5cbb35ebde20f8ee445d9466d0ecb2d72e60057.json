@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-32\",\"object\":\"chat.completion\",\"created\":1766511820,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The user wants me to find all mentions of 'профессора Звёздочкина' in the current batch, excluding headers. The task says to look in the context provided, which is the paragraphs and not headers. \\n\\nFirst, I need to check each item in the batch. The first item is a paragraph with a lot of text about the Moon's surface. I'll scan through it looking for the exact phrase. The paragraph talks about the Moon's surface cooling and bubbles, but I don't see 'профессора Звёздочкина' here.\\n\\nNext, the second item is another paragraph. It mentions astronomers, vulcanologists, and meteoritologists laughing at Znayka's theory. Still no mention of the professor. \\n\\nThe third item is a paragraph starting with \\\"Вулканисты говорили:\\\" which translates to \\\"Vulcanologists said:\\\". Again, no sign of the professor's name. \\n\\nSince none of the paragraphs in the current batch contain the required mention, the decision should be 'not_found'. The newEvidence array will be empty. I need to make sure not to include any pointers from the snapshot's recentEvidencePointers, but since the evidenceCount is 0 and there are no matches here, it's all set. The output should be a JSON object with decision 'not_found' and no new evidence.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1096,\"completion_tokens\":302,\"total_tokens\":1398}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 17:43:40 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

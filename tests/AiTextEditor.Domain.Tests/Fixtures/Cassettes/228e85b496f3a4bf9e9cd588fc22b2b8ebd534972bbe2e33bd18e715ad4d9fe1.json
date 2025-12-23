@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-724\",\"object\":\"chat.completion\",\"created\":1766432782,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's see. The user is asking for the first dialogue between two named characters and wants their names. I've tried several cursors with different filters, but each time it's returning not found. Maybe the issue is that the initial filters were too strict. Let me think about how dialogues are structured. Sometimes, dialogues might not have both names in the same line. Maybe one name is mentioned first, then the dialogue, and the other name is mentioned in the next paragraph. The previous cursors might have required both names in the same line, which isn't always the case.\\n\\nI should adjust the filter to look for paragraphs that mention two character names, even if they're in adjacent paragraphs. Also, considering that dialogue markers like dashes or quotes might not be present, maybe the filter should be more lenient. Let me create a new cursor that checks for paragraphs containing two character names, allowing them to be in separate paragraphs but in the same section. That way, even if the dialogue spans a paragraph break, the cursor can still find it. Let's try that.\\n\",\"tool_calls\":[{\"id\":\"call_h6otd2tg\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_cursor\",\"arguments\":\"{\\\"filterDescription\\\":\\\"Paragraphs containing two character names in proximity\\\",\\\"maxBytes\\\":1048576,\\\"maxElements\\\":500,\\\"name\\\":\\\"dialogue_cursor_v7\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":2203,\"completion_tokens\":278,\"total_tokens\":2481}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 19:46:22 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-958\",\"object\":\"chat.completion\",\"created\":1766433536,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The user wants to find all mentions of \\\"Фуксии\\\" in the provided batch. First, I need to scan each item's markdown content carefully. The task specifies that the context is all paragraphs containing 'Фуксии', and the maxEvidenceCount is 10. \\n\\nLooking at the items in the batch:\\n\\n1. The first item (27:1.1.1.p24) has a paragraph that starts with \\\"– Дорогие друзья, разрешите заседание, посвящённое обсуждению Знайкиной книги, считать открытым.\\\" There's no mention of Фуксии here.\\n\\n2. The second item (28:1.1.1.p25) has a longer paragraph. The text talks about Professor Zvezdочкин discussing Znayka's book, mentioning errors in assuming bricks were present, and talking about lunar gravity. I don't see any reference to Фуксии here either.\\n\\n3. The third item (29:1.1.1.p26) starts with \\\"Выслушав всё это, Знайка поднялся со своего места и сказал насмешливо:\\\" Again, no mention of Фуксии.\\n\\nNone of the provided paragraphs in the current batch contain the term \\\"Фуксии\\\". The snapshot's recentEvidencePointers include \\\"8:1.1.1.p5\\\", which isn't in the current batch. Since the user's task is to find all mentions, and there are none in the current batch, the decision should be \\\"not_found\\\". The newEvidence array remains empty because there are no matches. The evidenceCount from the snapshot is 1, but since the current batch doesn't add any new evidence, the total remains at 1. However, the user's maxEvidenceCount is 10, but since there are no new matches, the decision is \\\"not_found\\\".\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1052,\"completion_tokens\":430,\"total_tokens\":1482}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 19:58:56 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-104\",\"object\":\"chat.completion\",\"created\":1766484633,\"model\":\"deepseek-v3.1:671b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"decision\\\": \\\"continue\\\",\\n  \\\"newEvidence\\\": [\\n    {\\n      \\\"pointer\\\": \\\"71:1.1.1.p68\\\",\\n      \\\"excerpt\\\": \\\"– Дорогие друзья, нам всем было очень интересно послушать про Луну и про всё прочее, и я от имени всех собравшихся приношу сердечную благодарность знаменитому Знайке за его интересное и содержательное выступление. Однако… – сказал Звёздочкин и со строгим видом поднял кверху указательный палец.\\\",\\n      \\\"reason\\\": \\\"This paragraph contains a direct speech line attributed to the named character Звёздочкин, which is part of a dialogue exchange.\\\"\\n    }\\n  ]\\n}\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1161,\"completion_tokens\":171,\"total_tokens\":1332}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 10:10:32 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

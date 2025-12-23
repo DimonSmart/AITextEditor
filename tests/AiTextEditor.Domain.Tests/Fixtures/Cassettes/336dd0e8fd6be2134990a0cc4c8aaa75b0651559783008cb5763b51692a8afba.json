@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-940\",\"object\":\"chat.completion\",\"created\":1766431167,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first dialogue between two named characters. The context mentions lines with dialogue markers or character names. The maxEvidenceCount is 1, so we need to find the first occurrence.\\n\\nLooking at the provided batch items. The first item is a paragraph discussing lunar craters and astronomers splitting into two groups. There's no dialogue here, just exposition. The second paragraph mentions Znayka and Steklyashkin observing the Moon. Wait, the paragraph says they were observing the Moon through a telescope. But does it have a dialogue? Let me check again.\\n\\nThe second item's markdown says: \\\"Знайка, однако ж, не был согласен ни с вулканической, ни с метеоритной теорией. Ещё до путешествия на Луну он создал свою собственную теорию происхождения лунных кратеров. Однажды он вместе со Стекляшкиным наблюдал Луну в телескоп...\\\" So here, Znayka is mentioned, and he's with Steklyashkin. But is there a dialogue? The text describes their observation but doesn't show a conversation between them. The next part talks about Znayka noticing the Moon's surface like a pancake, but that's still narrative.\\n\\nWait, maybe the dialogue is in the next batch? But the user only provided the first batch. Since the first batch has no dialogue between two named characters, the answer would be \\\"not_found\\\". But the user's instruction says to scan only the current batch. Since there's no dialogue in the provided items, the decision should be \\\"not_found\\\".\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1101,\"completion_tokens\":374,\"total_tokens\":1475}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 19:19:27 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

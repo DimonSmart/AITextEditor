@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-339\",\"object\":\"chat.completion\",\"created\":1766415339,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"В абзаце с указателем **\\\"Пончик выбирал потемней ночку и утопил старые костюмы в Огурцовой реке\\\"** описывается действие Пончика. \\n\\n**Ответ:**  \\nПончик, выбрав потемней ночку, утопил старые костюмы в Огурцовой реке в абзаце с указателем [Пончик выбирал потемней ночку и утопил старые костюмы в Огурцовой реке](#pointer-Пончик_выбирал_потемней_ночку_и_утопил_старые_костюмы_в_Огурцовой_реке).\",\"reasoning\":\"Okay, let's see. The user is asking in which paragraph Ponchik, choosing a darker night, drowned his old costumes in the Ogurcovna River. I need to find the specific mention in the document.\\n\\nFirst, I'll create a cursor to search for the keywords \\\"Пончик\\\" and \\\"Огурцовой реке\\\". The cursor is named \\\"search_cursor\\\" with the filter description. The response from the tool gives the first evidence item. The paragraph mentions Ponchik selecting a darker night and drowning his old costumes in the Ogurcovna River. The pointer label is \\\"Пончик выбирал потемней ночку и утопил старые костюмы в Огурцовой реке\\\". \\n\\nSince the user asked for the paragraph where this happens, the first evidence item from the cursor should contain the answer. I need to check if this paragraph matches the query. The text directly states the action, so this is the correct mention. No further iteration is needed because the first item already provides the required information. The answer should include the pointer label in Russian as specified.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1142,\"completion_tokens\":407,\"total_tokens\":1549}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 14:55:39 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-481\",\"object\":\"chat.completion\",\"created\":1766430798,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The goal is to find the first dialog between two named characters and report their names. The context mentions that the paragraph contains at least two named characters. The maxEvidenceCount is 1, so we need to find the first occurrence.\\n\\nLooking at the first batch provided, there are two paragraphs. Let's check each one. \\n\\nIn the first paragraph (pointer 4:1.1.1.p1), the characters mentioned are Незнайка, Кнопочки, Пачкули Пёстренького, and Вертибутылкина. However, there's no dialog here—just descriptions of events and constructions. \\n\\nThe second paragraph (pointer 5:1.1.1.p2) mentions инженера Клёпки and refers to the одёжная фабрика. Again, no direct dialog between named characters. \\n\\nWait, maybe I missed something. Let me scan again. The first paragraph has Незнайка talking about his journey, but it's a monologue. The other characters are mentioned as listeners but no direct dialogue. The second paragraph is about the factory and its operations, no dialogues there either. \\n\\nSince there's no dialog between two named characters in the provided batch, the decision should be \\\"not_found\\\". The evidenceCount is 0, and the newEvidence array is empty. So the output should indicate that no evidence was found in this batch.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1258,\"completion_tokens\":315,\"total_tokens\":1573}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 19:13:17 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

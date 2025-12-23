@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-700\",\"object\":\"chat.completion\",\"created\":1766435995,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's see. The user wants the first dialogue between two named characters and their names. I created a cursor for paragraphs with dialogue markers. Now, I need to run the agent to find the first occurrence.\\n\\nI'll call run_agent with the dialogue_cursor, asking for the first dialogue. The agent should scan the document and return the first evidence item. Once I get that, I can extract the character names from the dialogue. If the dialogue mentions two names, those are the ones. If not, I might need to check adjacent paragraphs. But the user specified \\\"названными по имени,\\\" so names should be mentioned directly. Let's wait for the tool response.\\n\",\"tool_calls\":[{\"id\":\"call_v6guopn3\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"agent-run_agent\",\"arguments\":\"{\\\"cursorName\\\":\\\"dialogue_cursor\\\",\\\"maxEvidenceCount\\\":1,\\\"taskDescription\\\":\\\"Find the first dialogue between two named characters\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1359,\"completion_tokens\":188,\"total_tokens\":1547}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 20:39:54 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

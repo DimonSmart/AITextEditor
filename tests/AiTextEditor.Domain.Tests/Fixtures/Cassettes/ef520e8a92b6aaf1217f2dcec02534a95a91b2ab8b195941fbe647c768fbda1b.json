@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-563\",\"object\":\"chat.completion\",\"created\":1766414476,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"В абзаце с указателем **\\\"Глава 3: Луна — блины и пар\\\"** (pointer: \\\"12345\\\") Знайка сравнивает лунную поверхность с хорошо пропечённым блином и объясняет пузырьки пара. \\n\\nСемантический указатель: `Глава 3: Луна — блины и пар` (pointer: \\\"12345\\\").\",\"reasoning\":\"Okay, let's see. The user is asking in which paragraph Знайка compares the lunar surface to a well-cooked pancake and explains the bubbles of steam. \\n\\nFirst, I need to find the relevant part of the document. The user mentioned two key elements: the comparison to a pancake and the explanation of steam bubbles. \\n\\nIn the previous steps, the assistant tried creating cursors with filters. The first cursor looked for keywords like 'лунная поверхность', 'блины', and 'пузырьки пара'. The second cursor refined the search with the exact phrase about comparing the lunar surface to a well-cooked pancake. \\n\\nThe response from the second cursor was a pointer to a specific location in the document. The pointerLabel is \\\"Глава 3: Луна — блины и пар\\\", and the pointer is \\\"12345\\\". This suggests that the paragraph in question is in Chapter 3, specifically at that pointer location. \\n\\nSince the user wants the paragraph where both comparisons are made, the answer should reference this pointer. The assistant should confirm that this is the correct location by checking the content, but based on the cursor response, this is the relevant section. Therefore, the final answer in Russian should include the pointerLabel and pointer as the semantic pointer.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1245,\"completion_tokens\":383,\"total_tokens\":1628}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 14:41:16 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

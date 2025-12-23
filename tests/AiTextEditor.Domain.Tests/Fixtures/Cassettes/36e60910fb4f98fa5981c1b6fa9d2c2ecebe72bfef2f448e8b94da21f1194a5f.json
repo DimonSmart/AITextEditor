@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-645\",\"object\":\"chat.completion\",\"created\":1766425761,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first direct dialogue between two named characters. The context mentions that it should be a paragraph with direct dialogue like \\\"Alice: Hello, Bob.\\\" But looking at the provided batch item, the markdown content is about scientists arguing over the origin of lunar craters. There's a mention of two groups: volcanists and meteoritists. However, I need to check if there's any direct dialogue here.\\n\\nThe paragraph talks about astronomers splitting into two halves, each with their own theories. The terms \\\"вулканисты\\\" and \\\"метеоритчики\\\" are used, but these are labels for the groups, not actual dialogue between named characters. There's no direct speech or conversation between two named individuals here. The content is more about their debate rather than a dialogue. Since the task requires direct dialogue between two named characters, and the provided text doesn't have that, the decision should be \\\"not_found\\\". Also, the snapshot's evidenceCount is 0, and since there's no new evidence, the newEvidence array remains empty.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":815,\"completion_tokens\":240,\"total_tokens\":1055}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 17:49:21 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

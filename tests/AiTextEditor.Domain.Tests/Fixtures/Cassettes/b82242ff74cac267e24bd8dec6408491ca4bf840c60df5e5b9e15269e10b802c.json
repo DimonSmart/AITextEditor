@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-845\",\"object\":\"chat.completion\",\"created\":1766433889,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, the user is asking where in the text it's mentioned that the clothing factory produced everything from rubber bras to synthetic fur coats. Let me start by creating a cursor with a broad filter to capture all paragraphs that mention 'одёжная фабрика' and list those products. The cursor name is search_cursor.\\n\\nAfter creating the cursor, I need to run the agent to scan through the document. The first response from the tool shows that the cursor was created successfully. Now, I'll call run_agent with the search_cursor to find the relevant paragraphs. \\n\\nThe agent will process the document in batches. The first batch might not have the answer, so I need to check the evidence items. If the answer isn't there, I'll have to run the agent again without changing the cursor. Let's see what the first batch returns. If it's not found, I'll continue scanning until the cursor completes or the answer is found. Once the relevant paragraph is found, I'll extract the pointer and present the answer in Russian, including the semantic pointer as specified.\\n\",\"tool_calls\":[{\"id\":\"call_s1w4n1p5\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"agent-run_agent\",\"arguments\":\"{\\\"cursorName\\\":\\\"search_cursor\\\",\\\"taskDescription\\\":\\\"Find the first mention of the clothing factory producing rubber bras and synthetic fur coats\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1383,\"completion_tokens\":265,\"total_tokens\":1648}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 20:04:48 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

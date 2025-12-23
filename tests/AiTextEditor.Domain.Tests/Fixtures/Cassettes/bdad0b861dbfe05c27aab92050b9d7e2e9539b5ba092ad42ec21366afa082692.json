@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-593\",\"object\":\"chat.completion\",\"created\":1766513237,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"decision\\\": \\\"continue\\\",\\n  \\\"newEvidence\\\": []\\n}\",\"reasoning\":\"We need to output JSON with decision, newEvidence.\\n\\nTask: Find first occurrence of term \\\"Пончик\\\". The batch items contain paragraphs; need to check if \\\"Пончик\\\" appears. The provided markdowns do not include the term \\\"Пончик\\\". So no new evidence. Snapshot already has evidenceCount=2 and pointers... Those are previous matches. Now we have no new matching pointers. Since we have more batches, and we haven't found new evidence, decision should be \\\"continue\\\". Also must not include evidence entries.\\n\\nThus output: decision continue, newEvidence empty array.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1077,\"completion_tokens\":147,\"total_tokens\":1224}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:07:16 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-871\",\"object\":\"chat.completion\",\"created\":1766512064,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's see. The user is asking for the second mention of Professor Zvezdokhin in the book, excluding headers. The previous attempts resulted in an error. First, I tried creating a cursor with a filter for paragraphs containing 'профессора Звёздочкина' and not headers. Then, I ran the agent to find all mentions. But there was an HTTP 500 error, which probably means the server had an issue.\\n\\nHmm, maybe the filter description was too complex or the server couldn't handle it. Let me simplify the approach. Instead of using a cursor, maybe I should first retrieve the entire document to check for mentions manually. Alternatively, I can split the task into smaller parts. Let me try creating a cursor without the header exclusion first, then filter the results. Or perhaps the server needs a different filter structure. Let me adjust the filter to be more straightforward, like just searching for the name without excluding headers initially. Then, after retrieving all mentions, I can manually exclude headers. Wait, but the user wants to exclude headers. Maybe the initial filter was too strict. Let me try creating a cursor with just the name and see if that works. If that fails, maybe the server is down, and I should inform the user. Alternatively, check if the document ID is correct. Let me first try creating the cursor again with a simpler filter.\\n\",\"tool_calls\":[{\"id\":\"call_679h04z6\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_cursor\",\"arguments\":\"{\\\"filterDescription\\\":\\\"Contains 'профессора Звёздочкина'\\\",\\\"name\\\":\\\"search_cursor\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1108,\"completion_tokens\":325,\"total_tokens\":1433}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 17:47:44 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

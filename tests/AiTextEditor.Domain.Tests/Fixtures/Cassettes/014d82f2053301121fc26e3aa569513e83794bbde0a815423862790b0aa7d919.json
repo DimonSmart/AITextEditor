@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-746\",\"object\":\"chat.completion\",\"created\":1766412140,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"done\\\",\\\"newEvidence\\\":[{\\\"pointer\\\":\\\"3:1.1.1\\\",\\\"excerpt\\\":\\\"### Как Знайка победил профессора Звёздочкина\\\",\\\"reason\\\":\\\"The heading explicitly mentions 'профессор Звёздочкин' as the subject of the section.\\\"}]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first mention of 'профессор Звёздочкин' in the provided batch. The snapshot shows evidenceCount is 0, so we need to look through the current batch items.\\n\\nFirst, I'll go through each item in the batch. The first item is a heading, then another heading, then a third heading which mentions \\\"профессор Звёздочкина\\\" in the markdown. Wait, the pointer is 3:1.1.1, and the markdown is \\\"### Как Знайка победил профессора Звёздочкина\\\". That's the first occurrence. \\n\\nBut wait, the task says to find the first mention. The user might be looking for the first time the name appears. Let me check the rest of the items to make sure there's no earlier mention. The next items are paragraphs, but they don't mention the professor. So the heading at 3:1.1.1 is the first mention. \\n\\nThe reason for including this evidence is that the excerpt directly mentions 'профессор Звёздочкин' in the heading. Since the task's maxEvidenceCount is 1, and we've found one, the decision should be \\\"done\\\" because we've met the max count. But wait, the snapshot's evidenceCount is 0, and adding this one would make it 1, which meets the max. So the decision is \\\"done\\\".\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2033,\"completion_tokens\":377,\"total_tokens\":2410}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 14:02:20 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

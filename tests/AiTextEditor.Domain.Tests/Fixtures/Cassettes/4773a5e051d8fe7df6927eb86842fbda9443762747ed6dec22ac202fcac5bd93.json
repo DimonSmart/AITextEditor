@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-120\",\"object\":\"chat.completion\",\"created\":1766526642,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The user wants to find a paragraph describing two rotating buildings on Kolokolchikov Street with a spiral descent and a devil's wheel on the roof. The context includes the keywords 'Колокольчиков', 'вертящихся зданий', 'спиральный спуск', and 'чёртовым колесом'. \\n\\nFirst, I need to check the current batch items. The snapshot shows that there's already one piece of evidence, but the user is asking for more. The batch has two items: pointer 8:1.1.1.p5 and 9:1.1.1.p6. \\n\\nLooking at the markdown for pointer 8:1.1.1.p5, it talks about Znayka's trip to the Sun City, meeting scientists, and a rocket trip to the Moon. There's mention of a lunar crater and a cave, but nothing about Kolokolchikov Street or the specific features mentioned in the task. \\n\\nThe next item is pointer 9:1.1.1.p6, which discusses the Moon's surface, craters, and their shapes. Again, no mention of the required keywords. Neither of these paragraphs include the terms 'Колокольчиков', 'вертящихся зданий', 'спиральный спуск', or 'чёртовым колесом'. \\n\\nSince the current batch doesn't have any items that match the task's context, the decision should be 'not_found'. There's no new evidence to add here. The user might need to check subsequent batches for the required information.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1362,\"completion_tokens\":361,\"total_tokens\":1723}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 21:50:42 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

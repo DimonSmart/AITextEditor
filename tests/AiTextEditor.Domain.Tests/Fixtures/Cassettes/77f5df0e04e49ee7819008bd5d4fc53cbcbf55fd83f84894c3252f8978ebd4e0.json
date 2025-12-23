@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-140\",\"object\":\"chat.completion\",\"created\":1766446805,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first dialogue between two named characters in all paragraphs. The current batch has three items. Let me check each one.\\n\\nFirst item, pointer 12:1.1.1.p9, is a paragraph about the Moon's surface. It mentions Знайка (Znayka) but no dialogue. The paragraph is descriptive, no conversation here.\\n\\nNext, pointer 13:1.1.1.p10: \\\"All astronomers – and volcanologists, and meteoritists – laughed at this Znayka's theory.\\\" Still no dialogue, just a statement of others laughing. No two characters talking here.\\n\\nThird item, pointer 14:1.1.1.p11: \\\"Volcanologists said:\\\" That's a start. It's a quote, but it's only one character (volcanologists) speaking. The task requires a dialogue between two named characters. So this is a single speaker, not a dialogue. \\n\\nNone of the items in this batch have a dialogue between two named characters. The snapshot has zero evidence, and the user hasn't reached the max count. So the decision should be \\\"continue\\\" since there's no new evidence here. Need to check more batches.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1072,\"completion_tokens\":278,\"total_tokens\":1350}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 23:40:05 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

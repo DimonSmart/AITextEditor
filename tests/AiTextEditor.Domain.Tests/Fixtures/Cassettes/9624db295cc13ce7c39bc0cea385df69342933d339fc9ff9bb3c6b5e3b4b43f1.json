@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-345\",\"object\":\"chat.completion\",\"created\":1766435338,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants the first mention of Фуксия and Селедочка. The context is all paragraphs, and the maxEvidenceCount is null, so we need to find both names.\\n\\nLooking at the snapshot, the evidenceCount is 1, and the recentEvidencePointers include \\\"8:1.1.1.p5\\\". But since the firstBatch is false and there's more batches, we need to check the current batch items.\\n\\nThe current batch has three items. Let's check each paragraph for the names. \\n\\nFirst item (24:1.1.1.p21) mentions Знайкина книжка and some scientists, but no Фуксия or Селедочка. \\n\\nSecond item (25:1.1.1.p22) talks about профессор Звёздочкин and the discussion about the book. Still no match.\\n\\nThird item (26:1.1.1.p23) starts with the professor entering and his words. Again, no mention of the names. \\n\\nWait, maybe I missed something. The task says \\\"first mention,\\\" but the snapshot's recentEvidencePointers have a pointer from a previous batch. However, the current batch doesn't have any of the required names. So, there's no new evidence here. The decision should be \\\"not_found\\\" because the current batch doesn't contain the names. But wait, the user might have more batches coming. Since hasMoreBatches is true, maybe the next batch will have them. But according to the current input, the batch items don't include the names. So, the answer is that there's no new evidence in this batch, hence \\\"not_found\\\".\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1130,\"completion_tokens\":376,\"total_tokens\":1506}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 20:28:57 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

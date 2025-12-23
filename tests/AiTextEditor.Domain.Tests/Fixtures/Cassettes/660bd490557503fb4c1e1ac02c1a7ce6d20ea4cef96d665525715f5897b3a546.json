@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-907\",\"object\":\"chat.completion\",\"created\":1766484585,\"model\":\"deepseek-v3.1:671b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"decision\\\": \\\"continue\\\",\\n  \\\"newEvidence\\\": [\\n    {\\n      \\\"pointer\\\": \\\"52:1.1.1.p49\\\",\\n      \\\"excerpt\\\": \\\"– Пусть Знайка делает доклад! – кричали вокруг. – Долой Звёздочкина!\\\",\\n      \\\"reason\\\": \\\"This paragraph contains a direct dialogue line attributed to a group, mentioning the character names Знайка and Звёздочкина.\\\"\\n    },\\n    {\\n      \\\"pointer\\\": \\\"53:1.1.1.p50\\\",\\n      \\\"excerpt\\\": \\\"– Дорогие друзья! – говорил Знайка, очутившись на трибуне. – Я не могу делать доклад. Я не подготовился.\\\",\\n      \\\"reason\\\": \\\"This paragraph contains a direct dialogue line spoken by the named character Знайка.\\\"\\n    }\\n  ]\\n}\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":920,\"completion_tokens\":191,\"total_tokens\":1111}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 10:09:43 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

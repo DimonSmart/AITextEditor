@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-54\",\"object\":\"chat.completion\",\"created\":1766520018,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants the first mentions of \\\"Фуксия\\\" and \\\"Селедочка\\\". But looking at the provided batch items, none of the paragraphs contain those exact words. The first batch's snapshot already has an evidence pointer \\\"8:1.1.1.p5\\\", which might be from a previous batch not included here. The current batch items are about lunar craters and meteorites, with no mention of the required terms. Since the task is to find the first mentions, and the current batch doesn't have them, the decision should be \\\"not_found\\\". Also, the maxEvidenceCount is null, so we don't stop here. Need to make sure not to include any pointers from the snapshot's recentEvidencePointers. So the output is \\\"not_found\\\" with no new evidence.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":913,\"completion_tokens\":187,\"total_tokens\":1100}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 20:00:18 GMT"
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-786\",\"object\":\"chat.completion\",\"created\":1766513442,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"The task: \\\"Find the first occurrence where a paragraph starts with a name followed by colon (e.g., \\\\\\\"Anna: ...\\\\\\\") and the subsequent paragraph also starts with a different name followed by colon. Return both lines and the two names.\\\" Need to find evidence where a paragraph starts with Name: and next paragraph also starts with Different Name:. In this batch items, we have three paragraphs. None start with a name followed by colon; they start with dash. So no matches. Also snapshot already has evidence pointer 14:1.1.1.p11, but that's from previous batch. We must not repeat. No new evidence.\\n\\nDecision: not_found (since no matches in this batch). Or continue? Since there are more batches, we could continue scanning. The instructions: decision can be continue|done|not_found. If none found here but more batches, we likely continue. Not_found indicates none exist overall? Probably continue. Use continue.\\n\\nNo newEvidence array empty.\\n\\nThus output JSON.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1002,\"completion_tokens\":222,\"total_tokens\":1224}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:10:41 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

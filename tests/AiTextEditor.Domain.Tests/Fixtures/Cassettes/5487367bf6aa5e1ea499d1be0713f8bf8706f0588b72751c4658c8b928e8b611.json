@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-176\",\"object\":\"chat.completion\",\"created\":1766520527,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Фуксия и Селёдочка упоминаются впервые в параграфе с указателем **8:1.1.1.p5**. В тексте говорится:  \\n*\\\"Там он познакомился с учёными малышками Фуксией и Селёдочкой, которые в то время готовили свой второй полёт на Луну.\\\"*  \\n\\nЭто их первое упоминание, где они описываются как юные учёные, готовящиеся к полёту на Луну.  \\n\\nSemantic pointer: `8:1.1.1.p5`\",\"reasoning\":\"Okay, let's see. The user is asking about Фуксия and Селедочка, who they are, and where they are first mentioned. \\n\\nFirst, I need to figure out if these are characters from a book. The user mentioned a markdown book, so probably fictional characters. The query is in Russian, so the book is likely in Russian as well.\\n\\nThe assistant created a cursor to search for paragraphs containing 'Фуксия' or 'Селедочка'. The first response from the tool showed a paragraph where both names are mentioned together. The excerpt says they are \\\"учёными малышками\\\" (young scientists) preparing a lunar flight. That seems like their first mention.\\n\\nBut the user wants to know who they are and where they are first mentioned. The answer is in that paragraph. The names are Фуксия and Селедочка, and they are introduced there. The assistant should confirm if there's more info, but since the status is \\\"More items available,\\\" maybe there are other mentions. However, the user might just need the first occurrence. \\n\\nWait, the tool response says \\\"Decision: not_found\\\" but the evidence has a pointer. Maybe the agent didn't find anything else. The status says more items are available, so maybe there are more paragraphs. But the user's question is about the first mention, which is already found. \\n\\nSo the answer is that they are introduced in the paragraph with pointer 8:1.1.1.p5. The assistant should present this info in Russian, including the semantic pointer. Also, check if there's a need to continue searching, but since the user asked for the first mention, maybe that's sufficient. The final answer should include the names, their description, and the pointer.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1171,\"completion_tokens\":511,\"total_tokens\":1682}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 20:08:47 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

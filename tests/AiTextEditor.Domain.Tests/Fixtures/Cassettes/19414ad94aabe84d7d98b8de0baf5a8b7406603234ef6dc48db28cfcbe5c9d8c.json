@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-960\",\"object\":\"chat.completion\",\"created\":1766431198,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first dialogue between two named characters. The context mentions lines with dialogue markers or character names. The maxEvidenceCount is 1, so we need to find the first occurrence.\\n\\nLooking at the provided batch items, the first item is a paragraph without any dialogue markers or character names. The second paragraph starts with \\\"Знайка отвечал...\\\" which indicates a dialogue, but it's a single character responding. The third paragraph has \\\"Метеоритчики говорили:\\\" which is a group name, but again, it's just one side of the dialogue. \\n\\nWait, the task specifies two named characters. The second paragraph mentions Знайка and possibly another character, but the excerpt only shows Знайка's response. The third paragraph mentions Метеоритчики, which is a plural, but maybe that's a single character's name? Or perhaps there's a missing part. Since the user mentioned \\\"two named characters,\\\" but the provided excerpts don't show both. \\n\\nHmm, maybe the first dialogue is between Знайка and someone else, but the given text only has Знайка's part. The third paragraph might be part of a dialogue where Метеоритчики are speaking, but there's no other character mentioned. Since the task requires two named characters, and the current batch items don't have both, maybe there's no evidence here. But the user's instruction says to report all matches. However, the first dialogue between two characters isn't present in the given items. So the decision would be \\\"not_found\\\" because there's no evidence meeting the criteria.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":801,\"completion_tokens\":358,\"total_tokens\":1159}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 19:19:57 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

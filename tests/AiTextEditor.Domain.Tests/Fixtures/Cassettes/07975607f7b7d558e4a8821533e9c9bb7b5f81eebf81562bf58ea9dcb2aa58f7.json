@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-743\",\"object\":\"chat.completion\",\"created\":1766414814,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, the user is asking where Fuxia is first mentioned in the document. Let me start by creating a cursor to search for mentions of Fuxia. I'll use the cursor-create_cursor function with a filterDescription that looks for \\\"Фуксия\\\". Then, I'll run the agent to find the first occurrence. If the first result doesn't mention Fuxia, I'll need to check subsequent entries. But since the user wants the first mention, I'll set maxEvidenceCount to 1 to stop after the first hit. If the cursor returns a result, I'll note the pointer and summary. If not, I'll inform the user it's not found.\\n\",\"tool_calls\":[{\"id\":\"call_i3dj5cdp\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_cursor\",\"arguments\":\"{\\\"filterDescription\\\":\\\"Contains 'Фуксия'\\\",\\\"maxEvidenceCount\\\":1,\\\"name\\\":\\\"search_cursor\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1054,\"completion_tokens\":185,\"total_tokens\":1239}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 14:46:54 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

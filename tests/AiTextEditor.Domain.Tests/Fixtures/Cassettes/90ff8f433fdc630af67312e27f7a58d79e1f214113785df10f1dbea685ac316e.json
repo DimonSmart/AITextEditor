@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-818\",\"object\":\"chat.completion\",\"created\":1766430755,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants me to find the first dialog between two named characters and report their names. The context is that a paragraph contains at least two named characters. The maxEvidenceCount is 1, so once I find one, I should stop.\\n\\nLooking at the input, the first batch has items with pointers 1:1, 2:1.1, and 3:1.1.1. All of them are headings. The task mentions that the evidence should come from the current batch. But none of these items have any dialog or named characters in their markdown. The headings are just titles, like \\\"Часть I\\\" and \\\"Глава первая\\\". There's no actual content with characters talking here. \\n\\nSince the user said to only use the current batch and the items are all headings without any dialog, there's no evidence to report. The snapshot's evidenceCount is 0, and the recentEvidencePointers are empty. So, I can't add any new evidence here. The decision should be \\\"not_found\\\" because there's no dialog between named characters in the provided batch items. I need to wait for the next batch that might have actual content with dialogues.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":657,\"completion_tokens\":266,\"total_tokens\":923}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 19:12:35 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-413\",\"object\":\"chat.completion\",\"created\":1766430717,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let me try to figure out how to approach this. The user wants the first dialog between two named characters and their names. I remember the assistant created a cursor called \\\"character_dialog_cursor\\\" to find paragraphs with at least two named characters. Now, the response from the tool is \\\"character_dialog_cursor\\\", which probably means the cursor was created successfully.\\n\\nNext, I need to use the agent to run on this cursor. The task is to find the first occurrence of such a dialog. So I should call \\\"agent-run_agent\\\" with the cursor name and a task description that asks for the first dialog between two named characters. The maxEvidenceCount should be 1 to get the first mention. \\n\\nWait, the user mentioned \\\"назови их имена\\\" which means to name the characters. So the task description should be something like \\\"Find the first dialog between two named characters and report their names.\\\" \\n\\nI need to make sure that the agent scans the document using the cursor and returns the first paragraph that meets the criteria. The response should include the names of the characters involved in the first dialog. If the cursor returns more items, I might need to call the agent again, but since we're looking for the first one, maxEvidenceCount=1 should suffice. Let me structure the tool call accordingly.\\n\",\"tool_calls\":[{\"id\":\"call_np4fowfp\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"agent-run_agent\",\"arguments\":\"{\\\"cursorName\\\":\\\"character_dialog_cursor\\\",\\\"maxEvidenceCount\\\":1,\\\"taskDescription\\\":\\\"Find the first dialog between two named characters and report their names\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1312,\"completion_tokens\":322,\"total_tokens\":1634}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 19:11:57 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-164\",\"object\":\"chat.completion\",\"created\":1766443760,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Диалог между двумя названными по имени персонажами в документе не найден. В предоставленном тексте отсутствуют прямо указанные диалоги (с использованием кавычек, дефисов и т.п.) между персонажами, названными их именами.\",\"reasoning\":\"Okay, let's see. The user wants the first dialogue between two named characters. I tried creating several cursors with different filters, starting with dialogue markers and then expanding to the full text. Each time, I ran the agent but got \\\"not_found\\\" until the last attempt with the full text cursor. Even then, it didn't find anything. Maybe the document doesn't have any direct dialogue between named characters, or maybe the dialogues are formatted differently. Since the tools aren't finding it, I should check if the book's content might not include such dialogues. Alternatively, perhaps the dialogues are in a format that doesn't use standard markers. Since the user's query is about the book's content and the tools can't find it, the answer is that it's not present in the document.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2102,\"completion_tokens\":246,\"total_tokens\":2348}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 22:49:19 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

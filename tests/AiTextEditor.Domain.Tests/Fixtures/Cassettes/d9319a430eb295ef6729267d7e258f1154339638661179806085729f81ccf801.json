@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-392\",\"object\":\"chat.completion\",\"created\":1766526184,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's tackle this query. The user is asking about a specific description in a markdown book: two rotating buildings on Kolokolchikov Street, with a spiral descent and a devil's wheel on the roof. First, I need to figure out how to locate this information using the provided tools.\\n\\nThe user mentioned \\\"location questions,\\\" so I should create a cursor. The function cursor-create_cursor is needed here. The filterDescription should be a stateless per-element filter. Since the user is looking for specific elements (two rotating buildings, spiral descent, devil's wheel), the filter should check for those keywords. But since the cursor can't use counters or nth occurrences, I need to make sure the filter is per-element.\\n\\nWait, the filter must be stateless. So maybe the filterDescription could be something like \\\"contains 'rotating buildings' and 'spiral descent' and 'devil's wheel'\\\". But the exact phrasing might vary. Alternatively, since the user is looking for a specific paragraph, maybe the filter should look for any mention of Kolokolchikov Street and the described elements.\\n\\nBut the user might have multiple mentions, so the cursor should scan through the document. Once the cursor is created, the agent-run_agent function will process the document in portions. The taskDescription for the agent should be to find the paragraph containing those elements.\\n\\nI need to call cursor-create_cursor with a name like \\\"search_cursor\\\" and a filterDescription that includes the keywords. Then use agent-run_agent with that cursor to scan the document. If the initial run doesn't find it, continue with the same cursor until all portions are checked. The answer should be the pointer to the relevant paragraph(s).\\n\",\"tool_calls\":[{\"id\":\"call_57jb395p\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_cursor\",\"arguments\":\"{\\\"filterDescription\\\":\\\"contains 'Колокольчиков' and 'вертящихся зданий' and 'спиральный спуск' and 'чёртовым колесом'\\\",\\\"name\\\":\\\"search_cursor\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":966,\"completion_tokens\":420,\"total_tokens\":1386}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 21:43:04 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

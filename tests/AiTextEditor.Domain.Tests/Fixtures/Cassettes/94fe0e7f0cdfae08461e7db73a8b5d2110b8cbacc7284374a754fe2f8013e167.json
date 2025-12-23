@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-248\",\"object\":\"chat.completion\",\"created\":1766431281,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first dialogue between two named characters. The context mentions lines with dialogue markers or character names. The maxEvidenceCount is 1, so we need to find the first occurrence.\\n\\nLooking at the provided batch items. The first item is a paragraph where someone says, \\\"Дорогие друзья, разрешите заседание...\\\" but it's just a single speaker, not a dialogue between two. The next paragraph has the professor Zvezdochkin talking, but again, it's a monologue. The third paragraph mentions Znayka standing up and speaking mockingly, but again, it's only Znayka. \\n\\nWait, maybe the first dialogue is when Znayka responds to the professor? But in the given items, the professor's speech is followed by Znayka's reaction. However, the items provided don't include the actual dialogue exchange between two characters yet. The professor is speaking, and then Znayka responds, but the excerpt here only shows Znayka starting to speak. The actual dialogue between two characters might be in the next batch, but since the user only provided the first batch, maybe there's no evidence here. \\n\\nBut the task says to scan only the current batch. Since the first batch's items don't have a dialogue between two named characters yet, the decision would be \\\"not_found\\\". However, the user might have more batches coming. But according to the input, the firstBatch is false, and hasMoreBatches is true. But the current batch doesn't have the required evidence. So the answer should be \\\"not_found\\\" because there's no dialogue between two characters in the current batch.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1051,\"completion_tokens\":369,\"total_tokens\":1420}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 19:21:20 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

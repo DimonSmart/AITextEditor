@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-532\",\"object\":\"chat.completion\",\"created\":1766517983,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, the user is asking where Fuxia is first mentioned in the document. I need to use the cursor-create_cursor function with a filter for \\\"Фуксия\\\". The previous tool call created a cursor named \\\"search_cursor\\\" with that filter. Now, the response from the tool is \\\"search_cursor\\\", which probably means the cursor was successfully created. Next, I should run the agent using this cursor to find the first occurrence.\\n\\nWait, the agent-run_agent function requires the cursorName and taskDescription. The task here is to find the first mention of Fuxia. So I'll call agent-run_agent with cursorName \\\"search_cursor\\\" and taskDescription \\\"Find the first mention of Фуксия\\\". The maxEvidenceCount can be set to 1 to get the first occurrence. Let me structure the tool call accordingly.\\n\",\"tool_calls\":[{\"id\":\"call_burl3frz\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"agent-run_agent\",\"arguments\":\"{\\\"cursorName\\\":\\\"search_cursor\\\",\\\"maxEvidenceCount\\\":1,\\\"taskDescription\\\":\\\"Find the first mention of Фуксия\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1002,\"completion_tokens\":220,\"total_tokens\":1222}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 19:26:23 GMT"
+    ]
+  }
+}

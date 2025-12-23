@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-893\",\"object\":\"chat.completion\",\"created\":1766415824,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"decision\\\": \\\"continue\\\",\\n  \\\"newEvidence\\\": [\\n    {\\n      \\\"pointer\\\": \\\"4:1.1.1.p1\\\",\\n      \\\"excerpt\\\": \\\"По проекту архитектора Вертибутылкина на улице Колокольчиков было построено даже два вертящихся здания. Одно пятиэтажное, башенного типа, со спиральным спуском и плавательным бассейном вокруг (спустившись по спиральному спуску, можно было нырять прямо в воду), другое шестиэтажное, с качающимися балконами, парашютной вышкой и чёртовым колесом на крыше.\\\",\\n      \\\"reason\\\": \\\"Упоминаются два вертящихся здания на Колокольчиков с спиральным спуском и чёртовым колесом.\\\"\\n    }\\n  ]\\n}\",\"reasoning\":\"Okay, let's tackle this task. The user wants the first mention of two rotating buildings with spiral descent and devil's wheel on Kolokolchikov Street. The context mentions 'Колокольчиков', 'вертящихся зданий', 'спиральный спуск', and 'чёртово колесо'. \\n\\nLooking at the provided batch, the first item with content is pointer 4:1.1.1.p1. The markdown here talks about two rotating buildings on Kolokolchikov Street. It specifies one is five-story with a spiral descent and a swimming pool, and the other is six-story with a devil's wheel. This seems to match all the required elements. \\n\\nI need to check if there's any other mention, but since the maxEvidenceCount is 1, even if there are more, we only take the first. The snapshot has evidenceCount 0, so this is the first match. The reason should be factual, pointing out the specific details in the excerpt. No other pointers in recentEvidencePointers, so it's safe to include. The excerpt is copied exactly as is, and the reason mentions the spiral descent and devil's wheel as per the text.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2068,\"completion_tokens\":477,\"total_tokens\":2545}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 15:03:44 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

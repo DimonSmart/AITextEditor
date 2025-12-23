@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-680\",\"object\":\"chat.completion\",\"created\":1766414714,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"done\\\",\\\"newEvidence\\\":[{\\\"pointer\\\":\\\"8:1.1.1.p5\\\",\\\"excerpt\\\":\\\"Впрочем, главное было не это. Главное было то, что Знайка тоже побывал в Солнечном городе. Там он познакомился с учёными малышками Фуксией и Селёдочкой, которые в то время готовили свой второй полёт на Луну. Знайка тоже включился в работу по постройке космической ракеты и, когда ракета была готова, совершил с Фуксией и Селёдочкой межпланетное путешествие. Прилетев на Луну, наши отважные путешественники обследовали один из небольших лунных кратеров в районе лунного Моря Ясности, побывали в пещере, которая находилась в центре этого кратера и произвели наблюдения над изменением силы тяжести. На Луне, как известно, сила тяжести значительно меньше, чем на Земле, и поэтому наблюдения над изменением силы тяжести имеют большое научное значение. Пробыв на Луне около четырёх часов, Знайка и его спутницы принуждены были поскорей отправиться в обратный путь, так как запасы воздуха были у них на исходе. Всем известно, что на Луне воздуха нет, и, чтоб не задохнуться, всегда надо брать с собой запас воздуха. В сгущённом виде, конечно.\\\",\\\"reason\\\":\\\"excerpt contains 'Фуксии'\\\"}]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the last mention of \\\"Фуксии\\\" in the provided batch. First, I need to scan through each item in the batch to locate all instances of \\\"Фуксии\\\". \\n\\nStarting with the first item, pointer 8:1.1.1.p5. The markdown mentions \\\"учёными малышками Фуксией и Селёдочкой\\\". That's one mention. Now, checking the next items. The second item, pointer 9:1.1.1.p6, doesn't have \\\"Фуксии\\\". The third item, pointer 10:1.1.1.p7, also doesn't mention it. The fourth item, pointer 11:1.1.1.p8, doesn't have it either. \\n\\nSo, the only mention found is in the first item. Since the task asks for the last mention, and there's only one occurrence, that's the one to report. The snapshot's evidenceCount is 0, and since we found one, which meets the maxEvidenceCount of 1, the decision should be \\\"done\\\". I need to make sure the pointer is exactly as in the batch, the excerpt is copied verbatim, and the reason states that the excerpt mentions Фуксии. No other pointers are in recentEvidencePointers, so no duplicates. Alright, that should cover it.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1813,\"completion_tokens\":691,\"total_tokens\":2504}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 14:45:14 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

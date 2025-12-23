@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-983\",\"object\":\"chat.completion\",\"created\":1766414533,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"decision\\\": \\\"done\\\",\\n  \\\"newEvidence\\\": [\\n    {\\n      \\\"pointer\\\": \\\"6:1.1.1.p3\\\",\\n      \\\"excerpt\\\": \\\"Все были очень довольны. Единственным, кто пострадал на этом деле, оказался Пончик. Когда Пончик увидел, что теперь можно брать в магазине любую вещь, какая только могла понадобиться, он стал недоумевать: к чему ему вся та куча костюмов, которая накопилась у него дома.\\\",\\n      \\\"reason\\\": \\\"Экспресс-перечисление упоминает Пончика как единственного, кто пострадал от изменений в городе.\\\"\\n    }\\n  ]\\n}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first mention of \\\"Пончик\\\" in the provided batch. The snapshot shows evidenceCount is 0, so we need to look through the current batch items.\\n\\nFirst, I'll go through each item in the batch. The items are a mix of headings and paragraphs. The task specifies to look for the word 'Пончик' in the context. \\n\\nLooking at the first item, it's a heading with \\\"# Часть I\\\" – no mention there. The next heading is \\\"## Глава первая\\\" – still nothing. The third heading is \\\"### Как Знайка победил профессора Звёздочкина\\\" – no luck. \\n\\nNow, checking the paragraphs. The first paragraph (4:1.1.1.p1) talks about Незнайка and other characters but no Пончик. The second paragraph (5:1.1.1.p2) mentions the odjazhnaia fabrika but again, no Пончик. \\n\\nThe third paragraph (6:1.1.1.p3) is where I find \\\"Пончик\\\" mentioned. The excerpt here says, \\\"Единственный, кто пострадал на этом деле, оказался Пончик.\\\" That's the first occurrence. \\n\\nI need to make sure not to include any pointers from the snapshot's recentEvidencePointers, but since the snapshot is empty, all are new. The reason should be factual, pointing out that the excerpt mentions Пончик. \\n\\nSince the maxEvidenceCount is 1 and this is the first occurrence, the decision should be \\\"done\\\" after adding this evidence. No other paragraphs in the batch mention Пончик again, so no need to check further. The output JSON should include the pointer, excerpt, and reason, then set decision to done.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2020,\"completion_tokens\":568,\"total_tokens\":2588}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 14:42:13 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

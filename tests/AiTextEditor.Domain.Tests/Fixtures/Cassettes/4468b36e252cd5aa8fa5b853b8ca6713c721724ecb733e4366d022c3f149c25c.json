@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-684\",\"object\":\"chat.completion\",\"created\":1766513245,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"We need to find first occurrence of term \\\"Пончик\\\". Snapshot indicates already two evidence found pointers 6:1.1.1.p3 and 7:1.1.1.p4. Those are previous batches. Now current batch items 24,25,26. Need to scan markdown for term \\\"Пончик\\\". None of these excerpts contain \\\"Пончик\\\". So no new evidence. Decision: continue because more batches remain and haven't found first occurrence? However we already have evidenceCount=2, but task is first occurrence; maybe they already found earlier occurrences. But we must continue scanning to possibly find earlier? Since ordering guaranteed, first occurrence should be earliest pointer, which they've already found in previous batches (pointers 6 and 7). Now current batch likely after those, no new. So we can set decision=\\\"continue\\\" (since there may be more batches but no new evidence). Not_found would be if no occurrence in entire doc, but we have previous evidence count \\u003e0, so not. So output with empty newEvidence array.\\n\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1093,\"completion_tokens\":236,\"total_tokens\":1329}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:07:24 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

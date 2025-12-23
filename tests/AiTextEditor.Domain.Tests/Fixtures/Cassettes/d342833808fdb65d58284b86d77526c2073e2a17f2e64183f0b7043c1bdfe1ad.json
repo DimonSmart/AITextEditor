@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-388\",\"object\":\"chat.completion\",\"created\":1766418019,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[{\\\"pointer\\\":\\\"3:1.1.1\\\",\\\"excerpt\\\":\\\"### Как Знайка победил профессора Звёздочкина\\\",\\\"reason\\\":\\\"Heading mentions Professor Zvezdokhin in the title.\\\"}]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants the first two mentions of Professor Zvezdokhin. The snapshot shows evidenceCount is 0, so we need to find two instances.\\n\\nLooking at the batch items, the first item is a heading. Then there's a paragraph that mentions \\\"профессора Звёздочкина\\\" in the third paragraph (pointer 3:1.1.1). Wait, that's a heading, but the actual mention is in the paragraph. Wait, the pointer 3:1.1.1 is a heading with the text \\\"Как Знайка победил профессора Звёздочкина\\\". So that's the first mention. Then, looking through the paragraphs, the next mention might be in the same paragraph or another. Wait, the paragraph 4:1.1.1.p1 mentions \\\"профессора Звёздочкина\\\" in the first paragraph? Wait, no. Let me check again.\\n\\nWait, the first mention is in the heading 3:1.1.1, which is part of the content. Then, looking through the paragraphs, the next mention might be in another paragraph. Wait, the user's task is to find mentions of Professor Zvezdokhin. The heading mentions him, so that's one. Then, looking through the paragraphs, maybe another mention. Let me check each paragraph.\\n\\nParagraph 4:1.1.1.p1: The text mentions \\\"профессора Звёздочкина\\\" in the first paragraph? Wait, the text says \\\"Как Знайка победил профессора Звёздочкина\\\" as the heading. Then in the first paragraph (pointer 4:1.1.1.p1), the text starts with \\\"С тех пор как Незнайка совершил путешествие в Солнечный город...\\\" and doesn't mention the professor again. The next paragraphs don't mention him again. Wait, maybe the heading is considered part of the content. So the first mention is in the heading. Then, is there another mention? The user wants two mentions. Wait, maybe the heading is the first, and then another mention in the same paragraph? Or perhaps there's another mention elsewhere. Wait, looking through all the items, the only mention is in the heading. Wait, maybe the user made a mistake, but according to the input, the batch has items up to pointer 7. Let me check again.\\n\\nWait, the heading 3:1.1.1 is \\\"Как Знайка победил профессора Звёздочкина\\\" which is the first mention. Then, in the paragraphs, is there another mention? Let me check each paragraph's markdown:\\n\\nParagraph 4:1.1.1.p1: Talks about Незнайка's trip, but no mention of the professor.\\n\\nParagraph 5:1.1.1.p2: Mentions the professor? No, it talks about the factory and clothes.\\n\\nParagraph 6:1.1.1.p3: Pончик's story, no mention.\\n\\nParagraph 7:1.1.1.p4: Same as above.\\n\\nSo the only mention is in the heading. But the task says to find two. Wait, maybe the heading is considered the first mention, and there's another in the same paragraph? Or perhaps the user's input has a mistake. Alternatively, maybe the heading is the first, and the next mention is in the same paragraph but not found. Wait, maybe the user's input is missing something. But according to the given data, there's only one mention. However, the task says to find two. Maybe the heading is the first, and the next mention is in another part. Wait, perhaps I missed something. Let me check again.\\n\\nWait, the heading is \\\"Как Знайка победил профессора Звёздочкина\\\" which is the first mention. Then, in the first paragraph (pointer 4:1.1.1.p1), the text starts with \\\"С тех пор как Незнайка совершил путешествие в Солнечный город...\\\" and mentions \\\"профессора Звёздочкина\\\" again? Wait, no. The first paragraph doesn't mention the professor again. So maybe there's only one mention. But the task requires two. Hmm. Maybe the user made a mistake, but according to the input, there's only one mention. However, the task says to find two. Wait, perhaps the heading is the first, and the next mention is in the same paragraph but not found. Alternatively, maybe the user's input is incomplete. But given the data, I can only report the one mention. However, the task says to find two. Maybe the user intended that the heading is the first, and another mention in the same paragraph. But according to the given data, there's only one. So perhaps the answer is that there's only one mention, but the task requires two. But the user's instruction says to output exactly one JSON object. So maybe the correct answer is to report the one mention and set decision to \\\"continue\\\" since evidenceCount is 0 and newEvidence has one, which is less than maxEvidenceCount of 2. But the user's task says to find the first two. So maybe there's a mistake in the input. But according to the given data, there's only one mention. Therefore, the output should have one newEvidence entry and decision \\\"continue\\\".\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2024,\"completion_tokens\":1204,\"total_tokens\":3228}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 15:40:19 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

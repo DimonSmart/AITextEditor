@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-670\",\"object\":\"chat.completion\",\"created\":1766435446,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first mention of \\\"профессор Звёздочкин\\\" with \\\"кипел от негодования\\\". The context is all paragraphs mentioning either of those terms. \\n\\nFirst, I need to scan through the provided batch items. There are two paragraphs here. Let me check each one.\\n\\nThe first paragraph (pointer 8:1.1.1.p5) talks about Знайка's trip to the Sun City, meeting scientists like Фуксия and Селёдочка. It mentions the Moon, experiments, but I don't see \\\"профессор Звёздочкин\\\" or \\\"кипел от негодования\\\" here. \\n\\nThe second paragraph (pointer 9:1.1.1.p6) discusses Стекляшкин, an astronomer, and lunar features. Again, no mention of Звёздочкин or the anger phrase. \\n\\nSince neither paragraph contains the required terms, there's no evidence to report. The snapshot shows evidenceCount is 0, and recentEvidencePointers is empty. So, the decision should be \\\"not_found\\\" because the current batch doesn't have the needed info. No new evidence to add here.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1332,\"completion_tokens\":276,\"total_tokens\":1608}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 20:30:46 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

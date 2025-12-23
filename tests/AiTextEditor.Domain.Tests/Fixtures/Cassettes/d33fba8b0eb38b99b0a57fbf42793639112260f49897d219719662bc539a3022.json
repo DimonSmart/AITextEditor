@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-359\",\"object\":\"chat.completion\",\"created\":1766417578,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's tackle this query. The user is asking about a specific scene in the book where Znayka sarcastically comments on the professor's claim about hanging around the Moon's center. First, I need to locate this mention.\\n\\nI'll start by creating a cursor to search for the relevant text. The cursor will look for mentions of Znayka's sarcastic remark related to the professor's statement about the Moon's center. Using the cursor-create_cursor function with a filter description that captures this scenario.\\n\\nOnce the cursor is created, the next step is to run the agent to find the first occurrence. The task description should guide the agent to identify the first mention. If the initial run doesn't find it, I'll need to iterate further, checking each evidence item carefully. Since the user wants the exact location, I'll ensure to track the pointerLabel and include it in the summary. If the document doesn't have this mention, I'll inform the user accordingly.\\n\",\"tool_calls\":[{\"id\":\"call_2f0jiop8\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"agent-run_agent\",\"arguments\":\"{\\\"cursorName\\\":\\\"search_cursor\\\",\\\"maxEvidenceCount\\\":1,\\\"taskDescription\\\":\\\"Find the first mention of Znayka's sarcastic remark about the professor's claim regarding hanging around the Moon's center\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1221,\"completion_tokens\":265,\"total_tokens\":1486}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 15:32:57 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

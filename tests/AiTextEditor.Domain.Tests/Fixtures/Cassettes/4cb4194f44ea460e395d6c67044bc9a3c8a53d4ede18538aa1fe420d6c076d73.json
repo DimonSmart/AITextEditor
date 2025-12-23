@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-446\",\"object\":\"chat.completion\",\"created\":1766513443,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"decision\\\": \\\"continue\\\",\\n  \\\"newEvidence\\\": []\\n}\",\"reasoning\":\"The task: \\\"Find the first occurrence where a paragraph starts with a name followed by colon (e.g., \\\"Anna: ...\\\") and the subsequent paragraph also starts with a different name followed by colon. Return both lines and the two names.\\\" Need evidence where paragraph begins with a name colon. In current batch items we have three paragraphs. None start with a name colon; they start with dash or Russian dash. So no new evidence. Must check recentEvidencePointers: snapshot recent evidence pointer is \\\"14:1.1.1.p11\\\". Not in current batch.\\n\\nThus decision: continue (since more batches remain). No newEvidence. Output JSON.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1029,\"completion_tokens\":157,\"total_tokens\":1186}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:10:42 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

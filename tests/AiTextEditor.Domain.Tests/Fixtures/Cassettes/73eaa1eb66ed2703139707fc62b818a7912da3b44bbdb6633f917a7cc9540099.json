@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-868\",\"object\":\"chat.completion\",\"created\":1766426304,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first dialogue between two named characters. The context is lines with at least two named characters in a dialogue format. The max evidence count is 1, so we need to find the first occurrence.\\n\\nLooking at the provided batch items, both are paragraphs. The first paragraph mentions Незнайка, Кнопочки, and Пачкули Пёстренького. But these are all names, but are they in a dialogue? The text says \\\"Наслушавшись рассказов Незнайки, Кнопочки и Пачкули Пёстренького,\\\" which sounds like they're listening to stories, not having a dialogue. The names are mentioned in a narrative, not in a conversational format.\\n\\nThe second paragraph talks about Жители Солнечного города helping коротышки. Again, these are names of groups or people, but there's no direct dialogue between two named characters here either. The sentences are descriptive, not dialogues.\\n\\nSince there's no dialogue format with two named characters in either paragraph, the decision should be \\\"not_found\\\". The evidence count is 0, and the new evidence array is empty. So the output is \\\"not_found\\\" with no new evidence.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1258,\"completion_tokens\":277,\"total_tokens\":1535}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 17:58:23 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

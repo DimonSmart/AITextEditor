@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-184\",\"object\":\"chat.completion\",\"created\":1766418057,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first two mentions of Professor Zvezdokhin. Wait, looking at the input data, I notice that the snapshot has an evidenceCount of 1 and a recentEvidencePointer of \\\"3:1.1.1\\\". But the firstBatch is false, so this isn't the first batch. However, the items in the current batch don't seem to mention Professor Zvezdokhin at all. Let me check each paragraph again.\\n\\nLooking through the items, the pointers go from 12:1.1.1.p9 to 23:1.1.1.p20. The markdown content talks about Знайка (which is Znayka, a character) discussing the Moon's surface, volcanoes, meteorites, and later about lunar inhabitants. There's a mention of Знайка publishing a book, but no reference to Professor Zvezdokhin. The snapshot's recentEvidencePointer is \\\"3:1.1.1\\\", which might be from a previous batch, but in the current batch, there's no mention of the professor. So, the answer should be that there's no new evidence here. The decision would be \\\"not_found\\\" since the required mentions aren't present in the current batch.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2316,\"completion_tokens\":287,\"total_tokens\":2603}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 15:40:57 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

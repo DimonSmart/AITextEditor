@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-623\",\"object\":\"chat.completion\",\"created\":1766432757,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, the user is asking for the first dialogue between two named characters. I've tried several cursors with different filters, but each time it's returning not found. Maybe the issue is that the dialogues aren't in lines with two names followed by dialogue markers. Perhaps the dialogues are spread across multiple lines or the names are mentioned in the same paragraph without explicit dialogue markers.\\n\\nI should adjust the filter to look for paragraphs that contain two character names and then check if there's a dialogue in the vicinity, even if it's across lines. Maybe using a broader filter like \\\"Paragraphs containing two character names\\\" would capture the context better. Let me try creating a new cursor with that filter.\\n\",\"tool_calls\":[{\"id\":\"call_msq0ls6n\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_cursor\",\"arguments\":\"{\\\"filterDescription\\\":\\\"Paragraphs containing two character names\\\",\\\"maxBytes\\\":1048576,\\\"maxElements\\\":500,\\\"name\\\":\\\"dialogue_cursor_v5\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":2059,\"completion_tokens\":197,\"total_tokens\":2256}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 19:45:57 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

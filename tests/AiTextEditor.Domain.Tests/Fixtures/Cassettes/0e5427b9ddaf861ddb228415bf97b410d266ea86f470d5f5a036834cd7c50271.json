@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-741\",\"object\":\"chat.completion\",\"created\":1766426014,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The user wants to detect the first instance of dialogue involving two distinct named characters in the same sentence. The task specifies direct or indirect dialogue, like \\\"Alice says to Bob...\\\" or \\\"John asked Mary...\\\". The context mentions focusing on sentences with at least two named entities in a conversational context.\\n\\nLooking at the provided batch, the only item is a heading: \\\"### Как Знайка победил профессора Звёздочкина\\\". Translating that, it's \\\"How Znayka Defeated Professor Zvezdokhin\\\". This seems to be a title of a story or a section. The heading itself doesn't contain any dialogue. It's just a title, so there's no conversation here. \\n\\nSince the task requires dialogue between two characters in the same sentence, and the current batch only has a heading without any dialogue, there's no evidence to report. The snapshot's evidenceCount is 0, and the recentEvidencePointers are empty. The user's maxEvidenceCount is 1, but since there's no dialogue in the current batch, the decision should be \\\"not_found\\\". \\n\\nI need to make sure not to include any pointers from the snapshot's recentEvidencePointers, but since there are none, that's not an issue here. The answer should be a JSON object with decision \\\"not_found\\\" and an empty newEvidence array.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":673,\"completion_tokens\":304,\"total_tokens\":977}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 17:53:33 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

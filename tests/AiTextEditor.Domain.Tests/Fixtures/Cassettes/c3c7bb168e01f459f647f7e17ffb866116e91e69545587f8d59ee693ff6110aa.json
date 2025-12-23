@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-383\",\"object\":\"chat.completion\",\"created\":1766513380,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"We need to find second occurrence of \\\"Звёздочкин\\\" excluding headings. The batch items contain paragraphs but I see no \\\"Звёздочкин\\\" in these three paragraphs; they mention \\\"Знайка\\\". So no matches. Since no evidence, decision likely \\\"continue\\\" because more batches. Also must not add evidence for pointers already in recentEvidencePointers (none). So output decision continue, newEvidence empty array.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1203,\"completion_tokens\":108,\"total_tokens\":1311}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:09:39 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

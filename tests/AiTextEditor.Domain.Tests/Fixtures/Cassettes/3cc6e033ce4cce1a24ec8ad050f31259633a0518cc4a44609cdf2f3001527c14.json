@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-165\",\"object\":\"chat.completion\",\"created\":1766513389,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to find first dialogue between two named characters. Use cursor broad filter (all paragraphs). Then run agent with task description: find first dialogue between two named characters, return their names and maybe pointer. We'll use cursor_create_cursor with filterDescription \\\"All paragraphs\\\". Name cursor \\\"search\\\". Then run_agent with taskDescription: \\\"Find the first dialogue that includes two named characters speaking. Return the names of the characters and the semantic pointer of the paragraph.\\\" Let's do that.\",\"tool_calls\":[{\"id\":\"call_qyqy96af\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_cursor\",\"arguments\":\"{\\\"filterDescription\\\":\\\"All paragraphs\\\",\\\"maxBytes\\\":-1,\\\"maxElements\\\":-1,\\\"name\\\":\\\"search\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":791,\"completion_tokens\":149,\"total_tokens\":940}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:09:48 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

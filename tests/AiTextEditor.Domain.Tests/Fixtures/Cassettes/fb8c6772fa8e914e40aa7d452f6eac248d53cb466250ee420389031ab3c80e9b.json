@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-366\",\"object\":\"chat.completion\",\"created\":1766511075,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of \\\"Пончик\\\" in the given batch. The user provided a snapshot with evidenceCount 1 and recentEvidencePointers including \\\"6:1.1.1.p3\\\". But the current batch has items with pointers 81:1.1.1.p78, 82:1.1.1.p79, and 83:1.2. \\n\\nFirst, I need to check each item's markdown content. The first item's markdown is \\\"– На этом заседание объявляю закрытым.\\\" No mention of Пончик here. The second item says \\\"После чего встал и тоже пошёл домой.\\\" Still no Пончик. The third is a heading, so probably not relevant. \\n\\nSince none of the current batch items mention Пончик, there's no new evidence to add. The decision should be \\\"not_found\\\" because the task is to find the first mention, but it's not present in this batch. Also, the snapshot's recentEvidencePointers might have a previous match, but the current batch doesn't contribute any new evidence. So the answer is to indicate that no new evidence was found.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":684,\"completion_tokens\":279,\"total_tokens\":963}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 17:31:15 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

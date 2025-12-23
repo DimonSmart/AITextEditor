@@ -1,0 +1,1 @@
+{ "temperature": 0, "messages": [ { "role": "user", "content": "Hello" } ], "model": "qwen3:latest", "tools": [ { "type": "function", "function": { "description": "A placeholder tool", "name": "test_tool", "parameters": { "type": "object", "properties": {} } } } ], "tool_choice": "auto" }

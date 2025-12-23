@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-15\",\"object\":\"chat.completion\",\"created\":1766432318,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first dialogue between two named characters. The context mentions lines with character names followed by dialogue markers. The maxEvidenceCount is 1, so we need to find the first occurrence.\\n\\nLooking at the provided batch items, the first item is a paragraph without any character names or dialogue markers. The second item has \\\"Знайка\\\" responding, which is a character name followed by dialogue. But there's only one character mentioned here. The third item starts with \\\"Метеоритчики говорили:\\\", which could be another character, but the dialogue isn't fully provided in the excerpt. \\n\\nSince the task requires a dialogue between two named characters, the second item has Знайка speaking, but there's no second character mentioned. The third item might involve multiple people, but the excerpt cuts off. The first item doesn't have any dialogue. So, maybe the second item is the first dialogue, even though only one character is mentioned. Wait, the task says \\\"между двумя названными персонажами,\\\" which means between two named characters. If only one is mentioned, that's not enough. The third item might have the second character, but the excerpt is incomplete. Since the user wants the first occurrence, and the second item is the first dialogue, even if only one character is present, maybe that's the best possible. But according to the rules, we need two characters. Hmm. Maybe the third item's \\\"Метеоритчики\\\" is a group, but the task specifies two named characters. So perhaps there's no valid evidence here. But the user might consider the second item as the first dialogue, even if only one character is mentioned. Wait, the task says \\\"между двумя названными персонажами,\\\" so two characters. The second item has Знайка speaking, but no other character. The third item starts with \\\"Метеор, говорили:\\\" which might be another character, but the excerpt ends there. So maybe there's no valid evidence. But the user might expect the second item as the first dialogue. However, since the task requires two characters, maybe the answer is not found. But the user's example might have different data. Wait, the user's input might have more items. Wait, the provided batch has three items. The first has no dialogue. The second has Знайка speaking, but no other character. The third starts with \\\"Метеоритчики говорили:\\\" which could be a group, but not two named characters. So maybe there's no valid evidence. But the user's task says to find the first dialogue between two named characters. If none are found, the decision would be \\\"not_found\\\". But the user might have intended the second item as the first dialogue, even though only one character is present. However, according to the rules, we must have two named characters. Therefore, the correct decision is \\\"not_found\\\".\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":802,\"completion_tokens\":631,\"total_tokens\":1433}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 19:38:38 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

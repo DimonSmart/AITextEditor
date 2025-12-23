@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-779\",\"object\":\"chat.completion\",\"created\":1766443832,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let me try to figure out how to approach this. The user wants the first dialogue between two named characters and their names. I remember the assistant created a cursor called dialogue_cursor to find paragraphs with dialogue markers. Now, the response from the tool is \\\"dialogue_cursor\\\", which probably means the cursor was created successfully.\\n\\nNext, I need to run the agent on this cursor to find the first dialogue. The agent's task is to identify the first mention of a dialogue between two named characters. Since the cursor is set to read paragraphs with dialogue markers, the agent should process the first batch of items.\\n\\nI should call agent-run_agent with the cursorName \\\"dialogue_cursor\\\" and a taskDescription that specifies finding the first dialogue between two named characters. The maxEvidenceCount can be set to 1 to get the first occurrence. Wait, but the user wants the first dialogue, so maybe the agent will return the first evidence item that meets the criteria.\\n\\nAfter running the agent, if the response has evidence items, I need to check each paragraph to see if it contains a dialogue with two named characters. The first such paragraph would be the answer. If the agent returns \\\"not_found\\\" but there are more items, I need to call run_agent again with the same cursor. But since the user wants the first occurrence, it's likely in the first batch. Once found, extract the names from the dialogue and present them.\\n\",\"tool_calls\":[{\"id\":\"call_gte4r55d\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"agent-run_agent\",\"arguments\":\"{\\\"cursorName\\\":\\\"dialogue_cursor\\\",\\\"maxEvidenceCount\\\":1,\\\"taskDescription\\\":\\\"Find the first dialogue between two named characters\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1406,\"completion_tokens\":339,\"total_tokens\":1745}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 22:50:31 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-381\",\"object\":\"chat.completion\",\"created\":1766511041,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The user wants the first mention of \\\"Пончик\\\" in the provided batch items. The snapshot shows that there's already 1 piece of evidence, with the pointer \\\"6:1.1.1.p3\\\". But the current batch has items starting from pointer \\\"78:1.1.1.p75\\\" onwards.\\n\\nFirst, I need to scan each item's markdown content for the exact mention of \\\"Пончик\\\". Let's look at each paragraph:\\n\\n1. The first item (78:1.1.1.p75) says: \\\"От такого бесцеремонного обращения Звёздочкин ошалел настолько, что не мог произнести ни слова. Потом он понемногу пришёл в себя и закричал:\\\" – here, the word \\\"понемногу\\\" is present, but that's not \\\"Пончик\\\". No match here.\\n\\n2. The second item (79:1.1.1.p76) has: \\\"– Это безобразие! Я буду жаловаться! Я напишу в газету! Вы ещё узнаете профессора Звёздочкина!\\\" – mentions \\\"профессора Звёздочкина\\\" but not \\\"Пончик\\\".\\n\\n3. The third item (80:1.1.1.p77) states: \\\"Он долго так кричал, размахивая кулаками, но, увидев, что все коротышки разошлись по домам, сказал:\\\" – again, no \\\"Пончик\\\" here.\\n\\nNone of the current batch items contain \\\"Пончик\\\". The snapshot's recent evidence pointer was from a previous batch, so the user is looking for the next occurrence in this batch. Since there's no mention in the current items, the decision should be \\\"not_found\\\". Also, the maxEvidenceCount is null, so we don't need to check for a limit here. Therefore, the correct output is \\\"not_found\\\" with no new evidence.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":784,\"completion_tokens\":463,\"total_tokens\":1247}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 17:30:41 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

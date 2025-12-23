@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-838\",\"object\":\"chat.completion\",\"created\":1766425928,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The goal is to find the first direct dialogue with two named characters in the same sentence. The context mentions examples like 'Alice says to Bob: Hello' or 'John: Hi, Mary!'. So, I need to look for direct speech where two named characters are mentioned in the same sentence.\\n\\nLooking at the provided batch, there's only one item with pointer \\\"10:1.1.1.p7\\\". The markdown content is in Russian, discussing lunar craters and astronomers debating their origins. The text mentions two groups: \\\"последователями вулканической теории\\\" (volcanic theory followers) and \\\"последователями метеоритной теории\\\" (meteorite theory followers). However, these are groups, not individual named characters. The paragraph doesn't have any direct dialogue or named characters in a conversational context. \\n\\nSince there's no direct dialogue between two named characters here, and the snapshot's evidenceCount is 0, the decision should be \\\"not_found\\\". The newEvidence array remains empty because there's no applicable evidence in the current batch.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":828,\"completion_tokens\":259,\"total_tokens\":1087}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 17:52:08 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

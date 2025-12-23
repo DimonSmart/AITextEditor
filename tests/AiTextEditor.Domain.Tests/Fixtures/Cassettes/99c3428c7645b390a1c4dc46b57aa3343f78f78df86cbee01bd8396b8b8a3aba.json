@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-723\",\"object\":\"chat.completion\",\"created\":1766433181,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"В первом абзаце (Pointer: 11:1.1.1.p8) Знайка сравнивает лунную поверхность с хорошо пропечённым блином, описывая пузырьки пара, которые образуются на поверхности блина и остаются в виде дырок. Это прямо отвечает запросу. \\n\\n**Семантический указатель:** 11:1.1.1.p8\",\"reasoning\":\"Okay, let's tackle this query. The user is asking in which paragraph Znayka compares the lunar surface to a well-cooked pancake and explains the steam bubbles. \\n\\nFirst, I need to recall the previous steps. The user already created a cursor named \\\"search_cursor\\\" with a filter looking for mentions of Znayka comparing the lunar surface to a pancake or steam bubbles. Then, the agent was run, and the first response had two evidence items. The first pointer (11:1.1.1.p8) mentions the pancake comparison and steam bubbles. The second pointer (12:1.1.1.p9) also talks about steam bubbles but in a different context.\\n\\nThe user's question is about the specific paragraph where Znayka makes both comparisons. The first excerpt (p8) directly mentions the pancake and the bubbles forming and popping, which matches the query. The second excerpt (p9) discusses the lunar surface as viscous like dough and steam bubbles, but it's part of Znayka's theory about the Moon's origin, not the direct comparison to a pancake. \\n\\nSince the user wants the paragraph where he compares the lunar surface to a well-cooked pancake and explains the steam bubbles, the correct answer is the first excerpt (p8). The second excerpt, while related to steam bubbles, doesn't mention the pancake comparison. Therefore, the answer should point to the first evidence item.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2229,\"completion_tokens\":413,\"total_tokens\":2642}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 19:53:01 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

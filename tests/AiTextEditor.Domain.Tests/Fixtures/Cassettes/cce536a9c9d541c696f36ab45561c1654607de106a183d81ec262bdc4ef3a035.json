@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-554\",\"object\":\"chat.completion\",\"created\":1766513448,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"We need to find first occurrence where a paragraph starts with a name followed by colon (e.g., \\\"Anna: ...\\\") and the subsequent paragraph also starts with a different name followed by colon. Return both lines and the two names. Our job: scan current batch items, extract candidate evidence if matches.\\n\\nCheck each paragraph markdown:\\n\\n66: \\\"– А вы привезли что-нибудь с Луны?\\\" starts with dash not name colon.\\n\\n67: \\\"– Я привёз кусочек самой Луны.\\\" similar.\\n\\n68: \\\"Знайка достал из кармана небольшой камешек голубовато-серого цвета и сказал:\\\" doesn't start with name colon.\\n\\nThus no matches. We must not include pointers already in recentEvidencePointers (14:1.1.1.p11) but there's none.\\n\\nDecision? Since we found no evidence in this batch, but there are more batches. So decision = \\\"continue\\\". newEvidence empty.\\n\\nReturn JSON.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":775,\"completion_tokens\":213,\"total_tokens\":988}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:10:47 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

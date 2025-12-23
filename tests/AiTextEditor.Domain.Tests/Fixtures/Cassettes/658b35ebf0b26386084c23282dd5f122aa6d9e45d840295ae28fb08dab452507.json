@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-45\",\"object\":\"chat.completion\",\"created\":1766435232,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants the first mention of Фуксия and Селедочка. Wait, the task says \\\"Find the first mention of Фуксия and Селедочка.\\\" But looking at the provided batch items, the paragraphs are about Пончик and his troubles with clothes. I need to check each item's markdown for those names.\\n\\nFirst item: pointer 6:1.1.1.p3. The text talks about Пончик, but no Фуксия or Селедочка here. The second item is pointer 7:1.1.1.p4. Still about Пончик, mites, and the smell. Neither of these paragraphs mention Фуксия or Селедочка. \\n\\nSince the snapshot has evidenceCount 0 and recentEvidencePointers empty, but the current batch doesn't have any mentions of the required names, the decision should be not_found. The newEvidence array would be empty. So the output is decision: not_found and no new evidence.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1271,\"completion_tokens\":232,\"total_tokens\":1503}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 20:27:12 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-970\",\"object\":\"chat.completion\",\"created\":1766415655,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's tackle this query. The user is asking where in the book it's explained why the Ponchik (which I assume is a character, maybe a nickname for someone) had everyone run away because of naphthalene, and the hosts were opening windows and doors. \\n\\nFirst, I need to figure out what the user is referring to. The mention of naphthalene makes me think of a story where a character might have a habit of using naphthalene, which is a substance used in mothballs. Maybe the character's presence or the smell of naphthalene caused people to flee. The hosts opening windows and doors could be trying to ventilate or get rid of the smell.\\n\\nSince the user is asking about a specific explanation in the book, I need to use the provided tools to search for this information. The tools include creating a cursor to scan the document. The function cursor-create_cursor is needed to set up a filter to find mentions related to naphthalene and the hosts' actions. \\n\\nI should create a cursor with a filter that looks for the terms \\\"нафталин\\\" (naphthalene) and the actions of opening windows and doors. The filterDescription parameter should be a stateless filter, so maybe something like \\\"contains 'нафталин' and 'распахивали окна и двери'\\\". \\n\\nOnce the cursor is created, I'll run the agent to find the first occurrence. The user might be looking for the first mention, so setting maxEvidenceCount to 1 would stop the search early. \\n\\nI need to make sure that the cursor is named uniquely, like \\\"search_cursor\\\", and the filter is correctly described. Then, using the agent-run_agent function with the cursor name and task description to find the relevant paragraph. \\n\\nIf the first evidence item contains the explanation, I'll retrieve it and present the answer in Russian, including the semantic pointer. If not, I'll continue searching. But since the user is asking for the first mention, stopping at the first item should suffice. \\n\\nAlso, I should check if the book actually has this content. If not, the answer would be that it's not found. But assuming the book does have this, the cursor and agent functions should locate the relevant section.\\n\",\"tool_calls\":[{\"id\":\"call_23b5wjvk\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_cursor\",\"arguments\":\"{\\\"filterDescription\\\":\\\"contains 'нафталин' and 'распахивали окна и двери'\\\",\\\"maxBytes\\\":1048576,\\\"name\\\":\\\"search_cursor\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1078,\"completion_tokens\":535,\"total_tokens\":1613}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 15:00:55 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

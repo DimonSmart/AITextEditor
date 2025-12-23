@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-115\",\"object\":\"chat.completion\",\"created\":1766426316,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The goal is to find the first dialogue between two named characters. The context specifies that lines must have at least two named characters in a dialogue format. The maxEvidenceCount is 1, so we need to find the first occurrence.\\n\\nLooking at the provided batch items, both paragraphs are from the story about Ponchik. The first paragraph mentions Ponchik and other characters like \\\"все\\\" (everyone) but doesn't have a dialogue. The second paragraph has Ponchik and mentions others, but again, no direct dialogue. \\n\\nWait, the user mentioned that the snapshot has evidenceCount 0 and no recent pointers. So we need to check if there's any dialogue in the current batch. However, the paragraphs provided are narrative, not dialogues. There's no direct speech between two named characters here. \\n\\nSince there's no dialogue found, the decision should be \\\"not_found\\\". The newEvidence array would be empty. So the output is decision: \\\"not_found\\\" and no new evidence.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1274,\"completion_tokens\":227,\"total_tokens\":1501}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 17:58:35 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

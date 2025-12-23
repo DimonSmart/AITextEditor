@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-990\",\"object\":\"chat.completion\",\"created\":1766432523,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first dialog between two named characters. The context mentions lines with two character names followed by dialogue. The maxEvidenceCount is 1, so we need to find the first occurrence.\\n\\nLooking at the provided batch items, all the pointers are paragraphs from a story about Знайка and лунатики. The first paragraph (21:1.1.1.p18) talks about Знайка's experience on the Moon but doesn't have any dialogue. The second paragraph (22:1.1.1.p19) mentions Знайка publishing a book about лунатики, but again, no dialogue. The third paragraph (23:1.1.1.p20) continues the story about лунатики moving inside the Moon. \\n\\nWait, none of these paragraphs have a dialogue format with two names followed by speech. The task requires lines where two characters are named and then their dialogue. Since the user's input doesn't include any such lines in the current batch, there's no evidence here. The snapshot's evidenceCount is 0, and the recentEvidencePointers are empty. So, the correct decision here is \\\"not_found\\\" because there's no matching dialogue in the current batch items.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1295,\"completion_tokens\":285,\"total_tokens\":1580}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 19:42:02 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

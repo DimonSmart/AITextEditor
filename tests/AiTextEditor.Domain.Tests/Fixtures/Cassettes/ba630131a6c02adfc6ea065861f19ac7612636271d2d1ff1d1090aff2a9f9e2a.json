@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-420\",\"object\":\"chat.completion\",\"created\":1766486446,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The goal is to find the first dialogue between two named characters and report their names. The context is all paragraphs, and the maxEvidenceCount is null, so we need to find all such dialogues but stop if we reach the first one.\\n\\nFirst, I'll scan through the provided batch items. The first item is a paragraph discussing the Moon's surface and Znayka's theory. There's no dialogue here, just exposition. The second paragraph mentions astronomers, vulcanologists, and meteoritologists laughing at Znayka's theory. Still no dialogue. The third paragraph starts with \\\"Vulkanists said:\\\", but it's cut off. The paragraph doesn't complete the dialogue, so there's no second character mentioned here either.\\n\\nSince none of the provided paragraphs contain a complete dialogue between two named characters, the decision should be \\\"not_found\\\". There's no evidence to report here. The user might need to check subsequent batches for such a dialogue.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1076,\"completion_tokens\":217,\"total_tokens\":1293}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 10:40:46 GMT"
+    ]
+  }
+}

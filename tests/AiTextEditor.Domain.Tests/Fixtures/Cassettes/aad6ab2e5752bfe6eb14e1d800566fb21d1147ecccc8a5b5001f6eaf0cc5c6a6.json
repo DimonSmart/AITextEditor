@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-686\",\"object\":\"chat.completion\",\"created\":1766508847,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, the user is asking where Ponchik is first mentioned in the book. Let me think about how to approach this.\\n\\nFirst, I need to use the tools provided. The cursor-create_cursor function can help me create a filter to find mentions of Ponchik. Since the user wants the first mention, I should set the filter to look for \\\"Пончик\\\" and start from the beginning of the document. \\n\\nWait, the cursor needs a filter description that's stateless. So maybe the filter should be something like \\\"contains 'Пончик'\\\". Then, using the agent-run_agent with this cursor will scan the document in portions. Since it's the first mention, the first portion that includes this term should be the answer. \\n\\nI should create a cursor named \\\"search_cursor\\\" with the filter \\\"contains 'Пончик'\\\". Then run the agent with that cursor. If the first result is found, that's the answer. If not, continue until the cursor completes. Also, need to make sure to check all paragraphs, maybe using a broad filter as mentioned in the workflow. \\n\\nWait, the user might have multiple mentions, but the first one is needed. The agent will return the first occurrence in the scanned portions. So the steps are: create the cursor, run the agent, collect the evidence, and then report the first mention's location.\\n\",\"tool_calls\":[{\"id\":\"call_0d0kqvjn\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_cursor\",\"arguments\":\"{\\\"filterDescription\\\":\\\"contains 'Пончик'\\\",\\\"maxBytes\\\":1048576,\\\"maxElements\\\":1000,\\\"name\\\":\\\"search_cursor\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":935,\"completion_tokens\":339,\"total_tokens\":1274}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 16:54:06 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

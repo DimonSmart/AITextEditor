@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-868\",\"object\":\"chat.completion\",\"created\":1766513295,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"We need to find last mention of \\\"Фуксии\\\". The batch items have no \\\"Фуксии\\\" mention. So no new evidence. Decision: continue (since more batches). Also avoid adding evidence for snapshot pointers (we have none). Output JSON with decision continue and empty newEvidence array.\\n\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":769,\"completion_tokens\":82,\"total_tokens\":851}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:08:14 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

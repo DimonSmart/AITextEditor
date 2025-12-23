@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-846\",\"object\":\"chat.completion\",\"created\":1766517453,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The user wants me to find all mentions of 'Фуксии' in the current batch. First, I need to check each item's markdown content.\\n\\nLooking at the first item, pointer 78:1.1.1.p75. The markdown is about Звёздочкин being startled by an impolite address. No mention of Фуксии here.\\n\\nNext, pointer 79:1.1.1.p76. The text mentions Звёздочкин shouting about complaining and writing to the newspaper. Still no Фуксии.\\n\\nThird item, pointer 80:1.1.1.p77. The paragraph says he kept shouting but then saw the little guys dispersed and said something. Again, no Фуксии. \\n\\nNone of the provided excerpts contain 'Фуксии'. The snapshot's recent pointers are 8:1.1.1.p5 and 70:1.1.1.p67, which aren't in the current batch. Since there's no match in the current items, the decision should be 'not_found'. No new evidence to add.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":799,\"completion_tokens\":260,\"total_tokens\":1059}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 19:17:33 GMT"
+    ]
+  }
+}

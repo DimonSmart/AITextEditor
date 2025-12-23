@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-388\",\"object\":\"chat.completion\",\"created\":1766516187,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The user wants me to find all mentions of 'Фуксии' in the provided batch. First, I need to scan each item's markdown content carefully. \\n\\nLooking at the first item with pointer 45:1.1.1.p42, the markdown talks about the Moon's interior and a hollow space, but there's no mention of 'Фуксии' here. The second item, 46:1.1.1.p43, has a simple \\\"– Верно! – закричал кто-то.\\\" No 'Фуксии' there either. The third item, 47:1.1.1.p44, starts with \\\"И сейчас же со всех сторон раздались крики:\\\" Still nothing.\\n\\nWait, maybe I missed something. Let me check again. All the paragraphs are about the Moon's formation and some dialogue, but 'Фуксии' isn't appearing anywhere. The snapshot's recentEvidencePointers include \\\"8:1.1.1.p5\\\", which isn't in the current batch. Since the current batch has no mentions of 'Фуксии', the decision should be 'not_found'. Also, the evidenceCount was 1 before, and since there are no new matches here, the total remains 1. The user might need to check if the batch includes the correct documents or if there's a typo in the search term. But based on the given data, there's no evidence here.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":933,\"completion_tokens\":331,\"total_tokens\":1264}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:56:27 GMT"
+    ]
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-238\",\"object\":\"chat.completion\",\"created\":1766443911,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first dialogue between two named characters. The context mentions that all paragraphs with dialogue markers like quotes or dashes should be considered. The maxEvidenceCount is 1, so once we find one, we can stop.\\n\\nLooking at the provided batch items. The first item is a paragraph discussing lunar craters and two theories, but there's no dialogue here. The second paragraph mentions Znayka and Steklyashkin observing the Moon. Wait, the paragraph says they were observing the Moon through a telescope, and Znayka notices the surface resembling a pancake with bubbles. But is there any dialogue between them? The text describes their observation but doesn't include direct dialogue. \\n\\nWait, the task says \\\"dialogue between two named characters.\\\" The characters mentioned are Znayka and Steklyashkin. However, the paragraph doesn't show them talking; it's a narrative of their observation. So maybe there's no dialogue here either. \\n\\nBut the user's instruction says to look for paragraphs with dialogue markers. The current batch items don't have any quotes or dashes indicating dialogue. The first paragraph has no dialogue, and the second one is a narrative. Therefore, there's no evidence here. \\n\\nSince the snapshot's evidenceCount is 0 and the batch doesn't have any dialogue, the decision should be \\\"not_found.\\\" But wait, maybe I missed something. Let me check again. The second paragraph mentions Znayka and Steklyashkin together, but no dialogue. So no matches. Hence, the answer is \\\"not_found.\\\"\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1095,\"completion_tokens\":347,\"total_tokens\":1442}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 22:51:51 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

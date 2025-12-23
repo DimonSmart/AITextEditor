@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-331\",\"object\":\"chat.completion\",\"created\":1766513445,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"We need to scan current batch items for evidence matching task: \\\"Find the first occurrence where a paragraph starts with a name followed by colon (e.g., \\\\\\\"Anna: ...\\\\\\\") and the subsequent paragraph also starts with a different name followed by colon. Return both lines and the two names.\\\"\\n\\nWe must produce evidence for any paragraph that starts with a name and colon. The current batch items are Russian text, but none start with a name and colon. They start with \\\"Некоторые\\\" or \\\"– Ну так вот,\\\" etc. No name colon pattern.\\n\\nThus no new evidence. Decision: continue? Since no evidence found in this batch, but there are more batches. So decision = \\\"continue\\\". newEvidence empty.\\n\\nMake sure not to include evidence already in recentEvidencePointers. Not needed.\\n\\nReturn JSON accordingly.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1026,\"completion_tokens\":182,\"total_tokens\":1208}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:10:44 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

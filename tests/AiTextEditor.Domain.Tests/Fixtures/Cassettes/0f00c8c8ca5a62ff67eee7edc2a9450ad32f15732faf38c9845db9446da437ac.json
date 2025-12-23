@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-646\",\"object\":\"chat.completion\",\"created\":1766510902,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants the first mention of \\\"Пончик\\\" in the provided batch. First, I need to scan through each item's markdown content to find any occurrence of that exact word.\\n\\nLooking at the first item with pointer 69:1.1.1.p66, the markdown talks about stones on the Moon and a rock knocked off by a hammer. There's no mention of Пончик here. \\n\\nNext, the second item 70:1.1.1.p67 mentions a piece of the Moon being passed around, and the story about Znayka's trip. Still, no Пончик here. \\n\\nThe third item 71:1.1.1.p68 is a thank you from Professor Zvezdochkin. Again, no sign of Пончик. \\n\\nWait, the snapshot's recentEvidencePointers include \\\"6:1.1.1.p3\\\", but that's from a previous batch. The current batch doesn't have that pointer. The user's task is to find the first mention in the current batch. Since none of the items in the current batch mention Пончик, the decision should be \\\"not_found\\\". \\n\\nBut wait, maybe I missed something. Let me check again. All the markdown texts are in Russian. The word \\\"Пончик\\\" is a proper noun, possibly a character or a specific term. The current batch's items don't have that word. Therefore, there's no new evidence to add. The answer should be \\\"not_found\\\" because the current batch doesn't contain the first mention of Пончик.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1029,\"completion_tokens\":354,\"total_tokens\":1383}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 17:28:21 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

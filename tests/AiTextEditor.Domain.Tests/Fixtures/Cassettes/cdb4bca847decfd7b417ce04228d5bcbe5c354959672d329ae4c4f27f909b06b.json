@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-308\",\"object\":\"chat.completion\",\"created\":1766435264,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants the first mention of Фуксия and Селедочка. The snapshot shows that there's already 1 piece of evidence, with the pointer \\\"8:1.1.1.p5\\\". But the current batch has items with pointers 10:1.1.1.p7 and 11:1.1.1.p8.\\n\\nFirst, I need to check each item in the current batch. The first item is pointer 10:1.1.1.p7. The markdown there talks about lunar craters and two theories: volcanic and meteorite. There's no mention of Фуксия or Селедочка here. The second item is pointer 11:1.1.1.p8. This paragraph describes Znayka's theory about lunar craters comparing them to pancakes. Again, no mention of the two names.\\n\\nSince neither of these paragraphs in the current batch mention Фуксия or Селедочка, there's no new evidence to add. The decision should be \\\"not_found\\\" because the required mentions aren't present in the current batch. Also, the snapshot's recentEvidencePointers include \\\"8:1.1.1.p5\\\", which isn't in the current batch's items, so we don't need to consider it here. Therefore, the output should indicate that no new evidence was found.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1100,\"completion_tokens\":308,\"total_tokens\":1408}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 20:27:43 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-647\",\"object\":\"chat.completion\",\"created\":1766415295,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Впервые профессор Звёздочкин упоминается в разделе **3:1.1.1** с описанием его характера:  \\n\\u003e *«кипел от негодования»* — это указывает на его **вспыльчивый и раздражительный характер**, который проявляется в реакции на действия Знайки.  \\n\\nСемантический указатель: `3:1.1.1`\",\"reasoning\":\"Okay, let's see. The user is asking where Professor Zvezdokhinn is first mentioned, specifically the part where he \\\"kiplied from indignation,\\\" and a brief description of his character.\\n\\nFirst, I created a cursor to find any mention of \\\"Звёздочкин\\\" and got the first result pointing to the heading \\\"Как Знайка победил профессора Звёздочкина.\\\" But the user wants the part where he \\\"кипел от негодования,\\\" which means he was boiling with indignation. The initial cursor found the heading, but the actual description might be in the following paragraphs.\\n\\nSo, I need to create another cursor starting after that heading to look for the exact phrase \\\"кипел от негодования.\\\" The next step was to run the agent on that new cursor with a maxEvidenceCount of 1 to find the first occurrence. The response from the tool shows that the excerpt includes the phrase, and the reason matches the task. \\n\\nNow, I need to check if this excerpt provides the character description. The excerpt mentions that Zvezdokhinn was boiling with indignation, which describes his reaction. The user wants a brief character description, so this excerpt likely suffices. Since the agent found it and the decision is done, I can conclude here. The pointer is 3:1.1.1, and the excerpt includes the required information.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1376,\"completion_tokens\":404,\"total_tokens\":1780}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 14:54:55 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

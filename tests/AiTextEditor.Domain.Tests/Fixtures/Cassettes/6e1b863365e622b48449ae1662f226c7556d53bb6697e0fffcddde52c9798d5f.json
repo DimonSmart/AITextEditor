@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-795\",\"object\":\"chat.completion\",\"created\":1766416638,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The user wants to find a paragraph that describes the lunar crater visualization as an enormous circular field with an earth embankment along the edge. The context mentions looking for the terms 'визуализация лунного кратера', 'огромного круглого поля', and 'земляной вал по краю'. \\n\\nFirst, I need to scan through the provided batch items. The snapshot shows that there's already one piece of evidence, but the user is asking for another. The maxEvidenceCount is 2, so if I find one more, the decision should be \\\"done\\\".\\n\\nLooking at each paragraph:\\n\\n- The first few paragraphs discuss the Moon's cooling process, liquid substance, and formation of a cavity. They mention \\\"жидкость\\\" and \\\"пустое пространство\\\", but not the specific terms needed.\\n- Paragraphs 45-54 talk about the state of weightlessness and rocket travel. No relevant terms here.\\n- The later paragraphs are about audience reactions and Znayka's speech, which don't include the required keywords.\\n\\nWait, maybe I missed something. Let me check again. The terms required are 'визуализация лунного кратера' (visualization of the lunar crater), 'огромного круглого поля' (enormous circular field), and 'земляной вал по краю' (earth embankment along the edge). \\n\\nLooking through the markdown content again, none of the paragraphs seem to include all three terms. The closest is paragraph 45, which mentions \\\"земляной вал\\\" (earth embankment) but not the other terms. The other paragraphs discuss the Moon's structure but not the visualization as described. \\n\\nSince none of the current batch items contain all the required keywords, there's no new evidence to add. The existing evidence from the snapshot is already counted, and the max is 2. But since the current batch doesn't have any matching paragraphs, the decision would be \\\"not_found\\\" or \\\"continue\\\". However, the user might have more batches coming, so \\\"continue\\\" is appropriate here.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2290,\"completion_tokens\":455,\"total_tokens\":2745}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 15:17:18 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

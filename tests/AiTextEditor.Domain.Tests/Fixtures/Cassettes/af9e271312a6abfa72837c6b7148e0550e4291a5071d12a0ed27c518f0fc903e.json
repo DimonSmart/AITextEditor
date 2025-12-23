@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-909\",\"object\":\"chat.completion\",\"created\":1766414892,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Фуксия впервые упоминается в параграфе с указателем **8:1.1.1.p5**. В тексте говорится:  \\n\\u003e «...познакомился с учёными малышками Фуксией и Селёдочкой, которые в то время готовили свой второй полёт на Луну...».  \\n\\nЭто первое упоминание в документе.\",\"reasoning\":\"Okay, the user is asking where Фуксия is first mentioned in the document. Let me start by creating a cursor to search for the term \\\"Фуксия\\\" with a filter. The cursor is named \\\"search_cursor\\\" and the filter description is \\\"Contains 'Фуксия'\\\". I set the maxEvidenceCount to 1 to get the first occurrence.\\n\\nNext, I run the agent with the cursor to find the first mention. The response from the tool shows that the first mention is at Pointer 8:1.1.1.p5. The excerpt mentions that Знайка met Фуксия and Селёдочка in the Солнечном городе. The reason given is that Фуксия is mentioned as a young scientist there. \\n\\nSince the user wants the first mention, I should check if there's any earlier occurrence. The status says more items are available, but since we used maxEvidenceCount=1, the agent stopped after the first hit. However, maybe there's another mention in the same paragraph or an earlier pointer. Wait, the pointer 8:1.1.1.p5 might be the first occurrence. The user might need the exact location, so I should confirm if this is the first instance. Since the tool returned this as the first evidence item, it's safe to conclude this is the first mention. I'll present the pointer and the excerpt in Russian, making sure to include the semantic pointer as required.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1344,\"completion_tokens\":405,\"total_tokens\":1749}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 14:48:12 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-240\",\"object\":\"chat.completion\",\"created\":1766432994,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants the first mention of Znayka comparing the lunar surface to pancake and steam bubbles. Wait, the context mentions all paragraphs with 'Знайка' and comparisons to pancake or steam bubbles. But looking at the provided batch items, the pointers are 6:1.1.1.p3 and 7:1.1.1.p4. Let me check the markdown content.\\n\\nThe first paragraph (6:1.1.1.p3) talks about Ponchik and his clothes, no mention of Знайка or lunar surface. The second paragraph (7:1.1.1.p4) continues the story of Ponchik's clothes causing a smell, still no Знайка or lunar references. \\n\\nHmm, maybe there's a mistake. The task mentions Znayka, but the batch items don't have any mention of that name. The paragraphs are about Ponchik, not Znayka. Also, there's no mention of the lunar surface or pancake/steam bubbles. So, there's no evidence here. The decision should be 'not_found' since the required content isn't present in the current batch.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1292,\"completion_tokens\":268,\"total_tokens\":1560}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 19:49:53 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

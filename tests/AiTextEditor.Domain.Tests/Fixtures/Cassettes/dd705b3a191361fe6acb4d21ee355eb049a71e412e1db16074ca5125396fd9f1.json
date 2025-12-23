@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-473\",\"object\":\"chat.completion\",\"created\":1766414951,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first mention of 'визуализация лунного кратера' described as 'огромного круглого поля с земляным валом по краю'. \\n\\nFirst, I need to scan through the provided batch items. The snapshot shows evidenceCount is 0, so we need to find the first occurrence. The task specifies that the context must include the term 'визуализация лунного кратера' and describe it as 'огромного круглого поля с земляным валом по краю'.\\n\\nLooking at the batch items, all the pointers are in the first batch. Let's check each paragraph. The first paragraph (4:1.1.1.p1) talks about the city changes but doesn't mention the required terms. The second paragraph (5:1.1.1.p2) discusses the factory and clothing, still no match. The third paragraph (6:1.1.1.p3) is about Ponchik's clothes, not relevant. The fourth paragraph (7:1.1.1.p4) mentions the moth and the smell, but again, no match.\\n\\nWait, none of the paragraphs in the first batch seem to contain the exact terms. The user's query is about a lunar crater visualization described in a specific way. The provided text is about a city and Ponchik's clothes, which doesn't relate to a lunar crater. Therefore, there's no evidence in the current batch that matches the task's criteria. \\n\\nSince the evidenceCount is 0 and the first batch doesn't have any matches, the decision should be 'not_found'. The newEvidence array will be empty because there are no relevant pointers in the current batch. The user might need to check subsequent batches, but based on the given data, there's nothing to report here.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2082,\"completion_tokens\":407,\"total_tokens\":2489}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 14:49:11 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

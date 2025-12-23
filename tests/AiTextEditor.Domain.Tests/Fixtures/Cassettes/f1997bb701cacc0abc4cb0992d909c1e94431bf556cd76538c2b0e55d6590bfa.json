@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-392\",\"object\":\"chat.completion\",\"created\":1766415150,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's tackle this query. The user is asking about a specific instance where Znayka sarcastically comments on Professor's phrase about having to hang around the center of the Moon. First, I need to figure out how to locate this mention in the document.\\n\\nSince the user mentioned \\\"Знайка\\\" (Znayka) and \\\"профессора\\\" (professor), I should create a cursor to search for mentions of Znayka. The filter description should look for instances where Znayka is being sarcastic or critical, possibly using the phrase related to the Moon's center. \\n\\nI'll start by creating a cursor named \\\"search_cursor\\\" with a filterDescription that targets mentions of Znayka in a critical or sarcastic context. The maxEvidenceCount can be set to 1 to find the first occurrence. Then, using the agent-run_agent function, I'll process the cursor to find the relevant paragraph. \\n\\nIf the first result doesn't contain the exact phrase about the Moon's center, I might need to adjust the filter or check subsequent entries. However, since the user is asking for the first mention, I'll stick with the initial cursor setup and see if the agent's response includes the specific phrase. If not, I'll have to refine the search further, but I'll start with the initial steps.\\n\",\"tool_calls\":[{\"id\":\"call_uiftpg1x\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_cursor\",\"arguments\":\"{\\\"filterDescription\\\":\\\"Mentions of Znayka criticizing the professor with sarcasm about hanging in the Moon's center\\\",\\\"maxBytes\\\":1048576,\\\"name\\\":\\\"search_cursor\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1082,\"completion_tokens\":342,\"total_tokens\":1424}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 14:52:30 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

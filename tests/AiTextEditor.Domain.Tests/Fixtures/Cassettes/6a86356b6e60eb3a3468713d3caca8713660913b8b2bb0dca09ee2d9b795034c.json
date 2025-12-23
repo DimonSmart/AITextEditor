@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-758\",\"object\":\"chat.completion\",\"created\":1766415071,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The user wants the first mention of 'визуализация лунного кратера' described as 'огромного круглого поля с земляным валом по краю'. \\n\\nFirst, I need to scan through the provided batch items. Each item has a pointer and markdown content. The task specifies that the evidence must include both the term 'визуализация лунного кратера' and the description 'огромного круглого поля с земляным валом по краю'.\\n\\nLooking at the markdown texts:\\n\\n- The first few paragraphs talk about the Moon cooling from the surface, forming a spherical vessel with molten material inside. But I don't see the exact terms here.\\n- Paragraph 45 mentions \\\"огромного круглого поля с земляным валом по краю\\\" but doesn't mention 'визуализация лунного кратера'. \\n- Further down, paragraph 54 discusses weightlessness and the Moon's state, but again, no mention of the required terms.\\n- Wait, maybe I missed something. Let me check again. The term 'визуализация лунного кратера' isn't present in any of the provided texts. The closest is paragraph 45 describing the Moon's structure as a large round field with an earth wall, but without the specific term. \\n\\nSince the task requires both the term and the description, and none of the items in the current batch contain 'визуализация лунного кратера', there's no matching evidence here. The snapshot's evidenceCount is 0, and none of the recent pointers are in the current batch. Therefore, the decision should be 'not_found' as there's no relevant evidence in the current batch.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2300,\"completion_tokens\":389,\"total_tokens\":2689}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 14:51:11 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

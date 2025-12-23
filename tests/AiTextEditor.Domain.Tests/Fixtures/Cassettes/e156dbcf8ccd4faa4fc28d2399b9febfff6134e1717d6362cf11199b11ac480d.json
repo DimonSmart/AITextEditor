@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-677\",\"object\":\"chat.completion\",\"created\":1766417052,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, the user is asking for the last mention of \\\"Фуксии\\\" in the document. First, I need to create a cursor to search for mentions of Фуксии. The cursor should filter the document elements where the text contains \\\"Фуксии\\\". Since the user wants the last occurrence, I'll have to scan through the document and track the latest mention. However, the cursor function mentioned in the tools doesn't support counters or global queries, so I can't directly get the nth occurrence. \\n\\nI'll start by creating a cursor with the filterDescription set to \\\"contains 'Фуксии'\\\". Then, I'll use the agent to run through the document, specifying the task to find mentions of Фуксии. Since the cursor doesn't keep counters, I'll need to iterate through the document, collecting each mention as I go. The last mention found during this process will be the one the user is asking for. \\n\\nBut wait, the agent's run_agent function can stop after a certain number of evidence items. To get the last mention, I might need to first determine how many mentions there are, but since the cursor can't track that, I'll have to process each portion until the end. Alternatively, maybe the first mention found in the last portion is the last one. I'll proceed by creating the cursor and then running the agent to find all mentions, then selecting the last one from the results. However, the tools don't allow for knowing the total count, so I'll have to keep iterating until the cursor completes. \\n\\nAnother approach: create the cursor, then run the agent with a high maxEvidenceCount to capture all mentions, then pick the last one. But since the user wants the last mention, perhaps the first mention found in the last portion of the document is the answer. I'll proceed step by step, first creating the cursor, then running the agent to collect all mentions, and then selecting the last one from the collected evidence items.\\n\",\"tool_calls\":[{\"id\":\"call_ww66j5ud\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_cursor\",\"arguments\":\"{\\\"filterDescription\\\":\\\"contains 'Фуксии'\\\",\\\"maxBytes\\\":10485760,\\\"maxElements\\\":1000,\\\"name\\\":\\\"search_cursor\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1120,\"completion_tokens\":468,\"total_tokens\":1588}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 15:24:12 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

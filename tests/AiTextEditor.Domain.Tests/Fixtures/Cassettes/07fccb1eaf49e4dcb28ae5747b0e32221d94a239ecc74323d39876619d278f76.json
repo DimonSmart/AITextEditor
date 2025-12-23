@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-881\",\"object\":\"chat.completion\",\"created\":1766484628,\"model\":\"deepseek-v3.1:671b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"decision\\\": \\\"continue\\\",\\n  \\\"newEvidence\\\": [\\n    {\\n      \\\"pointer\\\": \\\"66:1.1.1.p63\\\",\\n      \\\"excerpt\\\": \\\"– А вы привезли что-нибудь с Луны?\\\",\\n      \\\"reason\\\": \\\"This line is a direct question from a speaker, indicating the start of a dialogue exchange.\\\"\\n    },\\n    {\\n      \\\"pointer\\\": \\\"67:1.1.1.p64\\\",\\n      \\\"excerpt\\\": \\\"– Я привёз кусочек самой Луны.\\\",\\n      \\\"reason\\\": \\\"This line is a direct response from a speaker, continuing the dialogue exchange.\\\"\\n    },\\n    {\\n      \\\"pointer\\\": \\\"68:1.1.1.p65\\\",\\n      \\\"excerpt\\\": \\\"Знайка достал из кармана небольшой камешек голубовато-серого цвета и сказал:\\\",\\n      \\\"reason\\\": \\\"This line introduces the character Знайка as the speaker of the dialogue.\\\"\\n    }\\n  ]\\n}\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":851,\"completion_tokens\":213,\"total_tokens\":1064}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 10:10:27 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-679\",\"object\":\"chat.completion\",\"created\":1766520898,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Второе упоминание профессора Звёздочкина (исключая заголовки) находится на следующем указателе:\\n\\n**Pointer: 25:1.1.1.p22**  \\n*Excerpt:* \\\"Профессор Звёздочкин и предложил академии астрономических наук устроить обсуждение Знайкиной книги и разобрать её, как он выразился, по косточкам, с тем чтобы никому больше не повадно было такие книги писать.\\\"\\n\\nЭто второй упоминательный пункт в тексте, соответствующий запросу.\",\"reasoning\":\"Okay, the user is asking for the second mention of Professor Zvezdokhin in the book, excluding headers. Let me look at the evidence provided.\\n\\nThe first evidence is at pointer 24:1.1.1.p21, where he's mentioned as a member of the academy and reacting to Znaykin's book. The second evidence is at 25:1.1.1.p22, where he suggests organizing a discussion on the book. The third is at 26:1.1.1.p23, where he steps up to the tribune. \\n\\nWait, the user wants the second occurrence. So the first mention is p21, the second is p22. But the user said \\\"исключая заголовки\\\" (excluding headers), which the filter already handles. The answer should be the second pointer, which is p22. But let me confirm that there are no other mentions between p21 and p22. Since the pointers are in order, p21 is first, p22 is second. So the second mention is at 25:1.1.1.p22. The answer should be that pointer.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1441,\"completion_tokens\":403,\"total_tokens\":1844}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 20:14:58 GMT"
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-972\",\"object\":\"chat.completion\",\"created\":1766513261,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"We need to output JSON with decision and newEvidence.\\n\\nTask: Find last mention of \\\"Фуксии\\\". We have snapshot evidenceCount=1, recentEvidencePointers=[\\\"8:1.1.1.p5\\\"]. That means previous batches already gave a mention at pointer 8:1.1.1.p5. Now we need to scan current batch items for mentions of \\\"Фуксии\\\". The batch items are pointers 10:1.1.1.p7 and 11:1.1.1.p8. We need to see if those contain \\\"Фуксии\\\". Reading the markdown: first paragraph about lunar craters, no \\\"Фуксии\\\". Second paragraph about Znaika, no. So no mentions.\\n\\nThus newEvidence is empty. Decision? Since no new evidence and hasMoreBatches true, we likely continue scanning later batches. decision = \\\"continue\\\". If no evidence found but may be later, continue.\\n\\nOutput JSON: decision continue, newEvidence empty list.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1060,\"completion_tokens\":222,\"total_tokens\":1282}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:07:40 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

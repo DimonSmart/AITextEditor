@@ -30,15 +30,17 @@ public sealed class EditorPlugin(
     }
 
     [KernelFunction("create_targets")]
-    public TargetSet CreateTargets(string label, params string[] pointers)
+    public TargetSet CreateTargets(string label, [Description("Comma-separated list of pointers")] string pointers)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(label);
-        ArgumentNullException.ThrowIfNull(pointers);
+        ArgumentException.ThrowIfNullOrWhiteSpace(pointers);
 
-        logger.LogInformation("CreateTargets: label={Label}, pointers={Pointers}", label, string.Join(",", pointers));
+        var pointerList = pointers.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+        logger.LogInformation("CreateTargets: label={Label}, pointers={Pointers}", label, pointers);
         var items = server.GetItems();
         var indices = new List<int>();
-        foreach (var pointer in pointers)
+        foreach (var pointer in pointerList)
         {
             var match = items.FirstOrDefault(item => string.Equals(item.Pointer.ToCompactString(), pointer, StringComparison.Ordinal));
             if (match != null)

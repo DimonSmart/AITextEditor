@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-114\",\"object\":\"chat.completion\",\"created\":1766484486,\"model\":\"deepseek-v3.1:671b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Теперь запущу агента для поиска диалогов в документе:\",\"tool_calls\":[{\"id\":\"call_z30pq46p\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"agent-run_agent\",\"arguments\":\"{\\\"cursorName\\\":\\\"search_cursor\\\",\\\"taskDescription\\\":\\\"Find the first dialogue between two named characters. Look for patterns like 'Name: Text', 'Name said, \\\\\\\"Text\\\\\\\"', or paragraphs with dashes where different speakers are implied. Report the names of the characters involved in the first dialogue found.\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1047,\"completion_tokens\":89,\"total_tokens\":1136}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 10:08:05 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

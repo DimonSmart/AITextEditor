@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-283\",\"object\":\"chat.completion\",\"created\":1766488657,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's see. The user wants to find the first dialogue between two named characters and report their names. The previous attempts had some issues. First, the cursor was created with \\\"All paragraphs\\\" filter, and the agent ran but didn't find anything. Then there was an error, maybe due to the agent being canceled. Then a new cursor was created with a more specific filter: \\\"Paragraphs containing named characters in dialogue format\\\". The response was \\\"dialogue_cursor_v2\\\", which I assume is a success.\\n\\nNow, I need to run the agent again with this new cursor. The task is still to find the first dialogue between two named characters. Since the cursor is now more targeted, the agent should process the next portion of the document. I'll call \\\"agent-run_agent\\\" with the new cursor name and the same task description. If it finds the dialogue, it will return the names. If not, we might need to continue scanning. But since the user wants the first occurrence, once found, that's the answer. Let's proceed with the tool call.\\n\",\"tool_calls\":[{\"id\":\"call_hwj7mvya\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"agent-run_agent\",\"arguments\":\"{\\\"cursorName\\\":\\\"dialogue_cursor_v2\\\",\\\"taskDescription\\\":\\\"Find the first dialogue between two named characters and report their names\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1226,\"completion_tokens\":264,\"total_tokens\":1490}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 11:17:37 GMT"
+    ]
+  }
+}

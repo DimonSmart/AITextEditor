@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-963\",\"object\":\"chat.completion\",\"created\":1766434058,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, the user is asking where Fuchs is first mentioned in the text. Let me start by creating a cursor to search for mentions of Fuchs. Since the name might appear in different paragraphs, I need to use a broad filter. I'll set the filter description to \\\"All paragraphs\\\" to ensure I don't miss any instances. The cursor name will be \\\"search_cursor\\\". Once the cursor is created, I'll run the agent to find the first mention. I'll check the response; if it's not found, I'll need to continue scanning the next portions of the document. I'll keep calling run_agent with the same cursor until I find the first occurrence or determine it's not present.\\n\",\"tool_calls\":[{\"id\":\"call_jpkkd2ec\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_cursor\",\"arguments\":\"{\\\"filterDescription\\\":\\\"All paragraphs\\\",\\\"maxBytes\\\":1048576,\\\"maxElements\\\":1000,\\\"name\\\":\\\"search_cursor\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1267,\"completion_tokens\":199,\"total_tokens\":1466}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 20:07:38 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-952\",\"object\":\"chat.completion\",\"created\":1766491261,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's see. The user wants the first dialogue between two named characters and their names. I created a cursor to find paragraphs with named characters. The first run didn't find anything, then an error occurred. I tried again with a different filter, but it still didn't find. Then, the third attempt with \\\"Paragraphs containing at least two named characters\\\" gave an excerpt mentioning Знайка and Стекляшкин. The reason says they observed the Moon together, implying a dialogue. But the status says more items are available. I need to check if there's an actual dialogue in the next batch. Since the current evidence only mentions them observing but not speaking, maybe the next batch has the actual dialogue. I should continue running the agent until the cursor completes or finds the dialogue.\\n\",\"tool_calls\":[{\"id\":\"call_kkcgrfqh\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"agent-run_agent\",\"arguments\":\"{\\\"cursorName\\\":\\\"dialogue_cursor_v3\\\",\\\"taskDescription\\\":\\\"Find the first dialogue between two named characters and report their names\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1618,\"completion_tokens\":208,\"total_tokens\":1826}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 12:01:01 GMT"
+    ]
+  }
+}

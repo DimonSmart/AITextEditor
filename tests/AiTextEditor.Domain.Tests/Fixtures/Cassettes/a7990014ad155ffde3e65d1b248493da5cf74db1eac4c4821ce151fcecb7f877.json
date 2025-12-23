@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-532\",\"object\":\"chat.completion\",\"created\":1766433668,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's see. The user is asking for the last mention of \\\"Фуксии\\\" in the document. I created a cursor to find all paragraphs containing that name and ran the agent to gather evidence. The first response gave me one excerpt where Фуксии is mentioned as a young scientist participating in a lunar flight. Then, when I tried again with a higher maxEvidenceCount, it said no new evidence was found but there are more items available.\\n\\nHmm, maybe the cursor hasn't processed all the document yet. The agent might need to scan more portions. But the user wants the last mention, so perhaps I should continue running the agent until the cursor completes or until all instances are found. Since the first hit was in the first batch, the next ones might be in subsequent portions. I should keep calling run_agent with the same cursor name to check the next batches. If after a few more runs there's no new evidence, then the last mention would be the one found. Alternatively, if the cursor completes and there's no more data, then that's the last one. Let me try running the agent again to check if there's another mention in the next portion.\\n\",\"tool_calls\":[{\"id\":\"call_gnazicdu\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"agent-run_agent\",\"arguments\":\"{\\\"cursorName\\\":\\\"search_cursor\\\",\\\"maxEvidenceCount\\\":10,\\\"taskDescription\\\":\\\"Find all mentions of Фуксии\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1876,\"completion_tokens\":286,\"total_tokens\":2162}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 20:01:08 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

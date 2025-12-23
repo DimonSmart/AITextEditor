@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-224\",\"object\":\"chat.completion\",\"created\":1766442491,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let me try to figure out what's going on here. The user wants the first dialogue between two named characters. I created a cursor to find paragraphs with dialogue markers, then ran the agent to find the first occurrence. The first run returned \\\"not_found\\\" but said there are more items. I tried again, but got an error about the function invocation being canceled.\\n\\nHmm, maybe the cursor isn't set up correctly. The filter description was \\\"All paragraphs with dialogue markers,\\\" which should include direct speech. But maybe the document's dialogue isn't marked with quotes or dashes? Or perhaps the cursor is reading the document in chunks, and the first dialogue is in a later chunk. The error might be because the agent couldn't process the next batch properly.\\n\\nWait, the user mentioned using the editor functions. Maybe I should check the document's content first. Let me try reading the document to see if there's any dialogue. If the document is empty or doesn't have dialogue markers, the cursor wouldn't find anything. Alternatively, maybe the cursor name was already used, causing a conflict. Let me check if the cursor was created successfully. The first tool call created \\\"dialogue_cursor\\\" with the filter. If that's okay, then maybe the agent just needs more time to process. Let me try running the agent again, maybe without the maxEvidenceCount to see if it finds something. Or perhaps the first dialogue is in a paragraph that wasn't included in the initial batch. I'll have to keep running the agent until it finds the dialogue or marks the cursor as complete.\\n\",\"tool_calls\":[{\"id\":\"call_6cjl96px\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"agent-run_agent\",\"arguments\":\"{\\\"cursorName\\\":\\\"dialogue_cursor\\\",\\\"maxEvidenceCount\\\":1,\\\"taskDescription\\\":\\\"Find the first dialogue between two named characters\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1503,\"completion_tokens\":365,\"total_tokens\":1868}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 22:28:11 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

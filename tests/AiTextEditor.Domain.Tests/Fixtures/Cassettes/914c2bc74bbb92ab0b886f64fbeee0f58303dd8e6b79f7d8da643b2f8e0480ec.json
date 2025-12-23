@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-813\",\"object\":\"chat.completion\",\"created\":1766426405,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The goal is to find the first dialogue between two named characters. The context specifies that lines must have at least two named characters in a dialogue format. The maxEvidenceCount is 1, so we need to find the first occurrence.\\n\\nLooking at the provided batch items, all the entries are paragraphs. The first item (18:1.1.1.p15) is a single paragraph without any dialogue. The second item (19:1.1.1.p16) has a dialogue where Знайка responds to someone, but it's not clear if there's another named character besides Знайка. The third item (20:1.1.1.p17) mentions Знайка again and refers to \\\"они\\\" (they), which could be other characters, but the dialogue here is more of a reaction than a direct dialogue between two named characters.\\n\\nWait, in the second paragraph, Знайка is speaking, and the response is from \\\"они\\\" (the volcanologists and meteoritists). But the task requires two named characters. The problem is whether \\\"они\\\" refers to specific named characters. The text mentions \\\"вулканисты и метеоритчики\\\" (volcanologists and meteoritists) as the ones who dismiss Знайка. However, these are groups, not individual named characters. The task specifies \\\"two named characters,\\\" so unless there are specific names given for these groups, they might not count. \\n\\nThe third paragraph mentions \\\"они\\\" again, but again, it's a group. The first dialogue between two named characters might not be present here. Since the snapshot evidenceCount is 0, and the max is 1, but no valid dialogues between two named characters are found, the decision would be \\\"not_found\\\". However, if the task allows group names as characters, then the second paragraph's dialogue between Знайка and \\\"они\\\" could be considered. But the task says \\\"two named characters,\\\" implying individual names. Since the provided text doesn't have two named individuals in a dialogue, the answer is \\\"not_found\\\".\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":895,\"completion_tokens\":466,\"total_tokens\":1361}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 18:00:05 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-549\",\"object\":\"chat.completion\",\"created\":1766417717,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's tackle this query. The user is asking about Фуксия and Селедочка, specifically who they are and where they are first mentioned. First, I need to figure out how to approach this using the available tools.\\n\\nThe user mentioned using the cursor-create_cursor function to search for mentions. The previous assistant created a cursor named \\\"search_cursor\\\" with a filter for mentions of those names. Now, the response from the tool indicates that the cursor was created successfully. \\n\\nNext, I should use the agent-run_agent function to process the cursor and find the first mentions. The task description should be to locate the first occurrence of Фуксия and Селедочка. Since the user wants the first mention, I'll set maxEvidenceCount to 1 to stop after the first result. \\n\\nWait, but the cursor might return multiple items. I need to check each evidence item to see if it contains both names or just one. The user is asking about both, so the first mention that includes both would be the answer. If the first item only mentions one, I might need to continue, but the maxEvidenceCount is set to 1. Hmm, maybe the first item could have both. Let me proceed with running the agent with maxEvidenceCount=1 to get the first possible mention. If it's not there, the user might need to check further, but according to the tools, if not_found and hasMore is true, we continue. However, the user's question is about the first mention, so the first evidence item that includes both names would be the answer. Let's execute the agent run with the cursor and task to find the first mention.\\n\",\"tool_calls\":[{\"id\":\"call_6rze9kwm\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"agent-run_agent\",\"arguments\":\"{\\\"cursorName\\\":\\\"search_cursor\\\",\\\"maxEvidenceCount\\\":1,\\\"taskDescription\\\":\\\"Find the first mention of Фуксия and Селедочка\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1191,\"completion_tokens\":398,\"total_tokens\":1589}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 15:35:17 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-670\",\"object\":\"chat.completion\",\"created\":1766431136,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first dialogue between two named characters. The context mentions lines with dialogue markers or character names. The maxEvidenceCount is 1, so we need to find the first occurrence.\\n\\nLooking at the provided batch items, both are paragraphs. The first paragraph talks about Ponchik and his actions, but there's no dialogue here. The second paragraph mentions Ponchik and others, but again, no direct dialogue. Wait, maybe I missed something. Let me check again.\\n\\nWait, the first paragraph has \\\"Пончик увидел...\\\" which is a narrative, not dialogue. The second paragraph has \\\"Пончик и сам пропах...\\\" still narrative. There's no direct dialogue between two characters here. The task says \\\"первый диалог между двумя названными персонажами,\\\" but in the given text, there's no dialogue. So the answer would be \\\"not_found\\\" since there's no evidence in the current batch. The snapshot has evidenceCount 0, and the batch items don't have any dialogue. Therefore, the decision is \\\"not_found\\\".\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1281,\"completion_tokens\":251,\"total_tokens\":1532}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 19:18:56 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

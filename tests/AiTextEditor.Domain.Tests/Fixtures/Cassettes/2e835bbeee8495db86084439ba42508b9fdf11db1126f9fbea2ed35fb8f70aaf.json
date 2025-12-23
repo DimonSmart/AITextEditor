@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-668\",\"object\":\"chat.completion\",\"created\":1766432613,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first dialog between two named characters. The context mentions lines with exactly two character names followed by dialogue markers. The maxEvidenceCount is 1, so we need to find the first occurrence.\\n\\nLooking at the provided batch items, both are paragraphs. The first paragraph talks about Ponchik and others, but there's no dialogue here. The second paragraph mentions Ponchik and others again, but still no dialogue. Wait, maybe I'm missing something. Let me check again.\\n\\nWait, the task says \\\"Lines with exactly two character names followed by dialogue markers.\\\" So the evidence should be a line where two names are followed by dialogue. But in the given batch items, the paragraphs don't have any such lines. They're all narrative descriptions. There's no dialogue section here. So maybe there's no evidence in this batch. The decision would be \\\"not_found\\\" since the required pattern isn't present. Also, the snapshot's evidenceCount is 0, and since there's no new evidence here, the decision remains not_found.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1284,\"completion_tokens\":238,\"total_tokens\":1522}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 19:43:33 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-784\",\"object\":\"chat.completion\",\"created\":1766435616,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"decision\\\": \\\"continue\\\",\\n  \\\"newEvidence\\\": [\\n    {\\n      \\\"pointer\\\": \\\"3:1.1.1\\\",\\n      \\\"excerpt\\\": \\\"### Как Знайка победил профессора Звёздочкина\\\",\\n      \\\"reason\\\": \\\"Содержит упоминание профессора Звёздочкина в заголовке\\\"\\n    }\\n  ]\\n}\",\"reasoning\":\"Okay, let's tackle this task. The user wants the first two mentions of \\\"профессора Звёздочкина\\\" from the provided batch. The snapshot shows evidenceCount is 0, and there are no recent pointers. The batch has three items, all headings.\\n\\nFirst, I need to check each item's markdown content. The first item is a heading with \\\"Часть I\\\" – no mention. The second is \\\"Глава первая\\\" – also no match. The third heading is \\\"Как Знайка победил профессора Звёздочкина\\\". Here, \\\"профессора Звёздочкина\\\" is present. Since it's the only occurrence in the batch, this counts as one match. But the task asks for two. However, the batch might not have enough. Wait, the user mentioned \\\"first two mentions,\\\" but in this batch, there's only one. Since the snapshot's evidenceCount is 0, adding this one would make it 1. But the maxEvidenceCount is 2. Since there's only one in this batch, the decision would be \\\"continue\\\" because we need two. But the user's instruction says to output exactly one JSON. So, the newEvidence includes this one, and decision is \\\"continue\\\" because we need more. But wait, the task says \\\"first two,\\\" but the batch only has one. So the answer should include this one and set decision to \\\"continue\\\" since there's no second mention here. But maybe the user expects that even if only one is found, it's part of the process. So the correct output is to include this one as newEvidence and decide to continue.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":667,\"completion_tokens\":436,\"total_tokens\":1103}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 20:33:36 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

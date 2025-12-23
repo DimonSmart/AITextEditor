@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-655\",\"object\":\"chat.completion\",\"created\":1766484497,\"model\":\"deepseek-v3.1:671b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"decision\\\": \\\"continue\\\",\\n  \\\"newEvidence\\\": []\\n}\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1158,\"completion_tokens\":16,\"total_tokens\":1174}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 10:08:16 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

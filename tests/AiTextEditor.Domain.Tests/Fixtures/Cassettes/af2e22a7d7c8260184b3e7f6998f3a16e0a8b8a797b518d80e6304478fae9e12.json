@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-817\",\"object\":\"chat.completion\",\"created\":1766435432,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first mention of \\\"профессор Звёздочкин\\\" with \\\"кипел от негодования\\\". The context is all paragraphs mentioning either of those terms. \\n\\nFirst, I need to scan the current batch's items. The first item has pointer 6:1.1.1.p3. The markdown there talks about Пончик and his troubles with clothes, but there's no mention of профессор Звёздочкин or кипел от негодования. The second item is pointer 7:1.1.1.p4, which also discusses Пончик's situation with moths and the smell. Again, no relevant terms here.\\n\\nSince neither paragraph contains the required keywords, there's no evidence to report. The snapshot's evidenceCount is 0, and the newEvidence array would be empty. The decision should be \\\"not_found\\\" because the terms aren't present in the current batch. I need to make sure not to include any pointers from recentEvidencePointers since there are none. Also, the output must be a JSON object with the decision and newEvidence array. No need to mention anything else, just the structure as specified.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1301,\"completion_tokens\":271,\"total_tokens\":1572}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 20:30:32 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

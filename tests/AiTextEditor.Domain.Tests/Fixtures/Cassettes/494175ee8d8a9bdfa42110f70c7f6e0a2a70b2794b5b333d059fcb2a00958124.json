@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-519\",\"object\":\"chat.completion\",\"created\":1766510476,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of \\\"Пончик\\\" in the provided batch. The user mentioned that the context contains 'Пончик', so I need to look through the items in the batch to see where that term appears.\\n\\nFirst, I'll check each item's markdown content. The first item has a pointer 42:1.1.1.p39, and the markdown is about Звёздочкин talking about liquid on the Moon. No mention of Пончик there. The second item, pointer 43:1.1.1.p40, is Знайка explaining about cooling liquid and volume decrease. Still no Пончик. The third item, pointer 44:1.1.1.p41, is профессор being annoyed. \\n\\nWait, none of these paragraphs mention Пончик. The snapshot's recentEvidencePointers include \\\"6:1.1.1.p3\\\", which was from a previous batch. Since the current batch doesn't have any mentions of Пончик, the decision should be \\\"not_found\\\". Also, the user's task says to use only the current batch, so even if previous batches had evidence, we can't consider them here. Therefore, there's no new evidence to add, and the decision is not_found.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":840,\"completion_tokens\":295,\"total_tokens\":1135}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 17:21:15 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

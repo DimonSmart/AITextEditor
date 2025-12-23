@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-81\",\"object\":\"chat.completion\",\"created\":1766432200,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let me try to figure out what's going on here. The user wants the first dialogue between two named characters. I created a cursor to find lines with dialogue markers or character names. Then I ran the agent to find the first occurrence. The first response said \\\"not_found\\\" but there were more items. I tried again, but got an error about the function invocation being canceled.\\n\\nHmm, maybe the cursor isn't set up correctly. The filter description might not be capturing the dialogue lines properly. Alternatively, the agent might be having trouble processing the cursor. Let me check the cursor creation again. The filter was \\\"Lines with dialogue markers or character names,\\\" which should work. But maybe the document's structure is different. \\n\\nWait, the error message says the function was canceled. That's unexpected. Maybe there's an issue with the cursor's name or the parameters. Let me try creating a new cursor with a different filter. Perhaps using a broader filter, like \\\"Lines containing character names followed by dialogue markers,\\\" to ensure it captures more relevant lines. Then run the agent again. If that doesn't work, maybe the document doesn't have the required dialogue, and I should inform the user.\\n\",\"tool_calls\":[{\"id\":\"call_u466puf2\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_cursor\",\"arguments\":\"{\\\"filterDescription\\\":\\\"Lines containing character names followed by dialogue markers\\\",\\\"maxBytes\\\":1048576,\\\"maxElements\\\":500,\\\"name\\\":\\\"dialogue_cursor_v2\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1583,\"completion_tokens\":301,\"total_tokens\":1884}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 19:36:39 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

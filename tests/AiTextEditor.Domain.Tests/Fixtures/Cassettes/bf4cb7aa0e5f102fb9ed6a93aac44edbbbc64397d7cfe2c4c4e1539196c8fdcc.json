@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-141\",\"object\":\"chat.completion\",\"created\":1766433284,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Впервые Пончик упоминается в параграфе **6:1.1.1.p3**.  \\n**Семантический указатель:** 6:1.1.1.p3  \\n**Экспертиза:** В тексте указано, что \\\"единственным, кто пострадал на этом деле, оказался Пончик\\\".\",\"reasoning\":\"Okay, let's see. The user asked where Ponchik is first mentioned. I created a cursor to find all paragraphs with 'Пончик' and ran the agent to get the first occurrence. The response came back with a pointer to paragraph 6:1.1.1.p3. The excerpt shows that Ponchik is mentioned as the only one who suffered from the incident. The reason given is that he was the one who lost out. The status says there are more items available, but since the user asked for the first mention, this should be the correct location. I need to make sure to include the pointer label in the answer and confirm it's in Russian. Also, check if there's any other mention in the same paragraph, but it seems this is the first occurrence. Alright, time to present the answer with the pointer.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1726,\"completion_tokens\":265,\"total_tokens\":1991}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 19:54:44 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

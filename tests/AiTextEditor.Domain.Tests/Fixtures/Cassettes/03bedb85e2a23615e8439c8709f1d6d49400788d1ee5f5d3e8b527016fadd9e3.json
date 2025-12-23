@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-106\",\"object\":\"chat.completion\",\"created\":1766412586,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"decision\\\": \\\"done\\\",\\n  \\\"newEvidence\\\": [\\n    {\\n      \\\"pointer\\\": \\\"24:1.1.1.p21\\\",\\n      \\\"excerpt\\\": \\\"Эта Знайкина книжка наделала много шума. Все коротышки с увлечением читали её. Многие учёные хвалили эту книжку за то, что она интересно написана, но всё же высказывали недовольство тем, что она научно не обоснована. А действительный член академии астрономических наук профессор Звёздочкин, которому тоже случилось прочитать Знайкину книжку, просто кипел от негодования и говорил, что книга эта – вовсе не книга, а какая-то, как он выразился, чёртова чепуха. Этот профессор Звёздочкин был не то чтобы какой-нибудь очень сердитый субъект. Нет, он был довольно добрый коротышка, но очень, как бы это сказать, требовательный, непримиримый. Во всяком деле он ценил больше всего точность, порядок и терпеть не мог никаких фантазий, то есть выдумок.\\\",\\n      \\\"reason\\\": \\\"Содержит первое упоминание 'профессор Звёздочкин' в тексте, соответствующее условию задачи.\\\"\\n    }\\n  ]\\n}\",\"reasoning\":\"Okay, let's tackle this task. The user wants the first mention of 'профессор Звёздочкин' after the heading. The snapshot shows evidenceCount is 0, so we need to find the first occurrence in the current batch.\\n\\nLooking at the items, the first paragraph (24:1.1.1.p21) mentions \\\"профессор Звёздочкин\\\" in the middle. Since the task says \\\"after the heading,\\\" I need to check if this paragraph is after any heading. The items don't have headings listed, but the first item is a paragraph. Maybe the heading is the initial part before the first paragraph. Assuming the first paragraph is after the heading, this would be the first mention. \\n\\nThe next paragraphs (25:1.1.1.p22 and others) also mention him, but since we need the first one, the earliest occurrence is in 24:1.1.1.p21. The excerpt there is the entire paragraph. The reason is that it directly mentions the professor's name. Since evidenceCount is 0, adding this as newEvidence makes sense. The decision is 'continue' because maxEvidenceCount is 1, and we've found one. But wait, the task says \\\"after the heading,\\\" so maybe the first paragraph is actually the first content after the heading. So the correct pointer is 24:1.1.1.p21. The excerpt is the entire markdown text of that paragraph. The reason is that it's the first mention of the professor's name in the batch. So the JSON should have this as newEvidence with decision 'done' since maxEvidenceCount is 1 and we found one. Wait, the maxEvidenceCount is 1, so after adding this, the total would be 1, so decision should be 'done'. But the user's example might have different rules. Let me double-check. The task's maxEvidenceCount is 1, and since snapshot.evidenceCount is 0, adding one makes it 1, so decision is 'done'. But the user's example might require 'continue' if there are more batches. However, the input has hasMoreBatches as true, but the task might just need the first occurrence. So the correct output is to include the first mention in the batch, set decision to 'done' because maxEvidenceCount is 1. So the JSON should have newEvidence with the first occurrence and decision 'done'.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2410,\"completion_tokens\":864,\"total_tokens\":3274}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 14:09:46 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

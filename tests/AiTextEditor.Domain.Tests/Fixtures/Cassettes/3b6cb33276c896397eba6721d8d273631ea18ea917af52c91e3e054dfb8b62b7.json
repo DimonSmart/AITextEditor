@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-565\",\"object\":\"chat.completion\",\"created\":1766432264,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first dialog between two named characters. The context mentions lines with character names followed by dialogue markers. So, I need to scan through the provided batch items to find any such dialogues.\\n\\nLooking at the first paragraph (pointer 8:1.1.1.p5), there's a mention of Знайка meeting Фуксией and Селёдочкой. But the text describes their interactions as actions, not direct dialogue. The characters are mentioned in a narrative form, so no dialogue markers here.\\n\\nMoving to the second paragraph (pointer 9:1.1.1.p6), the text talks about Знайка's return and his stories. Again, it's a narrative without direct dialogue between characters. The characters are mentioned in the context of actions and observations, not in a dialogue format.\\n\\nSince the task specifies that the evidence must be from the current batch and the snapshot has zero evidence, I need to check if there's any dialogue in the current items. However, both paragraphs are narrative descriptions without any direct dialogue between characters. Therefore, there's no evidence to report here. The decision would be \\\"not_found\\\" as there are no dialogues meeting the criteria in the current batch.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1313,\"completion_tokens\":276,\"total_tokens\":1589}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 19:37:44 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

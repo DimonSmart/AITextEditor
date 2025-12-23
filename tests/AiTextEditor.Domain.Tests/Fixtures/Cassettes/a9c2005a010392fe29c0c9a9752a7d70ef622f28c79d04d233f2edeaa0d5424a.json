@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-655\",\"object\":\"chat.completion\",\"created\":1766513253,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"We have a task: \\\"Find last mention of Фуксии\\\". Context: \\\"paragraph contains Фуксии\\\". So we need to scan current batch items for the word \\\"Фуксии\\\". We have two paragraphs. Let's check:\\n\\nParagraph 1 (pointer 4:1.1.1.p1) text: does it contain \\\"Фуксии\\\"? I read: It mentions \\\"цветочный город\\\", but no \\\"Фуксии\\\". No.\\n\\nParagraph 2 (pointer 5:1.1.1.p2): also no mention.\\n\\nThus no evidence in this batch. Should we output decision \\\"continue\\\"? Since hasMoreBatches true and we haven't found any evidence. Snapshot evidenceCount 0. No maxEvidenceCount defined. So decision continue.\\n\\nNo newEvidence array empty.\\n\\nThus output JSON accordingly.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1185,\"completion_tokens\":185,\"total_tokens\":1370}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:07:32 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

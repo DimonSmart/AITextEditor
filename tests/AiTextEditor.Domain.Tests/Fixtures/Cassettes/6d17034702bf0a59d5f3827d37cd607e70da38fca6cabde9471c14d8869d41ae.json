@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-534\",\"object\":\"chat.completion\",\"created\":1766511603,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The user wants me to find all mentions of 'профессора Звёздочкина' in the current batch, excluding headers. The task says to look in the context provided, which includes paragraphs and not headers. \\n\\nFirst, I need to check each item in the batch. The first item has a pointer 6:1.1.1.p3, which is a paragraph. The markdown there talks about Пончик and his clothes, but I don't see any mention of 'профессора Звёздочкина' here. The second item is pointer 7:1.1.1.p4, another paragraph. This one also discusses Пончик's situation with moths and the smell, but again, no trace of the professor's name.\\n\\nSince neither of the paragraphs in the current batch mention 'профессора Звёздочкина', there's no evidence to extract. The snapshot shows evidenceCount is 0, and the recentEvidencePointers are empty. The user's task doesn't specify a maxEvidenceCount, so even if there were matches, we'd need to report them. But in this case, there are none. Therefore, the decision should be 'not_found' because the required mentions aren't present in the current batch items.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1289,\"completion_tokens\":285,\"total_tokens\":1574}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 17:40:02 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

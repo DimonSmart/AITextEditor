@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-995\",\"object\":\"chat.completion\",\"created\":1766417393,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, the user is asking where Фуксия is first mentioned. I need to use the cursor-create_cursor function to set up a search for mentions of Фуксия. The function requires a filter description, so I'll use \\\"Mentions of Фуксия\\\" as the filter. I'll set maxBytes and maxElements to reasonable limits to avoid overwhelming the system. The cursor name is search_cursor.\\n\\nNow, after creating the cursor, the next step is to run the agent to find the first mention. Using agent-run_agent with the cursor name and task description to find the first occurrence. I'll set maxEvidenceCount to 1 to stop after the first result. \\n\\nOnce the agent runs, if it returns evidence, I'll check the pointerLabel and pointer to provide the exact location. If not found, I'll inform the user. Since the user wants the first mention, I need to ensure the agent stops after the first match. Also, I should verify if the result is from the document's content, not just a heading. If the first item in the evidence contains multiple mentions, I still consider it the first occurrence. If the cursor completes without finding, then the answer is that it's not in the document.\\n\",\"tool_calls\":[{\"id\":\"call_jfvhptvv\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"agent-run_agent\",\"arguments\":\"{\\\"cursorName\\\":\\\"search_cursor\\\",\\\"maxEvidenceCount\\\":1,\\\"taskDescription\\\":\\\"Find the first mention of Фуксия in the document\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1185,\"completion_tokens\":305,\"total_tokens\":1490}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 15:29:52 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

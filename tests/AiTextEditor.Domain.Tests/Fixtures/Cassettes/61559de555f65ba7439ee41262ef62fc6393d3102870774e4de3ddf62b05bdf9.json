@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-124\",\"object\":\"chat.completion\",\"created\":1766484659,\"model\":\"deepseek-v3.1:671b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"decision\\\": \\\"continue\\\",\\n  \\\"newEvidence\\\": [\\n    {\\n      \\\"pointer\\\": \\\"78:1.1.1.p75\\\",\\n      \\\"excerpt\\\": \\\"От такого бесцеремонного обращения Звёздочкин ошалел настолько, что не мог произнести ни слова. Потом он понемногу пришёл в себя и закричал:\\\",\\n      \\\"reason\\\": \\\"This paragraph shows the character Звёздочкин reacting and beginning to speak.\\\"\\n    },\\n    {\\n      \\\"pointer\\\": \\\"79:1.1.1.p76\\\",\\n      \\\"excerpt\\\": \\\"– Это безобразие! Я буду жаловаться! Я напишу в газету! Вы ещё узнаете профессора Звёздочкина!\\\",\\n      \\\"reason\\\": \\\"This paragraph contains direct dialogue spoken by the character Звёздочкин.\\\"\\n    },\\n    {\\n      \\\"pointer\\\": \\\"80:1.1.1.p77\\\",\\n      \\\"excerpt\\\": \\\"Он долго так кричал, размахивая кулаками, но, увидев, что все коротышки разошлись по домам, сказал:\\\",\\n      \\\"reason\\\": \\\"This paragraph shows Звёздочкин continuing to speak and indicates another character group (коротышки) is present.\\\"\\n    }\\n  ]\\n}\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":923,\"completion_tokens\":299,\"total_tokens\":1222}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 10:10:57 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

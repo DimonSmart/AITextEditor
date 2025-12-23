@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-584\",\"object\":\"chat.completion\",\"created\":1766510819,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of \\\"Пончик\\\" in the given batch. The user provided a snapshot with evidenceCount 1 and recentEvidencePointers including \\\"6:1.1.1.p3\\\". But the current batch has items starting from pointer \\\"63:1.1.1.p60\\\" onwards.\\n\\nFirst, I need to scan each item in the current batch for the exact mention of \\\"Пончик\\\". The rules say to use only the current batch's content and not consider previous evidence pointers. The snapshot's recentEvidencePointers are from a previous batch, so I should ignore those.\\n\\nLooking at the items:\\n\\n1. \\\"63:1.1.1.p60\\\" has a paragraph mentioning simple water, no Пончик.\\n2. \\\"64:1.1.1.p61\\\" talks about citrus or kerosene, still no match.\\n3. \\\"65:1.1.1.p62\\\" is about laughter and a question, but no Пончик here either.\\n\\nNone of these paragraphs contain \\\"Пончик\\\". Since the task is to find the first mention, and there's no match in the current batch, the decision should be \\\"not_found\\\". Also, the maxEvidenceCount is null, so we don't stop here. The user might have more batches, but based on the current data, there's no evidence.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":742,\"completion_tokens\":313,\"total_tokens\":1055}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 17:26:58 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

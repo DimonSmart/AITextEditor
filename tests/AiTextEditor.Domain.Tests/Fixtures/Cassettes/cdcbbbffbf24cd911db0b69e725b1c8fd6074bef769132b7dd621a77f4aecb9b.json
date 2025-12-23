@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-683\",\"object\":\"chat.completion\",\"created\":1766513326,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"We have task: Find first mention of professor Звёздочкин. Context: paragraph contains 'профессор Звёздочкин'. Need to scan current batch items for that string. Items are two paragraphs, neither seem to contain that phrase. So no matches. Decision: continue? Since hasMoreBatches true, and no evidence found, decision = continue. newEvidence empty array.\\n\\nCheck not to add evidence for pointer already in recentEvidencePointers (none). So output JSON.\\n\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1205,\"completion_tokens\":124,\"total_tokens\":1329}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:08:46 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

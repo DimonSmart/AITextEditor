@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-665\",\"object\":\"chat.completion\",\"created\":1766513271,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We got an evidence with pointer 8:1.1.1.p5 containing mention. Need last mention, so must continue scanning until end. Use same cursor, run again.\",\"tool_calls\":[{\"id\":\"call_mwytvf3m\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"agent-run_agent\",\"arguments\":\"{\\\"cursorName\\\":\\\"fuchsia_cursor\\\",\\\"taskDescription\\\":\\\"Find last mention of Фуксии\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1216,\"completion_tokens\":76,\"total_tokens\":1292}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:07:50 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-76\",\"object\":\"chat.completion\",\"created\":1766511345,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"В книге профессор Звёздочкин впервые упоминается в параграфе с указателем **24:1.1.1.p21**. \\n\\n**Семантический указатель:**  \\n`24:1.1.1.p21` (полный текст: \\\"А действительный член академии астрономических наук профессор Звёздочкин...\\\"). \\n\\nЭто первое упоминание вне заголовков.\",\"reasoning\":\"Okay, let's see. The user is asking where in the book the professor Zvezdochkin is first mentioned, excluding headers. The assistant created a cursor to search for the term and ran the agent. The response shows two evidence items. The first one is a section title mentioning him, but the user said to exclude headers. The second excerpt is from a paragraph where he's discussed in detail. The pointer here is 24:1.1.1.p21. Since the user wants the first mention excluding headers, the answer should be the second excerpt's pointer. Need to make sure there's no earlier mention in the document. The status says more items are available, but since the first non-header mention is at 24:1.1.1.p21, that's the correct pointer.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1453,\"completion_tokens\":291,\"total_tokens\":1744}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 17:35:45 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

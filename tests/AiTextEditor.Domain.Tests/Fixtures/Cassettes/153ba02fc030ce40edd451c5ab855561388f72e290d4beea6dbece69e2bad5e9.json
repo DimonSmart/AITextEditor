@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-590\",\"object\":\"chat.completion\",\"created\":1766495156,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants the first dialogue between two named characters, reporting their names. The context is all paragraphs, and the maxEvidenceCount is null, so we need to find all such dialogues but since the task says \\\"first,\\\" maybe they just need the first occurrence.\\n\\nLooking at the current batch items. The first item is pointer 48:1.1.1.p45, which is a paragraph with the text: “– Верно! Правильно! Молодец, Знайка! Ура!” This seems like a dialogue, but it's only one character, Знайка, speaking. There's no mention of another named character here. \\n\\nNext, pointer 49:1.1.1.p46: “Все захлопали в ладоши. Кто-то крикнул:” This is a description of people clapping and someone shouting, but again, only one character is mentioned here. The dialogue starts with \\\"Кто-то крикнул,\\\" which is a general statement, not a named character.\\n\\nThen pointer 50:1.1.1.p47: “– Долой Звёздочкина!” This is another dialogue, but again, it's just one character, Звёздочкина, speaking. There's no interaction between two named characters here. \\n\\nWait, maybe I'm missing something. The task says \\\"dialogue between two named characters,\\\" so each line should have two characters. But in the given paragraphs, each line is a single character's dialogue. The first paragraph mentions Знайка, the third mentions Звёздочкина. But there's no interaction between them here. \\n\\nSo, none of the current batch items have a dialogue between two named characters. The user might have expected previous batches to have some, but according to the snapshot, the recent evidence pointers are from earlier batches. Since the current batch doesn't have any such dialogues, the decision would be \\\"not_found.\\\" But wait, the user's task is to find the first occurrence. If the current batch doesn't have it, maybe the answer is \\\"not_found.\\\" However, the user might have more batches coming. But according to the input, hasMoreBatches is true, so there might be more. But the current batch doesn't have any. So the correct decision here is \\\"not_found\\\" because there's no evidence in the current batch that meets the criteria.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":756,\"completion_tokens\":536,\"total_tokens\":1292}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 13:05:56 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

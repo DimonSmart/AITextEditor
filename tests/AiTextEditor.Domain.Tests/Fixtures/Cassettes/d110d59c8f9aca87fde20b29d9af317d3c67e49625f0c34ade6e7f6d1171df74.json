@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-233\",\"object\":\"chat.completion\",\"created\":1766415181,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's tackle this query. The user is asking about Фуксия (Fuchsia) and Селедочка (Selodka), and where they are first mentioned in the document. \\n\\nFirst, I need to create a cursor to search for mentions of these names. Since the user wants the first mention, I'll set maxEvidenceCount to 1 to stop early. The filter should look for either \\\"Фуксия\\\" or \\\"Селедочка\\\". \\n\\nI'll start by creating a cursor with the name \\\"search_cursor\\\" and the filter description to find any text containing these names. Then, run the agent with this cursor to get the first occurrence. \\n\\nIf the first result includes both names, I need to check if they're in the same paragraph. If not, I'll have to adjust the search. But since the user wants the first mention, I'll take the earliest occurrence found. \\n\\nAlso, I should make sure to use the correct pointers and include the semantic pointer in the answer. If the document doesn't have the information, I'll inform the user it's not found.\\n\",\"tool_calls\":[{\"id\":\"call_ectzq1vr\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_cursor\",\"arguments\":\"{\\\"filterDescription\\\":\\\"text.Contains(\\\\\\\"Фуксия\\\\\\\") || text.Contains(\\\\\\\"Селедочка\\\\\\\")\\\",\\\"maxEvidenceCount\\\":1,\\\"name\\\":\\\"search_cursor\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1063,\"completion_tokens\":285,\"total_tokens\":1348}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 14:53:01 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

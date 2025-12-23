@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-380\",\"object\":\"chat.completion\",\"created\":1766432377,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first dialogue between two named characters. The context mentions lines with character names followed by dialogue markers. The maxEvidenceCount is 1, so we need to find the first occurrence.\\n\\nLooking at the provided batch items. The first item (24:1.1.1.p21) is a paragraph discussing Professor Zvezdochkin's reaction to Znayka's book. There's no dialogue here, just narration. The second item (25:1.1.1.p22) mentions the professor proposing a discussion and Znayka attending. Still no dialogue. The third item (26:1.1.1.p23) starts with the professor entering and his first words. Wait, the paragraph says \\\"первое, что от него услышали, были слова:\\\" which translates to \\\"The first thing they heard from him were the words:\\\" but there's no actual dialogue quoted here. It's just setting up that he started speaking, but the actual dialogue hasn't been included yet. \\n\\nSince the task is to find the first dialogue between two named characters, and the current batch doesn't have any actual dialogue lines yet, there's no evidence here. The snapshot has evidenceCount 0, and the recentEvidencePointers are empty. So, the decision should be \\\"not_found\\\" because none of the current batch items contain the required dialogue. We need to wait for the next batch where the actual dialogue might be present.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1132,\"completion_tokens\":327,\"total_tokens\":1459}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 19:39:37 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

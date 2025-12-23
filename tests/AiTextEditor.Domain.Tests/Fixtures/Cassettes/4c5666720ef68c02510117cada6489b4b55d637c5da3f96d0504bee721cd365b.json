@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-938\",\"object\":\"chat.completion\",\"created\":1766443187,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\": \\\"not_found\\\", \\\"newEvidence\\\": []}\",\"reasoning\":\"Okay, let's tackle this task. The goal is to find the first dialogue between two named characters. The context mentions looking for direct speech markers like quotes or dashes. The maxEvidenceCount is 1, so once we find one, we should stop.\\n\\nLooking at the provided batch items, both paragraphs are from the story about Ponchik. The first paragraph describes Ponchik's actions and thoughts but doesn't have any dialogue. The second paragraph continues his situation, mentioning the moth problem and the smell, but again, no direct dialogue between two characters. \\n\\nWait, the user mentioned that the snapshot has evidenceCount 0 and no recent pointers. So we need to check if there's any dialogue in the current batch. Let me scan again. The first paragraph has \\\"Пончик стал недоумевать: к чему ему вся та куча костюмов...\\\" which is a colon, indicating a thought or explanation, not a dialogue. The second paragraph has \\\"Пончик и сам пропах...\\\" which is a narrative. There's no direct speech between two characters here. \\n\\nSince there's no dialogue between two named characters in the current batch, the decision should be \\\"not_found\\\". The newEvidence array would be empty. So the output is {\\\"decision\\\": \\\"not_found\\\", \\\"newEvidence\\\": []}.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1278,\"completion_tokens\":291,\"total_tokens\":1569}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 22:39:47 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

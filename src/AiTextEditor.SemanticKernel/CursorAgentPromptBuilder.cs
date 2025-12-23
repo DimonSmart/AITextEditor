@@ -43,7 +43,8 @@ public sealed class CursorAgentPromptBuilder(CursorAgentLimits limits) : ICursor
             type = "task",
             orderingGuaranteed = true,
             goal = request.TaskDescription,
-            context = string.IsNullOrWhiteSpace(request.Context) ? null : request.Context
+            context = string.IsNullOrWhiteSpace(request.Context) ? null : request.Context,
+            maxEvidenceCount = request.MaxEvidenceCount
         };
 
         var options = new JsonSerializerOptions
@@ -172,6 +173,7 @@ Scanning Strategy:
 - Report ALL matches found in the batch. Do not try to filter for "the second one" yourself. The agent needs all candidates to count correctly.
 - Do not skip items just because they don't look like the "answer". Report ALL matches.
 - If a paragraph contains multiple mentions, report it once as evidence. The counting logic will handle the rest.
+- If 'maxEvidenceCount' is provided in the task and you have found enough evidence (snapshot.evidenceCount + newEvidence.length >= maxEvidenceCount), set decision="done".
 
 Content preference:
 - Prefer Paragraph/ListItem content.

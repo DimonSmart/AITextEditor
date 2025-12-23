@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-749\",\"object\":\"chat.completion\",\"created\":1766510718,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants the first mention of \\\"Пончик\\\" in the provided batch. First, I need to scan through each item in the batch to find any occurrence of that exact word.\\n\\nLooking at the first item with pointer 57:1.1.1.p54, the markdown is \\\"– Расскажите, что вы чувствовали? Что вы испытывали? – закричал кто-то.\\\" There's no mention of Пончик here. \\n\\nNext, the second item is 58:1.1.1.p55. The markdown here is a longer paragraph. Scanning through, I see the word \\\"Пончик\\\" isn't present. The text talks about losing weight and various sensations but doesn't mention Пончик. \\n\\nThe third item is 59:1.1.1.p56, with the markdown \\\"– Рассказывайте! Рассказывайте ещё! – завопили коротышки хором, увидев, что Знайка остановился.\\\" Again, no Пончик here. \\n\\nSince none of the items in the current batch contain \\\"Пончик,\\\" the decision should be \\\"not_found.\\\" The user's snapshot shows that there was one evidence pointer previously, but the current batch doesn't have any new mentions. Therefore, the output should indicate that no new evidence was found.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1019,\"completion_tokens\":317,\"total_tokens\":1336}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 17:25:17 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

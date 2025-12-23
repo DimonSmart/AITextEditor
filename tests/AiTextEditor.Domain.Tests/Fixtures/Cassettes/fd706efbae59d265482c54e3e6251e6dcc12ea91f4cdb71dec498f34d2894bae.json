@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-475\",\"object\":\"chat.completion\",\"created\":1766517692,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The user wants me to find all mentions of 'Фуксии' in the provided batch. First, I need to scan through each item in the batch. The snapshot shows that there were already 2 pieces of evidence found in previous batches, and the recent pointers are 8:1.1.1.p5 and 70:1.1.1.p67. But since the current batch's items don't include those pointers, I should focus on the current items.\\n\\nLooking at the first item, it's a heading: \\\"### Загадка лунного камня\\\". No mention of Фуксии here. The next item is a paragraph with pointer 85:1.2.1.p1. The markdown content talks about a report in the newspaper about a discussion of Znaykina's book, mentions lunar residents, and various cartoons. I'll check if 'Фуксии' is there. Scanning through the text, I don't see that word. The next item is 86:1.1.1.p2, but the markdown is truncated in the sample. Since the user provided only part of it, maybe the full text might have mentions, but based on the given excerpt, there's nothing. \\n\\nWait, the task says to use only the current batch's items. The user's input includes the first batch, but the items provided here are 84, 85, 86. None of these paragraphs mention 'Фуксии'. The snapshot's recent pointers are from previous batches, so they're not in the current items. Therefore, there are no new mentions in the current batch. So the decision should be 'not_found' because there's no evidence here. The output JSON should reflect that with an empty newEvidence array.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1078,\"completion_tokens\":396,\"total_tokens\":1474}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 19:21:32 GMT"
+    ]
+  }
+}

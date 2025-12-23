@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-924\",\"object\":\"chat.completion\",\"created\":1766418104,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Второе упоминание профессора Звёздочкина (исключая заголовки) находится в следующем абзаце:  \\n**Pointer: 25:1.1.1.p22**  \\n*Профессор Звёздочкин и предложил академии астрономических наук устроить обсуждение Знайкиной книги и разобрать её, как он выразился, по косточкам, с тем чтобы никому больше не повадно было такие книги писать.*  \\n\\nЭто второй упоминание в тексте после исключения заголовков.\",\"reasoning\":\"Okay, let's see. The user is asking for the second mention of Professor Zvezdokhin in the book, excluding headers. \\n\\nFirst, I need to make sure I understand the query correctly. They want the second occurrence of the professor's name in the text, not in any headings. The previous interaction used a cursor to find mentions, and the agent returned three evidence items. The first one was a heading, which the user specified to exclude. So the actual mentions are in the paragraphs.\\n\\nLooking at the evidence, the first mention (excluding the heading) is in pointer 24:1.1.1.p21. The second mention would be the next one, which is pointer 25:1.1.1.p22. The user is asking for the second mention, so that should be the answer. I need to check if there's a third mention, but since the user asked for the second, the second evidence item after the heading is the correct one. \\n\\nI should confirm that the answer is the paragraph from pointer 25, which describes the professor proposing a discussion. The user wants the second mention, so that's the second paragraph in the evidence list after excluding the heading. The final answer should include the pointer label and the excerpt, in Russian, as per the instructions.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1552,\"completion_tokens\":418,\"total_tokens\":1970}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 15:41:44 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

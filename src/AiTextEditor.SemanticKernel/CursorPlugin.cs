@@ -18,9 +18,9 @@ public sealed class CursorPlugin(
         [Description("Stateless per-element filter description (like IEnumerable.Where). Must NOT depend on previous portions (no counters, no 'nth occurrence').")]
         string filterDescription,
 
-        [Description("Optional override for max elements per portion. Clamped to server limits.")] int? maxElements = null,
-        [Description("Optional override for max bytes per portion. Clamped to server limits.")] int? maxBytes = null,
-        [Description("Pointer to start after (optional).")] string? startAfterPointer = null,
+        [Description("Optional override for max elements per portion. Clamped to server limits.")] int maxElements = -1,
+        [Description("Optional override for max bytes per portion. Clamped to server limits.")] int maxBytes = -1,
+        [Description("Pointer to start after (optional).")] string startAfterPointer = "",
         CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -33,13 +33,13 @@ public sealed class CursorPlugin(
 
         var document = editorSession.GetDefaultDocument();
 
-        var actualMaxElements = Math.Min(maxElements ?? limits.MaxElements, limits.MaxElements);
-        var actualMaxBytes = Math.Min(maxBytes ?? limits.MaxBytes, limits.MaxBytes);
+        var actualMaxElements = Math.Min(maxElements > 0 ? maxElements : limits.MaxElements, limits.MaxElements);
+        var actualMaxBytes = Math.Min(maxBytes > 0 ? maxBytes : limits.MaxBytes, limits.MaxBytes);
         logger.LogInformation(
                "CreateCursor: name={Name}, startAfter={StartAfter}, maxElements={MaxElements}, maxBytes={MaxBytes}, filterDescription={filterDescription}",
                name, startAfterPointer, actualMaxElements, actualMaxBytes, filterDescription);
 
-        var cursorStream = new CursorStream(document, actualMaxElements, actualMaxBytes, startAfterPointer, filterDescription, logger);
+        var cursorStream = new CursorStream(document, actualMaxElements, actualMaxBytes, string.IsNullOrEmpty(startAfterPointer) ? null : startAfterPointer, filterDescription, logger);
 
         cursorRegistry.RegisterCursor(name, cursorStream);
 

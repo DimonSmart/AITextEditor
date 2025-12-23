@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-503\",\"object\":\"chat.completion\",\"created\":1766443816,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's tackle this query. The user wants the first dialogue between two named characters and their names. First, I need to create a cursor that captures all paragraphs with dialogue markers. Since dialogue is usually in quotes or with dashes, the filter should look for those. I'll use \\\"All paragraphs\\\" as the filter to be safe. Then, I'll run the agent to find the first occurrence. I need to check each evidence item to see if it contains direct speech between two named characters. Once found, I'll note their names and the pointer. If not found in the first batch, I'll continue iterating until the cursor completes or the answer is found.\\n\",\"tool_calls\":[{\"id\":\"call_2sg4way0\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_cursor\",\"arguments\":\"{\\\"filterDescription\\\":\\\"All paragraphs with dialogue markers (e.g., quotes or dashes)\\\",\\\"maxBytes\\\":1048576,\\\"maxElements\\\":20,\\\"name\\\":\\\"dialogue_cursor\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1335,\"completion_tokens\":201,\"total_tokens\":1536}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 22:50:16 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

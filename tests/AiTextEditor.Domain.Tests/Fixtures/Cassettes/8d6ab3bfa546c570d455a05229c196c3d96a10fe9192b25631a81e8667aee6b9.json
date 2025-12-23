@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-255\",\"object\":\"chat.completion\",\"created\":1766432558,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's see. The user wants the first dialogue between two named characters. I tried creating different cursors with varying filters, but each time it came back as not found. Maybe the initial filters were too broad or not specific enough. Let me think about how to adjust the filter description.\\n\\nPerhaps the issue is that the previous filters didn't correctly capture lines with two character names followed by dialogue markers. Maybe I need to make the filter more precise. Instead of just looking for lines with two names and dialogue, maybe I should look for lines that start with a character name, followed by dialogue markers, and then another character name. That way, it's more specific to actual dialogues between two characters.\\n\\nLet me try creating a new cursor with a filter that looks for lines containing exactly two character names followed by dialogue indicators. That should narrow it down. If that doesn't work, maybe the document doesn't have such dialogues, but I should try one more time with this refined filter.\\n\",\"tool_calls\":[{\"id\":\"call_s55cpe9g\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_cursor\",\"arguments\":\"{\\\"filterDescription\\\":\\\"Lines with exactly two character names followed by dialogue markers\\\",\\\"maxBytes\\\":1048576,\\\"maxElements\\\":500,\\\"name\\\":\\\"dialogue_cursor_v4\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1899,\"completion_tokens\":261,\"total_tokens\":2160}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 19:42:38 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

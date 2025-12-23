@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-4\",\"object\":\"chat.completion\",\"created\":1766513414,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"decision\\\": \\\"continue\\\",\\n  \\\"newEvidence\\\": []\\n}\",\"reasoning\":\"We need to scan current batch items for dialogue lines: a name followed by colon or quoted speech. The items are Russian text paragraphs about Znaika and lunar beings. No dialogue pattern appears. Look for patterns like \\\"Имя:\\\" probably not present. None contain colon after a name? The first paragraph starts \\\"Впрочем, Знайка и сам отказался...\\\" not dialogue. No quoted speech. So no new evidence. Since snapshot has evidenceCount=1 and recent pointer 14:1.1.1.p11 (some previous evidence). But no new evidence in this batch. So decision? Continue if more batches. hasMoreBatches true. decision should be \\\"continue\\\". newEvidence empty list.\\n\\nWe must not include any evidence for pointers already in recentEvidencePointers. None apply.\\n\\nThus output JSON.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1231,\"completion_tokens\":193,\"total_tokens\":1424}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:10:14 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

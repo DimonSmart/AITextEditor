@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-910\",\"object\":\"chat.completion\",\"created\":1766484637,\"model\":\"deepseek-v3.1:671b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"decision\\\": \\\"continue\\\",\\n  \\\"newEvidence\\\": [\\n    {\\n      \\\"pointer\\\": \\\"73:1.1.1.p70\\\",\\n      \\\"excerpt\\\": \\\"– Однако… – повторил, повышая голос, профессор Звёздочкин. – Однако мы собрались здесь вовсе не для того, чтоб про Луну слушать, а для того, чтоб обсудить Знайкину книжку, а поскольку книжку не обсудили, то, значит, не выполнили того, что было намечено, а раз не выполнили того, что было намечено, то надо будет всё-таки выполнить, а раз надо будет всё-таки выполнить, то придётся все-таки выполнить и подвергнуть рассмотрению…\\\",\\n      \\\"reason\\\": \\\"This paragraph contains dialogue spoken by the named character профессор Звёздочкин.\\\"\\n    }\\n  ]\\n}\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1012,\"completion_tokens\":209,\"total_tokens\":1221}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 10:10:36 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

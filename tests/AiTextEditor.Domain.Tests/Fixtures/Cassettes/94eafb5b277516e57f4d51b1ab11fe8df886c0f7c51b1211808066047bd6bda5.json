@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-838\",\"object\":\"chat.completion\",\"created\":1766513264,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"We have a task: Find last mention of Фуксии. Context: paragraph contains Фуксии. Ordering guaranteed true means we need last mention overall across documents, but our job is to scan current batch for candidate evidence. Snapshot shows evidenceCount=1, recentEvidencePointers includes \\\"8:1.1.1.p5\\\". So they've already found one mention earlier maybe? We need to find any mention of \\\"Фуксии\\\" in current batch. Items have Russian text, none mention \\\"Фуксии\\\". So no new evidence. Decision: continue because more batches remain. Not_found maybe if none in this batch? Since we haven't found any new evidence, and there may be more batches, decision should be continue. newEvidence empty array.\\n\\nReturn JSON accordingly.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":807,\"completion_tokens\":174,\"total_tokens\":981}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:07:43 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

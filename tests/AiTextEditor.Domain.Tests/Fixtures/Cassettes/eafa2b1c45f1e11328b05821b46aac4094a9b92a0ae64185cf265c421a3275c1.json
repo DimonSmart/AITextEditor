@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-683\",\"object\":\"chat.completion\",\"created\":1766513349,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"We need to find first occurrence of names \\\"Фуксия\\\" and \\\"Селедочка\\\" in current batch items. The batch contains two paragraphs. Need to scan for those names. First paragraph (pointer 4:1.1.1.p1) contains no mention of those names. It's about city etc. No. Second paragraph (pointer 5:1.1.1.p2) is about clothing factory; also no mention. So no matches in this batch. According to rules, we must output decision: continue (since not found any new evidence). newEvidence empty array.\\n\\nCheck snapshot evidenceCount=0, maxEvidenceCount=2. Not reached.\\n\\nThus output JSON.\\n\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1215,\"completion_tokens\":160,\"total_tokens\":1375}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:09:08 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

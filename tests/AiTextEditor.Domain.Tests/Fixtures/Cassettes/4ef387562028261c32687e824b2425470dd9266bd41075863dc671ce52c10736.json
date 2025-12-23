@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-635\",\"object\":\"chat.completion\",\"created\":1766514315,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, the user wants the last mention of \\\"Фуксии\\\". I created a cursor with a filter for \\\"contains 'Фуксии'\\\" and maxElements set to 1000 to get enough data. Now, I need to run the agent to process the document portions. Let me call agent-run_agent with the cursor name and task to find all occurrences. Since the user asked for the last one, I'll have to collect all matches and then pick the last one. Let's start by running the agent.\\n\",\"tool_calls\":[{\"id\":\"call_o86vvep9\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"agent-run_agent\",\"arguments\":\"{\\\"cursorName\\\":\\\"search_cursor\\\",\\\"taskDescription\\\":\\\"Find all mentions of 'Фуксии'\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1003,\"completion_tokens\":151,\"total_tokens\":1154}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:25:15 GMT"
+    ]
+  }
+}

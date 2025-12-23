@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-800\",\"object\":\"chat.completion\",\"created\":1766414415,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's tackle this query. The user is asking in which paragraph Znayka compares the lunar surface to a well-baked blini and explains the bubbles of steam. First, I need to figure out how to approach this.\\n\\nSince the user mentioned \\\"Знайка,\\\" which I know is a character from Soviet children's literature, probably from the story \\\"The Moon is a White Ship\\\" by Kornei Chukovsky. But since I can't rely on external knowledge, I need to use the provided tools to search the document.\\n\\nThe tools available include creating a cursor with a filter description. The cursor will help scan the document for mentions related to Znayka comparing the lunar surface to blini and explaining steam bubbles. The function cursor-create_cursor requires a name and a filterDescription. The filter should look for text that includes both the comparison and the explanation.\\n\\nI'll start by creating a cursor named \\\"search_cursor\\\" with a filterDescription that looks for \\\"лунная поверхность\\\" (lunar surface) and \\\"блины\\\" (blini) and \\\"пузырьки пара\\\" (steam bubbles). Then, using agent-run_agent with this cursor to find the relevant paragraph. Since the user wants the first mention, I'll set maxEvidenceCount to 1 to stop early.\\n\\nWait, but the user might have multiple mentions. However, the question is about the specific comparison and explanation, so the first occurrence is likely the answer. I'll proceed with creating the cursor and running the agent to get the evidence. If the first result contains both elements, that's the answer. If not, I might need to adjust the filter or check subsequent results. But given the user's request, the first mention should suffice.\\n\",\"tool_calls\":[{\"id\":\"call_kcacziir\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_cursor\",\"arguments\":\"{\\\"filterDescription\\\":\\\"contains 'лунная поверхность' and 'блины' and 'пузырьки пара'\\\",\\\"maxBytes\\\":1048576,\\\"name\\\":\\\"search_cursor\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1080,\"completion_tokens\":423,\"total_tokens\":1503}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 14:40:15 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

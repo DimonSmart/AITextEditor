@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-263\",\"object\":\"chat.completion\",\"created\":1766426001,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The user wants me to detect the first instance of dialogue involving two distinct named characters in the same sentence. The task specifies direct or indirect dialogue, like \\\"Alice says to Bob...\\\" or \\\"John asked Mary...\\\". The context mentions focusing on sentences with at least two named entities in a conversational context.\\n\\nLooking at the provided batch, the items have a heading: \\\"## Глава первая\\\". That's a chapter title in Russian, meaning \\\"Chapter One\\\". There's no actual content here. The snapshot shows evidenceCount is 0, and recentEvidencePointers is empty. Since the first batch is false and there's more batches coming, but the current items don't have any text beyond the heading, there's nothing to analyze. The user's instruction says to only use the current batch's items. Since there's no dialogue or named characters in the provided items, the decision should be \\\"not_found\\\". No new evidence can be extracted here. I need to make sure not to include any pointers from recentEvidencePointers since they're empty. So the output is decision: \\\"not_found\\\" and no newEvidence array.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":659,\"completion_tokens\":250,\"total_tokens\":909}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 17:53:20 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

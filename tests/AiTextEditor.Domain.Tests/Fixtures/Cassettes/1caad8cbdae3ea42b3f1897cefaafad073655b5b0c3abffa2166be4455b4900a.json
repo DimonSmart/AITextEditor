@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-868\",\"object\":\"chat.completion\",\"created\":1766433039,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[{\\\"pointer\\\":\\\"11:1.1.1.p8\\\",\\\"excerpt\\\":\\\"Знайка, однако ж, не был согласен ни с вулканической, ни с метеоритной теорией. Ещё до путешествия на Луну он создал свою собственную теорию происхождения лунных кратеров. Однажды он вместе со Стекляшкиным наблюдал Луну в телескоп, и ему бросилось в глаза, что лунная поверхность очень похожа на поверхность хорошо пропечённого блина с его ноздреватыми дырками. После этого Знайка часто ходил на кухню и наблюдал, как пекутся блины. Он заметил, что пока блин жидкий, его поверхность совершенно гладкая, но по мере того как он подогревается на сковородке, на его поверхности начинают появляться пузырьки нагретого пара. Проступив на поверхность блина, пузырьки лопаются, в результате чего на блине образуются неглубокие дырки, которые так и остаются, когда тесто как следует пропечётся и потеряет вязкость.\\\",\\\"reason\\\":\\\"Лунная поверхность описывается как похожая на поверхность хорошо пропечённого блина с ноздреватыми дырками, созданными пузырьками пара.\\\"}]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants the first mention of Znayka comparing the lunar surface to a pancake and steam bubbles. The context is paragraphs mentioning 'Знайка' and comparing the lunar surface to pancake or steam bubbles.\\n\\nLooking at the provided batch items. The first item is paragraph 10:1.1.1.p7, which talks about scientists debating the origin of lunar craters but doesn't mention Znayka. The second item is 11:1.1.1.p8. Let me check that.\\n\\nIn paragraph 11:1.1.1.p8, Znayka is mentioned. The excerpt says he noticed the lunar surface resembled a well-cooked pancake with holes from steam bubbles. That's exactly what the task is looking for. The key parts are comparing the lunar surface to a pancake and steam bubbles. Since this is the first mention in the batch and meets the criteria, it should be the evidence. The snapshot has zero evidence, so this is the first one. No other items in the batch mention Znayka again, so this is the correct pointer and excerpt.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1112,\"completion_tokens\":597,\"total_tokens\":1709}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 19:50:39 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

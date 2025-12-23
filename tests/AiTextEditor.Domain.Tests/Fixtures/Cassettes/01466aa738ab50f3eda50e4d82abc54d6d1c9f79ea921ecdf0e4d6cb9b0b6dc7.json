@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-455\",\"object\":\"chat.completion\",\"created\":1766515472,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, the user asked for the last mention of \\\"Фуксии\\\". I created a cursor to find all instances, and the first result came back with a pointer 8:1.1.1.p5. The excerpt mentions \\\"Фуксией\\\", which is a form of \\\"Фуксии\\\". But the user wants the last occurrence. Since the status says there are more items available, I need to continue scanning. I'll call the agent again with the same cursor to get the next batch of results. I'll keep doing this until I find the last mention or until the status indicates there's no more data. Let me make sure to check each excerpt carefully and track the latest pointer.\\n\",\"tool_calls\":[{\"id\":\"call_kvhag767\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"agent-run_agent\",\"arguments\":\"{\\\"cursorName\\\":\\\"search_cursor\\\",\\\"maxEvidenceCount\\\":10,\\\"taskDescription\\\":\\\"Find all mentions of 'Фуксии'\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1150,\"completion_tokens\":191,\"total_tokens\":1341}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:44:32 GMT"
+    ]
+  }
+}

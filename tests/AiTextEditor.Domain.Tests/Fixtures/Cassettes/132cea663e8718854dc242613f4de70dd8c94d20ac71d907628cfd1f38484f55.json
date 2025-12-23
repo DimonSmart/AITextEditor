@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-974\",\"object\":\"chat.completion\",\"created\":1766417489,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"done\\\",\\\"newEvidence\\\":[{\\\"pointer\\\":\\\"3:1.1.1\\\",\\\"excerpt\\\":\\\"### Как Знайка победил профессора Звёздочкина\\\",\\\"reason\\\":\\\"The heading directly mentions 'профессор Звёздочкин' as the subject of the section.\\\"}]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants the first mention of 'профессор Звёздочкин' in the text content, excluding headers. The snapshot shows evidenceCount is 0, so we need to find the first occurrence in the current batch.\\n\\nLooking at the items, the first batch has headings, but the user said to ignore headers. The first paragraph (pointer 4:1.1.1.p1) mentions \\\"профессора Звёздочкина\\\" in the third sentence. That's the first occurrence. The next paragraphs don't mention him again. So the newEvidence should include this pointer with the excerpt. Since maxEvidenceCount is 1, once we find this, decision should be \\\"done\\\".\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2045,\"completion_tokens\":223,\"total_tokens\":2268}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 15:31:29 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

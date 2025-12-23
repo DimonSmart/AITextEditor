@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-538\",\"object\":\"chat.completion\",\"created\":1766511137,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first mention of \\\"Пончик\\\" in the provided batch. First, I need to scan through the items in the batch to see where \\\"Пончик\\\" appears. \\n\\nLooking at the snapshot, there's already an evidence pointer \\\"6:1.1.1.p3\\\", but since the firstBatch is false, maybe that's from a previous batch. The current batch has items starting from pointer \\\"84:1.2.1\\\" onwards. \\n\\nThe first item is a heading, which doesn't seem relevant. The next item is a paragraph (85:1.2.1.p1). I'll check the markdown content here. The paragraph mentions \\\"Луна\\\" and \\\"коротышки\\\", but I don't see \\\"Пончик\\\" here. The next paragraph is truncated, so maybe the mention is in the next items. However, the user provided only the first two items of the batch. \\n\\nWait, the user's input includes the batch items up to 86:1.2.1.p2, but the second paragraph is truncated. Since the task is to find the first mention, and the snapshot already has one evidence, but the current batch might not have any new mentions. However, the user's instruction says to scan only the current batch. \\n\\nWait, the snapshot's recentEvidencePointers include \\\"6:1.1.1.p3\\\", which might be from a previous batch. The current batch's items don't have that pointer, so maybe there's no new evidence here. But the user's task is to find the first mention, and if the current batch doesn't have it, then the decision would be \\\"not_found\\\". However, the user's input might have more items, but in the provided data, the batch items only go up to 86:1.2.1.p2. \\n\\nWait, the user's input shows that the batch has items starting from 84:1.2.1 (heading), then 85:1.2.1.p1 (paragraph), and 86:1.2.1.p2 (another paragraph, but truncated). Since the task is to find \\\"Пончик\\\", and none of the provided paragraphs mention it, the answer would be that there's no new evidence in the current batch. Therefore, the decision should be \\\"not_found\\\".\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1063,\"completion_tokens\":518,\"total_tokens\":1581}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 17:32:17 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

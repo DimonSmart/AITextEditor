@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-751\",\"object\":\"chat.completion\",\"created\":1766414425,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, the user is asking how the second chapter ends. I need to find the ending of the second chapter in the document. Let me start by creating a cursor to locate the relevant paragraphs.\\n\\nFirst, I'll use the cursor-create_cursor function to set up a filter that identifies the last paragraph under the second chapter heading. The filterDescription should check if the element is a paragraph and is the last one under the second chapter. I'll name the cursor \\\"chapter_end_cursor\\\" and set reasonable maxBytes and maxElements to ensure it processes enough content without being too slow.\\n\\nOnce the cursor is created, I'll run the agent to process the document using this cursor. The task description will be to find the last paragraph of the second chapter. Since the user wants the ending, I need to make sure the cursor stops at the correct paragraph. If the cursor returns the paragraph, I'll extract the text and provide the answer. If not, I might need to adjust the filter or check if the chapter ends with a specific marker. But since the user asked for the second chapter's end, the cursor should capture that. Let's proceed with the cursor and agent run.\\n\",\"tool_calls\":[{\"id\":\"call_1vsj7s0f\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"agent-run_agent\",\"arguments\":\"{\\\"cursorName\\\":\\\"chapter_end_cursor\\\",\\\"maxEvidenceCount\\\":1,\\\"taskDescription\\\":\\\"Find the last paragraph under the second chapter heading\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1129,\"completion_tokens\":286,\"total_tokens\":1415}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 14:40:25 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

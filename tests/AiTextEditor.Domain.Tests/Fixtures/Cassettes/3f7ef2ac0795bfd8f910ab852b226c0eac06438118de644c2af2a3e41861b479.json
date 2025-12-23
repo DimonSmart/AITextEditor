@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-118\",\"object\":\"chat.completion\",\"created\":1766510985,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The user wants the first mention of \\\"Пончик\\\" in the provided batch. The snapshot shows that there's already 1 piece of evidence, with the pointer \\\"6:1.1.1.p3\\\". But the current batch has items starting from pointer \\\"75:1.1.1.p72\\\" onwards.\\n\\nFirst, I need to check each item in the current batch to see if any of them contain \\\"Пончик\\\". The task says to look for the first mention, but since the previous evidence was from a different batch, I need to scan the current batch items thoroughly.\\n\\nLooking at the first item in the batch: pointer 75:1.1.1.p72, markdown is \\\"– Долой!\\\". No mention of Пончик here. Next is 76:1.1.1.p73: the paragraph talks about two little guys dragging someone out, but no Пончик. Then 77:1.1.1.p74 mentions being on the lawn and talking about flying to the Moon, but again, no Пончик. \\n\\nNone of the current batch items have \\\"Пончик\\\" in their markdown. The user's task is to find the first mention, but since the current batch doesn't have it, and the snapshot's recent evidence is from a previous batch, the decision here would be \\\"not_found\\\" because there's no new evidence in the current batch. The user might need to check the next batch or confirm if there's another source. So the correct output is to set decision as \\\"not_found\\\" with no new evidence added.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":760,\"completion_tokens\":356,\"total_tokens\":1116}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 17:29:44 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

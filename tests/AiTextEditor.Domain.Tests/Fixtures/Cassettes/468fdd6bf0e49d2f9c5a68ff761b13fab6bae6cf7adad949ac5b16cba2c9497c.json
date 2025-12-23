@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-793\",\"object\":\"chat.completion\",\"created\":1766515705,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's see. The user wants me to find all mentions of 'Фуксии' in the current batch. The task says to scan only the current batch's items and extract evidence. The snapshot shows that there's already 1 piece of evidence, but the recentEvidencePointers include \\\"8:1.1.1.p5\\\", which isn't in the current batch. So I need to check the items provided in the batch.\\n\\nLooking at the items, there are three paragraphs. The first one mentions something about the Moon, but no 'Фуксии'. The second paragraph has a professor responding, but again, no match. The third paragraph talks about flying in a rocket and observing objects in weightlessness. Still, I don't see 'Фуксии' here. \\n\\nWait, maybe I missed something. Let me check again. The user's input has the current batch items, and none of the markdown fields contain 'Фуксии'. The snapshot's recentEvidencePointers might be from a previous batch, but the current batch doesn't have any mentions. So according to the rules, if there are no new matches, the decision should be 'not_found'. Also, the maxEvidenceCount is 10, but since the current batch doesn't contribute any new evidence, the total remains at 1. Therefore, the output should indicate that no new evidence was found.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":746,\"completion_tokens\":302,\"total_tokens\":1048}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:48:25 GMT"
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-3\",\"object\":\"chat.completion\",\"created\":1766437885,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's see. The user is asking where in the text it's explained why everyone ran away from Ponchik because of naphthalene and the hosts opened the windows and doors. \\n\\nFirst, I need to create a cursor that can find the relevant paragraphs. The previous assistant created a cursor with the filter for paragraphs mentioning Ponchik, naphthalene, and hosts opening windows/doors. Now, the tool response says \\\"search_cursor\\\" was created, but the user hasn't provided the actual data yet. Wait, maybe the tool response is just confirming the cursor was created. \\n\\nSince the user's next input is just \\\"\\u003ctool_response\\u003e, I need to check if the cursor was successfully created. If so, the next step is to run the agent on that cursor to find the evidence. The agent will scan the document in portions, so I need to call run_agent with the cursor name and a task description. The task is to find the explanation about why people ran away from Ponchik due to naphthalene and the hosts opening windows and doors.\\n\\nI should structure the tool call to run_agent with the cursorName \\\"search_cursor\\\" and a taskDescription that clearly states the goal. The parameters should include the cursor name and the task description. Since the user wants the first mention, maybe set maxEvidenceCount to 1 to stop after the first relevant item. But the previous instructions said to check previous evidence and not assume 1 item equals 1 mention. So perhaps don't limit the count unless specified. \\n\\nWait, the user's question is about the explanation, so the agent needs to find the paragraph that explains the reason. The cursor was created with the right filter, so running the agent should retrieve the relevant evidence items. Once the agent returns the results, I can check the pointers and provide the answer in Russian, including the semantic pointer if applicable.\\n\",\"tool_calls\":[{\"id\":\"call_p7f9ayqb\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"agent-run_agent\",\"arguments\":\"{\\\"cursorName\\\":\\\"search_cursor\\\",\\\"maxEvidenceCount\\\":1,\\\"taskDescription\\\":\\\"Find the first mention of why everyone ran away from Ponchik due to naphthalene and hosts opening windows/doors\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1360,\"completion_tokens\":449,\"total_tokens\":1809}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 21:11:25 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

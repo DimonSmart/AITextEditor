@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-570\",\"object\":\"chat.completion\",\"created\":1766511303,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of 'профессор Звёздочкин'. The user provided a snapshot with evidenceCount 1 and recentEvidencePointers including \\\"3:1.1.1\\\". But the current batch's items don't have that pointer. The firstBatch is false, so we're in a subsequent batch. The items here are pointers 21:1.1.1.p18, 22:1.1.1.p19, 23:1.1.1.p20. \\n\\nLooking through each item's markdown. The first paragraph (21:1.1.1.p18) talks about Знайка and his theory about the Moon's crater, but no mention of профессор Звёздочкин. The second paragraph (22:1.1.1.p19) mentions Знайка again, discussing the lunar inhabitants, but still no professor. The third paragraph (23:1.1.1.p20) continues the story about the lunar inhabitants moving inside the Moon. None of these paragraphs mention 'профессор Звёздочкин'. \\n\\nSince the snapshot's recentEvidencePointers include \\\"3:1.1.1\\\" which isn't in the current batch, maybe that was from a previous batch. But the current batch doesn't have any evidence for the target term. So the decision should be 'not_found' because there's no mention in the current batch items. Also, the maxEvidenceCount is null, so we don't stop here. Therefore, the output is 'not_found' with no new evidence.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1302,\"completion_tokens\":366,\"total_tokens\":1668}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 17:35:03 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

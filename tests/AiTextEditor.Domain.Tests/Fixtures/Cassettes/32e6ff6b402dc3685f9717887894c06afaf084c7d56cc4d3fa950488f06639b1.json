@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-366\",\"object\":\"chat.completion\",\"created\":1766414548,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Первое упоминание Пончика находится в разделе с указателем **6:1.1.1.p3**.  \\n**Экспресс-перечисление**:  \\n*«Все были очень довольны. Единственным, кто пострадал на этом деле, оказался Пончик. Когда Пончик увидел, что теперь можно брать в магазине любую вещь, какая только могла понадобиться, он стал недоумевать: к чему ему вся та куча костюмов, которая накопилась у него дома.»*  \\n\\nТекст указывает, что Пончик стал символом изменений в городе, описывая его реакцию на новые возможности.\",\"reasoning\":\"Okay, the user asked where Пончик is first mentioned. I created a cursor to find the first occurrence. The agent ran and found an excerpt where Пончик is mentioned as the only one who suffered from the city's changes. The pointer is 6:1.1.1.p3. Since the user wants the first mention, this should be the correct location. I'll present the excerpt and the pointer in Russian.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1320,\"completion_tokens\":268,\"total_tokens\":1588}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 14:42:28 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

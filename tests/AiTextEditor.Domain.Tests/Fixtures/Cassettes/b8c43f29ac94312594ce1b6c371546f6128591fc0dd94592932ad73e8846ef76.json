@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-247\",\"object\":\"chat.completion\",\"created\":1766484567,\"model\":\"deepseek-v3.1:671b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"decision\\\": \\\"continue\\\",\\n  \\\"newEvidence\\\": [\\n    {\\n      \\\"pointer\\\": \\\"40:1.1.1.p37\\\",\\n      \\\"excerpt\\\": \\\"– Ещё не остывшее расплавленное вещество! – закричал кто-то из слушателей.\\\",\\n      \\\"reason\\\": \\\"This paragraph contains a line of dialogue spoken by an unnamed character.\\\"\\n    },\\n    {\\n      \\\"pointer\\\": \\\"41:1.1.1.p38\\\",\\n      \\\"excerpt\\\": \\\"– Верно! – подхватил Знайка. – Ещё не остывшее расплавленное вещество, то есть, попросту говоря, жидкость.\\\",\\n      \\\"reason\\\": \\\"This paragraph contains a line of dialogue spoken by the named character Знайка.\\\"\\n    }\\n  ]\\n}\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":977,\"completion_tokens\":177,\"total_tokens\":1154}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 10:09:26 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

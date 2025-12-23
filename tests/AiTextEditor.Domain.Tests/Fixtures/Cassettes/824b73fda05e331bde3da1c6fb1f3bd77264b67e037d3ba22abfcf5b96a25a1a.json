@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-46\",\"object\":\"chat.completion\",\"created\":1766432282,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first dialog between two named characters. The context mentions lines with character names followed by dialogue markers. The maxEvidenceCount is 1, so we need to find the first occurrence.\\n\\nLooking at the provided batch items. The first item is a paragraph discussing lunar craters and astronomers splitting into two groups. There's no dialogue here, just exposition. The second paragraph mentions Znayka and Steklyashkin observing the Moon. Wait, the markdown says \\\"Знайка, однако ж, не был согласен ни с вулканической, ни с метеоритной теорией. Ещё до путешествия на Луну он создал свою собственную теорию...\\\" But there's no dialogue marker here. Then later, \\\"Однажды он вместе со Стекляшкиным наблюдал Луну в телескоп...\\\" Again, no dialogue. \\n\\nWait, maybe I'm missing something. The task says lines with character names followed by dialogue markers. So maybe the dialogue is when they start talking. But in the given text, there's no actual dialogue between characters. The paragraphs are narrative, not dialogue. So perhaps there's no evidence here. But the user might have expected some. Wait, maybe the mention of Znayka and Steklyashkin together is the first dialog? But the text doesn't show them speaking. The user might have intended that their interaction is the first dialog, but according to the given text, there's no actual dialogue. So the answer would be not_found. But the user might have expected the first mention of them together as the first dialog. However, according to the rules, the excerpt must have the dialogue. Since there's no dialogue here, the decision is not_found.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1102,\"completion_tokens\":396,\"total_tokens\":1498}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 19:38:02 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

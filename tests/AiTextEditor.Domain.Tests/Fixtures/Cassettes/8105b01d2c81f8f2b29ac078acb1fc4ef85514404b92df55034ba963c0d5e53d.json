@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-286\",\"object\":\"chat.completion\",\"created\":1766415095,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The user wants the first mention of 'визуализация лунного кратера' described as 'огромного круглого поля с земляным валом по краю'. First, I need to scan through the provided batch items to find any occurrence of the exact term. \\n\\nLooking at the items, most of them are paragraphs from a story involving characters like Знайка and discussions about the Moon. The terms I'm looking for are 'визуализация лунного кратера' and the description 'огромного круглого поля с земляным валом по краю'. \\n\\nI'll go through each item's markdown content. The first few paragraphs talk about losing weight and floating, but no mention of the crater. Later, there's a part where Знайка mentions bringing a piece of the Moon, but again, no crater description. \\n\\nWait, looking at item 69:1.1.1.p66, the markdown says: \\\"На поверхности Луны валяется множество разных камней, и притом очень красивых, но я не хотел их брать, так как они могли оказаться метеоритами, случайно занесёнными на Луну из мирового пространства. А этот камень я отбил молотком от скалы, когда мы опускались в лунную пещеру. Поэтому вы можете быть вполне уверены, что этот камень – кусочек самой настоящей Луны.\\\" \\n\\nHmm, that's about a stone from the Moon's surface but doesn't mention the specific description. Let me check again. The task requires the exact phrase 'визуализация лунного кратера' and the description. None of the items seem to have that exact phrase. \\n\\nWait, maybe I missed something. Let me check each paragraph again. The user's query specifies that the term must be present and the description must match. Since none of the items contain the exact term, there's no evidence. Therefore, the decision should be 'not_found' because the required terms aren't present in the current batch.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2497,\"completion_tokens\":474,\"total_tokens\":2971}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 14:51:35 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

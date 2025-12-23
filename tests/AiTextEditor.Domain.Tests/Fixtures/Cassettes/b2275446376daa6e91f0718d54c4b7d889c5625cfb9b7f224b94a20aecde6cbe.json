@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-875\",\"object\":\"chat.completion\",\"created\":1766513378,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"We need to find second occurrence of \\\"Звёздочкин\\\" excluding headings. In current batch items, none contain \\\"Звёздочкин\\\". So no new evidence. Decision likely continue (since need more batches). evidenceCount 0, maxEvidenceCount 2 not reached.\\n\\nThus output decision continue, no newEvidence.\\n\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":808,\"completion_tokens\":91,\"total_tokens\":899}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:09:37 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

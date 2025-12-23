@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-694\",\"object\":\"chat.completion\",\"created\":1766435729,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"decision\\\": \\\"done\\\",\\n  \\\"newEvidence\\\": [\\n    {\\n      \\\"pointer\\\": \\\"24:1.1.1.p21\\\",\\n      \\\"excerpt\\\": \\\"А действительный член академии астрономических наук профессор Звёздочкин, которому тоже случилось прочитать Знайкину книжку, просто кипел от негодования и говорил, что книга эта – вовсе не книга, а какая-то, как он выразился, чёртова чепуха.\\\",\\n      \\\"reason\\\": \\\"Упоминается профессор Звёздочкин в контексте его реакции на книгу Знайкина.\\\"\\n    },\\n    {\\n      \\\"pointer\\\": \\\"25:1.1.1.p22\\\",\\n      \\\"excerpt\\\": \\\"Профессор Звёздочкин и предложил академии астрономических наук устроить обсуждение Знайкиной книги и разобрать её, как он выразился, по косточкам, с тем чтобы никому больше не повадно было такие книги писать.\\\",\\n      \\\"reason\\\": \\\"Профессор Звёздочкин инициировал обсуждение книги Знайкина.\\\"\\n    }\\n  ]\\n}\",\"reasoning\":\"Okay, let's tackle this task. The user wants the first two mentions of \\\"профессора Звёздочкина\\\" from the provided batch. \\n\\nFirst, I need to scan each item in the batch. The snapshot shows that there's already one evidence pointer: \\\"3:1.1.1\\\". But the user is asking for the first two mentions, so I need to check the current batch items.\\n\\nLooking at the first item with pointer \\\"24:1.1.1.p21\\\", the markdown mentions \\\"профессор Звёздочкин\\\" once. That's the first mention. Then, the second item \\\"25:1.1.1.p22\\\" has another mention of \\\"Профессор Звёздочкин\\\" again. The third item \\\"26:1.1.1.p23\\\" also mentions him, but since we need only two, maybe the first two are sufficient. Wait, the snapshot's recentEvidencePointers includes \\\"3:1.1.1\\\", which might be from a previous batch. The current batch's items are 24, 25, 26. So the first mention is in 24, the second in 25. The third item's mention would be the third, but since maxEvidenceCount is 2, we stop there. So the newEvidence should include the first two occurrences from the current batch. Need to make sure not to include any pointers from the snapshot's recentEvidencePointers. The pointers in the current batch are 24, 25, 26, none of which are in the snapshot's list. So extract the first two mentions from these items.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1141,\"completion_tokens\":652,\"total_tokens\":1793}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 20:35:29 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

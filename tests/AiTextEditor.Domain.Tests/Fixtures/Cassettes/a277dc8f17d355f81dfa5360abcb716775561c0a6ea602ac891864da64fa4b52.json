@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-991\",\"object\":\"chat.completion\",\"created\":1766433328,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"В документе упоминание о конфликте астрономов в Солнечном городе и их расколе на вулканистов и метеоритчиков находится в разделе **\\\"История Солнечного города\\\"** (pointerLabel: \\\"История Солнечного города\\\"). \\n\\n**Пункт 1:**  \\n\\\"Астрономы Солнечного города вступили в ожесточённые споры о происхождении космических тел. Одни считали, что ключ к пониманию лежит в вулканической активности, другие — в ударных процессах. Конфликт перерос в раскол: последователи первой теории основали Общество вулканистов, а сторонники второй — Общество метеоритчиков.\\\"\\n\\nСсылка на раздел: `pointer=\\\"История Солнечного города\\\"`\",\"reasoning\":\"Okay, the user is asking where in the document it's described how the astronomers in the Solar City got into a fight and split into volcanologists and meteoritologists. Let me break this down.\\n\\nFirst, I need to find the part of the text that mentions \\\"Солнечный город\\\" (Solar City) and the terms related to the conflict and the split into two groups. The user mentioned \\\"ссорились\\\" (fought) and \\\"разделились\\\" (split), along with the two groups. \\n\\nI created a cursor named \\\"search_cursor\\\" with a filter that looks for all paragraphs containing these keywords. The tool response came back with evidence items. The first item points to a paragraph in the \\\"История Солнечного города\\\" section. Let me check that paragraph.\\n\\nThe paragraph mentions that the astronomers in Solar City had a disagreement over the origin of celestial bodies, leading to a split. They formed two groups: volcanologists (who believed volcanic activity on celestial bodies was key) and meteoritologists (focused on meteorite impacts). The conflict arose from differing theories, and they eventually split into the two factions. \\n\\nThis seems to cover the user's query about the fight and the split into the two groups. The answer is in the first evidence item, so I should present that and confirm it's the correct location.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1384,\"completion_tokens\":499,\"total_tokens\":1883}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 19:55:28 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

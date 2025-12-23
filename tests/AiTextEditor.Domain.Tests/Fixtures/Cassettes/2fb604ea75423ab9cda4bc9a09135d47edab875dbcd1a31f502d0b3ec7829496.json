@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-639\",\"object\":\"chat.completion\",\"created\":1766443923,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The goal is to find the first dialogue between two named characters. The context mentions that all paragraphs with dialogue markers like quotes or dashes should be considered. The maxEvidenceCount is 1, so we need to find the first occurrence.\\n\\nLooking at the provided batch items, the first item is a paragraph discussing the Moon's surface, but there's no dialogue here. The second paragraph mentions astronomers and vulcanologists laughing at Znayka's theory, but again, no dialogue between named characters. The third paragraph starts with \\\"Вулканисты говорили:\\\", which translates to \\\"Vulcanologists said:\\\" but it's just the beginning of a sentence. There's no dialogue marker like quotes or dashes here either. \\n\\nSince none of the items in the current batch contain dialogue between two named characters, the decision should be \\\"not_found\\\". The newEvidence array remains empty. The snapshot's evidenceCount is 0, and since there's no new evidence, the decision is \\\"not_found\\\".\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1082,\"completion_tokens\":225,\"total_tokens\":1307}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 22:52:03 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

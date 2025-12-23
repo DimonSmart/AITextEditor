@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-157\",\"object\":\"chat.completion\",\"created\":1766418040,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first two mentions of Professor Zvezdokhin. The snapshot shows that there's already one evidence pointer: \\\"3:1.1.1\\\". But wait, the current batch's items don't include that pointer. The first batch is false, and there's more batches coming. Let me check the items in the current batch.\\n\\nLooking at the items, all the pointers start with 8:1.1.1.p5, 9:1.1.1.p6, etc. The snapshot's recentEvidencePointers has \\\"3:1.1.1\\\", which isn't in the current batch. So maybe that's from a previous batch. Since the task says to use only the current batch, I need to scan these items for mentions of Professor Zvezdokhin.\\n\\nLooking through each paragraph:\\n\\nThe first item (8:1.1.1.p5) talks about Знайка and his friends Фуксией and Селёдочкой. No mention of Professor Zvezdokhin here. The second item (9:1.1.1.p6) mentions Стекляшкин, an astronomer, but not the professor. The third item (10:1.1.1.p7) discusses astronomers in the Solar City arguing about the origin of lunar craters. Still no professor. The fourth item (11:1.1.1.p8) again mentions Знайка and Стекляшкин, but not the professor. \\n\\nWait, maybe I missed something. The task is about Professor Zvezdokhin, but none of the current batch items mention him. The snapshot's evidenceCount is 1, but the current batch doesn't have that pointer. So, there are no new mentions in this batch. Therefore, the decision should be \\\"not_found\\\" since there's no evidence here. But wait, the user might have more batches coming. However, the current batch doesn't have any mentions. So the answer is that there's no new evidence here.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1824,\"completion_tokens\":450,\"total_tokens\":2274}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 15:40:40 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-337\",\"object\":\"chat.completion\",\"created\":1766510068,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants the first mention of \\\"Пончик\\\" in the provided batch. The snapshot shows that there's already 1 piece of evidence, with the pointer \\\"6:1.1.1.p3\\\". But the current batch has items starting from pointer \\\"15:1.1.1.p12\\\" onwards.\\n\\nFirst, I need to scan each item in the current batch for the exact mention of \\\"Пончик\\\". Let's look at each paragraph:\\n\\n1. The first item (15:1.1.1.p12) mentions \\\"понадобилась ещё эта блинистая теория\\\". Wait, \\\"понадобилась\\\" is part of a sentence but doesn't have \\\"Пончик\\\" as a standalone mention. The word here is \\\"понадобилась\\\", which is a verb, not the name \\\"Пончик\\\".\\n\\n2. The second item (16:1.1.1.p13) talks about \\\"вулкан – это очень большая гора\\\" and mentions \\\"кратер\\\". No \\\"Пончик\\\" here either.\\n\\n3. The third item (17:1.1.1.p14) starts with \\\"Метеоритчики говорили:\\\" which is a heading, not content. The user's instructions say to ignore headings unless the task asks for them. Since the task is about finding \\\"Пончик\\\", this isn't relevant.\\n\\nNone of the current batch items contain \\\"Пончик\\\" as a standalone mention. The previous evidence was from a different batch (pointer 6:1.1.1.p3), which isn't in the current batch. Since the current batch doesn't have any new mentions, the decision should be \\\"not_found\\\". Also, the user's task says to use only the current batch, so even if there's a mention in a previous batch, it's not considered here. Therefore, the output is \\\"not_found\\\" with no new evidence.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":798,\"completion_tokens\":432,\"total_tokens\":1230}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 17:14:27 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

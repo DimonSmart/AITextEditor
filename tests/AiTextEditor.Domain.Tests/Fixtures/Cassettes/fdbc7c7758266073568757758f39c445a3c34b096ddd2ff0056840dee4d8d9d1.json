@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-797\",\"object\":\"chat.completion\",\"created\":1766433842,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"**Ответ:**  \\nПоследнее упоминание Фуксии находится в параграфе с указателем **70:1.1.1.p67**.  \\n**Экспертиза:**  \\nВ тексте упоминается, что Знайка рассказывал о путешествии на Луну с Фуксией и Селёдочкой, детали этого рассказа вызвали интерес у присутствующих.  \\n\\n\uD83D\uDCCC **Семантический указатель:** 70:1.1.1.p67\",\"reasoning\":\"Okay, let's see. The user is asking for the last mention of \\\"Фуксии\\\" in the document. I need to use the cursor and agent functions to find all instances and then determine which one is the latest.\\n\\nFirst, I created a cursor named \\\"search_cursor\\\" with the filter for paragraphs containing \\\"Фуксии\\\". Then, I ran the agent to find all mentions. The first response gave an excerpt where Фуксии is mentioned as a young scientist participating in the moon flight. The status said there are more items available.\\n\\nI called the agent again with a maxEvidenceCount of 10, but the response said no new evidence was found in this batch, but there are more items. So I called the agent once more. This time, the evidence pointed to a different paragraph where Фуксия is mentioned in the context of Знайка's story about traveling to the Moon with Фуксия and Селёдочка. The status indicated the cursor is complete now.\\n\\nSince the last evidence item is at pointer 70:1.1.1.p67, that's the latest mention. I should check if there are any other mentions after that, but since the cursor is complete, this is the final one. The user wants the last mention, so this is the correct excerpt. I'll present this in Russian with the pointer label.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2167,\"completion_tokens\":422,\"total_tokens\":2589}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 20:04:02 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

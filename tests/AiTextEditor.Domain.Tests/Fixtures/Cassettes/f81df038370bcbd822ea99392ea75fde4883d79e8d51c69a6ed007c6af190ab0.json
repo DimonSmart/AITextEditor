@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-681\",\"object\":\"chat.completion\",\"created\":1766513328,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"We need to scan current batch items for mention of \\\"профессор Звёздочкин\\\". Items:\\n\\nItem 8:1.1.1.p5 paragraph mentions \\\"Знайка\\\", \\\"Фуксия\\\", etc. No professor.\\n\\nItem 9:1.1.1.p6 mentions \\\"астронома Стекляшкина\\\". No professor.\\n\\nThus no matches. So decision maybe continue (since hasMoreBatches true). No newEvidence.\\n\\nOutput JSON with decision \\\"continue\\\", newEvidence empty list.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1228,\"completion_tokens\":130,\"total_tokens\":1358}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:08:47 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

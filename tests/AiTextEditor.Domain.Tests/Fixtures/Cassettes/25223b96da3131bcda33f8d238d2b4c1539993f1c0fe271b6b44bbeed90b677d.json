@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-483\",\"object\":\"chat.completion\",\"created\":1766432403,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's see. The user wants the first dialogue between two named characters. I tried creating a cursor for lines with dialogue markers or names, then adjusted the filter. But each time, the agent returned not found. Maybe the initial filters were too broad or not specific enough. Let me try a more precise filter. Perhaps lines that have two character names followed by dialogue. Wait, I already tried that with dialogue_cursor_v3. Maybe the issue is that the document's dialogue format doesn't match the filters. Maybe the dialogue isn't marked with traditional markers, or the character names are in the same line but not followed by dialogue. Alternatively, maybe the first occurrence is in a later batch. I need to keep running the agent on the same cursor to check more batches. Let me try again with the same cursor.\\n\",\"tool_calls\":[{\"id\":\"call_0cbbplc2\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"agent-run_agent\",\"arguments\":\"{\\\"cursorName\\\":\\\"dialogue_cursor_v3\\\",\\\"maxEvidenceCount\\\":1,\\\"taskDescription\\\":\\\"Найдите первый диалог между двумя названными персонажами\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1813,\"completion_tokens\":224,\"total_tokens\":2037}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 19:40:02 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

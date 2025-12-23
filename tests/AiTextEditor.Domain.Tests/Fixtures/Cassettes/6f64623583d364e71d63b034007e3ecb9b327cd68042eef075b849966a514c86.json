@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-925\",\"object\":\"chat.completion\",\"created\":1766430703,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's tackle this query. The user wants the first dialog between two named characters and their names. First, I need to figure out how to approach this using the provided tools.\\n\\nThe tools include creating a cursor to scan the document. Since the user is asking for a dialog between two specific characters, I should create a cursor that looks for mentions of characters by name. The filterDescription for the cursor should check if a paragraph contains two named characters. \\n\\nWait, the cursor's filter must be stateless. So, each paragraph is checked individually. The task is to find the first occurrence where two characters are mentioned. But how do I ensure that the dialog is between them? Maybe the cursor can look for paragraphs where two names are present, and then the agent can process those to find the dialog.\\n\\nAlternatively, maybe the initial cursor should look for any mention of characters, and then the agent can track which ones are involved. But the user wants the first dialog between two named characters. So the first step is to create a cursor that identifies paragraphs with two named characters. Then, using the agent, find the earliest such paragraph.\\n\\nWait, the cursor's filterDescription needs to be a stateless per-element check. So, for each paragraph, check if it contains two named characters. The filterDescription could be something like \\\"paragraph contains at least two named characters\\\". Then, when the cursor is created, it will return paragraphs that meet this condition. Then, the agent can process these paragraphs to find the first dialog.\\n\\nBut the user wants the first dialog, so the earliest occurrence. So after creating the cursor, run the agent to find the first such paragraph. Then, extract the names from that paragraph. \\n\\nBut how to handle the names? The cursor might return paragraphs with two names, but the actual dialog might be in a subsequent paragraph. Wait, no. The cursor is set to find paragraphs with two named characters, so the first such paragraph would be the earliest occurrence. Then, the agent can check that paragraph for the dialog.\\n\\nAlternatively, maybe the cursor should look for paragraphs where two characters are mentioned in a dialog. But the filter can't be too specific. The initial step is to find paragraphs with two named characters, then the agent can check those for dialog.\\n\\nSo first, create a cursor with filterDescription \\\"paragraph contains at least two named characters\\\". Then, run the agent to find the first occurrence. Once found, extract the names from that paragraph and confirm it's a dialog.\\n\\nBut the user might have a document where the first dialog between two characters is in a paragraph that mentions both. So the cursor would find that paragraph, and the agent can then report the names.\\n\\nI need to make sure that the cursor is set up correctly. The filterDescription should be stateless, so each paragraph is checked independently. The agent's task would be to find the first such paragraph and then extract the names.\\n\\nSo the steps are: create a cursor to find paragraphs with two named characters, then run the agent to get the first occurrence, then extract the names from that paragraph.\\n\",\"tool_calls\":[{\"id\":\"call_29dyudyh\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_cursor\",\"arguments\":\"{\\\"filterDescription\\\":\\\"paragraph contains at least two named characters\\\",\\\"maxBytes\\\":1048576,\\\"maxElements\\\":1000,\\\"name\\\":\\\"character_dialog_cursor\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1244,\"completion_tokens\":687,\"total_tokens\":1931}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 19:11:43 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

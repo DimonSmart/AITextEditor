@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-1\",\"object\":\"chat.completion\",\"created\":1766417297,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Последнее упоминание Фуксии находится в следующем абзаце:  \\n**Показатель:** 70:1.1.1.p67  \\n**Текст:** *Каждому хотелось поближе посмотреть на него. Пока коротышки разглядывали камень, передавая его из рук в руки, Знайка рассказывал, как они с Фуксией и Селёдочкой путешествовали по Луне и что там видели.*  \\n\\nЭто последнее явное упоминание в документе.\",\"reasoning\":\"Okay, let's see. The user asked for the last mention of \\\"Фуксии\\\" in the document. I first created a cursor to find all mentions, and the agent returned three evidence items. The first one is at pointer 8:1.1.1.p5, then 70:1.1.1.p67, and 71:1.1.1.p68. Wait, the last pointer is 71, but the excerpt there doesn't mention Фуксии. The last mention is actually in pointer 70:1.1.1.p67. The user might be confused because the cursor completed, but the last valid mention is at p67. I need to check the pointers again. The third evidence item's pointer is 71, but the excerpt there doesn't have Фуксии. So the last mention is the second one, at 70:1.1.1.p67. I should present that as the answer with the correct pointer.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1586,\"completion_tokens\":357,\"total_tokens\":1943}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 15:28:17 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

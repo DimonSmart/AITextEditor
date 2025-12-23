@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-225\",\"object\":\"chat.completion\",\"created\":1766513235,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"We have task: find first occurrence of term \\\"Пончик\\\". Need to scan current batch items for term. Items have Russian texts; we need to see if term \\\"Пончик\\\" appears. The two paragraphs: first about Znaika on Moon. No \\\"Пончик\\\". Second about returning to Flower city; no \\\"Пончик\\\". So no new evidence. Also must not include pointers already in recentEvidencePointers: \\\"6:1.1.1.p3\\\",\\\"7:1.1.1.p4\\\". Not relevant.\\n\\nThus decision? Since no new evidence found, but hasMoreBatches true, we continue scanning. So decision \\\"continue\\\", newEvidence empty array.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1242,\"completion_tokens\":164,\"total_tokens\":1406}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:07:14 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

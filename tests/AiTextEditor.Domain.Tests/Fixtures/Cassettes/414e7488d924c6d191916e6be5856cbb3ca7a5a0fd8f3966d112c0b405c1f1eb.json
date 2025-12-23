@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-759\",\"object\":\"chat.completion\",\"created\":1766416845,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"В абзаце с указателем **11:1.1.1.p8** Знайка сравнивает лунную поверхность с хорошо пропечённым блином, отмечая, что кратеры напоминают ноздреватые дырки на блине. Он также объясняет процесс образования пузырьков пара: когда блин жидкий, на его поверхности появляются пузырьки нагретого пара, которые лопаются, оставляя неглубокие дырки. \\n\\n**Семантический указатель:** 11:1.1.1.p8\",\"reasoning\":\"Okay, let's see. The user is asking in which paragraph Znayka compares the lunar surface to a well-baked pancake and explains the steam bubbles. \\n\\nFirst, I need to create a cursor to search for mentions of Znayka making that comparison. The filter description should include both the comparison and the explanation of steam bubbles. I'll set maxEvidenceCount to 1 to get the first occurrence.\\n\\nThen, using the agent to run the task, specifying the cursor and the task description. The response from the tool shows that the evidence is found at pointer 11:1.1.1.p8. The excerpt mentions the lunar surface resembling a well-baked pancake with holes and describes the steam bubbles forming and popping on the pancake's surface. \\n\\nSince the user wants the paragraph where this happens, the answer is the excerpt provided, and the pointer is 11:1.1.1.p8. I should present this in Russian and include the pointer label.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1638,\"completion_tokens\":365,\"total_tokens\":2003}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 15:20:45 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

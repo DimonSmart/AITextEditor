@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-534\",\"object\":\"chat.completion\",\"created\":1766433802,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's see. The user wants me to find all mentions of \\\"Фуксии\\\" in the current batch. The task says to look at all paragraphs containing that term. The snapshot shows that there are already 2 pieces of evidence, and the recent pointers are 8:1.1.1.p5 and 70:1.1.1.p67. But those are from previous batches, so I need to check the current batch items.\\n\\nLooking at the current batch items: there are three items. The first two are paragraphs with pointers 81:1.1.1.p78 and 82:1.1.1.p79. Their markdown content doesn't include \\\"Фуксии\\\". The third item is a heading, pointer 83:1.2, which also doesn't mention the term. \\n\\nSince none of the current batch items have \\\"Фуксии\\\" in their markdown, there are no new evidence points to add. The decision should be \\\"continue\\\" because there's no new evidence found. Also, the maxEvidenceCount is 10, but since the current batch doesn't contribute any, the total remains at 2, so we don't reach the max yet. Therefore, the output should indicate no new evidence and continue scanning.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":700,\"completion_tokens\":285,\"total_tokens\":985}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 20:03:22 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

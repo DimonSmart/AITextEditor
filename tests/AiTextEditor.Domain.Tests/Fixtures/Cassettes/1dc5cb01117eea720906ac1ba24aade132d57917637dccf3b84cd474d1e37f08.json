@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-109\",\"object\":\"chat.completion\",\"created\":1766517243,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The user wants me to find all mentions of 'Фуксии' in the current batch. First, I need to check each item's markdown content carefully. \\n\\nLooking at the first item with pointer 72:1.1.1.p69, the markdown is \\\"– Долой! – закричал кто-то из коротышек.\\\" No mention of Фуксии here.\\n\\nNext, pointer 73:1.1.1.p70: \\\"– Однако… – повторил, повышая голос, профессор Звёздочкин. – Однако мы собрались здесь вовсе не для того, чтоб про Луну слушать, а для того, чтоб обсудить Знайкину книжку, а поскольку книжку не обсудили, то, значит, не выполнили того, что было намечено, а раз не выполнили того, что было намечено, то надо будет всё-таки выполнить, а раз надо будет всё-таки выполнить, то придётся все-таки выполнить и подвергнуть рассмотрению…\\\" Still no Фуксии. \\n\\nThird item, pointer 74:1.1.1.p71: \\\"Никто так и не узнал, что хотел подвергнуть рассмотрению Звёздочкин. Шум поднялся такой, что ничего уже нельзя было понять. Отовсюду слышалось только одно слово:\\\" Again, no mention. \\n\\nNone of the provided markdowns contain 'Фуксии'. The snapshot's recentEvidencePointers have entries from previous batches, but the current batch's items don't have any matches. So, the decision should be 'not_found' since there's no new evidence here.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":887,\"completion_tokens\":413,\"total_tokens\":1300}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 19:14:03 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

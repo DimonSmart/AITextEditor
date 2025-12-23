@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-736\",\"object\":\"chat.completion\",\"created\":1766512370,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The user wants me to find all mentions of 'профессора Звёздочкина' in the provided batch, excluding headers. First, I need to check each item in the batch's items array.\\n\\nLooking at the first item with pointer \\\"4:1.1.1.p1\\\", the markdown content is about Незнайка's journey and the changes in Цветочный город. I don't see any mention of профессора Звёздочкина here. The second item is pointer \\\"5:1.1.1.p2\\\", which talks about the industrial enterprises built with help from Солнечного города. Again, no mention of the professor. \\n\\nSince neither paragraph includes the name, and there are no headers to exclude, the evidence count remains zero. The decision should be \\\"not_found\\\" because the required mentions aren't present in the current batch. Also, the snapshot's recentEvidencePointers are empty, so no duplicates to avoid. The output should reflect that no new evidence was found.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1269,\"completion_tokens\":232,\"total_tokens\":1501}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 17:52:49 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

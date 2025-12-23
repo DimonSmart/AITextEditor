@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-912\",\"object\":\"chat.completion\",\"created\":1766415702,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"decision\\\": \\\"done\\\",\\n  \\\"newEvidence\\\": [\\n    {\\n      \\\"pointer\\\": \\\"7:1.1.1.p4\\\",\\n      \\\"excerpt\\\": \\\"От такого обилия шерстяных изделий в доме развелась моль, и, чтоб она не изгрызла костюмов, Пончику приходилось ежедневно травить её нафталином, от которого в комнате стоял такой сильный запах, что непривычного коротышку валило с ног. Пончик и сам пропах насквозь этим одуряющим запахом, но настолько привык к нему, что даже перестал замечать. Для других, однако же, этот запах был очень заметен. Как только Пончик приходил к кому-нибудь в гости, у хозяев сейчас же начинала кружиться от одурения голова. Пончика моментально прогоняли и поскорей открывали настежь все окна и двери, чтобы проветрить помещение, иначе можно было упасть в обморок или сойти с ума.\\\",\\n      \\\"reason\\\": \\\"Упоминается использование нафталина для борьбы с молью и действия владельцев по открыванию окон и дверей для проветривания.\\\"\\n    }\\n  ]\\n}\",\"reasoning\":\"Okay, let's tackle this task. The user wants the first mention of naphthalene and the owners opening windows and doors. The context mentions 'нафталин' and 'распахивали окна и двери'. \\n\\nFirst, I need to scan the current batch for these terms. Let's look through each item. The first batch has items starting from pointer 1:1, which is a heading. Then there are paragraphs. \\n\\nLooking at pointer 4:1.1.1.p1, the paragraph talks about the city changes but doesn't mention naphthalene or the required phrases. Next, pointer 5:1.1.1.p2 discusses the factory and clothing, still no match. Pointer 6:1.1.1.p3 is about Ponchik's old clothes, but again, no relevant terms. \\n\\nPointer 7:1.1.1.p4 is the key here. The markdown mentions \\\"нафталином\\\" which is naphthalene. Then it says \\\"открывали настежь все окна и двери\\\" which translates to opening windows and doors. This seems to fit both parts of the task. \\n\\nCheck if this is the first mention. Since previous paragraphs didn't have these terms, this is the first occurrence. The snapshot has evidenceCount 0, so adding this as new evidence. The reason should be that the excerpt mentions both terms. \\n\\nNo other pointers in the batch have these terms, so only this one is relevant. The decision is to continue since maxEvidenceCount is 1, and we found one match. So the output should include this pointer with the excerpt and reason.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2041,\"completion_tokens\":681,\"total_tokens\":2722}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 15:01:42 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

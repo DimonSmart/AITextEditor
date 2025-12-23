@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-668\",\"object\":\"chat.completion\",\"created\":1766425941,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, the user is asking for the first dialog between two named characters. I tried creating two cursors with different filter descriptions, but both returned \\\"not_found\\\" with more items available. Maybe the dialog isn't in the same sentence or the initial filters were too strict.\\n\\nLet me adjust the filter to look for any dialogue where two names are mentioned, even if they're in separate sentences. Also, perhaps the dialog is formatted differently, like using \\\"said\\\" instead of a colon. I'll create a new cursor that checks for paragraphs containing at least two named entities in a conversational context, not necessarily in the same sentence. Let's see if that picks it up.\\n\",\"tool_calls\":[{\"id\":\"call_h62vem0g\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_cursor\",\"arguments\":\"{\\\"filterDescription\\\":\\\"Identifies paragraphs with direct dialogue containing at least two named characters (e.g., 'Alice said to Bob...' or 'John told Mary...'), focusing on named entities in conversational contexts.\\\",\\\"name\\\":\\\"dialogue_cursor_v3\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1446,\"completion_tokens\":206,\"total_tokens\":1652}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 17:52:21 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

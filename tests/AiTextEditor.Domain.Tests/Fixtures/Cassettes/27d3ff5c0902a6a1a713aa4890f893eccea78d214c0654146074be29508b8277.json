@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-949\",\"object\":\"chat.completion\",\"created\":1766435772,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's tackle this query. The user is asking in which paragraph Ponchik, after choosing a darker night, threw his old costumes into the Ogurcovna River. First, I need to create a cursor that filters all paragraphs mentioning both Ponchik and the Ogurcovna River. The cursor was created with the filter \\\"All paragraphs mentioning Ponchik and Ogurcovna River\\\". Now, I'll run the agent to find the first occurrence.\\n\\nWait, the response from the tool says \\\"search_cursor\\\" but no evidence items. Maybe the filter is too broad or there's no match. Let me check if the cursor was successfully created. Since the tool response just says \\\"search_cursor\\\", perhaps the agent didn't find any matches yet. I should run the agent again to process the next batch. If there's no result, maybe the answer isn't in the document. Alternatively, maybe the paragraph mentions Ponchik and the river but not together. Let me try running the agent again to ensure all batches are checked. If it's still not found, I'll have to inform the user that the information isn't present.\\n\",\"tool_calls\":[{\"id\":\"call_vokygg14\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"agent-run_agent\",\"arguments\":\"{\\\"cursorName\\\":\\\"search_cursor\\\",\\\"taskDescription\\\":\\\"Find the first mention of Ponchik throwing old costumes into Ogurcovna River\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1359,\"completion_tokens\":283,\"total_tokens\":1642}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 20:36:11 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

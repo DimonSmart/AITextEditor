@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-119\",\"object\":\"chat.completion\",\"created\":1766434137,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[{\\\"pointer\\\":\\\"8:1.1.1.p5\\\",\\\"excerpt\\\":\\\"Впрочем, главное было не это. Главное было то, что Знайка тоже побывал в Солнечном городе. Там он познакомился с учёными малышками Фуксией и Селёдочкой, которые в то время готовили свой второй полёт на Луну. Знайка тоже включился в работу по постройке космической ракеты и, когда ракета была готова, совершил с Фуксией и Селёдочкой межпланетное путешествие. Прилетев на Луну, наши отважные путешественники обследовали один из небольших лунных кратеров в районе лунного Моря Ясности, побывали в пещере, которая находилась в центре этого кратера и произвели наблюдения над изменением силы тяжести. На Луне, как известно, сила тяжести значительно меньше, чем на Земле, и поэтому наблюдения над изменением силы тяжести имеют большое научное значение. Пробыв на Луне около четырёх часов, Знайка и его спутницы принуждены были поскорей отправиться в обратный путь, так как запасы воздуха были у них на исходе. Всем известно, что на Луне воздуха нет, и, чтоб не задохнуться, всегда надо брать с собой запас воздуха. В сгущённом виде, конечно.\\\",\\\"reason\\\":\\\"Упоминается Фуксия как учёная малышка вместе с Селёдочкой.\\\"}]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants the first mention of Fuchs in the provided batch. The snapshot shows evidenceCount is 0, so we need to find the first occurrence in the current batch.\\n\\nLooking at the first item's markdown: it mentions \\\"учёными малышками Фуксией и Селёдочкой\\\". That's \\\"Fuchs\\\" spelled as Фуксией. The pointer here is 8:1.1.1.p5. Since the task is to find the first mention, this should be the correct evidence. The second paragraph doesn't mention Fuchs again. So the newEvidence should include this pointer and excerpt. The reason is that the excerpt directly mentions Fuchs. No other pointers from the snapshot are present, so no need to exclude anything. The decision is to continue since the maxEvidenceCount is null, but since it's the first one, we just add it.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1295,\"completion_tokens\":601,\"total_tokens\":1896}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 20:08:57 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

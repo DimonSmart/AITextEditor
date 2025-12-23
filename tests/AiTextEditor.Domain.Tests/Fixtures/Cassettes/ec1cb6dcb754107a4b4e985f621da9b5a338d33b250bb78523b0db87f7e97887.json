@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-233\",\"object\":\"chat.completion\",\"created\":1766434418,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"decision\\\": \\\"done\\\",\\n  \\\"newEvidence\\\": [\\n    {\\n      \\\"pointer\\\": \\\"3:1.1.1\\\",\\n      \\\"excerpt\\\": \\\"### Как Знайка победил профессора Звёздочкина\\\",\\n      \\\"reason\\\": \\\"The paragraph contains 'профессор Звёздочкин' as part of the title.\\\"\\n    }\\n  ]\\n}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of \\\"профессор Звёздочкин\\\". The user provided a snapshot with evidenceCount 0 and no recent pointers. The batch has three items: two headings and a third-level heading.\\n\\nFirst, I need to check each item's markdown content. The first item is a heading with \\\"# Часть I\\\" – no mention. The second is \\\"## Глава первая\\\" – still no. The third is \\\"### Как Знайка победил профессора Звёздочкина\\\". Here, \\\"профессор Звёздочкин\\\" is present. \\n\\nSince the task wants the first mention, and this is the first occurrence in the batch, I should extract this. The pointer is \\\"3:1.1.1\\\", the excerpt is the entire markdown text. The reason is that the paragraph mentions \\\"профессор Звёздочкин\\\" directly. Since evidenceCount is 0 and adding this one meets maxEvidenceCount of 1, the decision should be \\\"done\\\".\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":666,\"completion_tokens\":312,\"total_tokens\":978}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 20:13:38 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

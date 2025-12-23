@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-710\",\"object\":\"chat.completion\",\"created\":1766412201,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's see. The user is asking where in the book the professor Zvezdokhin is first mentioned, excluding headers. The previous steps used a cursor to search for the term and found a section heading that mentions him. But the user specified to exclude headers, so the answer should be the first paragraph under that heading.\\n\\nFirst, I need to check if the cursor created earlier included the heading. The initial cursor was set to filter text including 'профессор Звёздочкин', and the first evidence item was the heading. Since the user wants the first mention in the text, not the header, I need to look for the first paragraph after that heading.\\n\\nSo, I should create a new cursor that starts after the pointer 3:1.1.1 and filters for the same term. Then run the agent to find the first occurrence in the text. The maxEvidenceCount is set to 1 to get the first mention. If the first paragraph under the heading mentions him, that's the answer. If not, continue searching. But since the heading is the first mention, the first paragraph might be the next occurrence. Wait, but the user wants the first mention in the text, so maybe the heading is considered part of the text? The user said to exclude headers, so the answer should be the first paragraph under the heading. Therefore, I need to start the cursor after the heading's pointer and search again. Let me set up the new cursor with startAfterPointer as 3:1.1.1 and filter for the term. Then run the agent to find the first occurrence in the text. If found, return that excerpt. If not, check if there's another mention. But since the initial search found the heading, maybe the first paragraph is the next one. Let's proceed with the new cursor.\\n\",\"tool_calls\":[{\"id\":\"call_vexjukhs\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_cursor\",\"arguments\":\"{\\\"filterDescription\\\":\\\"text includes 'профессор Звёздочкин'\\\",\\\"maxEvidenceCount\\\":1,\\\"name\\\":\\\"search_cursor\\\",\\\"startAfterPointer\\\":\\\"3:1.1.1\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1261,\"completion_tokens\":436,\"total_tokens\":1697}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 14:03:21 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

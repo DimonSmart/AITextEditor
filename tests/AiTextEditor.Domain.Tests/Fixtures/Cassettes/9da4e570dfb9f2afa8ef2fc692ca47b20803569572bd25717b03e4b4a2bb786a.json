@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-648\",\"object\":\"chat.completion\",\"created\":1766443136,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, the user wants the first dialogue between two named characters. I tried creating a cursor for paragraphs with dialogue markers and running the agent, but it kept canceling. Maybe the filter isn't catching the dialogue correctly. Let me check the filter description again. The initial filter was \\\"All paragraphs with dialogue markers (e.g., quotes or dashes) indicating direct speech between characters\\\". Perhaps the document uses a different format for dialogue, like just quotes without dashes. Or maybe the cursor isn't processing the entire document because of the maxBytes or maxElements limits. Let me try increasing those limits to cover more of the document. Also, maybe the agent isn't properly identifying the characters. I should ensure the task description is clear. Let me adjust the cursor parameters and try again.\\n\",\"tool_calls\":[{\"id\":\"call_5iqtmga4\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_cursor\",\"arguments\":\"{\\\"filterDescription\\\":\\\"All paragraphs with direct speech markers (quotes, dashes, or other dialogue indicators)\\\",\\\"maxBytes\\\":2097152,\\\"maxElements\\\":1000,\\\"name\\\":\\\"dialogue_cursor_v2\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1574,\"completion_tokens\":222,\"total_tokens\":1796}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 22:38:56 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

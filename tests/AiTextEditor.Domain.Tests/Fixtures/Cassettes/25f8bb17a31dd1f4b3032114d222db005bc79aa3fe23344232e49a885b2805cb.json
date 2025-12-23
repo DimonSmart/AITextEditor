@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-757\",\"object\":\"chat.completion\",\"created\":1766433679,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The user wants to find all mentions of \\\"Фуксии\\\" in the provided batch. First, I need to scan each item's markdown content carefully. The task says to look for paragraphs containing 'Фуксии', but looking through the given items, none of the markdown text includes that term. The first item is a paragraph without it. The second one talks about losing weight and various sensations but no Фуксии. The third is a dialogue where characters are shouting, but again, no mention of Фуксии. Since none of the items in the current batch have the required term, the decision should be 'not_found'. Also, the snapshot's recentEvidencePointers don't include any from this batch, so no duplicates. The output should be a JSON with decision 'not_found' and empty newEvidence array.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1023,\"completion_tokens\":192,\"total_tokens\":1215}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 20:01:19 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

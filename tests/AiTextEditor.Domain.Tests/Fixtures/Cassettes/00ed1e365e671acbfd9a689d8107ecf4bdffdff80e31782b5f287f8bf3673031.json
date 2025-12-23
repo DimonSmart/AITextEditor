@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-255\",\"object\":\"chat.completion\",\"created\":1766435759,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's tackle this question. The user is asking in which paragraph Ponchik, choosing a darker night, drowned his old costumes in the Ogurcovna River. First, I need to find mentions of Ponchik and the Ogurcovna River in the document.\\n\\nI'll start by creating a cursor to search for paragraphs mentioning Ponchik and the river. The filter should be broad to capture all relevant sections. Using the cursor-create_cursor function with a filter like \\\"Ponchik Ogurcovna River\\\" seems appropriate. Then, I'll run the agent to find the first occurrence. If the initial scan doesn't find it, I'll continue iterating through the document portions. Once the relevant paragraph is found, I'll check the context to confirm the details about the dark night and the action of drowning the costumes. If the answer isn't found in the document, I'll inform the user accordingly.\\n\",\"tool_calls\":[{\"id\":\"call_hb4rrxd9\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_cursor\",\"arguments\":\"{\\\"filterDescription\\\":\\\"All paragraphs mentioning Ponchik and Ogurcovna River\\\",\\\"maxBytes\\\":1048576,\\\"maxElements\\\":1000,\\\"name\\\":\\\"search_cursor\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1288,\"completion_tokens\":255,\"total_tokens\":1543}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 20:35:58 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

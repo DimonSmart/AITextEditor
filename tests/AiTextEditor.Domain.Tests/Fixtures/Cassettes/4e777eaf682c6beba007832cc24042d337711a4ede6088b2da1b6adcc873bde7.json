@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-631\",\"object\":\"chat.completion\",\"created\":1766511255,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of 'профессор Звёздочкин'. The user provided a snapshot with evidenceCount 1 and recentEvidencePointers including \\\"3:1.1.1\\\". But the current batch's items don't have that pointer. The firstBatch is false, so we're not at the start. The items in the batch are paragraphs 9, 10, 11 from different pointers.\\n\\nLooking at the markdown content of each item. Paragraph 9 talks about the Moon's surface and bubbles, no mention of the professor. Paragraph 10 mentions astronomers and vulcanologists laughing at Znayka's theory. Still no professor. Paragraph 11 starts with \\\"Вулканисты говорили:\\\", which is about vulcanologists, but again, no professor name here. \\n\\nSince the snapshot's recentEvidencePointers include \\\"3:1.1.1\\\" which isn't in the current batch, maybe that was from a previous batch. But the current batch doesn't have any mention of 'профессор Звёздочкин'. So the answer should be that there's no new evidence here. The decision would be 'not_found' because the required mention isn't present in the current batch items. Also, the maxEvidenceCount is null, so we don't need to stop here. Therefore, the output should indicate that no new evidence was found.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1096,\"completion_tokens\":315,\"total_tokens\":1411}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 17:34:15 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

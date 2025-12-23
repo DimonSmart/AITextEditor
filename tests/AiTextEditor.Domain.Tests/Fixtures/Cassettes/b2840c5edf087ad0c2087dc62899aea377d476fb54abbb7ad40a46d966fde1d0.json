@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-259\",\"object\":\"chat.completion\",\"created\":1766513418,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"We need to extract evidence for the task: \\\"Find the first dialogue between two characters that are named in the text (e.g., lines starting with a name followed by colon or quoted speech). Return the dialogue snippet and the names of the characters.\\\"\\n\\nWe have snapshot evidenceCount 1, recentEvidencePointers includes [\\\"14:1.1.1.p11\\\"] already returned. Now scanning current batch items for dialogues that have named characters speaking.\\n\\nWe look at each markdown:\\n\\nItem 27: \\\"– Дорогие друзья, разрешите заседание, посвящённое обсуждению Знайкиной книги, считать открытым.\\\" This starts with dash, not name colon. No name.\\n\\nItem 28: long paragraph, no dialogue format.\\n\\nItem 29: \\\"Выслушав всё это, Знайка поднялся со своего места и сказал насмешливо:\\\" This is narration, not dialogue snippet actual speech; may be followed by speech elsewhere but not in this snippet. No actual speech lines.\\n\\nThus likely no dialogue in current batch. No new evidence. Decision should be continue (since more batches). Not_found maybe? Since no evidence found, but more batches exist, continue.\\n\\nThus output JSON with decision \\\"continue\\\" and empty newEvidence array.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1042,\"completion_tokens\":277,\"total_tokens\":1319}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:10:17 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

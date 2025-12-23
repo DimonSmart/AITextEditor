@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-977\",\"object\":\"chat.completion\",\"created\":1766446837,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first dialogue between two named characters in the given batch. The context is all paragraphs, and there's no maxEvidenceCount specified.\\n\\nFirst, I need to scan through each item in the batch. Let's look at each paragraph:\\n\\n1. The first paragraph mentions \\\"Знайка\\\" (Znayka) but only in a statement, not a dialogue. It's a single sentence explaining lunar craters, so no dialogue here.\\n\\n2. The second paragraph starts with \\\"На это Знайка отвечал...\\\" which translates to \\\"Znayka answered...\\\" This is a response, so it's a dialogue. The speaker is Znayka, but there's no other character mentioned here. The paragraph is a monologue, not a conversation between two named characters.\\n\\n3. The third paragraph has \\\"Однако вулканисты и метеоритчики... презрительно называли его блинистом.\\\" Here, \\\"вулканисты\\\" (volcanologists) and \\\"метеоритчики\\\" (meteoritists) are mentioned as groups, but they aren't named characters. The dialogue is between Znayka and these groups, but the groups aren't named individuals. The term \\\"блинистом\\\" is a nickname, but it's not a dialogue between two named characters.\\n\\nLooking for two named characters in a dialogue. The only named character is Znayka. The other parties are groups or not named. So there's no dialogue between two named characters in this batch. Therefore, the decision should be \\\"not_found\\\" since no such dialogue exists here.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":886,\"completion_tokens\":366,\"total_tokens\":1252}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 23:40:36 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

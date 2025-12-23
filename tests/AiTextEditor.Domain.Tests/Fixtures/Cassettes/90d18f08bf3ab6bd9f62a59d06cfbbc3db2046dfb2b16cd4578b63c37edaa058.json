@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-110\",\"object\":\"chat.completion\",\"created\":1766520112,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first mentions of \\\"Фуксия\\\" and \\\"Селедочка\\\" in the provided batch. First, I need to scan through each item in the batch to check if these words appear.\\n\\nLooking at the first item with pointer \\\"21:1.1.1.p18\\\", the markdown doesn't have either of the keywords. The second item, \\\"22:1.1.1.p19\\\", also doesn't mention them. The third item, \\\"23:1.1.1.p20\\\", still no luck. \\n\\nWait, the snapshot shows that there's already one piece of evidence with pointer \\\"8:1.1.1.p5\\\", but that's from a previous batch. The current batch's items don't include that pointer. So, in the current batch, none of the items have \\\"Фуксия\\\" or \\\"Селедочка\\\". \\n\\nSince the task is to find the first mentions, and there are no matches in the current batch, the decision should be \\\"not_found\\\". Also, the user mentioned that if there's no new evidence, we should output that. So the newEvidence array will be empty, and the decision is \\\"not_found\\\".\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1305,\"completion_tokens\":278,\"total_tokens\":1583}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 20:01:52 GMT"
+    ]
+  }
+}

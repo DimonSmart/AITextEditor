@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-796\",\"object\":\"chat.completion\",\"created\":1766431226,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first dialogue between two named characters, using lines with dialogue markers or character names. The context is about lines with dialogue markers or character names, and the max evidence count is 1. \\n\\nFirst, I need to scan through the provided batch items. The snapshot shows evidenceCount is 0 and recentEvidencePointers is empty, so no previous matches. The batch has three paragraphs.\\n\\nLooking at each item's markdown content:\\n\\n1. The first paragraph mentions Знайка but no dialogue. It's a narrative about him seeing lunar craters. No dialogue markers here.\\n\\n2. The second paragraph starts with \\\"Поразмыслив, Знайка понял...\\\" which is still narrative. No dialogue. Then it mentions him publishing a book, but again, no direct dialogue between characters.\\n\\n3. The third paragraph continues the story about лунатики moving inside the moon. Still no dialogue markers or interactions between two named characters.\\n\\nWait, the task says \\\"первый диалог между двумя названными персонажами\\\" – first dialogue between two named characters. But in the provided batch, there's no dialogue. All the text is narrative, explaining Знайка's findings and the story of лунатики. There's no direct dialogue between any two characters here. \\n\\nSince the user's instruction says to use only the current batch and not add evidence if the pointer is in recentEvidencePointers (which is empty here), but there's no dialogue in any of the items. Therefore, there's no evidence to report. The decision should be \\\"not_found\\\" because the required dialogue isn't present in the current batch.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1294,\"completion_tokens\":369,\"total_tokens\":1663}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 19:20:26 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

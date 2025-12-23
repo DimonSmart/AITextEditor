@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-68\",\"object\":\"chat.completion\",\"created\":1766416499,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, the user is asking about where in the document the \\\"visualization of the lunar crater\\\" is described as an \\\"enormous circular field with an earth embankment along the edge.\\\" Let me break this down.\\n\\nFirst, I need to create a cursor that filters paragraphs containing the key terms. The initial cursor creation used a filter for those terms. The response from the tool indicates that the first evidence item is a paragraph mentioning \\\"визуализация лунного кратера\\\" and \\\"огромного круглого поля.\\\" However, the user also mentioned \\\"земляной вал по краю,\\\" which wasn't in the first item. \\n\\nSo, I should check if the next portion of the document contains the missing part. The cursor might have more items. I'll run the agent again with the same cursor but look for the next evidence item that includes all three elements. If the first item only has two of the three terms, the answer might be in the next item. Alternatively, maybe the first item has all three, but the initial response didn't mention the embankment. I need to verify by checking the next evidence item. If not found, the answer isn't in the document.\\n\",\"tool_calls\":[{\"id\":\"call_bo0m36hb\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"agent-run_agent\",\"arguments\":\"{\\\"cursorName\\\":\\\"search_cursor\\\",\\\"maxEvidenceCount\\\":2,\\\"taskDescription\\\":\\\"Find the paragraph describing the lunar crater visualization as an enormous circular field with an earth embankment along the edge\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1231,\"completion_tokens\":310,\"total_tokens\":1541}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 15:14:58 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

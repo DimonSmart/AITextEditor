@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-723\",\"object\":\"chat.completion\",\"created\":1766509769,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants the first mention of \\\"Пончик\\\" in the provided batch. The snapshot shows evidenceCount is 0, and there are no recent pointers. The batch has three items, all headings. The first item is a heading with \\\"Часть I\\\", which doesn't include \\\"Пончик\\\". The second is \\\"Глава первая\\\", still no match. The third heading is \\\"Как Знайка победил профессора Звёздочкина\\\". I need to check if \\\"Пончик\\\" is in there. Looking at the markdown text, it doesn't seem to be present. None of the items in the batch contain \\\"Пончик\\\". So, there's no evidence here. The decision should be \\\"not_found\\\" since the first mention isn't found in the current batch. Also, since there are no new evidence pointers, the newEvidence array remains empty.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":652,\"completion_tokens\":208,\"total_tokens\":860}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 17:09:28 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

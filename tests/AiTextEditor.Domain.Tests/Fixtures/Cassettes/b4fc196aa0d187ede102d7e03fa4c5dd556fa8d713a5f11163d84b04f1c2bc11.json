@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-499\",\"object\":\"chat.completion\",\"created\":1766434022,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first mention of a clothing factory producing rubber bras and synthetic fur coats. The context is paragraphs mentioning 'одёжная фабрика' (clothing factory) and listing products from rubber bras to synthetic fur coats.\\n\\nFirst, I need to check the current batch items. The snapshot shows that there's already 1 piece of evidence with pointer \\\"5:1.1.1.p2\\\". But the user is asking about the first mention, so I need to look through the current batch's items to see if any of them mention the clothing factory and the specific products.\\n\\nLooking at the items provided:\\n\\n1. Pointer 21:1.1.1.p18 talks about Znayka's trip to the Moon and brick walls, but no mention of a clothing factory or the products in question.\\n2. Pointer 22:1.1.1.p19 mentions the lunar inhabitants (lunatiks) building brick walls and glass domes. Still no clothing factory or the specific items.\\n3. Pointer 23:1.1.1.p20 discusses the lunatiks moving inside the Moon. Again, no relevant info.\\n\\nNone of these paragraphs mention 'одёжная фабрика' or the products rubber bras and synthetic fur coats. The existing evidence from the snapshot might be from a previous batch, but the current batch doesn't have any new evidence that fits the task. Therefore, the decision should be \\\"not_found\\\" since there's no new evidence in the current batch that matches the criteria.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1315,\"completion_tokens\":346,\"total_tokens\":1661}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 20:07:01 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

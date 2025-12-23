@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-902\",\"object\":\"chat.completion\",\"created\":1766484519,\"model\":\"deepseek-v3.1:671b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Я нашел несколько параграфов с диалогами, но мне нужно найти первый диалог между двумя конкретными названными персонажами. Продолжу поиск, чтобы найти более ранний диалог:\",\"tool_calls\":[{\"id\":\"call_c3bbvnyb\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"agent-run_agent\",\"arguments\":\"{\\\"cursorName\\\":\\\"search_cursor\\\",\\\"taskDescription\\\":\\\"Continue searching for the first dialogue between two named characters. Look for earlier dialogues where specific character names are mentioned as speakers.\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1799,\"completion_tokens\":96,\"total_tokens\":1895}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 10:08:37 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

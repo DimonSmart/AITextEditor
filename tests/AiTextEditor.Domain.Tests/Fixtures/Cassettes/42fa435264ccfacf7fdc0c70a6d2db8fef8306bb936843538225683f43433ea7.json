@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-754\",\"object\":\"chat.completion\",\"created\":1766513289,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"We must output evidence of last mention of \\\"Фуксии\\\". The task: Find last mention of Фуксии. The context: paragraph contains Фуксии. We have current batch items. We need to scan items for mention of \\\"Фуксии\\\". The markdown texts given: none contain that word. So no evidence.\\n\\nDecision: not_found? Since no matches in current batch, and there are more batches. Probably continue scanning. Since we didn't find evidence here, decision = \\\"continue\\\". No newEvidence.\\n\\nThus output JSON.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":818,\"completion_tokens\":127,\"total_tokens\":945}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:08:08 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

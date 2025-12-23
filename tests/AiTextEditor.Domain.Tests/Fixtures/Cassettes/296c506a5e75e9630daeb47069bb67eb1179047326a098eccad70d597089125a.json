@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-238\",\"object\":\"chat.completion\",\"created\":1766414623,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, the user is asking for the last mention of \\\"Фуксии\\\" in the document. First, I need to figure out how to approach this. Since the document is loaded into the kernel functions, I should use the provided tools to search for the mentions.\\n\\nThe user wants the last occurrence, so I can't just take the first one. I remember that the cursor-create_cursor function can be used to create a streaming cursor that reads the document in portions. But since we need the last mention, maybe I should start from the end. However, the cursor functions might not support starting from a specific point unless I have a pointer. \\n\\nWait, the cursor-create_cursor function has a parameter called startAfterPointer, which allows starting after a specific pointer. But without knowing the pointer of the last mention, this might not help directly. Alternatively, maybe I can create a cursor that filters for mentions of \\\"Фуксии\\\" and then iterate through the results until the end. \\n\\nBut how do I get the last one? The agent-run_agent function can be used to run the agent on the cursor, and if I set a high maxEvidenceCount, maybe it will capture all mentions. However, the user wants the last one, so perhaps I need to first find all mentions and then take the last one. \\n\\nAlternatively, maybe the first step is to create a cursor that filters for \\\"Фуксии\\\" and then run the agent to get all occurrences. Then, the last item in the list would be the answer. But since the document might be large, this could be inefficient. \\n\\nWait, the cursor-create_cursor function's filterDescription must be stateless. So I can create a cursor that looks for any mention of \\\"Фуксии\\\" in the text. Then, using the agent-run_agent with a high maxEvidenceCount to get all mentions. Once I have all the evidence items, I can pick the last one. \\n\\nBut the user might not want to process the entire document. However, given the tools available, this seems like the way to go. So first, create a cursor with the filter for \\\"Фуксии\\\", then run the agent to get all mentions, and then select the last one. \\n\\nWait, but the agent-run_agent might not return all mentions if the document is large. The maxEvidenceCount parameter can be set to a high number, but if the document has many mentions, it might not capture all. However, the user is asking for the last one, so maybe the first step is to find all mentions and then take the last. \\n\\nAlternatively, maybe the first mention is in the first portion, and the last is in the last portion. But without knowing the structure, it's safer to process all mentions. \\n\\nSo, the plan is: create a cursor with filterDescription \\\"contains 'Фуксии'\\\", then run the agent with maxEvidenceCount set to a high number (like 1000) to get all mentions. Then, the last item in the evidence list would be the answer. \\n\\nBut how to handle if there are multiple mentions in the same paragraph? The user wants the last occurrence in the text, so the last evidence item in the list would be the correct one. \\n\\nTherefore, the steps are: create the cursor, run the agent with a high maxEvidenceCount, collect all evidence items, and then select the last one. \\n\\nNow, I need to implement this using the functions provided. First, create the cursor with the filter for \\\"Фуксии\\\", then run the agent to get all mentions. Then, the last item in the result is the answer. \\n\\nBut the user might not want to process all mentions. However, given the tools, this seems necessary. So, proceed with creating the cursor and running the agent with a high maxEvidenceCount.\\n\",\"tool_calls\":[{\"id\":\"call_cmvk9cpi\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_cursor\",\"arguments\":\"{\\\"filterDescription\\\":\\\"contains 'Фуксии'\\\",\\\"maxBytes\\\":10485760,\\\"maxElements\\\":1000,\\\"name\\\":\\\"search_cursor\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1055,\"completion_tokens\":848,\"total_tokens\":1903}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 14:43:43 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

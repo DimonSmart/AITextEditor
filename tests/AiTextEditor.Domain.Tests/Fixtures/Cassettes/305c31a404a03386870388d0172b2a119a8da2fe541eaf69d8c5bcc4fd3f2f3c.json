@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-115\",\"object\":\"chat.completion\",\"created\":1766513304,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"We need to find last mention of \\\"Фуксии\\\". The task: \\\"Find last mention of Фуксии\\\". The context: \\\"paragraph contains Фуксии\\\". So we need evidence where paragraph contains the word \\\"Фуксии\\\". In current batch, items have markdown: none contain Фуксии. So no new evidence. Decision: continue (since more batches). Not_found maybe? Since no evidence found in this batch but there may be more. So \\\"continue\\\". newEvidence empty. Also need to ensure we don't output evidence that is already in recentEvidencePointers (8:1.1.1.p5). Not relevant. So output JSON.\\n\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":718,\"completion_tokens\":152,\"total_tokens\":870}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:08:24 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

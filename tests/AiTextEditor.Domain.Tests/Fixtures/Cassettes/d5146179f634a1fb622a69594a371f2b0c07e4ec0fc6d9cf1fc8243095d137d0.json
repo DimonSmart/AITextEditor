@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-303\",\"object\":\"chat.completion\",\"created\":1766432495,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first dialog between two named characters. The context mentions lines with two character names followed by dialogue. The maxEvidenceCount is 1, so we need to find the first occurrence.\\n\\nLooking at the provided batch items, the first item is a paragraph without any dialogue. The second item has \\\"Знайка\\\" responding, but it's a single character's dialogue. The third item starts with \\\"Метеоритчики говорили:\\\", which might be a dialogue but only mentions one character. \\n\\nWait, maybe the second item has two characters? Let me check again. The second paragraph says \\\"Знайка отвечал...\\\" which is just one character. The third item starts with \\\"Метеоритчики говорили:\\\" which could be a group, but not two named characters. \\n\\nHmm, maybe there's no dialogue between two named characters in this batch. The user's snapshot has evidenceCount 0, and the task requires finding the first. Since none of the items here have two names followed by dialogue, the decision should be \\\"not_found\\\". But wait, the user's instruction says to output newEvidence if found. Since there's no match, the decision is \\\"not_found\\\" and newEvidence is empty. But the user's example might have different content. Wait, the provided items don't have two names in dialogue. So the correct response is \\\"not_found\\\".\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":802,\"completion_tokens\":312,\"total_tokens\":1114}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 19:41:35 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

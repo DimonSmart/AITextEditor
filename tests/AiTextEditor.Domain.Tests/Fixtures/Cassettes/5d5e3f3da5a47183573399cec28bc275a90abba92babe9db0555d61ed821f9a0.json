@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-736\",\"object\":\"chat.completion\",\"created\":1766435797,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first mention of Ponchik throwing old costumes into the Ogurcovna River. The context is all paragraphs mentioning Ponchik and the Ogurcovna River. \\n\\nFirst, I need to scan through the provided batch items. The snapshot shows evidenceCount is 0, so no previous matches. The batch has two paragraphs.\\n\\nLooking at the first paragraph (4:1.1.1.p1), it talks about Nезнайка's trip and changes in the city, but there's no mention of Ponchik or the river. The second paragraph (5:1.1.1.p2) discusses the clothing factory and machines, but again, no Ponchik or Ogurcovna River. \\n\\nSince neither paragraph mentions Ponchik or the river, there's no evidence here. The decision should be \\\"not_found\\\" because the required mention isn't present in the current batch. No new evidence to add, so the newEvidence array remains empty.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1268,\"completion_tokens\":227,\"total_tokens\":1495}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 20:36:37 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

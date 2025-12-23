@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-412\",\"object\":\"chat.completion\",\"created\":1766426290,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's see. The user wants me to find the first dialogue between two named characters. The task says to look for lines with at least two named characters in a dialogue format. The maxEvidenceCount is 1, so once I find one, I should set the decision to \\\"done\\\".\\n\\nLooking at the provided batch, the items are all headings. The first item is a main heading, then a subheading, and another subheading. None of these seem to be dialogues. The user mentioned that the snapshot has an evidence count of 0 and no recent pointers, so I need to check the current batch items.\\n\\nSince all the items in the batch are headings and not actual dialogue lines, there's no excerpt that contains a dialogue between two named characters. The pointers are for headings, not for any dialogue content. Therefore, there's no evidence to report here. The decision should be \\\"not_found\\\" because the required evidence isn't present in the current batch. I should output that and wait for the next batch if there is one.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":657,\"completion_tokens\":228,\"total_tokens\":885}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 17:58:09 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

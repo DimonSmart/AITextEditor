@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-598\",\"object\":\"chat.completion\",\"created\":1766416458,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's tackle this query. The user is asking where in the document the \\\"visualization of the lunar crater as a huge round field with an earth embankment on the edge\\\" is mentioned. \\n\\nFirst, I need to figure out the right approach. Since the user wants a specific mention, I should create a cursor to search for relevant parts. The function cursor-create_cursor seems appropriate here. The filterDescription should look for terms related to the visualization of a lunar crater, specifically mentioning a \\\"huge round field\\\" and an \\\"earth embankment on the edge.\\\" \\n\\nI'll set up the cursor with these keywords. Then, using agent-run_agent, I'll instruct the agent to find the first occurrence. The maxEvidenceCount is set to 1 to get the first mention. If the cursor returns the relevant paragraph, I'll check the pointerLabel and include it in the answer. If not, I might need to adjust the search terms or check if the document doesn't have that info. Since the user wants the answer in Russian, I'll make sure to present it correctly once found.\\n\",\"tool_calls\":[{\"id\":\"call_1vlfscmp\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_cursor\",\"arguments\":\"{\\\"filterDescription\\\":\\\"Парagraphs containing 'визуализация лунного кратера', 'огромного круглого поля' и 'земляной вал по краю'\\\",\\\"maxBytes\\\":1048576,\\\"name\\\":\\\"search_cursor\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1143,\"completion_tokens\":304,\"total_tokens\":1447}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 15:14:18 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

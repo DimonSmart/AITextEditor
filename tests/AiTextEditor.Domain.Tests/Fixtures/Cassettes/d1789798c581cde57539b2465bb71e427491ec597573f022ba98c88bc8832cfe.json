@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-421\",\"object\":\"chat.completion\",\"created\":1766519622,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants the first mentions of \\\"Фуксия\\\" and \\\"Селедочка\\\". But looking at the provided batch items, I need to scan through the markdown content.\\n\\nFirst, check each paragraph. The first item's markdown talks about lunar craters and astronomers, but no mention of the names. The second paragraph mentions Знайка and his theory about lunar craters, but again, no Фуксия or Селедочка. \\n\\nWait, maybe I missed something. Let me read again. The first paragraph's markdown is about scientists discussing lunar craters, with mentions of volcanic and meteorite theories. The second paragraph details Знайка's observation of pancakes. Neither of these paragraphs have the required names. \\n\\nSince the snapshot's recentEvidencePointers include \\\"8:1.1.1.p5\\\", which isn't in the current batch, maybe the current batch doesn't have any new evidence. The task's maxEvidenceCount is null, so we need to check if there are any mentions. But in the current items, there's no occurrence of Фуксия or Селедочка. Therefore, the decision should be \\\"not_found\\\" as there's no new evidence here.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1112,\"completion_tokens\":272,\"total_tokens\":1384}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 19:53:42 GMT"
+    ]
+  }
+}

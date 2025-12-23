@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-556\",\"object\":\"chat.completion\",\"created\":1766426530,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"done\\\",\\\"newEvidence\\\":[{\\\"pointer\\\":\\\"34:1.1.1.p31\\\",\\\"excerpt\\\":\\\"– А вот при чём, – сказал Знайка. – Да будет вам известно, что во время полёта в ракете у меня была бутылка с водой. Когда наступило состояние невесомости, бутылка свободно плавала в пространстве, как и каждый предмет, который не был прикреплён к стенам кабины. Всё было нормально, пока вода целиком наполняла бутылку. Но когда я половину воды выпил, начались странности: оставшаяся вода не держалась на дне бутылки и не собиралась в центре, а равномерно растекалась по стенкам, так что внутри бутылки образовался воздушный пузырь. Значит, вода притягивалась не к центру бутылки, а к её стенкам. Это и понятно, так как притягивать друг друга могут лишь массы вещества, а пустота ничего притянуть к себе не может.\\\",\\\"reason\\\":\\\"Contains dialogue between two named characters: профессор (implied by prior context) and Знайка.\\\"}]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first dialogue between two named characters. The context is lines with at least two named characters in a dialogue format. The maxEvidenceCount is 1, so we need to find the first occurrence.\\n\\nLooking at the provided batch items. The first item is a paragraph where the professor says something, but there's only one character mentioned. The second paragraph starts with Знайка responding to the professor. Wait, the first line is the professor speaking, then Знайка replies. But the task is about two named characters. The professor is mentioned, and then Знайка is another character. So their dialogue is between two named characters. The excerpt here has both of them talking. The third paragraph has Звёздочкин, but he's only talking alone. So the second item (pointer 34:1.1.1.p31) has the dialogue between the professor and Знайка. Since the first dialogue is between two named characters, this should be the evidence. The reason is that it's a dialogue between two named characters: профессор and Знайка. The snapshot evidenceCount is 0, so adding this one will meet the maxEvidenceCount of 1. Therefore, the decision should be \\\"done\\\" after including this evidence.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":985,\"completion_tokens\":591,\"total_tokens\":1576}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 18:02:10 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-269\",\"object\":\"chat.completion\",\"created\":1766416666,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The user wants to find a paragraph that describes the lunar crater visualization as an enormous circular field with an earth embankment along the edge. The context mentions looking for the terms 'визуализация лунного кратера', 'огромного круглого поля', and 'земляной вал по краю'. \\n\\nFirst, I need to scan through the provided batch items. Each item has a pointer and markdown content. The snapshot shows that there's already one piece of evidence, but the user is asking for another. The maxEvidenceCount is 2, so if we find one more, the decision should be \\\"done\\\".\\n\\nLooking at each paragraph:\\n\\n- The first few paragraphs talk about weightlessness and floating objects, but no mention of the crater or embankment.\\n- Paragraphs 55-64 discuss the water in the bottle and the moon rock. There's a mention of a \\\"кусочек самой Луны\\\" (a piece of the Moon), but not the specific visualization terms.\\n- Paragraph 69 mentions a \\\"кусочек Луны\\\" being passed around, but again, not the exact terms needed.\\n- The rest of the paragraphs are about the professor's reaction and the audience's response, which don't relate to the task.\\n\\nWait, maybe I missed something. Let me check again. The terms required are 'визуализация лунного кратера' (visualization of the lunar crater), 'огромного круглого поля' (enormous circular field), and 'земляной вал по краю' (earth embankment along the edge). \\n\\nLooking through the markdown texts again, none of the paragraphs contain all three terms. However, the user's context might allow for any of these terms. Let me check if any paragraph has any of these terms. \\n\\nParagraph 69 has \\\"кусочек Луны\\\" (piece of the Moon), but not the visualization terms. The other paragraphs don't mention the crater visualization, circular field, or earth embankment. \\n\\nSince none of the current batch items contain the required terms, the newEvidence array would be empty. The evidenceCount was 1 from the snapshot, and since we can't find any new evidence in this batch, the decision would be \\\"continue\\\" or \\\"not_found\\\". But according to the rules, if there's no new evidence, the decision should be \\\"not_found\\\". However, the user might have intended that even if no new evidence is found, but the maxEvidenceCount is 2, and the existing evidence is 1, maybe the decision is \\\"continue\\\" until more batches are processed. But since the current batch has no matches, the correct decision is \\\"not_found\\\".\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2487,\"completion_tokens\":582,\"total_tokens\":3069}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 15:17:46 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

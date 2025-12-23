@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-566\",\"object\":\"chat.completion\",\"created\":1766443342,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's see. The user wants the first dialogue between two named characters. I've tried creating cursors with different filters, increasing the max bytes and elements each time to cover more of the document. The previous attempts with dialogue_cursor, dialogue_cursor_v2, etc., didn't find anything, maybe because the document is large and the initial cursors weren't broad enough. Now, the latest cursor, dialogue_cursor_v4, is set to include all paragraphs with direct speech markers and at least two named characters. I should run the agent again with this cursor, maybe the answer is in the next batch. If it's not found, perhaps the document doesn't have such a dialogue, or I need to adjust the filter again. Let me try running the agent once more with dialogue_cursor_v4.\\n\",\"tool_calls\":[{\"id\":\"call_xzz0r8p3\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"agent-run_agent\",\"arguments\":\"{\\\"cursorName\\\":\\\"dialogue_cursor_v4\\\",\\\"maxEvidenceCount\\\":1,\\\"taskDescription\\\":\\\"Find the first dialogue between two named characters\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1889,\"completion_tokens\":210,\"total_tokens\":2099}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 22:42:21 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

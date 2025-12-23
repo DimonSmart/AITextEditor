@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-452\",\"object\":\"chat.completion\",\"created\":1766511226,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of 'профессор Звёздочкин'. The user provided a snapshot with evidenceCount 1 and recentEvidencePointers including \\\"3:1.1.1\\\". But the current batch's items have pointers 8:1.1.1.p5 and 9:1.1.1.p6. \\n\\nFirst, I need to scan the current batch items for any mention of 'профессор Звёздочкин'. Let me check each paragraph.\\n\\nLooking at the first item's markdown: It talks about Знайка, Фуксией, Селёдочкой, and their trip to the Moon. There's no mention of профессор Звёздочкин here. The second item's markdown discusses Стекляшкин, but again, no Звёздочкин. \\n\\nWait, the snapshot's recentEvidencePointers include \\\"3:1.1.1\\\", which isn't in the current batch. Maybe that's from a previous batch. Since the current batch doesn't have any mentions of профессор Звёздочкин, the decision should be 'not_found'. Also, the maxEvidenceCount is null, so we don't need to check for that. Therefore, the output should indicate that no new evidence was found.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1320,\"completion_tokens\":299,\"total_tokens\":1619}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 17:33:46 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

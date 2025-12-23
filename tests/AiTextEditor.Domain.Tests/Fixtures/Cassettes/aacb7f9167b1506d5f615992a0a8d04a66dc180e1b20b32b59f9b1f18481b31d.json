@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-399\",\"object\":\"chat.completion\",\"created\":1766484513,\"model\":\"deepseek-v3.1:671b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"decision\\\": \\\"continue\\\",\\n  \\\"newEvidence\\\": [\\n    {\\n      \\\"pointer\\\": \\\"18:1.1.1.p15\\\",\\n      \\\"excerpt\\\": \\\"– Конечно, лунные кратеры – не вулканы, но они также и не блины. Всем известно, что это следы от ударов метеоритов.\\\",\\n      \\\"reason\\\": \\\"This paragraph contains dialogue indicated by a dash, suggesting a speaker.\\\"\\n    },\\n    {\\n      \\\"pointer\\\": \\\"19:1.1.1.p16\\\",\\n      \\\"excerpt\\\": \\\"На это Знайка отвечал, что метеориты могли падать на Луну не только отвесно, но и под наклоном и в таком случае оставляли бы следы не круглые, а вытянутые, продолговатые или овальные. Между тем на Луне все кратеры в основном круглые, а не овальные.\\\",\\n      \\\"reason\\\": \\\"This paragraph contains dialogue attributed to a named character, Знайка, using the pattern 'Name отвечал'.\\\"\\n    },\\n    {\\n      \\\"pointer\\\": \\\"20:1.1.1.p17\\\",\\n      \\\"excerpt\\\": \\\"Однако вулканисты и метеоритчики настолько привыкли к своим излюбленным теориям, что даже слушать не хотели Знайку и презрительно называли его блинистом. Они говорили, что вообще смешно даже сравнивать Луну, которая является крупным космическим телом, с каким-то несчастным блином из прокисшего теста.\\\",\\n      \\\"reason\\\": \\\"This paragraph contains dialogue attributed to a group, 'Они говорили', which implies speakers.\\\"\\n    }\\n  ]\\n}\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1006,\"completion_tokens\":376,\"total_tokens\":1382}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 10:08:31 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

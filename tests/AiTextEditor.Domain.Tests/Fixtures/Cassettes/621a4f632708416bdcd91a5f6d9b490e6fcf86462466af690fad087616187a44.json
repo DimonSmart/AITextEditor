@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-641\",\"object\":\"chat.completion\",\"created\":1766435879,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants the first mention of Ponchik throwing old costumes into the Ogurcovna River. The context is paragraphs that mention both Ponchik and the Ogurcovna River. The snapshot shows that there's already 1 piece of evidence, with the pointer \\\"6:1.1.1.p3\\\". But the current batch doesn't include that pointer. The items in the current batch are pointers 10:1.1.1.p7 and 11:1.1.1.p8.\\n\\nLooking at the markdown content of these items. The first paragraph (10:1.1.1.p7) talks about lunar craters and astronomers arguing between volcanic and meteorite theories. No mention of Ponchik or the river. The second paragraph (11:1.1.1.p8) discusses Znayka's theory about lunar craters comparing them to pancakes. Still, no Ponchik or Ogurcovna River here.\\n\\nSince neither of the current batch items mention Ponchik or the Ogurcovna River, there's no new evidence to add. The decision should be \\\"not_found\\\" because the required information isn't present in the current batch. The user might need to check subsequent batches, but based on the provided data, there's nothing to report.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1113,\"completion_tokens\":294,\"total_tokens\":1407}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 20:37:58 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

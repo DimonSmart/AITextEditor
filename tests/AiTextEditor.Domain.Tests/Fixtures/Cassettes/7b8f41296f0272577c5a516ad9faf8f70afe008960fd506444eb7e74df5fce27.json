@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-465\",\"object\":\"chat.completion\",\"created\":1766432425,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first dialog between two named characters. The context mentions lines with two character names followed by dialogue. The maxEvidenceCount is 1, so we need to find the first occurrence.\\n\\nLooking at the provided batch items, both are paragraphs. The first paragraph talks about Nезнайка's journey and mentions Кнопочки and Пачкули Пёстренького, but there's no dialogue here. The second paragraph discusses the construction projects and mentions инженера Клёпки, but again, no dialogue. \\n\\nSince the task requires dialogue between two characters, and neither of these paragraphs has any direct dialogue, there's no evidence to report. The decision should be \\\"not_found\\\" because the required evidence isn't present in the current batch. Also, the snapshot's evidenceCount is 0, and adding nothing from the current batch would keep it at 0, which is less than the maxEvidenceCount of 1. So, the correct output is \\\"not_found\\\" with no new evidence.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1266,\"completion_tokens\":232,\"total_tokens\":1498}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 19:40:25 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

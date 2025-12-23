@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-265\",\"object\":\"chat.completion\",\"created\":1766484576,\"model\":\"deepseek-v3.1:671b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"decision\\\": \\\"continue\\\",\\n  \\\"newEvidence\\\": [\\n    {\\n      \\\"pointer\\\": \\\"42:1.1.1.p39\\\",\\n      \\\"excerpt\\\": \\\"– Вот видите, сами говорите – жидкость, – усмехнулся Звёздочкин. – Откуда же в Луне взялась пустота, если там была жидкость, садовая вы голова?\\\",\\n      \\\"reason\\\": \\\"This paragraph contains dialogue with speaker 'Звёздочкин' addressing another character.\\\"\\n    },\\n    {\\n      \\\"pointer\\\": \\\"43:1.1.1.p40\\\",\\n      \\\"excerpt\\\": \\\"– Ну, об этом совсем нетрудно догадаться, – невозмутимо ответил Знайка. – Ведь раскалённая жидкость, окружённая твёрдой оболочкой Луны, продолжала остывать, а остывая, она уменьшалась в объёме. Вы, надо полагать, знаете, что каждое вещество, охлаждаясь, уменьшается в объёме?\\\",\\n      \\\"reason\\\": \\\"This paragraph contains dialogue with speaker 'Знайка' responding to the previous speaker.\\\"\\n    },\\n    {\\n      \\\"pointer\\\": \\\"44:1.1.1.p41\\\",\\n      \\\"excerpt\\\": \\\"– Надо полагать, знаю, – сердито буркнул профессор.\\\",\\n      \\\"reason\\\": \\\"This paragraph contains dialogue with speaker 'профессор' continuing the conversation.\\\"\\n    }\\n  ]\\n}\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":963,\"completion_tokens\":337,\"total_tokens\":1300}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 10:09:35 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

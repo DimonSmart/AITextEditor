@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-851\",\"object\":\"chat.completion\",\"created\":1766512748,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The user wants me to find all mentions of 'профессора Звёздочкина' in the provided batch, excluding headers. First, I need to check each item in the batch's items array.\\n\\nLooking at the first item with pointer \\\"10:1.1.1.p7\\\", the markdown content talks about astronomers arguing about lunar craters. There's no mention of профессора Звёздочкина here. The second item is pointer \\\"11:1.1.1.p8\\\". The markdown here discusses Знайка's theory about lunar craters, but again, no reference to профессора Звёздочкина. \\n\\nWait, maybe I missed something. Let me scan again. The first paragraph mentions \\\"вулканистами\\\" and \\\"метеоритчиками\\\", but no Звёздочкин. The second paragraph talks about Знайка and his observations, but still no Звёздочкин. \\n\\nSince the task says to exclude headers and the snapshot has zero evidence, but the user's input doesn't have any mentions of профессора Звёздочкина in the current batch, the decision should be \\\"not_found\\\". There's no new evidence to add here. So the JSON should reflect that.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1105,\"completion_tokens\":290,\"total_tokens\":1395}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 17:59:07 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

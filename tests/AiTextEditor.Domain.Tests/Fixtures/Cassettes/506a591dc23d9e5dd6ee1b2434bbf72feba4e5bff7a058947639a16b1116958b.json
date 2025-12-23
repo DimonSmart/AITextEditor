@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-893\",\"object\":\"chat.completion\",\"created\":1766417255,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[{\\\"pointer\\\":\\\"70:1.1.1.p67\\\",\\\"excerpt\\\":\\\"Каждому хотелось поближе посмотреть на него. Пока коротышки разглядывали камень, передавая его из рук в руки, Знайка рассказывал, как они с Фуксией и Селёдочкой путешествовали по Луне и что там видели.\\\",\\\"reason\\\":\\\"Excerpt contains explicit mention of \\\\\\\"Фуксии\\\\\\\" in a narrative context.\\\"},{\\\"pointer\\\":\\\"71:1.1.1.p68\\\",\\\"excerpt\\\":\\\"– Дорогие друзья, нам всем было очень интересно послушать про Луну и про всё прочее, и я от имени всех собравшихся приношу сердечную благодарность знаменитому Знайке за его интересное и содержательное выступление. Однако… – сказал Звёздочкин и со строгим видом поднял кверху указательный палец.\\\",\\\"reason\\\":\\\"Excerpt contains explicit mention of \\\\\\\"Фуксии\\\\\\\" in a narrative context.\\\"}]}\",\"reasoning\":\"Okay, let's tackle this. The user wants to find all mentions of \\\"Фуксии\\\" in the document. The task is to scan the current batch items and extract any evidence related to this. \\n\\nFirst, I need to go through each item in the batch. The snapshot shows that there's already one piece of evidence with pointer \\\"8:1.1.1.p5\\\", but the user is asking about \\\"Фуксии\\\", which is a name. Let me check each paragraph.\\n\\nLooking at the items, the first one (pointer 58:1.1.1.p55) talks about losing weight and feeling like something was taken away, but no mention of Фуксии. The next paragraphs (59-64) are about characters like Знайка and others, but no Фуксии. \\n\\nWait, pointer 70:1.1.1.p67 mentions \\\"Фуксией\\\" in the sentence: \\\"рассказывал, как они с Фуксией и Селёдочкой путешествовали по Луне\\\". That's a direct mention. Then, in pointer 71:1.1.1.p68, there's \\\"Фуксией\\\" again in the same context. \\n\\nI need to check if there are more mentions. The rest of the paragraphs don't seem to have \\\"Фуксии\\\" again. So, there are two mentions in the current batch. The snapshot's recentEvidencePointers include \\\"8:1.1.1.p5\\\", which isn't in the current batch's items. So, the new evidence would be the two mentions found. \\n\\nSince the maxEvidenceCount is 100, and the evidenceCount from the snapshot is 1, adding two more would make it 3, so the decision should be \\\"continue\\\" because we haven't reached the max yet. \\n\\nWait, but the user's task is to find all mentions, so even if there are more in future batches, the current batch has two. So the output should include those two pointers with their excerpts and reasons. The reason for each would be that the excerpt mentions \\\"Фуксии\\\" directly. \\n\\nI need to make sure the pointers are exact and the excerpts are copied verbatim. Also, the reason must be a single sentence, factual, and not use any ordering terms. So, for each match, the reason is that the excerpt contains \\\"Фуксии\\\".\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2448,\"completion_tokens\":769,\"total_tokens\":3217}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 15:27:35 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-63\",\"object\":\"chat.completion\",\"created\":1766447011,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first dialogue between two named characters in all paragraphs. The current batch has three items. \\n\\nFirst, I need to scan each item's markdown content for dialogues. The first item (33:1.1.1.p30) has a dialogue: \\\"– При чём тут ещё состояние невесомости? – буркнул профессор.\\\" Here, the professor is speaking, but there's only one character mentioned. So this isn't a dialogue between two named characters.\\n\\nNext, the second item (34:1.1.1.p31) starts with \\\"– А вот при чём, – сказал Знайка.\\\" This is Знайка speaking. Then later, there's a part where Знайка explains about the water in the bottle. But again, only one character is involved here. Wait, maybe I missed something. Let me check again. The paragraph mentions Знайка and the professor? No, the professor was in the first paragraph. Wait, the second paragraph's dialogue is between Знайка and...? Wait, the first paragraph has the professor, and the second paragraph starts with Знайка. But is there a dialogue between two named characters here? The second paragraph's markdown is a single dialogue from Знайка, but maybe there's an implicit conversation? Or maybe the professor is involved? Wait, the first paragraph's dialogue is the professor, and the second paragraph's dialogue is Знайка. But the user is looking for a dialogue between two named characters. So maybe the second paragraph's dialogue is only Знайка speaking, not a dialogue between two. \\n\\nThen the third item (35:1.1.1.p32) has \\\"– Попал пальцем в небо! – сердито проворчал Звёздочкин.\\\" Here, Звёздочкин is speaking. But again, only one character. \\n\\nWait, maybe I'm missing something. Let me check again. The second paragraph's markdown starts with Знайка's dialogue, but maybe there's a dialogue between Знайка and someone else? Wait, the first paragraph has the professor, and the second paragraph's dialogue is Знайка. But the user is looking for a dialogue between two named characters. So perhaps the first dialogue between two named characters is between Знайка and the professor? Wait, the first paragraph's dialogue is the professor speaking, and the second paragraph's dialogue is Знайка. But there's no direct dialogue between them. Unless the professor is mentioned again. Wait, the second paragraph's markdown mentions \\\"во время полёта в ракете у меня была бутылка с водой.\\\" But that's just a statement, not a dialogue. \\n\\nWait, maybe the first dialogue between two named characters is between Знайка and someone else. Wait, the third paragraph's dialogue is Звёздочкин speaking. So maybe there's no dialogue between two named characters in the current batch. But the user's task says to find the first dialogue between two named characters. However, in the current batch, the dialogues are all from single characters. So maybe there's no evidence here. But the user's snapshot has evidenceCount 0, so maybe the answer is \\\"not_found\\\". But wait, the user's task says \\\"Find the first dialogue between two named characters\\\", and the current batch's items don't have such a dialogue. Therefore, the decision should be \\\"not_found\\\". But wait, maybe I missed something. Let me check again. \\n\\nWait, the second paragraph's markdown has \\\"– А вот при чём, – сказал Знайка. – Да будет вам известно...\\\" So that's Знайка speaking. But there's no other character in that dialogue. The first paragraph's dialogue is the professor. So no dialogue between two named characters. Therefore, the answer is \\\"not_found\\\". But the user's task says \\\"maxEvidenceCount\\\":null, so maybe they need to continue. Wait, the output schema requires \\\"decision\\\" to be \\\"continue\\\", \\\"done\\\", or \\\"not_found\\\". Since there's no dialogue between two named characters in the current batch, the decision should be \\\"not_found\\\". But maybe I'm missing something. Let me check again. \\n\\nAlternatively, maybe the first paragraph's dialogue is between the professor and someone else. Wait, the first paragraph's markdown is \\\"– При чём тут ещё состояние невесомости? – буркнул профессор.\\\" That's just the professor speaking. No other character. So no dialogue between two. Therefore, the answer is \\\"not_found\\\".\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":976,\"completion_tokens\":1007,\"total_tokens\":1983}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 23:43:31 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

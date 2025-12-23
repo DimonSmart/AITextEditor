@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-295\",\"object\":\"chat.completion\",\"created\":1766415399,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The goal is to find the first dialogue between two named characters. The context specifies that lines must have at least two named characters in a dialogue format. The maxEvidenceCount is 1, so we need to find the first occurrence.\\n\\nLooking at the provided batch, the items are a mix of headings and paragraphs. The user mentioned to focus only on the current batch and use the evidence rules. First, I'll scan each paragraph for any dialogue between named characters.\\n\\nStarting with pointer 4:1.1.1.p1, the paragraph talks about Nезнайка's journey and other characters like Кнопочки and Пачкули Пёстренького, but there's no dialogue here. The same goes for pointer 5:1.1.1.p2, which mentions the factory and characters but no dialogue.\\n\\nPointer 6:1.1.1.p3 describes Пончик's situation with his clothes. Still, no dialogue. Pointer 7:1.1.1.p4 continues the story about Пончик's room and the smell, but again, no dialogue between two named characters.\\n\\nWait, maybe I missed something. Let me check again. All the paragraphs are narrative, describing events and characters' actions but not actual dialogues. The headings don't contain any dialogues either. \\n\\nSince there's no dialogue between two named characters in the current batch, the decision should be \\\"not_found\\\". The evidenceCount is 0, and none of the paragraphs have the required dialogue. Therefore, the output should indicate that no evidence was found.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2023,\"completion_tokens\":343,\"total_tokens\":2366}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 14:56:38 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

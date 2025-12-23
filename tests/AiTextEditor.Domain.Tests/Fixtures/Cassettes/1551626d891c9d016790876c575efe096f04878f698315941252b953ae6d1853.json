@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-644\",\"object\":\"chat.completion\",\"created\":1766435170,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"В тексте Знайка язвительно поддевает профессора в диалоге, где указывает на его неправильное понимание структуры Луны. \\n\\n**Ответ:**  \\nПозиция: `30:1.1.1.p27`  \\nЦитата: *«– Вы рассуждаете так, будто вам уже когда-нибудь приходилось болтаться в центре Луны!»*  \\n\\nЭто первое упоминание, где Знайка саркастически высмеивает профессора, упоминая центр Луны.\",\"reasoning\":\"Okay, let's see. The user is asking about where Znayka sarcastically comments on the professor being stuck in the Moon's center. The previous tool responses showed that the first mention was found at pointer 30:1.1.1.p27 with the excerpt: “– Вы рассуждаете так, будто вам уже когда-нибудь приходилось болтаться в центре Луны!” \\n\\nThis seems to be a direct quote from Znayka to the professor, pointing out the professor's incorrect assumption about the Moon's center. The reason given by the tool is that it's a sarcastic remark about the professor's situation. The user is asking for the location of this mention, so the answer should include the pointer label and the excerpt.\\n\\nI need to check if there's a second mention, but the user's question is about the first occurrence. The tool response already found the first mention, so the answer is there. The final answer should be in Russian, including the semantic pointer. Let me make sure the pointer is correctly formatted and the excerpt is accurately quoted.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1753,\"completion_tokens\":378,\"total_tokens\":2131}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 20:26:10 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

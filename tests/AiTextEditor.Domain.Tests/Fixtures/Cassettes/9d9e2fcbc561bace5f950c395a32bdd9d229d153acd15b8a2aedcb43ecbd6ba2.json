@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-185\",\"object\":\"chat.completion\",\"created\":1766434096,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first mention of \\\"Fuchs\\\" in the provided batch. First, I need to scan through each item in the batch to see if \\\"Fuchs\\\" appears. \\n\\nLooking at the first paragraph (pointer 4:1.1.1.p1), the text is about Незнайка's journey to the Sun City and the changes in the Flower City. There's no mention of Fuchs here. The second paragraph (pointer 5:1.1.1.p2) talks about the inhabitants of Sun City helping the Flower City with industrial projects. Again, no Fuchs here.\\n\\nSince neither of the paragraphs in the current batch mention Fuchs, the decision should be \\\"not_found\\\". The newEvidence array will be empty because there are no relevant pointers. The snapshot's evidenceCount is 0, and since there's no new evidence, the decision remains not_found. I need to make sure not to include any pointers from recentEvidencePointers since they aren't in this batch. Also, the output must be a JSON object with the correct structure and no extra text.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1248,\"completion_tokens\":249,\"total_tokens\":1497}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 20:08:15 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

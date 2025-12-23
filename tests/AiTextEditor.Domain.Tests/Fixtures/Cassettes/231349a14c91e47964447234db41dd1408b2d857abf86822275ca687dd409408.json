@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-744\",\"object\":\"chat.completion\",\"created\":1766435186,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's tackle this query. The user is asking about characters named Фуксия (Fuksiya) and Селедочка (Selёdочка) and where they are first mentioned in the book. \\n\\nFirst, I need to create a cursor to search for these characters. Since the names might appear in different paragraphs, I should use a broad filter. The user mentioned that for multi-paragraph concepts like dialogue, a very broad filter is better. So, I'll create a cursor with the filter description \\\"All paragraphs\\\" to ensure I don't miss any mentions.\\n\\nNext, I'll use the run_agent function with this cursor to find the first occurrence of either name. The task description should be something like \\\"Find the first mention of Fuksiya or Selёdочка\\\". \\n\\nI need to check the response from the agent. If the first evidence item contains either name, that's where they are first mentioned. If not, I'll have to continue scanning the document by calling run_agent again with the same cursor. \\n\\nAlso, I should remember that the answer might be in a previous evidence item if the first mention is in the same paragraph as another mention. So, I'll keep track of the evidence items found and check each one carefully. \\n\\nIf the cursor completes without finding them, I'll have to inform the user that they aren't mentioned in the document. But since the user is asking for their first mention, it's likely they are in the text, so I'll proceed with the search.\\n\",\"tool_calls\":[{\"id\":\"call_x5w5sqcw\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_cursor\",\"arguments\":\"{\\\"filterDescription\\\":\\\"All paragraphs\\\",\\\"maxBytes\\\":1048576,\\\"maxElements\\\":1000,\\\"name\\\":\\\"search_cursor\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1276,\"completion_tokens\":368,\"total_tokens\":1644}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 20:26:26 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

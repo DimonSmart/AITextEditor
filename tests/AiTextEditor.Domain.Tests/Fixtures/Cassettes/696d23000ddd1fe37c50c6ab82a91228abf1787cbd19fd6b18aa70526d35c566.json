@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-883\",\"object\":\"chat.completion\",\"created\":1766432576,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, the user is asking for the first dialogue between two named characters. I've tried creating different cursors with varying filters, but each time the agent returns \\\"not_found\\\" with \\\"More items available.\\\" Maybe the initial approach was too restrictive. Let me think.\\n\\nFirst, the user mentioned \\\"two named characters,\\\" so the filter should capture lines where two character names are present, followed by dialogue. But perhaps the dialogue isn't always in the same line. Maybe the names are in adjacent paragraphs or split across lines. The previous cursors might have failed because they required the names and dialogue to be in the same line.\\n\\nI should adjust the filter to look for lines containing character names followed by dialogue markers, even if they're in separate lines. Also, considering that dialogue can span multiple lines, the cursor should scan more thoroughly. Let me try a broader filter that checks for any occurrence of two names followed by dialogue, regardless of line breaks. Maybe using a cursor that looks for lines with character names and then subsequent lines with dialogue markers. Alternatively, perhaps the document uses different markers like em dashes or quotes, so the filter should account for those variations.\\n\\nWait, the user tried several cursors with increasing specificity, but none found the dialogue. Maybe the issue is that the dialogue isn't in the same line, or the names are in separate paragraphs. Let me try a cursor that looks for any lines with character names followed by dialogue, even if they're in different lines. Alternatively, maybe the first occurrence is in a paragraph that wasn't scanned yet. Since the status says \\\"More items available,\\\" I need to keep running the agent until it finds the first occurrence. Let me try again with a more inclusive filter.\\n\",\"tool_calls\":[{\"id\":\"call_gj25fzn3\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"agent-run_agent\",\"arguments\":\"{\\\"cursorName\\\":\\\"dialogue_cursor_v4\\\",\\\"maxEvidenceCount\\\":1,\\\"taskDescription\\\":\\\"Найдите первый диалог между двумя названными персонажами\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1973,\"completion_tokens\":405,\"total_tokens\":2378}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 19:42:56 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-14\",\"object\":\"chat.completion\",\"created\":1766513399,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"decision\\\": \\\"continue\\\",\\n  \\\"newEvidence\\\": []\\n}\",\"reasoning\":\"We need to find \\\"first dialogue between two characters that are named in the text (e.g., lines starting with a name followed by colon or quoted speech)\\\". So we need to scan current batch items for dialogue snippets. The items are paragraphs in Russian about \\\"Пончик\\\". No dialogues with name colon. No quotes. So no matches. Should output decision \\\"continue\\\" (since there are more batches). No newEvidence.\\n\\nCheck snapshot.evidenceCount=0. No recent pointers. So output JSON with decision continue and empty newEvidence.\\n\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1221,\"completion_tokens\":138,\"total_tokens\":1359}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:09:58 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

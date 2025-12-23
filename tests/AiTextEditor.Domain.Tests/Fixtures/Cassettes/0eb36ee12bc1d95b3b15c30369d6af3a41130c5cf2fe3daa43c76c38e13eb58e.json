@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-301\",\"object\":\"chat.completion\",\"created\":1766515880,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The user wants me to find all mentions of 'Фуксии' in the current batch. First, I need to check each item's markdown content.\\n\\nLooking at the first item with pointer 36:1.1.1.p33, the markdown doesn't have 'Фуксии'. The second item, 37:1.1.1.p34, also doesn't mention it. The third item, 38:1.1.1.p35,同样 no mention. None of the paragraphs or list items in this batch contain the word 'Фуксии'. \\n\\nSince there are no new matches, the decision should be 'not_found'. The snapshot's recentEvidencePointers include '8:1.1.1.p5', but that's from a previous batch, so it's not part of the current items. Therefore, the newEvidence array remains empty. The decision is 'not_found' because the required term isn't present in the current batch.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":845,\"completion_tokens\":229,\"total_tokens\":1074}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:51:20 GMT"
+    ]
+  }
+}

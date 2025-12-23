@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-108\",\"object\":\"chat.completion\",\"created\":1766415737,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's tackle this query. The user is asking where in the document it's mentioned that Znayka stayed on the Moon for about four hours and had to return urgently due to air issues. \\n\\nFirst, I need to create a cursor to search for mentions related to Znayka's time on the Moon and the reason for returning. The cursor should filter for content involving \\\"Знайка\\\", \\\"Луна\\\", \\\"четыре часа\\\", and \\\"воздух\\\". Using the cursor-create_cursor function with these filters.\\n\\nNext, I'll run the agent to find the first occurrence. The maxEvidenceCount is set to 1 to get the first mention. If the result doesn't match, I'll adjust the cursor parameters and run again. I need to check each evidence item's text to ensure it includes all the specified details. If found, I'll note the pointer and summary. If not, continue searching until the cursor completes or the information is confirmed absent.\\n\",\"tool_calls\":[{\"id\":\"call_ql6gti63\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_cursor\",\"arguments\":\"{\\\"filterDescription\\\":\\\"Contains 'Знайка' and 'Луна' and 'четыре часа' and 'воздух'\\\",\\\"maxBytes\\\":1048576,\\\"name\\\":\\\"search_cursor\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1079,\"completion_tokens\":272,\"total_tokens\":1351}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 15:02:16 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-967\",\"object\":\"chat.completion\",\"created\":1766433973,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first mention of a clothing factory producing rubber bras and synthetic fur coats. The context is paragraphs mentioning 'одёжная фабрика' (clothing factory) and listing products from rubber bras to synthetic fur coats.\\n\\nFirst, I need to check the current batch items. The snapshot shows that there's already 1 piece of evidence, with pointer \\\"5:1.1.1.p2\\\". But the user is providing a new batch with items 10:1.1.1.p7 and 11:1.1.1.p8. \\n\\nLooking at the markdown content of these items. The first paragraph (10:1.1.1.p7) talks about lunar craters and astronomers arguing between volcanic and meteorite theories. No mention of a clothing factory here. The second paragraph (11:1.1.1.p8) describes Znayka's theory about lunar craters comparing them to pancakes with bubbles. Still no mention of a factory or clothing products.\\n\\nSince neither of these paragraphs mention 'одёжная фабрика' or any products like rubber bras or synthetic fur coats, there's no new evidence here. The user's task is to find the first mention, but in the current batch, there's nothing relevant. The decision should be \\\"not_found\\\" because the required content isn't present in the current batch items. Also, the snapshot's recentEvidencePointers include an entry that's not in the current batch, but since the user is processing the current batch, we can't consider that. So, no new evidence to add, and the decision is not_found.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1122,\"completion_tokens\":364,\"total_tokens\":1486}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 20:06:13 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

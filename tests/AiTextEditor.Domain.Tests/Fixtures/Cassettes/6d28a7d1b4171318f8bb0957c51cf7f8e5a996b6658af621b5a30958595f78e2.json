@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-209\",\"object\":\"chat.completion\",\"created\":1766446697,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's tackle this query. The user wants the first dialogue between two named characters and their names. First, I need to create a cursor to scan the document for dialogues. Since dialogues can span multiple paragraphs, I'll use a broad filter like \\\"All paragraphs\\\" to ensure I don't miss any. \\n\\nI'll start by creating a cursor with the name \\\"dialogue_cursor\\\" and filter description \\\"All paragraphs\\\". Then, I'll run the agent to find the first mention. The agent will process the document in batches, so I might need to call run_agent multiple times until it finds the first dialogue.\\n\\nOnce the agent returns the evidence, I'll check each paragraph for direct speech with character names. The first occurrence of such a dialogue will give me the answer. I need to make sure the names are mentioned in the same dialogue, even if they're in separate paragraphs. If the first item has multiple mentions, I'll count them accordingly. If not found in the first batch, I'll continue iterating until the cursor completes or the answer is found.\\n\",\"tool_calls\":[{\"id\":\"call_cx4spxv6\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_cursor\",\"arguments\":\"{\\\"filterDescription\\\":\\\"All paragraphs\\\",\\\"maxBytes\\\":1048576,\\\"maxElements\\\":1000,\\\"name\\\":\\\"dialogue_cursor\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1399,\"completion_tokens\":275,\"total_tokens\":1674}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 23:38:17 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

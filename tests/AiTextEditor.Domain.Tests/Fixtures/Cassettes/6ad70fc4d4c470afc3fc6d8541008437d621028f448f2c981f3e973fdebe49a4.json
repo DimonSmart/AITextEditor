@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-433\",\"object\":\"chat.completion\",\"created\":1766435220,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first mention of \\\"Фуксия\\\" and \\\"Селедочка\\\" in the provided batch. The snapshot shows evidenceCount is 0 and recentEvidencePointers is empty, so we need to look through the current batch items.\\n\\nFirst, I'll go through each item's markdown content. The first item (4:1.1.1.p1) talks about Незнайка's trip and the changes in Цветочный город. I don't see Фуксия or Селедочка here. The second item (5:1.1.1.p2) mentions the одёжная фабрика and various machines, but again, no sign of the two names. \\n\\nSince neither of these paragraphs contain the required mentions, there's no new evidence to add. The decision should be \\\"not_found\\\" because the task is to find the first mention, and the current batch doesn't have them. The user might need to check subsequent batches if these names appear later.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1255,\"completion_tokens\":233,\"total_tokens\":1488}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 20:27:00 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

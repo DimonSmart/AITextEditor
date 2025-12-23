@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-296\",\"object\":\"chat.completion\",\"created\":1766443744,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first dialogue between two named characters. The context is all paragraphs, and the maxEvidenceCount is 1, so we need to find just one instance.\\n\\nFirst, I'll look through the provided batch items. The first item (pointer 24:1.1.1.p21) mentions Professor Zvezdochkin and his reaction to Znayka's book. But there's no dialogue here, just his opinion. \\n\\nThe second item (pointer 25:1.1.1.p22) talks about the academy agreeing to a discussion and sending an invitation. Still no dialogue between two characters. \\n\\nThe third item (pointer 26:1.1.1.p23) starts with the professor entering and his first words. Wait, here's a line where he says, \\\"Когда все приглашённые на обсуждение коротышки собрались в просторном зале и расселись на стулья, на трибуну взошёл профессор Звёздочкин, и первое, что от него услышали, были слова:\\\" But this is just the setup, not a dialogue. \\n\\nWait, maybe there's a dialogue in the next paragraph? But the batch only includes up to p23. The user mentioned that there might be more batches, but the current batch ends here. Since the task requires the first dialogue, and the current batch doesn't have any actual dialogue between two named characters, the answer would be \\\"not_found\\\". However, the user's example might have a dialogue in the next batch. But according to the input provided, the current batch doesn't have any. So the correct decision here is \\\"not_found\\\".\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1115,\"completion_tokens\":389,\"total_tokens\":1504}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 22:49:03 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

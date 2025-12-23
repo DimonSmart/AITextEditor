@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-242\",\"object\":\"chat.completion\",\"created\":1766415841,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"В тексте упоминается, что два вертящихся здания на улице Колокольчиков описаны в следующем месте:  \\n**4:1.1.1.p1**  \\n*«По проекту архитектора Вертибутылкина на улице Колокольчиков было построено даже два вертящихся здания... одно пятиэтажное, башенного типа, со спиральным спуском... другое шестиэтажное... с чёртовым колесом на крыше.»*  \\n\\nЭто первое упоминание, соответствующее всем критериям.\",\"reasoning\":\"Okay, let's see. The user is asking about two rotating buildings on Kolokolchikov Street with a spiral descent and a devil's wheel on top. I need to find the exact location in the document.\\n\\nFirst, I created a cursor to search for mentions of those specific elements. The initial cursor creation used the filterDescription with all the keywords. Then, I ran the agent to find the first occurrence. The response came back with a pointer 4:1.1.1.p1. The excerpt mentions two rotating buildings, a spiral descent, and a devil's wheel. That seems to match the query. Since the user asked for the place where this is described, the answer should include the pointer label and the excerpt. I need to make sure there's no need to check further items since the first hit already contains all the mentioned features. So, the final answer in Russian with the pointer should be sufficient.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1447,\"completion_tokens\":347,\"total_tokens\":1794}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 15:04:01 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

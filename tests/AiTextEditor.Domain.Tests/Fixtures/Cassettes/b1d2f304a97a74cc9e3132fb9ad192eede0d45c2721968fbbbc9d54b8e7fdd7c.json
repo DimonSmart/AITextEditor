@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-266\",\"object\":\"chat.completion\",\"created\":1766433088,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants the first mention of Znayka comparing the lunar surface to pancake and steam bubbles. The context is paragraphs mentioning 'Знайка' with comparisons to pancake or steam bubbles.\\n\\nLooking at the provided batch items:\\n\\n1. The first item (15:1.1.1.p12) talks about a \\\"блинистая теория\\\" (pancake theory) but doesn't mention Znayka. So, no match here.\\n\\n2. The second item (16:1.1.1.p13) has Znayka explaining volcanoes. He mentions a crater as a small hole on a big mountain. However, the comparison here is about a volcano's structure, not directly the lunar surface being like pancakes or steam bubbles. The user's task requires a comparison of the lunar surface itself to those things. So this might not be the right match.\\n\\n3. The third item (17:1.1.1.p14) starts with \\\"Метеоритчики говорили:\\\" which is about meteorites, not Znayka. So no match here either.\\n\\nWait, the task says \\\"first mention\\\" and the snapshot has evidenceCount 2. The recent pointers are 11:1.1.1.p8 and 12:1.1.1.p9. Since the current batch items don't have any matches, the decision should be \\\"not_found\\\" because there's no new evidence here. The user might need to check previous batches or the next ones. But according to the current batch, there's nothing that fits the criteria. So the answer is \\\"not_found\\\" with no new evidence.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":833,\"completion_tokens\":373,\"total_tokens\":1206}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 19:51:28 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

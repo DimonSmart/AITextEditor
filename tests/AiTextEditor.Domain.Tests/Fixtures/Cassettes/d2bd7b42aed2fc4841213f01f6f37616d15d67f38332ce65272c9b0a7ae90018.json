@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-941\",\"object\":\"chat.completion\",\"created\":1766513238,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"We have a task: \\\"Find the first occurrence of the term \\\\\\\"Пончик\\\\\\\" in the document.\\\" The context: contains Пончик. We have snapshot evidenceCount=2 and recentEvidencePointers includes pointers \\\"6:1.1.1.p3\\\",\\\"7:1.1.1.p4\\\". Those indicate earlier evidence of term Пончик presumably. In current batch, we have three items with pointers 12:...,13:...,14:... None of their markdown visible text includes \\\"Пончик\\\". So no new evidence. Should we output decision? Since no new evidence found, we continue scanning other batches. So decision \\\"continue\\\". newEvidence empty array.\\n\\nMake sure not to include any pointers that are already in recentEvidencePointers. Not relevant. So output JSON.\\n\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1065,\"completion_tokens\":180,\"total_tokens\":1245}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:07:17 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-788\",\"object\":\"chat.completion\",\"created\":1766417796,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, I need to find where Professor Zvezdochkin is first mentioned in the book. The user wants to know the first occurrence and a brief description of his character. Let me start by creating a cursor to search for mentions of him. The function cursor-create_cursor will help here. The filter should look for any text containing \\\"профессор Звёздочкин\\\". Once the cursor is created, I'll use agent-run_agent to find the first mention. I'll set maxEvidenceCount to 1 to get the first occurrence. Then, I'll check the evidence item to find the description of his character, noting that he \\\"кипел от негодования\\\" which indicates he's easily angered. I need to make sure the answer includes the pointer label and the relevant paragraph.\\n\",\"tool_calls\":[{\"id\":\"call_fjxa8dab\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_cursor\",\"arguments\":\"{\\\"filterDescription\\\":\\\"mentions of 'профессор Звёздочкин'\\\",\\\"maxBytes\\\":10485760,\\\"name\\\":\\\"search_cursor\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1147,\"completion_tokens\":219,\"total_tokens\":1366}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 15:36:35 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

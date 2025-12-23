@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-86\",\"object\":\"chat.completion\",\"created\":1766417410,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first mention of \\\"Фуксия\\\" in the document. The current batch has several items, mostly paragraphs. I need to scan each item's markdown content for the exact term \\\"Фуксия\\\". \\n\\nLooking at the first paragraph (pointer 4:1.1.1.p1), the text talks about the Sun City and various buildings, but I don't see \\\"Фуксия\\\" here. The next paragraph (pointer 5:1.1.1.p2) mentions a factory designed by engineer Клёпки, but again, no Фуксия. The third paragraph (6:1.1.1.p3) discusses Ponchik's clothes, still nothing. The fourth paragraph (7:1.1.1.p4) talks about moths and the smell, but again, no mention.\\n\\nWait, maybe I missed something. Let me check each paragraph again. The user specified that the task is to find the first mention, so if none of the paragraphs in this batch have it, then the answer would be \\\"not_found\\\". Since the snapshot shows evidenceCount is 0 and there are no recent pointers, and the current batch doesn't have any mentions of Фуксия, the correct decision is \\\"not_found\\\".\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2023,\"completion_tokens\":289,\"total_tokens\":2312}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 15:30:09 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

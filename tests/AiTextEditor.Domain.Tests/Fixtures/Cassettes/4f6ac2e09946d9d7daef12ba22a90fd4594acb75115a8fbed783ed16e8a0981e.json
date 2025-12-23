@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-9\",\"object\":\"chat.completion\",\"created\":1766443173,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first dialogue between two named characters. The context mentions looking for direct speech markers like quotes or dashes. The maxEvidenceCount is 1, so once we find one, we can stop.\\n\\nLooking at the provided batch items, both paragraphs are from the same document. The first paragraph talks about Незнайка's journey and mentions other characters like Кнопочки and Пачкули Пёстренького, but there's no dialogue here. The second paragraph discusses the construction projects and mentions инженера Клёпки, but again, no direct speech.\\n\\nWait, maybe I missed something. Let me check again. The first paragraph ends with \\\"и у себя сделать кое-какие усовершенствования.\\\" The second starts with \\\"И это ещё не всё, конечно.\\\" These are narrative descriptions, not dialogue. There's no indication of any characters speaking to each other here. \\n\\nSince there's no dialogue between named characters in the current batch, the decision should be \\\"not_found\\\". The newEvidence array will be empty. The snapshot's evidenceCount is 0, and since we didn't find any new evidence, the decision remains not_found.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1262,\"completion_tokens\":267,\"total_tokens\":1529}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 22:39:33 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-632\",\"object\":\"chat.completion\",\"created\":1766425673,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's see. The user wants me to find the first direct dialogue between two named characters. The task says to look for paragraphs with direct dialogue, like \\\"Alice: Hello, Bob.\\\" and focus on named entities in a conversational context. The maxEvidenceCount is 1, so once I find one, I should set decision to \\\"done\\\".\\n\\nLooking at the input, the snapshot has evidenceCount 0 and no recent pointers. The batch has one item with pointer \\\"3:1.1.1\\\", which is a heading in Russian. The markdown is \\\"### Как Знайка победил профессора Звёздочкина\\\". That's a heading, not a paragraph or a dialogue. The user mentioned to ignore headings unless the task asks for them. Since the task is about dialogue, this heading doesn't qualify. There are no other items in the batch, so no other content to check. Therefore, there's no evidence here. The decision should be \\\"not_found\\\" because there's no matching content in the current batch.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":639,\"completion_tokens\":231,\"total_tokens\":870}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 17:47:52 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

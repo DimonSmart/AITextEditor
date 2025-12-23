@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-423\",\"object\":\"chat.completion\",\"created\":1766415321,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's tackle this query. The user is asking in which paragraph Ponchik, choosing a darker night, drowned his old costumes in the Ogurcov River. First, I need to figure out how to approach this.\\n\\nThe user mentioned specific details: Ponchik, a darker night, old costumes, Ogurcov River. Since the book is already loaded into the kernel functions, I should use the provided tools to search for this information. \\n\\nThe tools available include creating a cursor with a filter description. The cursor allows streaming through the document. The filter description needs to be stateless, so I can't use counters or track occurrences. But the user is looking for a specific event, so maybe I can create a cursor that looks for mentions of Ponchik and the Ogurcov River.\\n\\nWait, the user wants the exact paragraph where this happens. So I should create a cursor with a filter that includes \\\"Пончик\\\" and \\\"Огурцовой реке\\\". The filterDescription parameter should be something like \\\"Contains 'Пончик' and 'Огурцовой реке'\\\". Then, using the agent-run_agent function, I can scan through the document with this cursor.\\n\\nBut I need to make sure that the cursor is set up correctly. The name of the cursor should be unique, like \\\"search_cursor\\\". The filterDescription should be a stateless filter. Let me check the function parameters again. The cursor-create_cursor function requires a name and filterDescription. The filterDescription must be a string that can be evaluated per element without relying on previous portions.\\n\\nSo, the filterDescription could be \\\"document contains 'Пончик' and 'Огурцовой реке'\\\". Then, when I run the agent with this cursor, it will return the relevant paragraphs. The user wants the first mention, so I should set maxEvidenceCount to 1 to stop after the first match.\\n\\nOnce the cursor is created and the agent runs, the response will include the evidence items. Each item has a pointerLabel and the text. I need to check the text of the first item to see if it matches the query. If it does, then that's the paragraph. If not, maybe I need to adjust the filter or check further.\\n\\nAlso, the user might have multiple mentions, but since they asked for the first occurrence, maxEvidenceCount=1 should suffice. If the first item doesn't contain both elements, maybe the filter needs to be adjusted. But given the specific details, the filter should capture the correct paragraph.\\n\\nSo, the steps are: create a cursor with the filter, run the agent with maxEvidenceCount=1, check the result, and then provide the answer with the pointerLabel.\\n\",\"tool_calls\":[{\"id\":\"call_6u3madqc\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_cursor\",\"arguments\":\"{\\\"filterDescription\\\":\\\"Contains 'Пончик' and 'Огурцовой реке'\\\",\\\"maxBytes\\\":1048576,\\\"name\\\":\\\"search_cursor\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1075,\"completion_tokens\":617,\"total_tokens\":1692}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 14:55:21 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-361\",\"object\":\"chat.completion\",\"created\":1766513254,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"We need to find last mention of \\\"Фуксии\\\". The task: \\\"Find last mention of Фуксии\\\". Context: paragraph contains Фуксии.\\n\\nWe must scan current batch items for occurrence of the word \\\"Фуксии\\\". The two paragraphs given: first paragraph about Ponchik costumes, no \\\"Фуксии\\\". Second paragraph about moth, no \\\"Фуксии\\\". No match. So no new evidence. Decision? Since no evidence found, but there are more batches. The snapshot evidenceCount =0. We haven't found any match. According to schema: decisions: continue|done|not_found. If no evidence found in this batch and there are more batches, likely continue. But also if we've scanned all and none found, not_found. Here hasMoreBatches:true, so continue.\\n\\nThus output JSON with decision \\\"continue\\\" and empty newEvidence array.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1192,\"completion_tokens\":197,\"total_tokens\":1389}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:07:33 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

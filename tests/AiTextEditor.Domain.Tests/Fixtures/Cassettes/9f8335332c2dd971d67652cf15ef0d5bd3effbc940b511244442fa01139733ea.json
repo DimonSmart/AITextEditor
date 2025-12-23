@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-594\",\"object\":\"chat.completion\",\"created\":1766416980,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the description of astronomers in Solar City arguing and splitting into volcanologists and meteoritologists. The user provided a batch of items, and I need to scan through them to find relevant evidence.\\n\\nFirst, I'll check each item in the batch. The items are a mix of headings and paragraphs. The headings don't seem relevant, so I'll focus on the paragraphs. \\n\\nLooking at the first paragraph (pointer 4:1.1.1.p1), it talks about Nезнайка's trip to Solar City and the changes there, but there's no mention of astronomers or arguments. The next paragraph (pointer 5:1.1.1.p2) mentions the inhabitants of Solar City helping with construction, but again, no astronomers. \\n\\nThe third paragraph (pointer 6:1.1.1.p3) discusses Ponчик's problem with clothes, which is unrelated. The fourth paragraph (pointer 7:1.1.1.p4) continues the story about Ponчик's smell issue, still not relevant. \\n\\nWait, none of the paragraphs mention astronomers, arguing, or the split into volcanologists and meteoritologists. The task's context is about a specific event in Solar City, but the provided batch doesn't have any content that matches this. The evidenceCount is 0, and the newEvidence array would be empty. Since there's no matching content, the decision should be \\\"not_found\\\".\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2038,\"completion_tokens\":318,\"total_tokens\":2356}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 15:23:00 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

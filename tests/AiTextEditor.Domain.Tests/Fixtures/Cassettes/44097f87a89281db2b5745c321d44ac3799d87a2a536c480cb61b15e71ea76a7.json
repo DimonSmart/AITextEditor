@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-435\",\"object\":\"chat.completion\",\"created\":1766513395,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"decision\\\": \\\"continue\\\",\\n  \\\"newEvidence\\\": []\\n}\",\"reasoning\":\"We need to find first dialogue between two characters named in the text: lines starting with a name followed by colon or quoted speech. In current batch we have two paragraphs, Russian text, no dialogues like \\\"Name: ...\\\" I see no colon after a name indicating speech. The paragraphs talk about city, factories; no dialogue. So no evidence. Decision? Continue (since more batches). Not found indicates no evidence in this batch. So output decision \\\"continue\\\" and empty newEvidence.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1214,\"completion_tokens\":125,\"total_tokens\":1339}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:09:54 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

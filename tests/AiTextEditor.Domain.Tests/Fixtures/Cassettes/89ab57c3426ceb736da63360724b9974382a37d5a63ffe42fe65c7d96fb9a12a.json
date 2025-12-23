@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-786\",\"object\":\"chat.completion\",\"created\":1766513302,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"We need to find last mention of \\\"Фуксии\\\". The task: Find last mention of Фуксии. Context: paragraph contains Фуксии. So we need evidence where the word \\\"Фуксии\\\" appears. In current batch items (three paragraphs) none appear to contain \\\"Фуксии\\\". So no new evidence. Decision? Since more batches remain (hasMoreBatches true) but no evidence now, we continue. Also avoid adding evidence for recent pointers. So output decision \\\"continue\\\" and empty newEvidence list.\\n\\nCheck snapshot: evidenceCount=1, recentEvidencePointers includes \\\"8:1.1.1.p5\\\". So we have already one evidence elsewhere.\\n\\nThus output:\\n\\n{\\n \\\"decision\\\":\\\"continue\\\",\\n \\\"newEvidence\\\":[]\\n}\\n\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":789,\"completion_tokens\":173,\"total_tokens\":962}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:08:21 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

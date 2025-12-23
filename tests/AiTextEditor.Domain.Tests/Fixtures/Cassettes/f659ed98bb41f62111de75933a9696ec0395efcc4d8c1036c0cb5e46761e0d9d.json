@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-678\",\"object\":\"chat.completion\",\"created\":1766513431,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need first dialogue between two named characters. The evidence found is \\\"Вулканисты говорили:\\\" which is a group name, not two characters. Need continue scanning until find a dialogue line where there are two named speakers. Dialogue may be lines like \\\"Иван: ...\\\" then next paragraph maybe \\\"Мария: ...\\\". We need the first such pair.\\n\\nWe need keep scanning using same cursor (search). Continue retrieving batches until find two consecutive named dialogues? The instruction: find first dialogue between two named characters. Likely a conversation snippet containing both speakers. We need to detect a sequence where first paragraph has Name: text, second after maybe another Name: text. So we need to scan and find first occurrence of a paragraph that starts with \\\"Name:\\\" and next paragraph also starts with \\\"Name:\\\". Use agent to scan each batch. Our agent description can be generic: find first dialogue between two characters named. Already we used maxEvidenceCount=1 but would stop after first match. Might need to capture both paragraphs. Let's continue scanning more.\\n\\n\",\"tool_calls\":[{\"id\":\"call_x6ej29f9\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"agent-run_agent\",\"arguments\":\"{\\\"cursorName\\\":\\\"search\\\",\\\"taskDescription\\\":\\\"Find the first occurrence where a paragraph starts with a name followed by colon (e.g., \\\\\\\"Anna: ...\\\\\\\") and the subsequent paragraph also starts with a different name followed by colon. Return both lines and the two names.\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1170,\"completion_tokens\":286,\"total_tokens\":1456}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:10:30 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

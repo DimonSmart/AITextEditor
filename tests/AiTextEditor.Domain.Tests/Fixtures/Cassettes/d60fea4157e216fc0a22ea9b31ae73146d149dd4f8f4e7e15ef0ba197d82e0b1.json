@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-479\",\"object\":\"chat.completion\",\"created\":1766513334,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"decision\\\": \\\"continue\\\",\\n  \\\"newEvidence\\\": []\\n}\",\"reasoning\":\"We need to find first mention of professor Звёздочкин, context: paragraph contains 'профессор Звёздочкин'. In current batch, none of the markdown strings contain that phrase. So no new evidence. Decision? Since no evidence found, and hasMoreBatches true, we can continue. Should output decision \\\"continue\\\" and empty newEvidence array.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":898,\"completion_tokens\":107,\"total_tokens\":1005}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:08:53 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

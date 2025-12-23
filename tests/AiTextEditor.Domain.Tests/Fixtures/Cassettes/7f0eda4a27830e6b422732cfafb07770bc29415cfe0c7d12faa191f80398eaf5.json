@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-523\",\"object\":\"chat.completion\",\"created\":1766416615,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The user wants to find a paragraph that describes the lunar crater visualization as an enormous circular field with an earth embankment along the edge. The context mentions looking for the terms 'визуализация лунного кратера', 'огромного круглого поля' and 'земляной вал по краю'. \\n\\nFirst, I need to scan through the provided batch items. Each item has a pointer and markdown content. The snapshot shows that there's already one piece of evidence, but the user is asking for up to two. \\n\\nLooking at each paragraph:\\n\\n- The first few paragraphs talk about a book and a professor discussing it, but there's no mention of a lunar crater or the specific terms. \\n- Paragraphs 25-35 discuss the professor's critique of the book, mentioning the moon's gravity and the professor's arguments. However, there's no mention of a visualization or an embankment. \\n- Paragraph 34 mentions the bottle and the professor comparing it to a planet, but again, not the exact terms needed. \\n- The last paragraph (38) is just the audience laughing, no relevant info.\\n\\nWait, maybe I missed something. Let me check again. The task is about a visualization of a lunar crater as a circular field with an embankment. The terms in the context are in Russian. The user provided the context in Russian, so I need to look for those exact phrases. \\n\\nLooking through the markdown content again, none of the paragraphs contain the exact phrases 'визуализация лунного кратера', 'огромного круглого поля', or 'земляной вал по краю'. The closest is paragraph 36 where the professor compares the bottle to a planet, but that's not the exact terms. \\n\\nSince none of the current batch items contain the required terms, the decision would be 'not_found'. But wait, the snapshot's recentEvidencePointers include \\\"9:1.1.1.p6\\\", which isn't in the current batch. Maybe that's from a previous batch. The current batch's items don't have any matches for the required terms. Therefore, there's no new evidence to add, so the decision is 'not_found'.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2445,\"completion_tokens\":483,\"total_tokens\":2928}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 15:16:55 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

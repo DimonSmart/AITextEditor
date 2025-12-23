@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-204\",\"object\":\"chat.completion\",\"created\":1766513248,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to find last mention of \\\"Фуксии\\\" in the markdown book. Use cursor to scan entire document, filter to paragraphs containing \\\"Фуксии\\\". We need last mention, so we need to iterate through all, collect pointers, then determine the last. Approach: create cursor with filter \\\"paragraph contains Фуксии\\\". Then run agent repeatedly until cursor_complete, collecting evidence. Then take last evidence pointer.\\n\\nWe need to use functions. Let's create cursor.\",\"tool_calls\":[{\"id\":\"call_b9d4pe1r\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_cursor\",\"arguments\":\"{\\\"filterDescription\\\":\\\"paragraph contains Фуксии\\\",\\\"name\\\":\\\"fuchsia_cursor\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":780,\"completion_tokens\":137,\"total_tokens\":917}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:07:27 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

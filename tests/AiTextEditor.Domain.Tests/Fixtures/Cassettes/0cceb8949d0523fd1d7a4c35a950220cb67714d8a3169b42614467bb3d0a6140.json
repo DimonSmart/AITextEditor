@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-434\",\"object\":\"chat.completion\",\"created\":1766433014,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The goal is to find the first mention of Znayka comparing the lunar surface to a pancake and steam bubbles. The context is all paragraphs mentioning 'Знайка' and comparing the lunar surface to pancake or steam bubbles. \\n\\nFirst, I need to scan through the provided batch items. There are two paragraphs here. Let me check each one.\\n\\nStarting with the first paragraph (pointer 8:1.1.1.p5). It mentions Znayka being on the Moon and describes the lunar surface as having a crater in the area of the Sea of Clarity. However, there's no mention of a pancake or steam bubbles here. The text talks about the crater and the lack of air, but not the specific comparison to a pancake or steam bubbles.\\n\\nNext, the second paragraph (pointer 9:1.1.1.p6). This one discusses the lunar surface being uneven with hills, and mentions that many mountains on the Moon are round, called craters or cirques. It uses a metaphor comparing a lunar crater to a large circular field surrounded by a hill. However, there's no mention of a pancake or steam bubbles here either. The comparison is to a field and a hill, not a pancake or steam bubbles.\\n\\nWait, the task specifies comparing the lunar surface to a pancake and steam bubbles. The user is looking for a specific metaphor. In the first paragraph, there's a mention of the crater being in the Sea of Clarity, but that's about location, not the shape. The second paragraph's comparison is to a circular field and a hill, which doesn't match the required terms. \\n\\nSince neither paragraph mentions a pancake or steam bubbles in the context of Znayka's description, there's no evidence here. The snapshot's evidenceCount is 0, and the recentEvidencePointers are empty. So, the decision would be 'not_found' because the required comparison isn't present in the current batch. No new evidence can be added as the pointers don't match the criteria. Therefore, the output should indicate that no evidence was found.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1323,\"completion_tokens\":456,\"total_tokens\":1779}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 19:50:14 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-466\",\"object\":\"chat.completion\",\"created\":1766409844,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"В книге профессор Звёздочкин впервые упоминается в абзаце с указателем **24:1.1.1.p21**.  \\n**Экспресс-выдержка**:  \\n*\\\"А действительный член академии астрономических наук профессор Звёздочкин, которому тоже случилось прочитать Знайкину книжку, просто кипел от негодования...\\\"*  \\n\\nЭто первое упоминание в тексте (исключая заголовки).\",\"reasoning\":\"Okay, let's see. The user is asking where in the book the professor Zvezdokhin is first mentioned, excluding headers. So, I need to find the first occurrence of \\\"профессор Звёздочкин\\\" in the text content, not in any headings.\\n\\nFirst, I created a cursor named \\\"search_cursor\\\" with a filter to look for the term in the text. Then, I ran the agent to find the first mention. The tool responses gave several pointers. Let me check each excerpt to see which one is the first mention.\\n\\nLooking at the evidence items:\\n\\n1. Pointer 4:1.1.1.p1: The excerpt here talks about Незнайка's trip but doesn't mention Звёздочкин. Wait, the reason says it mentions him, but the excerpt text doesn't. Maybe a mistake? The excerpt here is about the city changes, not the professor.\\n\\n2. Pointer 24:1.1.1.p21: This excerpt mentions \\\"действительный член академии астрономических наук профессор Звёздочкин\\\". That's the first actual mention in the text. The reason says the excerpt contains the term, which it does here.\\n\\n3. Pointer 70:1.1.1.p67: This is a direct mention but comes later in the document. Since the user wants the first occurrence, this would be after p21.\\n\\n4. Pointer 79:1.1.1.p76: Another mention, but again later than p21.\\n\\nSo the first mention is at pointer 24:1.1.1.p21. The user wants the answer in Russian, so I should present that pointer and the excerpt. Also, include the semantic pointer as per the instructions.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2051,\"completion_tokens\":516,\"total_tokens\":2567}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 13:24:04 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

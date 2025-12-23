@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-694\",\"object\":\"chat.completion\",\"created\":1766432413,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The user wants the first dialog between two named characters. The task says to find the first occurrence where two character names are followed by dialogue. The context mentions lines with two names and then dialogue.\\n\\nLooking at the provided batch, the items are all headings. The first item is a main heading, then a subheading, and another subheading. None of these headings have dialogue. The user mentioned that the snapshot has zero evidence, and the first batch is being processed. Since there are no items with actual dialogue lines, there's no evidence to extract. The decision here should be \\\"not_found\\\" because the required dialog lines aren't present in the current batch. Also, the maxEvidenceCount is 1, but since there's no matching content, we can't fulfill the task. So the correct output is to indicate that no evidence was found.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":665,\"completion_tokens\":193,\"total_tokens\":858}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 19:40:13 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-92\",\"object\":\"chat.completion\",\"created\":1766414588,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"В документе упоминание о конфликте астрономов в Солнечном городе и их расколе на вулканистов и метеоритчиков находится в **Главе 3: Конфликт и раскол** (pointerLabel). \\n\\n**Экспертный вывод**:  \\nВ тексте описывается, как астрономы Солнечного города вступили в спор о природе космических явлений, что привело к расколу. Одна группа (вулканисты) отстаивала гипотезу вулканической активности на Луне, а другая (метеоритчики) — метеоритную теорию.  \\n\\nСсылка на раздел:  \\n`pointerLabel=\\\"Глава 3: Конфликт и раскол\\\"`\",\"reasoning\":\"Okay, the user is asking where in the document it's described how the astronomers in the Solar City got into a fight and split into volcanologists and meteoritologists. Let me break this down.\\n\\nFirst, I need to find the part of the text where these keywords appear together. The user mentioned \\\"Солнечный город\\\" (Solar City), \\\"астрономы\\\" (astronomers), \\\"ссорились\\\" (fought), \\\"разделились\\\" (split), \\\"вулканисты\\\" (volcanologists), and \\\"метеоритчики\\\" (meteoritologists). \\n\\nI created a cursor with a filter that looks for all these terms. The response from the tool gave me a pointer to a specific location in the document. The pointerLabel is \\\"Глава 3: Конфликт и раскол\\\" which translates to \\\"Chapter 3: Conflict and Split\\\". The actual text mentions the astronomers in Solar City arguing over theories, leading to a split into two groups. \\n\\nSince the user wants to know where this is described, the answer should point to Chapter 3. I need to make sure that the summary includes the pointerLabel and the relevant excerpt. Also, since the user might be looking for the exact section, providing the chapter name and the excerpt from that chapter would be helpful. I should check if there's any more context needed, but based on the tool's response, this seems to cover the query.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1173,\"completion_tokens\":503,\"total_tokens\":1676}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 14:43:08 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

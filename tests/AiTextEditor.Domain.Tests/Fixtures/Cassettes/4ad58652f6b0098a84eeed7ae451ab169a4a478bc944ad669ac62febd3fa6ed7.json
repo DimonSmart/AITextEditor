@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-673\",\"object\":\"chat.completion\",\"created\":1766513401,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"We need to extract evidence of first dialogue between two characters named in the text, lines starting with name colon or quoted speech. In the current batch items, we have two paragraphs in Russian describing scientists and Znaika. No dialogue lines with name colon. So no evidence in this batch.\\n\\nWe must output decision \\\"continue\\\" (since more batches exist). newEvidence empty array.\\n\\nCheck that we must not claim not_found? Since there may be later batches; we haven't found any. So decision continue.\\n\\nOutput JSON accordingly.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1079,\"completion_tokens\":124,\"total_tokens\":1203}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:10:00 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

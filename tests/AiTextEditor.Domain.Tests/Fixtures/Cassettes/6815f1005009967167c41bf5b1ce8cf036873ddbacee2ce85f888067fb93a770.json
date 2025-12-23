@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-932\",\"object\":\"chat.completion\",\"created\":1766433695,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's see. The user wants me to find all mentions of \\\"Фуксии\\\" in the provided batch. First, I need to check each item's markdown content.\\n\\nLooking at the first item, pointer 60:1.1.1.p57, the markdown is \\\"Некоторые от нетерпения даже застучали по полу ногами.\\\" No mention of Фуксии here. \\n\\nNext, pointer 61:1.1.1.p58. The markdown talks about Знайка and some physical movements in a cabin, but nothing about Фуксии. \\n\\nThen, pointer 62:1.1.1.p59. The markdown is a question about whether the bottle had water or another drink. Still no Фуксии. \\n\\nNone of the items in the current batch contain the term \\\"Фуксии\\\". The snapshot's recentEvidencePointers include \\\"8:1.1.1.p5\\\", which isn't in the current batch. Since there are no new matches, the decision should be \\\"not_found\\\". Also, the maxEvidenceCount is 10, but since we haven't found any new evidence, it's not enough to set done. So the correct output is \\\"not_found\\\" with empty newEvidence.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1030,\"completion_tokens\":288,\"total_tokens\":1318}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 20:01:35 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

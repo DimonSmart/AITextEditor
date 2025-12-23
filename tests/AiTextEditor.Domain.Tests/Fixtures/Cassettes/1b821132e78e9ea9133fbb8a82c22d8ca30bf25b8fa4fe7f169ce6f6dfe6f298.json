@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-242\",\"object\":\"chat.completion\",\"created\":1766510366,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants the first mention of \\\"Пончик\\\" in the provided batch. First, I need to scan through each item in the batch to find any occurrence of that exact word.\\n\\nLooking at the first item with pointer 33:1.1.1.p30, the markdown is \\\"– При чём тут ещё состояние невесомости? – буркнул профессор.\\\" There's no mention of Пончик here. \\n\\nNext, the second item is 34:1.1.1.p31. The markdown here talks about a bottle of water and the effects of weightlessness. The text mentions \\\"всё было нормально, пока вода целиком наполняла бутылку. Но когда я половину воды выпил...\\\" Wait, there's a part where it says \\\"Это и понятно, так как притягивать друг друга могут лишь массы вещества, а пустота ничего притянуть к себе не может.\\\" Hmm, I don't see Пончик here either. \\n\\nThe third item is 35:1.1.1.p32, with the markdown \\\"– Попал пальцем в небо! – сердито проворчал Звёздочкин. – Сравнил бутылку с планетой! По-вашему, это научно?\\\" Still no Пончик. \\n\\nWait, maybe I missed something. Let me check again. The task says to find the first mention of Пончик. The snapshot's recentEvidencePointers include \\\"6:1.1.1.p3\\\", but that's from a previous batch. The current batch items don't have any mention of Пончик. So, according to the rules, if there's no new evidence, the decision should be \\\"not_found\\\". But wait, the user's input might have a typo? Or maybe Пончик is a character from a story, and the current batch doesn't mention it. Since none of the current items have Пончик, the answer is that there's no new evidence found.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":989,\"completion_tokens\":477,\"total_tokens\":1466}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 17:19:26 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

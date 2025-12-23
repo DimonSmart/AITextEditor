@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-745\",\"object\":\"chat.completion\",\"created\":1766487020,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, the user wants the first dialogue between two named characters and their names. I created a cursor for all paragraphs and ran the agent, but it didn't find anything. Since there's more content available, I need to continue scanning.\\n\\nI should call the agent again with the same cursor to check the next batch. Maybe the dialogue is in a later portion. I'll keep doing this until the agent finds the dialogue or confirms there's no more content. Let's proceed.\\n\",\"tool_calls\":[{\"id\":\"call_sf194x8d\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"agent-run_agent\",\"arguments\":\"{\\\"cursorName\\\":\\\"dialogue_cursor\\\",\\\"taskDescription\\\":\\\"Find the first dialogue between two named characters and report their names\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1084,\"completion_tokens\":139,\"total_tokens\":1223}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 10:50:20 GMT"
+    ]
+  }
+}

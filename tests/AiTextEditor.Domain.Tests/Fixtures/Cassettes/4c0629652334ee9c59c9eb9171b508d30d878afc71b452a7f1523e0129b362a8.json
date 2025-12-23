@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-845\",\"object\":\"chat.completion\",\"created\":1766513428,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"done\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"We have a task: Find the first dialogue between two characters that are named in the text (lines starting with a name followed by colon or quoted speech). Return snippet and names. Goal is first dialogue. maxEvidenceCount=1. Snapshot evidenceCount=1 already, recentEvidencePointers includes \\\"14:1.1.1.p11\\\". So they already found one evidence? The snapshot indicates they have already found one piece of evidence. The task wants first dialogue; they have already one evidence presumably. But we need to process current batch to find any new evidence that matches. However they already have evidenceCount=1, and maxEvidenceCount=1, so we already have enough? snapshot.evidenceCount =1, max=1, so decision should be \\\"done\\\". But we must ensure we are not adding duplicate evidence, also must not add if no new needed. Since snapshot.evidenceCount already meets max, we should set decision \\\"done\\\" and newEvidence empty array.\\n\\nBut check rule: If maxEvidenceCount is provided and we have found enough evidence (snapshot.evidenceCount + newEvidence.length \\u003e= maxEvidenceCount), set decision=\\\"done\\\". Since snapshot evidenceCount=1, newEvidence length currently 0, 1 \\u003e=1, so decision = \\\"done\\\". Also must not add evidence if not needed. Also avoid adding pointers already in recentEvidencePointers. So output:\\n\\n{\\n \\\"decision\\\":\\\"done\\\",\\n \\\"newEvidence\\\":[]\\n}\\n\\nMake sure JSON exactly.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":891,\"completion_tokens\":316,\"total_tokens\":1207}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:10:27 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

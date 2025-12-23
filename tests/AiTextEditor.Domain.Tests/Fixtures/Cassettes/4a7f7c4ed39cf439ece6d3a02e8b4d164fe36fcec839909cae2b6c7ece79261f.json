@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-757\",\"object\":\"chat.completion\",\"created\":1766508241,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Первый диалог между двумя названными по имени персонажами — между **профессором** и **Знайкой**. \\n\\nЭто происходит в парagrafe 28-29:  \\n– А вы будто болтались? – огрызнулся профессор.  \\n– Я не болтался, – возразил Знайка, – но зато я летал в ракете...  \\n\\nSemantic pointer: `32:1.1.1.p29` (первое упоминание Знайки в диалоге).\",\"reasoning\":\"Okay, let's see. The user wants the first dialogue between two named characters. The assistant created a cursor to get all paragraphs and then ran the agent to find the first dialogue. The first evidence item is pointer 31:1.1.1.p28, which is the professor speaking. But that's just one character. The next item, pointer 32:1.1.1.p29, is Znayka responding to the professor. So that's a dialogue between the professor and Znayka. The reason says Znayka responds to the professor's dialogue, indicating a two-way conversation. So that's the first instance where two named characters are dialoguing. The answer should be the professor and Znayka. Let me check if there's any earlier ones. The first two pointers are p28 and p29, which are consecutive. So the first dialogue between two named characters is between the professor and Znayka.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1578,\"completion_tokens\":343,\"total_tokens\":1921}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 16:44:01 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

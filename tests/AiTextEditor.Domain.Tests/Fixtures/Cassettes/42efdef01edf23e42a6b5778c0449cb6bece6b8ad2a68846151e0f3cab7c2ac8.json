@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-497\",\"object\":\"chat.completion\",\"created\":1766526486,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"decision\\\": \\\"continue\\\",\\n  \\\"newEvidence\\\": [\\n    {\\n      \\\"pointer\\\": \\\"4:1.1.1.p1\\\",\\n      \\\"excerpt\\\": \\\"По проекту архитектора Вертибутылкина на улице Колокольчиков было построено даже два вертящихся здания. Одно пятиэтажное, башенного типа, со спиральным спуском и плавательным бассейном вокруг (спустившись по спиральному спуску, можно было нырять прямо в воду), другое шестиэтажное, с качающимися балконами, парашютной вышкой и чёртовым колесом на крыше.\\\",\\n      \\\"reason\\\": \\\"Упоминает два вертящихся здания на Колокольчиков с спиральным спуском и чёртовым колесом на крыше.\\\"\\n    }\\n  ]\\n}\",\"reasoning\":\"Okay, let's tackle this. The task is to find a paragraph describing two rotating buildings on Kolokolchikov Street with a spiral descent and a devil's wheel on the roof. The context includes the keywords 'Колокольчиков', 'вертящихся зданий', 'спиральный спуск', and 'чёртовым колесом'. \\n\\nFirst, I'll look at the provided batch items. The first paragraph (pointer 4:1.1.1.p1) mentions \\\"на улице Колокольчиков было построено даже два вертящихся здания.\\\" That matches 'Колокольчиков' and 'вертящихся зданий'. Then it describes one as five-story with a spiral descent and a swimming pool, and the other as six-story with swinging balconies, a parachute tower, and a devil's wheel. That covers all the required keywords. The second paragraph (pointer 5:1.1.1.p2) talks about other constructions but doesn't mention the specific buildings. \\n\\nSo, the first paragraph has all the necessary elements. I need to extract the pointer, the exact excerpt, and the reason. The reason should state that the paragraph mentions two rotating buildings on Kolokolchikov Street with the spiral descent and devil's wheel. Since there's no maxEvidenceCount, and the snapshot evidence count is 0, this is the only match. The decision should be 'continue' because there might be more batches, but since the user provided only the first batch, and this is the only match, but the task might require checking more batches. However, according to the rules, I should output the found evidence and decide based on whether the maxEvidenceCount is met. Since maxEvidenceCount is null, the decision is 'continue' unless all required evidence is found. But since the task might need more, but in this batch, we have the required info. Wait, the task's maxEvidenceCount is null, so we don't stop. But the user might want to check if this is the only one. However, the rules say to report all matches in the current batch. So the correct decision here is 'continue' because there might be more batches, but the current batch has the required evidence. However, the user's input has only the first batch, and the hasMoreBatches is true, so we should continue. But the output should be the new evidence found here. So the JSON should have the newEvidence with the first paragraph's details and decision 'continue'.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1306,\"completion_tokens\":761,\"total_tokens\":2067}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 21:48:06 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

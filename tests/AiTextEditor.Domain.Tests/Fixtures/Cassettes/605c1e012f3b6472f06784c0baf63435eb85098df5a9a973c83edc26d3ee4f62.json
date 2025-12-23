@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-896\",\"object\":\"chat.completion\",\"created\":1766433747,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[{\\\"pointer\\\":\\\"70:1.1.1.p67\\\",\\\"excerpt\\\":\\\"Кусочек Луны пошёл по рукам. Каждому хотелось поближе посмотреть на него. Пока коротышки разглядывали камень, передавая его из рук в руки, Знайка рассказывал, как они с Фуксией и Селёдочкой путешествовали по Луне и что там видели. Всем очень понравился Знайкин рассказ. Все остались очень довольны. Только профессор Звёздочкин был не очень доволен. Как только Знайка кончил свой рассказ и сошёл с трибуны, профессор Звёздочкин выскочил на трибуну и сказал:\\\",\\\"reason\\\":\\\"Paragraph mentions Фуксия in the context of Знайка's story about traveling to the Moon with Фуксия and Селёдочка.\\\"}]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find all mentions of \\\"Фуксии\\\" in the provided batch. First, I need to scan each item in the batch's items array. \\n\\nLooking at the first item with pointer 69:1.1.1.p66, the markdown doesn't have \\\"Фуксии\\\". The second item, 70:1.1.1.p67, mentions \\\"Фуксией\\\" in the sentence about Знайка's story. That's a match. The third item, 71:1.1.1.p68, doesn't mention Фуксии. \\n\\nSince the snapshot's recentEvidencePointers include \\\"8:1.1.1.p5\\\", which isn't in the current batch, I don't need to worry about duplicates here. The evidenceCount is 1, and the max is 10, so we need to find more. \\n\\nThe excerpt from pointer 70:1.1.1.p67 clearly mentions Фуксии in the context of the story. The reason is straightforward: the paragraph talks about Знайка's journey with Фуксия and Селёдочка. So, I'll extract that as new evidence. \\n\\nNo other mentions in the current batch, so the decision is to continue. The newEvidence array has one entry. Let me make sure the JSON structure is correct with the required fields.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1033,\"completion_tokens\":539,\"total_tokens\":1572}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 20:02:27 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

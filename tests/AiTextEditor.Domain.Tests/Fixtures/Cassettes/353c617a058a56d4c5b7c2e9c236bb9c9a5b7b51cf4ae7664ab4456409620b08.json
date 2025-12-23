@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-809\",\"object\":\"chat.completion\",\"created\":1766508875,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, the user is asking where Ponchik is first mentioned in the book. I need to use the cursor-create_cursor function to search for the term 'Пончик'. I'll set up a cursor with a filter to find any occurrence of that name. Since the user wants the first mention, I should start from the beginning of the document. The function requires a filter description, so I'll use \\\"contains 'Пончик'\\\" to catch any paragraph with that keyword. I'll also set maxBytes and maxElements to reasonable limits to ensure the cursor can process the document efficiently. Once the cursor is created, I'll run the agent to scan through the document using this cursor. The agent will go through each portion of the document, checking for the keyword. If it finds a match, it will return the relevant paragraph. Since the user wants the first mention, I'll need to make sure the cursor starts at the beginning and processes the document in order. If the first occurrence is found in the initial batch, the answer will be provided. If not, the agent will continue scanning until it finds the mention or reaches the end of the document.\\n\",\"tool_calls\":[{\"id\":\"call_zygyd0sd\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"agent-run_agent\",\"arguments\":\"{\\\"cursorName\\\":\\\"search_cursor\\\",\\\"taskDescription\\\":\\\"Find the first mention of Пончик\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1000,\"completion_tokens\":274,\"total_tokens\":1274}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 16:54:34 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

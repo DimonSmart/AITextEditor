@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-782\",\"object\":\"chat.completion\",\"created\":1766514403,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's see. The user wants me to find all mentions of 'Фуксии' in the current batch. The task says to scan only the current batch's items and extract evidence. The snapshot shows evidenceCount is 0 and recentEvidencePointers is empty, so I need to check the current batch items.\\n\\nLooking at the items provided: there are three items, all headings. The first is a main heading \\\"# Часть I\\\", the second is a subheading \\\"## Глава первая\\\", and the third is another subheading \\\"### Как Знайка победил профессора Звёздочкина\\\". None of these headings contain the word 'Фуксии'. \\n\\nSince the user's goal is to find mentions of 'Фуксии', and none of the current items have that term, there's no evidence to add. The decision should be \\\"not_found\\\" because there are no matches in the current batch. Also, the maxEvidenceCount is null, so we don't need to check for a maximum. Therefore, the output should indicate that no new evidence was found.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":655,\"completion_tokens\":244,\"total_tokens\":899}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:26:43 GMT"
+    ]
+  }
+}

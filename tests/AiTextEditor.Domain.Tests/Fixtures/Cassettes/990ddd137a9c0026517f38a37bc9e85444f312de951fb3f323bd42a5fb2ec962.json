@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-384\",\"object\":\"chat.completion\",\"created\":1766414848,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first mention of \\\"Фуксия\\\" in the provided batch. First, I need to scan through all the items in the batch to look for that exact term. \\n\\nLooking at the snapshot, the evidence count is 0, and there are no recent evidence pointers, so I need to check everything from scratch. The batch has several items, mostly headings and paragraphs. The task specifies to use only the current batch's content, so I'll ignore any previous data.\\n\\nStarting with the first item, it's a heading with \\\"# Часть I\\\" – no mention there. The next heading is \\\"## Глава первая\\\" – still nothing. Then there's a heading \\\"### Как Знайка победил профессора Звёздочкина\\\" – again, no \\\"Фуксия\\\". \\n\\nMoving to the paragraphs. The first paragraph (4:1.1.1.p1) talks about the Sun City and various buildings, but I don't see \\\"Фуксия\\\" here. The second paragraph (5:1.1.1.p2) mentions a factory called \\\"одёжная фабрика\\\" but no Фуксия. The third paragraph (6:1.1.1.p3) discusses Ponchik's clothes, but again, no match. The fourth paragraph (7:1.1.1.p4) talks about moths and the smell, still nothing.\\n\\nWait, maybe I missed something. Let me check each paragraph again. The user mentioned \\\"Фуксия\\\" which is a name, possibly a person or a place. The paragraphs don't have that term. The headings also don't. So, perhaps there's no mention of Фуксия in this batch. \\n\\nBut the task says to find the first mention, and if there's none, the decision should be \\\"not_found\\\". Since the user's maxEvidenceCount is 1, but the evidence count is 0, and after checking all items, there's no Фуксия, the correct decision is \\\"not_found\\\". The newEvidence array should be empty. So the output will be decision: \\\"not_found\\\" and no new evidence.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2020,\"completion_tokens\":478,\"total_tokens\":2498}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 14:47:28 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

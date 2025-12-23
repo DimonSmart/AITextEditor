@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-385\",\"object\":\"chat.completion\",\"created\":1766435641,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants the first two mentions of \\\"профессора Звёздочкина\\\" from the provided batch. But looking at the items in the batch, the pointers are 6:1.1.1.p3 and 7:1.1.1.p4. The markdown content for these paragraphs doesn't mention \\\"профессора Звёздочкина\\\" at all. The first paragraph talks about Пончик and his clothes, and the second one continues that story about the moth and the smell. There's no mention of Звёздочкин or any professor here.\\n\\nThe snapshot shows that there's already one piece of evidence with pointer \\\"3:1.1.1\\\", which isn't in the current batch. Since the current batch doesn't have any mentions of the required term, the newEvidence array should be empty. The decision would be \\\"continue\\\" because there's no evidence here. But wait, the user's task says to find the first two mentions, but the current batch doesn't have any. So the correct response is to indicate that no new evidence was found.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1291,\"completion_tokens\":249,\"total_tokens\":1540}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 20:34:01 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

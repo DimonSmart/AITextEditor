@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-681\",\"object\":\"chat.completion\",\"created\":1766432362,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first dialog between two named characters. The context mentions lines with character names followed by dialogue markers. The maxEvidenceCount is 1, so we need to find the first occurrence.\\n\\nLooking at the provided batch items, all the pointers are paragraphs from a story about Знайка and лунатики. The first paragraph (21:1.1.1.p18) talks about Знайка rejecting his theory after visiting the Moon. There's no dialogue here, just narration.\\n\\nThe second paragraph (22:1.1.1.p19) mentions Знайка realizing the walls were made by intelligent beings and publishing a book. Still, it's a narrative, not a dialogue. The third paragraph (23:1.1.1.p20) continues the story about лунатики moving inside the Moon. Again, no dialogue between characters.\\n\\nSince the task requires a dialog between two named characters, and the provided text is all narrative without any dialogue markers or character names followed by speech, there's no evidence here. The snapshot's evidenceCount is 0, and none of the current batch items have dialogue. Therefore, the decision should be \\\"not_found\\\" as there's no matching evidence in the current batch.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1295,\"completion_tokens\":286,\"total_tokens\":1581}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 19:39:22 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

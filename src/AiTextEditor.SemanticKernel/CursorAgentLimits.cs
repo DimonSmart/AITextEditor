@@ -16,7 +16,7 @@ public sealed class CursorAgentLimits
 
     public int DefaultResponseTokenLimit { get; init; } = 4000;
 
-    public int MaxElements { get; init; } = 50;
+    public int MaxElements { get; init; } = 3;
 
-    public int MaxBytes { get; init; } = 1024 * 8;
+    public int MaxBytes { get; init; } = 1024 * 4;
 }

@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-761\",\"object\":\"chat.completion\",\"created\":1766433072,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[{\\\"pointer\\\":\\\"12:1.1.1.p9\\\",\\\"excerpt\\\":\\\"Знайка даже сочинил книжку, в которой писал, что поверхность Луны не всегда была твёрдая и холодная, как теперь. Когда-то давно Луна представляла собой огненно-жидкий, то есть раскалённый до расплавленного состояния, шар. Постепенно, однако, поверхность Луны остывала и становилась уже не жидкая, а вязкая, словно тесто. Изнутри она была всё ж таки ещё очень горячая, поэтому раскалённые газы вырывались на поверхность в виде громаднейших пузырей. Выйдя на поверхность Луны, пузыри эти, конечно, лопались. Но пока поверхность Луны была ещё достаточно жидкая, следы от лопнувших пузырей затягивались и исчезали, не оставляя следа, как не оставляют следа пузыри на воде во время дождя. Но когда поверхность Луны остыла настолько, что стала густая, как тесто или как расплавленное стекло, следы от лопнувших пузырей уже не пропадали, а оставались в виде торчащих над поверхностью колец. Охлаждаясь всё больше, кольца эти окончательно отвердевали. Сначала они были ровные, словно застывшие круги на воде, а потом постепенно разрушались и в конце концов стали похожи на те лунные кольцевые горы, которые каждый может наблюдать в телескоп.\\\",\\\"reason\\\":\\\"The excerpt describes the lunar surface as viscous like dough (тесто) and mentions steam bubbles (раскалённые газы вырывались в виде пузырей), matching the task's criteria.\\\"}]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants the first mention of Znayka comparing the lunar surface to pancake and steam bubbles. The context is paragraphs mentioning 'Знайка' and comparing the lunar surface to pancake or steam bubbles.\\n\\nLooking at the provided batch items, the first relevant paragraph is 12:1.1.1.p9. The markdown here talks about the Moon's surface being like molten lava, then becoming viscous like dough. It mentions steam bubbles bursting and leaving trails, comparing the surface to dough (testo) and the bubbles to steam. The key parts are \\\"вязкая, словно тесто\\\" (viscous like dough) and \\\"раскалённые газы вырывались на поверхность в виде громаднейших пузырей\\\" (hot gases erupted as giant bubbles). The comparison to pancake isn't explicit here, but the mention of dough (testo) and bubbles fits the context. The next paragraphs (13 and 14) don't add new evidence. Since the snapshot already has one evidence pointer, but the user's task is to find the first mention, the correct new evidence is from p9. The reason should state that the excerpt describes the lunar surface as viscous like dough and mentions steam bubbles, matching the task's criteria.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1109,\"completion_tokens\":737,\"total_tokens\":1846}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 19:51:12 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

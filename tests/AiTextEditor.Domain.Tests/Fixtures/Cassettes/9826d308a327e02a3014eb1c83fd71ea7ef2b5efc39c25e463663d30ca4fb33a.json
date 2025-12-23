@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-495\",\"object\":\"chat.completion\",\"created\":1766433587,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The user wants me to find all mentions of \\\"Фуксии\\\" in the provided batch items. First, I need to scan each item's markdown content carefully. The task says to look for paragraphs containing 'Фуксии', so I'll check each paragraph.\\n\\nLooking at the first item with pointer 39:1.1.1.p36, the markdown doesn't have Фуксии. The second item, 40:1.1.1.p37, also doesn't mention it. The third item, 41:1.1.1.p38,同样 no mention. None of the paragraphs in the current batch contain the term Фуксии. \\n\\nThe snapshot shows that there's already one evidence pointer, but the current batch doesn't add any new ones. Since the task requires all mentions and there are none in this batch, the decision should be \\\"not_found\\\". I need to make sure not to include any pointers from the snapshot's recentEvidencePointers. So the output will have decision as \\\"not_found\\\" and an empty newEvidence array.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":862,\"completion_tokens\":249,\"total_tokens\":1111}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 19:59:46 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

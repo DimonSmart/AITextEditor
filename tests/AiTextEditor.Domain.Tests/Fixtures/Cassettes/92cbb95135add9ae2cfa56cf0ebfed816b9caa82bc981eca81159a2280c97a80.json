@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-32\",\"object\":\"chat.completion\",\"created\":1766434615,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's tackle this query. The user is asking about a specific moment in the book where Znayka sarcastically comments on Professor's phrase about having to hang around the center of the Moon. First, I need to figure out how to locate this in the document.\\n\\nSince the user mentioned \\\"Знайка\\\" (Znayka) and \\\"профессора\\\" (Professor), I should look for dialogues or interactions between these characters. The key phrase is \\\"якобы приходилось болтаться в центре Луны\\\" which translates to \\\"as if he had to hang around the center of the Moon.\\\" This seems like a sarcastic remark, so I need to find a dialogue where Znayka is being sarcastic towards the Professor.\\n\\nI'll start by creating a cursor to search for mentions of Znayka and the Professor, focusing on dialogues. The filter should be broad to capture any paragraphs with dialogue markers. Using the cursor-create_cursor function with a name like \\\"search_cursor\\\" and a filter description like \\\"All paragraphs with dialogue markers involving Znayka and Professor.\\\" Then, I'll run the agent to scan through the document portions.\\n\\nI need to check each evidence item returned by the agent to find the exact paragraph where Znayka's sarcastic comment is made. Since the user wants the first mention, I'll stop once I find the relevant paragraph. Also, I should ensure that the dialogue includes the specific phrase about the Moon's center. If the first result doesn't have it, I'll continue scanning the next portions until I find the correct one. Once found, I'll note the pointerLabel and include it in the answer.\\n\",\"tool_calls\":[{\"id\":\"call_obmbfw8h\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_cursor\",\"arguments\":\"{\\\"filterDescription\\\":\\\"All paragraphs with dialogue markers mentioning Znayka and Professor\\\",\\\"maxBytes\\\":1048576,\\\"maxElements\\\":500,\\\"name\\\":\\\"search_cursor\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1295,\"completion_tokens\":415,\"total_tokens\":1710}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 20:16:55 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

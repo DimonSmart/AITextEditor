@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-90\",\"object\":\"chat.completion\",\"created\":1766417700,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's tackle this query. The user is asking about Фуксия and Селедочка, specifically who they are and where they are first mentioned. First, I need to figure out how to approach this using the provided tools.\\n\\nSince the user wants to know about mentions in the text, I should use the cursor-create_cursor function to create a cursor that filters for these names. The filterDescription should look for occurrences of \\\"Фуксия\\\" and \\\"Селедочка\\\". I'll set the name of the cursor as \\\"search_cursor\\\" and describe the filter as \\\"Mentions of Фуксия and Селедочка\\\".\\n\\nNext, I'll use agent-run_agent with the cursorName \\\"search_cursor\\\" and a taskDescription that asks to find the first mention. I'll set maxEvidenceCount to 1 to get the first occurrence. The response should give me the first paragraph where they are mentioned. I need to check the evidence items from the tool response to find the exact mention and note the pointerLabel. If they are mentioned together, I'll need to check the same paragraph again for the first mention. If not found, I'll have to inform the user that they aren't in the document.\\n\",\"tool_calls\":[{\"id\":\"call_1m1602ds\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_cursor\",\"arguments\":\"{\\\"filterDescription\\\":\\\"Mentions of Фуксия and Селедочка\\\",\\\"maxBytes\\\":1048576,\\\"name\\\":\\\"search_cursor\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1128,\"completion_tokens\":307,\"total_tokens\":1435}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 15:35:00 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

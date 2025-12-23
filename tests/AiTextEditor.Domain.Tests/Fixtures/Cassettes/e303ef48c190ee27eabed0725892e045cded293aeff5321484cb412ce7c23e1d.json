@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-589\",\"object\":\"chat.completion\",\"created\":1766435628,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants the first two mentions of \\\"профессора Звёздочкина.\\\" Wait, but looking at the provided batch items, I don't see any mention of \\\"профессора Звёздочкина\\\" in the paragraphs. The first batch's items are about Незнайка's journey and the changes in Цветочный город. There's no reference to Звёздочкин here. The snapshot shows that there was one evidence pointer previously, which is \\\"3:1.1.1,\\\" but that's not in the current batch. Since the current batch doesn't have any instances of the required term, the newEvidence array should be empty. Therefore, the decision would be \\\"not_found\\\" because the required mentions aren't present here. Also, since there's no new evidence, the count doesn't reach the maxEvidenceCount of 2. So the output should reflect that no new evidence was found.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1275,\"completion_tokens\":215,\"total_tokens\":1490}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 20:33:47 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

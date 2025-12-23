@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-388\",\"object\":\"chat.completion\",\"created\":1766435693,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants the first two mentions of \\\"профессора Звёздочкина\\\". But looking at the provided batch items, none of the paragraphs contain that exact phrase. The snapshot shows that there's already one piece of evidence, but the recentEvidencePointers include \\\"3:1.1.1\\\", which isn't in the current batch's items. The current batch's items are pointers 18, 19, 20. The markdown content in these items doesn't mention \\\"профессора Звёздочкина\\\" at all. So there's no new evidence here. The decision should be \\\"not_found\\\" since there are no matches in the current batch. Also, since the maxEvidenceCount is 2 and the snapshot's evidenceCount is 1, but no new evidence is found, the decision remains not_found.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":912,\"completion_tokens\":198,\"total_tokens\":1110}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 20:34:52 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

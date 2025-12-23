@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-823\",\"object\":\"chat.completion\",\"created\":1766415135,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"В документе не найдено упоминания о \\\"визуализации лунного кратера\\\" с описанием \\\"огромного круглого поля с земляным валом по краю\\\". Поиск завершён без результатов. Проверьте правильность формулировки запроса или уточните контекст.\",\"reasoning\":\"Okay, the user is asking about the visualization of a lunar crater described as a huge round field with an earth embankment along the edge. I need to find where this description is in the document.\\n\\nFirst, I created a cursor with the filter to look for the exact terms and description. Then, I ran the agent to find the first mention. The response said \\\"not_found\\\" and the cursor is complete. That means the initial search didn't find anything, and there are no more items to check. \\n\\nSince the cursor is complete, there's no more data to scan. The user might need to check if the terms are correctly spelled or if the description is accurately phrased. Alternatively, maybe the document doesn't contain that specific description. I should inform the user that the search didn't find the mention and suggest possible next steps, like verifying the keywords or checking the document's contents.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1274,\"completion_tokens\":268,\"total_tokens\":1542}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 14:52:14 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

@@ -5,7 +5,8 @@ namespace AiTextEditor.Lib.Model;
 public sealed record CursorAgentRequest(
     string TaskDescription,
     string? StartAfterPointer = null,
-    string? Context = null);
+    string? Context = null,
+    int? MaxEvidenceCount = null);
 
 public sealed record CursorAgentResult(
     /// <summary>

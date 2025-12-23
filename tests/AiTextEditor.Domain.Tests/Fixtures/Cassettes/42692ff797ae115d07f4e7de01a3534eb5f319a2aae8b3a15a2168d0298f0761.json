@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-512\",\"object\":\"chat.completion\",\"created\":1766434348,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"done\\\",\\\"newEvidence\\\":[{\\\"pointer\\\":\\\"9:1.1.1.p6\\\",\\\"excerpt\\\":\\\"В свой телескоп Стекляшкин сумел разглядеть, что поверхность Луны не ровная, а гористая, причём многие горы на Луне не такие, как у нас на Земле, а почему-то круглые, вернее сказать – кольцеобразные. Эти кольцевые горы учёные называют лунными кратерами, или цирками. Чтобы понять, как выглядит такой лунный цирк, или кратер, вообразите себе огромное круглое поле, в поперечнике километров двадцать, тридцать, пятьдесят или даже сто, и представьте, что это огромное круглое поле окружено земляным валом или горой высотой всего в два или три километра, – вот и получится лунный цирк, или кратер.\\\",\\\"reason\\\":\\\"Параграф описывает лунный кратер как огромное круглое поле с земляным валом по краю.\\\"}]}\",\"reasoning\":\"Okay, let's tackle this task. The goal is to find the first mention of a lunar crater described as 'огромного круглого поля с земляным валом по краю'. The context is all paragraphs mentioning lunar craters or their features. The maxEvidenceCount is 1, so we need to find the first occurrence.\\n\\nFirst, I'll look through the provided batch items. The first item has a pointer 8:1.1.1.p5. The markdown there talks about a small lunar crater in the Sea of Clarity, but it doesn't mention the specific description. The second item, pointer 9:1.1.1.p6, has a paragraph that describes a lunar crater as \\\"огромное круглое поле, в поперечнике километров двадцать, тридцать, пятьдесят или даже сто, и представьте, что это огромное круглое поле окружено земляным валом или горой высотой всего в два или три километра\\\". That matches the required description exactly. Since the task is to find the first mention, and this is the second paragraph in the batch, but since the first batch might have more items, but in this case, the first batch's items are only these two. Wait, the firstBatch is false, so there might be previous batches, but the snapshot shows evidenceCount is 0. So the first occurrence in the current batch is the second item. But the user wants the first mention overall. However, since the previous batches have no evidence, the first mention here is the one in pointer 9:1.1.1.p6. So the newEvidence should include that pointer with the excerpt and reason. The reason is that the paragraph describes the crater as an enormous circular field with an earth embankment around the edge. That's exactly the description needed. So the decision is \\\"continue\\\" because maxEvidenceCount is 1, and we found one, so decision should be \\\"done\\\"? Wait, the maxEvidenceCount is 1, and since we found one, the decision should be \\\"done\\\". But the output schema says if the count meets or exceeds max, set decision to \\\"done\\\". So yes, here we have one, so decision is \\\"done\\\".\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1325,\"completion_tokens\":765,\"total_tokens\":2090}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 20:12:28 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

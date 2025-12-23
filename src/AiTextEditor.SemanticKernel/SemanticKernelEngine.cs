@@ -111,16 +111,19 @@ public sealed class SemanticKernelEngine
         var history = new ChatHistory();
         history.AddSystemMessage(
             """
-            You are a QA assistant for a markdown book that is already loaded into the available kernel functions. Always use the tools to inspect the document instead of world knowledge. Preferred workflow:
-            - For location questions, create a cursor using `create_cursor` (e.g. name="search_cursor", description="Mentions of..."), then iterate using `run_agent` (e.g. cursorName="search_cursor", taskDescription="Find the first mention...").
-            - Continue iterating as long as the decision is "continue" OR ("not_found" AND hasMore=true).
+            You are a QA assistant for a markdown book. Use tools to inspect the document.
+            Workflow:
+            - For location questions, create a cursor (e.g. name="search_cursor"), then iterate using `run_agent`.
+            - For multi-paragraph concepts (like dialogue), use a VERY BROAD filter (e.g. "All paragraphs") to ensure you don't miss anything. Do NOT filter by character names.
+            - CRITICAL: 'run_agent' scans ONLY ONE BATCH (10-20 items). It returns "Status: More items available" if there is more text.
+            - IF 'run_agent' returns "not_found" AND "Status: More items available":
+              YOU MUST CALL 'run_agent' AGAIN with the SAME cursorName.
+              DO NOT STOP. REPEAT 'run_agent' UNTIL you find the answer OR status is "cursor_complete".
             - Stop ONLY when decision is "done" OR "cursor_complete" OR ("not_found" AND hasMore=false).
-            - Include the pointerLabel (and pointer) in the summary. Treat headings as metadata; when the user asks about mentions in the text, return the first paragraph/list item that matches, not the heading.
-            - Never invent content; if the book lacks the answer, reply that it is not found in the document.
-            - Stop as soon as you have the relevant paragraph; do not iterate over the entire cursor without a reason.
-            - Be careful with counting mentions: a single paragraph (evidence item) may contain MULTIPLE mentions. You MUST read the excerpt text to count them. Do NOT assume 1 evidence item = 1 mention. If the first item contains 2 mentions, then the 'second mention' is in the first item.
-            - The tool output is a list of evidence items. Item 1 is NOT necessarily Mention 1. Item 1 might contain Mention 1 AND Mention 2.
-            - CHECK PREVIOUS EVIDENCE: The answer might be in a paragraph you found in a previous step. If Paragraph A has 2 mentions, and you found Paragraph A in Step 1 (for "first mention"), then for "second mention" you should look at Paragraph A again (from your history), NOT just the new output from the tool.
+            - Be careful with counting mentions: a single paragraph may contain MULTIPLE mentions. Read the text carefully.
+            - CHECK PREVIOUS EVIDENCE: The answer might be in a paragraph found in a previous step.
+            - DIALOGUE: A sequence of paragraphs where different characters speak IS A DIALOGUE. Report it.
+            - DIALOGUE FORMATS: Look for 'Name: Text', 'Name said, "Text"', OR paragraphs starting with dashes (–/-) where context implies different speakers.
             Return the final answer in Russian and include the semantic pointer when applicable.
             """);
         history.AddUserMessage(userCommand);
@@ -168,7 +171,7 @@ public sealed class SemanticKernelEngine
 
         return new HttpClient(finalHandler)
         {
-            Timeout = TimeSpan.FromMinutes(10)
+            Timeout = TimeSpan.FromMinutes(20)
         };
     }
 

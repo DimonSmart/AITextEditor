@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-179\",\"object\":\"chat.completion\",\"created\":1766433612,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's see. The user wants me to find all mentions of \\\"Фуксии\\\" in the provided batch. The task says to look for all paragraphs containing that term. The snapshot shows that there's already 1 piece of evidence, with the pointer \\\"8:1.1.1.p5\\\". But in the current batch, the items are pointers 45, 46, 47. None of their markdown content includes \\\"Фуксии\\\". The paragraphs talk about the Moon's formation, liquid substance, empty space, etc., but no mention of Фуксии. So, there are no new evidence points here. The decision should be \\\"not_found\\\" since there's nothing in the current batch that matches the task. I need to make sure not to include any pointers from the snapshot's recentEvidencePointers. Also, the output must be a JSON object with the decision and newEvidence array. Since there are no matches, newEvidence will be empty. Alright, that's it.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":933,\"completion_tokens\":225,\"total_tokens\":1158}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 20:00:11 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

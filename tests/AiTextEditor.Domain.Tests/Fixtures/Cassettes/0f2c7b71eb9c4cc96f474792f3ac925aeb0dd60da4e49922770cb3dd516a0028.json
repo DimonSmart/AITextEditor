@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-8\",\"object\":\"chat.completion\",\"created\":1766415200,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Первое упоминание Фуксии и Селедочки находится в разделе **ch02-s04-p01** (pointerLabel: \\\"Фуксия и Селедочка\\\"). В тексте этого абзаца они впервые представлены как персонажи, но конкретные детали их характеров или ролей в сюжете не раскрываются. Для получения дополнительной информации о их характеристиках потребуется анализ следующих разделов документа.\",\"reasoning\":\"Okay, let's tackle this query. The user is asking about Фуксия and Селедочка, specifically who they are and where they are first mentioned. First, I need to figure out how to approach this using the available tools.\\n\\nThe user mentioned using the cursor-create_cursor function to search for mentions. The previous assistant created a cursor with a filter to find text containing either \\\"Фуксия\\\" or \\\"Селедочка\\\" and set maxEvidenceCount to 1 to get the first occurrence. The response from the tool was a single evidence item pointing to a specific location in the document.\\n\\nNow, I need to check if that evidence item provides the necessary information. The pointerLabel is \\\"Фуксия и Селедочка\\\", and the pointer is \\\"ch02-s04-p01\\\". The user wants to know who these characters are and their first mention. Since the cursor was set to find the first occurrence, the evidence item should contain the first mention. However, the assistant needs to verify if the paragraph at that pointer actually introduces both characters. If the paragraph mentions both, then that's the first mention. If not, further steps might be needed. But according to the tool's response, the first mention is there. So the answer should include the pointer details and the information from that paragraph. If the paragraph doesn't specify, the assistant should state that the first mention is at that location but the details aren't provided. But since the user asked for who they are, the answer should include the characters' names and their first mention location as per the document.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1126,\"completion_tokens\":441,\"total_tokens\":1567}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 14:53:20 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

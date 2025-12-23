@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-88\",\"object\":\"chat.completion\",\"created\":1766511744,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find all mentions of 'профессора Звёздочкина' in the current batch, excluding headers. The context is that the mention should be in the content, not in a header. The maxEvidenceCount is null, so we don't have a limit here.\\n\\nFirst, I need to scan through each item in the batch. Let's look at the items provided. There are two items here, both paragraphs. \\n\\nStarting with the first item, pointer 8:1.1.1.p5. The markdown content talks about Знайка visiting the Sun City, meeting scientists Fuxia and Selodka, and their moon trip. There's a mention of a professor here? Wait, the text mentions \\\"профессора Звёздочкина\\\" anywhere? Let me check again. The first paragraph mentions \\\"профессора Звёздочкина\\\" in the context of the moon observations. Wait, no, looking at the text again: the first paragraph talks about Знайка and the scientists Fuxia and Selodka. The second paragraph mentions astronomer Steklyashkin. Wait, the user's query says to exclude headers, but the current batch items are paragraphs. \\n\\nWait, the first paragraph's markdown text: \\\"Впрочем, главное было не это. Главное было то, что Знайка тоже побывал в Солнечном городе. Там он познакомился с учёными малышками Фуксией и Селёдочкой, которые в то время готовили свой второй полёт на Луну. Знайка тоже включился в работу по постройке космической ракеты и, когда ракета была готова, совершил с Фуксией и Селёдочкой межпланетное путешествие. Прилетев на Луну, наши отважные путешественники обследовали один из небольших лунных кратеров в районе лунного Моря Ясности, побывали в пещере, которая находилась в центре этого кратера и произвели наблюдения над изменением силы тяжести. На Луне, как известно, сила тяжести значительно меньше, чем на Земле, и поэтому наблюдения над изменением силы тяжести имеют большое научное значение. Пробыв на Луне около четырёх часов, Знайка и его спутницы принуждены были поскорей отправиться в обратный путь, так как запасы воздуха были у них на исходе. Всем известно, что на Луне воздуха нет, и, чтоб не задохнуться, всегда надо брать с собой запас воздуха. В сгущённом виде, конечно.\\\"\\n\\nWait, I don't see \\\"профессора Звёздочкина\\\" here. Let me check the second paragraph. The second item's markdown is: \\\"Вернувшись в Цветочный город, Знайка много рассказывал о своём путешествии. Его рассказы очень заинтересовали всех, и особенно астронома Стекляшкина, который не раз наблюдал Луну в телескоп. В свой телескоп Стекляшкин сумел разглядеть, что поверхность Луны не ровная, а гористая, причём многие горы на Луне не такие, как у нас на Земле, а почему-то круглые, вернее сказать – кольцеобразные. Эти кольцевые горы учёные называют лунными кратерами, или цирками. Чтобы понять, как выглядит такой лунный цирк, или кратер, вообразите себе огромное круглое поле, в поперечнике километров двадцать, тридцать, пятьдесят или даже сто, и представьте, что это огромное круглое поле окружено земляным валом или горой высотой всего в два или три километра, – вот и получится лунный цирк, или кратер. Таких кратеров на Луне тысячи. Есть маленькие – километра в два, но есть и гигантские – до ста сорока километров в диаметре.\\\"\\n\\nStill no mention of \\\"профессора Звёздочкина\\\". Wait, maybe I missed something. Let me check again. The user's task says to find mentions of 'профессора Звёздочкина', but in the provided batch items, there's no such mention. The first paragraph mentions Знайка and other characters, but not Звёздочкин. The second paragraph talks about Стекляшкин. So, there's no occurrence of 'профессора Звёздочкина' in the current batch. \\n\\nTherefore, the newEvidence array should be empty. The decision would be \\\"continue\\\" since there's no evidence found. But wait, the snapshot's evidenceCount is 0, and since there are no new evidence, the decision remains \\\"continue\\\". However, the user's task might have previous batches with evidence, but the current batch has none. So the output should have decision \\\"continue\\\" and newEvidence as an empty array.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1320,\"completion_tokens\":1204,\"total_tokens\":2524}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 17:42:24 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

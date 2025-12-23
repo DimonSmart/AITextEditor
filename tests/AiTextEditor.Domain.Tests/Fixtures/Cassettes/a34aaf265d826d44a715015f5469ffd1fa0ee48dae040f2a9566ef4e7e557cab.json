@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-989\",\"object\":\"chat.completion\",\"created\":1766514908,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The user wants me to find all mentions of 'Фуксии' in the provided batch. First, I need to scan through each item's markdown content carefully. \\n\\nLooking at the first item with pointer \\\"10:1.1.1.p7\\\", the markdown talks about lunar craters and two theories: volcanic and meteorite. There's a mention of \\\"вулканистами\\\" and \\\"метеоритчиками\\\", but no 'Фуксии' here.\\n\\nNext, the second item has pointer \\\"11:1.1.1.p8\\\". The markdown describes Znayka's theory about lunar craters resembling a pancake's bubbles. Words like \\\"блин\\\" (pancake) and \\\"пузырьки\\\" (bubbles) are there, but again, no 'Фуксии' found. \\n\\nWait, maybe I missed something. Let me check again. The user's task is to find 'Фуксии', which is a name. The snapshot's recentEvidencePointers include \\\"8:1.1.1.p5\\\", but that's from a previous batch. The current batch's items don't have any mention of 'Фуксии'. \\n\\nSo, according to the rules, if there's no new evidence, the decision should be \\\"not_found\\\". The output JSON should reflect that with an empty newEvidence array.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1101,\"completion_tokens\":311,\"total_tokens\":1412}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:35:08 GMT"
+    ]
+  }
+}

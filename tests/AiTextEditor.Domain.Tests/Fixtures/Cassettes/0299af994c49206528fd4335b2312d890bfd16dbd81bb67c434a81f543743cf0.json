@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-123\",\"object\":\"chat.completion\",\"created\":1766415421,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The goal is to find the first dialogue between two named characters. The context specifies that lines must have at least two named characters in a dialogue format. The maxEvidenceCount is 1, so we need to find the first occurrence.\\n\\nLooking at the provided batch items, all the entries are paragraphs. I need to scan each paragraph for any dialogue where two named characters are mentioned. \\n\\nStarting with the first paragraph (8:1.1.1.p5): It mentions Знайка, Фуксией, and Селёдочкой. But the text is a narrative, not a direct dialogue. The characters are mentioned in the context of activities, not speaking to each other. So no dialogue here.\\n\\nNext, paragraph 9:1.1.1.p6 talks about Знайка's return and his stories, but again, it's a narrative. No direct dialogue between two characters.\\n\\nParagraph 10:1.1.1.p7 discusses a debate among astronomers about the origin of lunar craters. The characters here are the astronomers, but the text is a description of their disagreement, not a dialogue. The names mentioned are part of the discussion, but not in a dialogue format.\\n\\nParagraph 11:1.1.1.p8 describes Знайка's observation of the Moon and his theory. There's a mention of him observing with Стекляшкин, but again, it's a narrative. The text says they observed the Moon, but there's no direct dialogue between them.\\n\\nWait, maybe I missed something. Let me check again. The task says \\\"dialogue format,\\\" which usually implies quotes or direct speech. None of the paragraphs have any quoted dialogue. All are third-person narratives describing actions and discussions without direct speech. \\n\\nSince there's no direct dialogue between two named characters in any of the provided paragraphs, the answer would be that no evidence was found. However, the user's instruction says to output exactly one JSON object. If there's no evidence, the decision should be \\\"not_found\\\". But the rules state to report all matches, and if none, then \\\"not_found\\\". \\n\\nSo the correct output is decision: \\\"not_found\\\" with an empty newEvidence array.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1816,\"completion_tokens\":479,\"total_tokens\":2295}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 14:57:01 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

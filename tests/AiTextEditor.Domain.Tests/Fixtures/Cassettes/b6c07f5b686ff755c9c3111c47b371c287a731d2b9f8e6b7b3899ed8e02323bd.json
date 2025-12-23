@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-22\",\"object\":\"chat.completion\",\"created\":1766513392,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to scan current batch items for evidence matching task: first dialogue between two characters named in the text, lines starting with a name followed by colon or quoted speech. The batch only contains headings, no dialogues. So no evidence.\\n\\nWe must not add any evidence. Decision: continue (since more batches exist). No newEvidence.\\n\\nOutput JSON accordingly.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":726,\"completion_tokens\":96,\"total_tokens\":822}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:09:51 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

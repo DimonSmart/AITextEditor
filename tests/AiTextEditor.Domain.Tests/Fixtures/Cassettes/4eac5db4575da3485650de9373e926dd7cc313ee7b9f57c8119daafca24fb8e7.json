@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-487\",\"object\":\"chat.completion\",\"created\":1766513268,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"We have a task: Find last mention of \\\"Фуксии\\\". Need to scan current batch items for that term. The batch contains three paragraphs; none contain \\\"Фуксии\\\". So no new evidence. Also need to avoid pointers already in recentEvidencePointers (8:1.1.1.p5). Not present.\\n\\nThus decision: continue (since there are more batches). newEvidence empty array.\\n\\nOutput JSON.\\n\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1202,\"completion_tokens\":107,\"total_tokens\":1309}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:07:47 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

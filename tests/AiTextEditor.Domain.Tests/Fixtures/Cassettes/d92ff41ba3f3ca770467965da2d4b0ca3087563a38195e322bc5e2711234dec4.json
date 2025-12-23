@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-136\",\"object\":\"chat.completion\",\"created\":1766433447,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find all mentions of \\\"Фуксии\\\" in the provided batch. First, I need to scan each item's markdown content carefully. \\n\\nLooking at the first item with pointer 12:1.1.1.p9, the markdown talks about the Moon's surface and bubbles, but I don't see \\\"Фуксии\\\" here. The second item, 13:1.1.1.p10, mentions astronomers and vulcanologists laughing at Znayka's theory, still no match. The third item, 14:1.1.1.p11, starts with \\\"Вулканисты говорили:\\\", which is about vulcanologists, but again, no \\\"Фуксии\\\".\\n\\nWait, maybe I missed something. Let me check again. The user's input has the snapshot's recentEvidencePointers including \\\"8:1.1.1.p5\\\", but that's from a previous batch. The current batch items don't have any mention of \\\"Фуксии\\\". The task's context says to find all paragraphs containing 'Фуксии', but none of the current items include that term. \\n\\nSo, there are no new evidence pointers in the current batch. The decision should be \\\"not_found\\\" since there's no match. Also, the user's snapshot evidenceCount is 1, but since the current batch doesn't add any, the total remains 1. The output should reflect that no new evidence was found.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1088,\"completion_tokens\":332,\"total_tokens\":1420}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 19:57:26 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

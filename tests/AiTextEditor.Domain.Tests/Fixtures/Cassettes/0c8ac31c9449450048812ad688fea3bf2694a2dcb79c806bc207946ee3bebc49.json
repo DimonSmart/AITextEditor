@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-812\",\"object\":\"chat.completion\",\"created\":1766435783,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The user wants me to find the first mention of Ponchik throwing old costumes into Ogurcovna River. The task specifies that the context is all paragraphs mentioning both Ponchik and Ogurcovna River. The first batch has items with pointers 1:1, 2:1.1, and 3:1.1.1, all of which are headings. \\n\\nLooking at the pointers, none of the markdown content in these items mention Ponchik or the river. The headings are in Russian, but they don't include the required terms. Since the evidenceCount is 0 and there are no recent pointers, I need to check if any of the current batch items have the necessary info. However, the items here are just headings without any relevant content. Therefore, there's no evidence to add. The decision should be \\\"not_found\\\" because the first batch doesn't contain the required mention. I should wait for the next batch to check further.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":667,\"completion_tokens\":220,\"total_tokens\":887}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 20:36:23 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-388\",\"object\":\"chat.completion\",\"created\":1766409764,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of 'профессор Звёздочкин' in the text content, excluding headers. The user provided a batch of items, each with a pointer and markdown content. \\n\\nFirst, I need to scan each item's markdown for the exact phrase 'профессор Звёздочкин'. Let me go through each entry one by one.\\n\\nLooking at pointer 39: The text mentions \\\"Звёздочкин\\\" but not the full phrase with 'профессор'. Next, pointer 40: No mention. Pointer 41: Same as 39. Pointer 42: Here's the line: \\\"– Вот видите, сами говорите – жидкость, – усмехнулся Звёздочкин. – Откуда же в Луне взялась пустота, если там была жидкость, садовая вы голова?\\\" Wait, the full phrase is 'профессор Звёздочкин', but here it's just 'Звёздочкин'. Not quite. \\n\\nContinuing to pointer 44: \\\"– Надо полагать, знаю, – сердито буркнул профессор.\\\" Here, 'профессор' is mentioned, but not followed by 'Звёздочкин'. \\n\\nPointer 45: \\\"– Тогда вам всё должно быть понятно, – обрадованно сказал Знайка. – Если жидкое вещество уменьшалось в объёме, то внутри Луны само собой должно было получиться пустое пространство на манер воздушного пузыря в бутылке. Это пустое пространство делалось всё больше и больше, располагаясь в центральной части Луны, так как остававшаяся жидкой масса притягивалась к твёрдой оболочке Луны, подобно тому как притягивались остатки воды к стенкам бутылки, когда она находилась в состоянии невесомости. Со временем жидкость внутри Луны и вовсе остыла и затвердела, как бы прилипнув к твёрдым стенкам планеты, благодаря чему в Луне образовалась внутренняя полость, которая постепенно могла заполниться воздухом или каким-нибудь другим газом.\\\" No mention here.\\n\\nWait, maybe I missed something. Let me check again. The task says to exclude headers, so only the paragraph content. Let me check each paragraph again.\\n\\nLooking at pointer 42 again: The text says \\\"усмехнулся Звёздочкин.\\\" But the full phrase is 'профессор Звёздочкин'. So that's just the name, not the title. \\n\\nWait, maybe there's another instance. Let me check all the pointers again. \\n\\nPointer 44: \\\"профессор\\\" is mentioned, but not followed by Звёздочкин. \\n\\nWait, maybe there's a mention in another paragraph. Let me check pointer 51: \\\"Сейчас же двое коротышек схватили Звёздочкина – один за шиворот, другой за ноги – и стащили его с трибуны.\\\" Here, it's \\\"Звёздочкина\\\" but not with 'профессор'. \\n\\nHmm, maybe there's no mention of 'профессор Звёздочкин' in the current batch. The snapshot's recentEvidencePointers include \\\"4:1.1.1.p1\\\" and \\\"24:1.1.1.p21\\\", but those are from previous batches. The current batch's items don't have the exact phrase. \\n\\nWait, maybe I missed a line. Let me check pointer 42 again. The text is: \\\"– Вот видите, сами говорите – жидкость, – усмехнулся Звёздочкин. – Откуда же в Луне взялась пустота, если там была жидкость, садовая вы голова?\\\" Here, \\\"Звёздочкин\\\" is mentioned, but not as 'профессор'. \\n\\nSo, in the current batch, there's no mention of 'профессор Звёздочкин'. Therefore, the decision should be 'not_found' because the required phrase isn't present here. The user's task is to find the first mention, but if it's not in this batch, then the answer is 'not_found'.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2242,\"completion_tokens\":1024,\"total_tokens\":3266}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 13:22:44 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

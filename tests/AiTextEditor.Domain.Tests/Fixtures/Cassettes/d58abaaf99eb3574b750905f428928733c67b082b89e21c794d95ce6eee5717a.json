@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-749\",\"object\":\"chat.completion\",\"created\":1766511286,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of 'профессор Звёздочкин'. The user provided a snapshot with evidenceCount 1 and recentEvidencePointers including \\\"3:1.1.1\\\". But the current batch's items don't have that pointer. The firstBatch is false, so we're not at the start. The items in the batch are paragraphs 15, 16, 17 from different sources.\\n\\nLooking at each item's markdown content. The first paragraph (18:1.1.1.p15) talks about lunar craters not being volcanoes or pancakes. The second (19:1.1.1.p16) mentions Znayka discussing meteorites hitting the Moon at angles, leading to oval craters, but the Moon's craters are mostly round. The third (20:1.1.1.p17) refers to volcanologists and meteoritists dismissing Znayka, calling him a \\\"блинистом\\\" and comparing the Moon to a pancake.\\n\\nNone of these paragraphs mention 'профессор Звёздочкин'. The snapshot's recentEvidencePointers might be from a previous batch, but the current batch doesn't have that pointer. Since the task is to find the first mention, and the current batch doesn't contain it, the decision should be \\\"not_found\\\". No new evidence to add here.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":910,\"completion_tokens\":317,\"total_tokens\":1227}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 17:34:46 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

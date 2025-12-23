@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-523\",\"object\":\"chat.completion\",\"created\":1766513449,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"The search cursor hasn't found the dialogue yet. We need to keep iterating until we find first dialogue that includes two named characters. Use same cursor, continue calls until cursor_complete.\",\"tool_calls\":[{\"id\":\"call_dixysu5g\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"agent-run_agent\",\"arguments\":\"{\\\"cursorName\\\":\\\"search\\\",\\\"taskDescription\\\":\\\"Find the first dialogue between two named characters (lines starting with a name and colon). Return the snippet and names.\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1269,\"completion_tokens\":89,\"total_tokens\":1358}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:10:48 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-88\",\"object\":\"chat.completion\",\"created\":1766484522,\"model\":\"deepseek-v3.1:671b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"decision\\\": \\\"continue\\\",\\n  \\\"newEvidence\\\": [\\n    {\\n      \\\"pointer\\\": \\\"27:1.1.1.p24\\\",\\n      \\\"excerpt\\\": \\\"– Дорогие друзья, разрешите заседание, посвящённое обсуждению Знайкиной книги, считать открытым.\\\",\\n      \\\"reason\\\": \\\"This paragraph contains a direct speech line, though the speaker is not explicitly named.\\\"\\n    },\\n    {\\n      \\\"pointer\\\": \\\"29:1.1.1.p26\\\",\\n      \\\"excerpt\\\": \\\"Выслушав всё это, Знайка поднялся со своего места и сказал насмешливо:\\\",\\n      \\\"reason\\\": \\\"This paragraph introduces a dialogue by the named character Знайка.\\\"\\n    }\\n  ]\\n}\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1145,\"completion_tokens\":166,\"total_tokens\":1311}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 10:08:41 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-330\",\"object\":\"chat.completion\",\"created\":1766413923,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the second mention of \\\"профессора Звёздочкина\\\" in the provided text. The context specifies that it should be in the text and not in a heading. The maxEvidenceCount is 2, so we need to find two instances.\\n\\nFirst, I'll scan through the batch items. The first item is a heading, so I can ignore that. The second item is another heading, also to be skipped. The third item is a heading again, so same here. Now, looking at the paragraphs:\\n\\nItem 4 (pointer 4:1.1.1.p1) has a paragraph that mentions \\\"профессора Звёздочкина\\\" in the heading. Wait, no, the markdown here is a paragraph. Wait, the third item's markdown is a heading: \\\"### Как Знайка победил профессора Звёздочкина\\\". But the user said to ignore headings. So that's a heading, so even though it mentions the professor, it's in a heading, so it's excluded. \\n\\nWait, the task says the mention shouldn't be in a heading. So the heading \\\"### Как Знайка победил профессора Звёздочкина\\\" is a heading (item 3), so that's excluded. Then, looking through the paragraphs. The first mention in the text might be in the heading, but since headings are excluded, maybe the actual mention is in the paragraph. Wait, looking at the markdown of item 3: it's a heading, so even though it contains the name, it's a heading, so it's not counted. \\n\\nNow, checking the paragraphs. The first paragraph (item 4) starts with \\\"С тех пор как Незнайка совершил путешествие в Солнечный город...\\\" and mentions \\\"профессора Звёздочкина\\\" in the heading. Wait, no, the heading is item 3. The paragraph in item 4 doesn't mention the professor. Wait, maybe I'm confused. Let me recheck.\\n\\nThe third item is a heading: \\\"### Как Знайка победил профессора Звёздочкина\\\". So that's a heading, so even though it mentions the professor, it's in a heading, so it's excluded. Now, looking through the paragraphs. The first paragraph (item 4) doesn't mention the professor. The second paragraph (item 5) talks about the Sun City and the architect, but no mention of the professor. The third paragraph (item 6) is about Ponchik and his clothes, no mention. The fourth paragraph (item 7) is about the moth and Ponchik's room. \\n\\nWait, maybe there's another mention in the text. Wait, the user's task says to find the second mention. But in the provided batch, the only mention is in the heading (item 3), which is excluded. So there's no other mention in the paragraphs. Therefore, there's only one valid mention (if the heading is excluded), but the user is asking for the second. Wait, maybe I'm missing something. Let me check again.\\n\\nWait, the heading in item 3 is a heading, so it's excluded. The paragraphs don't mention the professor. So there are zero valid mentions. But the user's task says to find the second mention. This is confusing. Wait, maybe the heading is considered part of the text? The context says \\\"text contains 'профессора Звёздочкина' and not in a heading\\\". So the heading is excluded. Therefore, in the current batch, there's only one mention in the heading, which is excluded. So there are no valid mentions. But the user's task says to find the second. Maybe there's a mistake here. Alternatively, perhaps the heading is considered part of the text. Wait, the user's context says \\\"text contains\\\" but not in a heading. So the heading is excluded. Therefore, in the current batch, there are no valid mentions. But the user's task requires finding the second. This is conflicting. Maybe the answer is that there's no second mention, so the decision is \\\"not_found\\\". But the user's task says to find the second, but in the given batch, there's only one mention in the heading, which is excluded. Therefore, no valid mentions. Hence, the decision is \\\"not_found\\\".\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2036,\"completion_tokens\":942,\"total_tokens\":2978}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 14:32:03 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

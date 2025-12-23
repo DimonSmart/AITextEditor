@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-523\",\"object\":\"chat.completion\",\"created\":1766418141,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's tackle this query. The user is asking in which paragraph Ponchik, after choosing a darker night, drowned his old costumes in the Cucumber River. First, I need to figure out how to approach this using the provided tools.\\n\\nThe user mentioned using the cursor-create_cursor function to search for specific mentions. The previous assistant created a cursor with the filter description about Ponchik and the Cucumber River. The response from the tool was \\\"search_cursor\\\", which probably means the cursor was successfully created. Now, the next step is to run the agent on this cursor to find the relevant evidence.\\n\\nThe agent-run_agent function requires the cursor name and a task description. The task here is to find the paragraph where Ponchik does the mentioned action. The maxEvidenceCount should be set to 1 to get the first occurrence. I need to make sure the task description is phrased naturally without quotes, as per the guidelines. So, the taskDescription would be something like \\\"Find the paragraph where Ponchik chooses a darker night and drowns his old costumes in the Cucumber River.\\\"\\n\\nAfter running the agent, the response will give the evidence items. The first item should contain the relevant paragraph. Once found, I need to check if the pointerLabel is present and include it in the answer. If not, inform the user it's not found. Also, ensure that the answer is in Russian and includes the semantic pointer if applicable.\\n\",\"tool_calls\":[{\"id\":\"call_37qnhr41\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"agent-run_agent\",\"arguments\":\"{\\\"cursorName\\\":\\\"search_cursor\\\",\\\"maxEvidenceCount\\\":1,\\\"taskDescription\\\":\\\"Find the paragraph where Ponchik chooses a darker night and drowns his old costumes in the Cucumber River\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1210,\"completion_tokens\":360,\"total_tokens\":1570}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 15:42:21 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-695\",\"object\":\"chat.completion\",\"created\":1766426544,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"В диалоге упоминаются два названных по имени персонажа: **профессор** (имplied by prior context) и **Знайка**.  \\nSemantic pointer: `34:1.1.1.p31`\",\"reasoning\":\"Okay, let's see. The user asked for the first dialogue between two named characters and their names. The cursor was created to find dialogues with at least two named characters. The first run didn't find anything, then after another run, the evidence came back with a pointer and excerpt.\\n\\nLooking at the excerpt, the dialogue is between Знайка and the профессор. The reason given by the agent mentions both names. Even though the excerpt starts with Знайка speaking, the presence of the профессор's name in the context (implied by prior context) means both are named characters. So the answer should list both names. The pointer is 34:1.1.1.p31, which I need to include as the semantic pointer. The answer in Russian would state the names and the pointer.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1696,\"completion_tokens\":235,\"total_tokens\":1931}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 18:02:24 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

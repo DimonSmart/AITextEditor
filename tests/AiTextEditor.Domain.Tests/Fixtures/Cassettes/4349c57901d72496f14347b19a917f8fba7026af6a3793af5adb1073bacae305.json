@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-474\",\"object\":\"chat.completion\",\"created\":1766426366,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The goal is to find the first dialogue between two named characters. The context mentions that lines should have at least two named characters in a dialogue format. The maxEvidenceCount is 1, so we need to find the first occurrence.\\n\\nLooking at the provided batch items:\\n\\n1. The first paragraph (12:1.1.1.p9) talks about Знайка's theory about the Moon's surface. It mentions Знайка but no other character in a dialogue. The paragraph is descriptive, not a conversation.\\n\\n2. The second paragraph (13:1.1.1.p10) states that all astronomers, vulcanologists, and meteoritists laughed at Знайка's theory. Here, there's a mention of multiple characters (astronomers, vulcanologists, meteoritists) but no direct dialogue. It's a statement, not a conversation between two named characters.\\n\\n3. The third paragraph (14:1.1.1.p11) starts with \\\"Вулканисты говорили:\\\" which translates to \\\"Vulcanologists said:\\\". This is the beginning of a dialogue, but it only mentions one character (Vulcanologists) and doesn't have a second named character yet. The dialogue might continue in a subsequent batch, but since there's no more data here, this might be the only mention. However, the task requires two named characters in a dialogue. Since this paragraph only has one character mentioned, it doesn't meet the criteria.\\n\\nNone of the provided items have a dialogue between two named characters. The closest is the third paragraph starting a dialogue, but it's incomplete. Therefore, there's no valid evidence in the current batch. The decision should be \\\"not_found\\\" as there's no matching dialogue between two named characters.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1081,\"completion_tokens\":392,\"total_tokens\":1473}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 17:59:26 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

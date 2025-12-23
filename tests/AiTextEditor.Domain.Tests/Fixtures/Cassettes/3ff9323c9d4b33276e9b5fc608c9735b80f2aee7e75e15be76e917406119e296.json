@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-509\",\"object\":\"chat.completion\",\"created\":1766421934,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, the user is asking for the first dialogue between two named characters and their names. Let me try to figure out what went wrong.\\n\\nFirst, I created a cursor called dialogue_cursor with a filter to find paragraphs with direct dialogue between two named characters. Then I ran the agent to find the first occurrence. But there was an error saying the invocation was canceled. Maybe the filter description wasn't specific enough or the cursor couldn't find any matches. \\n\\nI should check if the document actually has such dialogues. Since the user mentioned \\\"названными по имени персонажами\\\" (named by name characters), perhaps the initial filter didn't capture the correct patterns. Maybe the dialogues don't use colons or are formatted differently. \\n\\nAlternatively, the cursor might not have found any evidence, leading to an error. To handle this, I should try a different approach. Let me create a more precise filter, maybe looking for any two named entities in a conversational context without relying on specific punctuation. Also, I'll ensure the task description is clear. If there's no dialogue, I need to inform the user that it's not found in the document.\\n\",\"tool_calls\":[{\"id\":\"call_jp36wi1q\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_cursor\",\"arguments\":\"{\\\"filterDescription\\\":\\\"Identifies paragraphs containing direct dialogue between two named characters (e.g., 'Alice says to Bob: Hello' or 'John: Hi, Mary.'), focusing on named entities in a conversational context.\\\",\\\"name\\\":\\\"dialogue_cursor_v2\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1278,\"completion_tokens\":308,\"total_tokens\":1586}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 16:45:34 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

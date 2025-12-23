@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-427\",\"object\":\"chat.completion\",\"created\":1766511444,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, the user is asking for the second mention of Professor Zvezdokhin in the book, excluding headers. Let me start by creating a cursor to find all instances of \\\"профессора Звёздочкина\\\" that aren't headers. I'll name the cursor \\\"search_cursor\\\" with the filter description as specified.\\n\\nNow, I need to run the agent using this cursor to get the evidence. The agent will scan the document in portions. Since the user wants the second occurrence, I should keep track of how many times the name appears. Each time the agent returns, I'll check if the count reaches two. If there are more items available, I'll continue running the agent until I find the second mention or exhaust the results. If the cursor completes without finding the second mention, I'll need to inform the user accordingly. Let's start by running the agent with the cursor.\\n\",\"tool_calls\":[{\"id\":\"call_s4xptbli\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"agent-run_agent\",\"arguments\":\"{\\\"cursorName\\\":\\\"search_cursor\\\",\\\"taskDescription\\\":\\\"Find all mentions of 'профессора Звёздочкина' (excluding headers)\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1007,\"completion_tokens\":234,\"total_tokens\":1241}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 17:37:23 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

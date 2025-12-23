@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-768\",\"object\":\"chat.completion\",\"created\":1766511195,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of 'профессор Звёздочкин'. The user provided a snapshot with evidenceCount 1 and recentEvidencePointers including \\\"3:1.1.1\\\". But the current batch's items start from pointer \\\"4:1.1.1.p1\\\" and \\\"5:1.1.1.p2\\\". \\n\\nFirst, I need to check if any of the current batch items mention 'профессор Звёздочкин'. Looking at the markdown content of the items:\\n\\nThe first item (4:1.1.1.p1) talks about Незнайка's trip, the passage of time, and changes in Цветочный город. There's no mention of профессор Звёздочкин here.\\n\\nThe second item (5:1.1.1.p2) discusses the construction projects and the factory built by инженера Клёпки. Again, no mention of the professor.\\n\\nSince the snapshot's recentEvidencePointers include \\\"3:1.1.1\\\", which isn't in the current batch, it's possible that the first mention was in a previous batch. However, the current batch doesn't have any references to профессор Звёздочкин. Therefore, there's no new evidence here. The decision should be \\\"not_found\\\" because the current batch doesn't contain the required mention. Also, since the task's maxEvidenceCount is null, we don't stop here. But since there's no match, we can't proceed further, so \\\"not_found\\\" is appropriate.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1273,\"completion_tokens\":352,\"total_tokens\":1625}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 17:33:15 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

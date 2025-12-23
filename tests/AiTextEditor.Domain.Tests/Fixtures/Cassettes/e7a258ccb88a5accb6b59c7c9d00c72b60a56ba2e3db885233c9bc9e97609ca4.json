@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-177\",\"object\":\"chat.completion\",\"created\":1766513375,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"decision\\\": \\\"continue\\\",\\n  \\\"newEvidence\\\": []\\n}\",\"reasoning\":\"We need to scan the current batch for occurrences of \\\"Звёздочкин\\\". The task: find second occurrence of Звёздочкин excluding headings. We must output evidence items where the excerpt contains the name. In current batch items, we have two paragraphs. Need to check if they contain \\\"Звёздочкин\\\". First paragraph content about lunar craters; no. Second about Знайка; no. So no occurrences. Thus newEvidence empty. decision depends: if maxEvidenceCount is 2, but we have none, and more batches exist (hasMoreBatches true). So continue. decision \\\"continue\\\".\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1061,\"completion_tokens\":160,\"total_tokens\":1221}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:09:34 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

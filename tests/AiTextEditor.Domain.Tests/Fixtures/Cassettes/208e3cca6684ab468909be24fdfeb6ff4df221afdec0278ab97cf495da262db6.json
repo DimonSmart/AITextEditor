@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-945\",\"object\":\"chat.completion\",\"created\":1766409818,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[{\\\"pointer\\\":\\\"79:1.1.1.p76\\\",\\\"excerpt\\\":\\\"– Это безобразие! Я буду жаловаться! Я напишу в газету! Вы ещё узнаете профессора Звёздочкина!\\\",\\\"reason\\\":\\\"The excerpt directly mentions 'профессор Звёздочкин' in the text content.\\\"}]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of 'профессор Звёздочкин' in the text content, excluding headers. The user provided a batch of items with pointers, markdown content, and item types. \\n\\nFirst, I need to scan each item's markdown content for the exact phrase 'профессор Звёздочкин'. The snapshot shows that there are 3 pieces of evidence already found, and the recent pointers are 4:1.1.1.p1, 24:1.1.1.p21, 70:1.3.1.p67. But since the current batch is different, I need to check the current items.\\n\\nLooking at the items in the batch:\\n\\n- Pointer 76:1.1.1.p73 mentions Звёздочкина but not the full title.\\n- Pointer 77:1.1.1.p74 refers to Звёздочкин again, but still not the full name.\\n- Pointer 78:1.1.1.p75 mentions Звёздочкин again.\\n- Pointer 79:1.1.1.p76 has \\\"профессора Звёздочкина\\\" which is the exact phrase. This seems to be the first occurrence in the current batch. The other mentions before this in the same batch might not have the full title. \\n\\nWait, the task says to find the first mention in the text content. The user's snapshot has recent pointers, but the current batch's items might have the first occurrence. Let me check each paragraph again.\\n\\nIn pointer 79's markdown: \\\"Вы ещё узнаете профессора Звёздочкина!\\\" This is the first time the full title is used. The previous mentions (76,77,78) just use \\\"Звёздочкин\\\" without the professor title. So the first mention in the current batch is pointer 79. \\n\\nBut wait, the snapshot's recentEvidencePointers include 70:1.1.1.p67, which might be from a previous batch. The current batch's items start from 76 onwards. So in the current batch, the first occurrence is 79:1.1.1.p76. \\n\\nTherefore, the new evidence should be pointer 79 with the excerpt from that paragraph. The reason is that it directly mentions 'профессор Звёздочкин' in the text. Since the task is to find the first mention, and this is the first in the current batch's items, this is the correct evidence.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1512,\"completion_tokens\":647,\"total_tokens\":2159}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 13:23:38 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

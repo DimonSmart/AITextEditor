@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-853\",\"object\":\"chat.completion\",\"created\":1766435747,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Второе упоминание профессора Звёздочкина (исключая заголовки) находится в параграфе с указателем **25:1.1.1.p22**.  \\n**Семантический указатель:** 25:1.1.1.p22  \\n**Экспертиза:** Профессор Звёздочкин инициировал обсуждение книги Знайкина.\",\"reasoning\":\"Okay, let's see. The user is asking for the second mention of Professor Zvezdochkin in the book, excluding headers. \\n\\nFirst, I created a cursor to find all paragraphs containing his name. Then, I ran the agent to get the first two mentions. The response showed three evidence items. The first one was a header, which the user specified to exclude. So, the valid mentions are the second and third pointers. \\n\\nThe second pointer (24:1.1.1.p21) is the first valid mention where he reacts to Znaykin's book. The third pointer (25:1.1.1.p22) is the second mention where he proposes a discussion. Since the user wants the second occurrence, the answer should be the third pointer. I need to make sure to exclude the header and count the next two valid mentions. So, the second mention is at pointer 25:1.1.1.p22.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1746,\"completion_tokens\":315,\"total_tokens\":2061}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 20:35:46 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

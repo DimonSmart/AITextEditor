@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-367\",\"object\":\"chat.completion\",\"created\":1766519170,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's see. The user wants me to find the first mentions of \\\"Фуксия\\\" and \\\"Селедочка\\\" in the provided batch. The task says to look for paragraphs containing either of those words. The snapshot shows evidenceCount is 0, and there are no recent evidence pointers. The batch has three items, all headings.\\n\\nFirst, I need to check each item's markdown content. The first item is a heading with \\\"Часть I\\\". The second is \\\"Глава первая\\\". The third is \\\"Как Знайка победил профессора Звёздочкина\\\". None of these headings include \\\"Фуксия\\\" or \\\"Селедочка\\\". Since the user mentioned that the context is paragraphs containing those words, but all the items here are headings, there's no paragraph content. \\n\\nWait, the evidence rules say to use only the current batch's content. Since none of the items in the batch have the required words, there's no evidence to report. The decision should be \\\"not_found\\\" because the first mentions aren't present here. Also, the user might have more batches coming, but since this is the first batch and there's no evidence, the answer is not found.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":666,\"completion_tokens\":270,\"total_tokens\":936}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 19:46:10 GMT"
+    ]
+  }
+}

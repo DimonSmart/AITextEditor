@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-380\",\"object\":\"chat.completion\",\"created\":1766432392,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, the user is asking for the first dialogue between two named characters. I tried creating two cursors, first with \\\"Lines with dialogue markers or character names\\\" and then with \\\"Lines containing character names followed by dialogue markers\\\". Both times, the agent returned not_found but said there are more items available. \\n\\nHmm, maybe the filter isn't capturing the dialogue lines correctly. Perhaps the dialogue markers are different, like using em dashes or something else. Let me adjust the filter to look for lines that have two character names followed by dialogue, even if the markers are different. Maybe using a broader filter like \\\"Lines with two character names followed by dialogue\\\" would work better. Let me try creating a new cursor with that filter and run the agent again. If it still doesn't find anything, I might need to check if there's a different pattern in the document, but I'll proceed with this new filter first.\\n\",\"tool_calls\":[{\"id\":\"call_txwi4dhi\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_cursor\",\"arguments\":\"{\\\"filterDescription\\\":\\\"Lines with two character names followed by dialogue\\\",\\\"maxBytes\\\":1048576,\\\"maxElements\\\":500,\\\"name\\\":\\\"dialogue_cursor_v3\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1741,\"completion_tokens\":243,\"total_tokens\":1984}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 19:39:52 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

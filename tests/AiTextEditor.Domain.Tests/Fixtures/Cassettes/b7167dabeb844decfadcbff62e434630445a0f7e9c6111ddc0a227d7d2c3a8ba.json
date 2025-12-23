@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-204\",\"object\":\"chat.completion\",\"created\":1766433461,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's see. The user wants me to find all mentions of \\\"Фуксии\\\" in the provided batch items. The task says to look for all paragraphs containing that term. \\n\\nFirst, I need to check each item's markdown content. Let me go through them one by one.\\n\\nThe first item has the pointer \\\"15:1.1.1.p12\\\" and the markdown is about lunar craters and volcanoes. I don't see \\\"Фуксии\\\" here. \\n\\nNext is \\\"16:1.1.1.p13\\\", which talks about volcanoes being large mountains with a small crater. Still no mention of Фуксии.\\n\\nThen there's \\\"17:1.1.1.p14\\\" with the markdown starting \\\"Метеоритчики говорили:\\\". Again, no sign of the term. \\n\\nWait, none of these paragraphs have \\\"Фуксии\\\". The snapshot's recentEvidencePointers include \\\"8:1.1.1.p5\\\", but that's from a previous batch. The current batch items don't contain the term. So, there's no new evidence here. \\n\\nSince the task is to find all mentions and the current batch has none, the decision should be \\\"not_found\\\". Also, the user mentioned that if there's no evidence, we should output that. So the JSON will have decision as \\\"not_found\\\" and an empty newEvidence array.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":801,\"completion_tokens\":314,\"total_tokens\":1115}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 19:57:40 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

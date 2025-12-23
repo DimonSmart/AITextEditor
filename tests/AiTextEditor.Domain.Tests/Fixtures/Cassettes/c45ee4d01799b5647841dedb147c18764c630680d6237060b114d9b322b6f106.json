@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-859\",\"object\":\"chat.completion\",\"created\":1766508448,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, the user is asking where in the book the professor Zvezdochkin is first mentioned, excluding headers. Let me think about how to approach this.\\n\\nFirst, I need to use the tools provided. The cursor-create_cursor function can help create a cursor to scan the document. Since the user wants the first mention, I should set a filter that captures the first occurrence. But how to ensure it's the first mention?\\n\\nWait, the cursor allows filtering. Maybe I can use a filter that checks for the name \\\"профессор Звёздочкин\\\" and stops after the first match. But the agent-run_agent function might need to process portions until it finds the first occurrence. \\n\\nAlternatively, maybe I should create a cursor with a filter that looks for any mention of \\\"профессор Звёздочкин\\\" and then run the agent to find the first occurrence. Since the user wants the first mention, I need to make sure the cursor is set up to find that. \\n\\nWait, the cursor's filter is stateless, so I can't track the first occurrence across portions. But the agent-run_agent can process each portion and check for the mention. So perhaps I need to create a cursor with a filter that includes the term, then run the agent to find the first occurrence. \\n\\nLet me outline the steps: \\n\\n1. Create a cursor with a filter that includes \\\"профессор Звёздочкин\\\" and any other relevant terms. Maybe use a broad filter like \\\"All paragraphs\\\" to ensure all mentions are considered. \\n\\nWait, the user said to exclude headers, so maybe the filter should be something like \\\"paragraphs\\\" or \\\"text\\\" without headers. But the exact filter description needs to be stateless. \\n\\nAlternatively, the filter could be \\\"contains 'профессор Звёздочкин'\\\" to capture any paragraph containing that name. Then, using the agent to scan through the document portions until it finds the first occurrence. \\n\\nSo first, create a cursor named \\\"search_cursor\\\" with filterDescription \\\"contains 'профессор Звёздочкин'\\\". Then run the agent with this cursor to find the first mention. \\n\\nBut the agent might return multiple results, so I need to check the first one. Also, the user wants the location, so the answer should include the paragraph where it's first mentioned. \\n\\nI should make sure that the cursor is set up correctly and then use the agent to process each portion until the first occurrence is found. If the agent returns \\\"Status: More items available\\\", I need to continue until the first mention is found. \\n\\nSo the plan is: create the cursor, run the agent, and then check the results. If the first mention is found, return its location. If not, continue until the cursor is complete. \\n\\nI think that's the right approach. Now, I'll structure the tool calls accordingly.\\n\",\"tool_calls\":[{\"id\":\"call_s33dv3yu\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_cursor\",\"arguments\":\"{\\\"filterDescription\\\":\\\"contains 'профессор Звёздочкин'\\\",\\\"maxBytes\\\":1048576,\\\"maxElements\\\":1000,\\\"name\\\":\\\"search_cursor\\\"}\"}},{\"id\":\"call_emwg9vek\",\"index\":1,\"type\":\"function\",\"function\":{\"name\":\"agent-run_agent\",\"arguments\":\"{\\\"cursorName\\\":\\\"search_cursor\\\",\\\"taskDescription\\\":\\\"Find first mention of 'профессор Звёздочкин'\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":952,\"completion_tokens\":704,\"total_tokens\":1656}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 16:47:28 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

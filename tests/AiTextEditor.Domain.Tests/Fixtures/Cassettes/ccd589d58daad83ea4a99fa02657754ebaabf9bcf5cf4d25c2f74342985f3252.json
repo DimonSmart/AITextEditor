@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-936\",\"object\":\"chat.completion\",\"created\":1766435547,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Впервые профессор Звёздочкин упоминается в абзаце с указателем **24:1.1.1.p21**. В тексте описывается, что он — действительный член академии астрономических наук, который «кипел от негодования» при упоминании книги Знайкина, называя её «чёртова чепухой». Это указывает на его характер как строгого, принципиального учёного, склонного к резким эмоциональным реакциям на неприемлемые идеи.\",\"reasoning\":\"Okay, let's see. The user is asking where Professor Zvezdochkin is first mentioned, specifically the part where he \\\"boiled with indignation,\\\" and a brief description of his character.\\n\\nFirst, I need to find the first occurrence of Professor Zvezdochkin in the text. The assistant created a cursor to search for paragraphs mentioning him or the phrase \\\"кипел от негодования.\\\" Then they ran the agent to find the first mention. The response from the tool shows an excerpt from pointer 24:1.1.1.p21 where he is introduced. The excerpt mentions that he's a real member of the academy of astronomical sciences and that he boiled with indignation, calling the book nonsense.\\n\\nSo the answer should include the pointer location and a brief character description based on that paragraph. The user wants the first mention, so this excerpt is the right place. The description says he's a respected academic who's angry and dismissive of the book, indicating his character as indignant and critical. I need to present this in Russian, include the pointer, and make sure it's concise.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1594,\"completion_tokens\":380,\"total_tokens\":1974}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 20:32:27 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

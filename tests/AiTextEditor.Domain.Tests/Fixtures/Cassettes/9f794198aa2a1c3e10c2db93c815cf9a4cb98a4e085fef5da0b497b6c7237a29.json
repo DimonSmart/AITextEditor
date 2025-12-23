@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-655\",\"object\":\"chat.completion\",\"created\":1766426349,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The goal is to find the first dialogue between two named characters. The context mentions that lines should have at least two named characters in a dialogue format. The maxEvidenceCount is 1, so we need to find the first occurrence.\\n\\nLooking at the provided batch items. The first item is a paragraph discussing lunar craters and two groups of astronomers. There's mention of \\\"Знайка\\\" (Znayka) and \\\"Стекляшкин\\\" (Steklyashkin). Wait, in the second paragraph, it says \\\"Знайка вместе со Стекляшкиным наблюдал Луну в телескоп.\\\" That's a dialogue? Wait, no, the text is a narrative. It says they observed the Moon together, but there's no direct dialogue between them. The paragraph is describing Znayka's observations and his theory, but it's not a dialogue. \\n\\nWait, maybe I'm missing something. The task says \\\"dialogue format,\\\" which usually implies direct speech like \\\"A: ... B: ...\\\" or quotes. In the given text, there's no such structure. The second paragraph mentions Znayka and Steklyashkin observing the Moon together, but it's a narrative, not a dialogue. So there's no direct dialogue between two named characters here. \\n\\nThe first paragraph mentions \\\"вулканистами\\\" and \\\"метеоритчиками,\\\" but those are groups, not individual characters in a dialogue. So, based on the provided items, there's no evidence of a dialogue between two named characters. Therefore, the decision should be \\\"not_found\\\" since the required evidence isn't present in the current batch.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1094,\"completion_tokens\":370,\"total_tokens\":1464}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 17:59:08 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-434\",\"object\":\"chat.completion\",\"created\":1766435418,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants to find the first mention of \\\"профессор Звёздочкин\\\" with \\\"кипел от негодования\\\". The context is all paragraphs mentioning either of those terms. \\n\\nFirst, I need to scan through the provided batch items. The snapshot shows evidenceCount is 0 and recentEvidencePointers is empty, so no previous matches. The batch has two paragraphs.\\n\\nLooking at the first paragraph (pointer 4:1.1.1.p1), the text talks about Незнайка's trip to the Sun City, but there's no mention of профессор Звёздочкин or кипел от негодования. The second paragraph (pointer 5:1.1.1.p2) discusses the construction projects and the clothing factory. Again, no mention of the required terms.\\n\\nSince neither paragraph contains the keywords, there's no evidence to report. The decision should be \\\"not_found\\\" because the terms aren't present in the current batch. Also, since there's no new evidence, the newEvidence array remains empty. The user might need to check subsequent batches since the current ones don't have the required mentions.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1285,\"completion_tokens\":263,\"total_tokens\":1548}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 20:30:18 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

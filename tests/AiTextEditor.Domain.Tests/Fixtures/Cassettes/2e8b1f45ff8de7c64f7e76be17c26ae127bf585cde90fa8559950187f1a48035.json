@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-509\",\"object\":\"chat.completion\",\"created\":1766513373,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"continue\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"We need to find second occurrence of \\\"Звёздочкин\\\" excluding headings. In this batch, check paragraphs. The first paragraph excerpt does not contain Звёздочкин. It mentions Знайка, Фуксия, etc. No. Second paragraph also no Звёздочкин. So no matches in current batch. Must output decision continue (since maxEvidenceCount=2, evidenceCount=0, none found). No newEvidence.\\n\\nBut ensure we don't add any. Output JSON.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1226,\"completion_tokens\":128,\"total_tokens\":1354}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 18:09:32 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

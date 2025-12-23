@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-449\",\"object\":\"chat.completion\",\"created\":1766434260,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's tackle this query. The user is asking about the visualization of a lunar crater described as a huge round field with a earthy rampart around the edge. First, I need to figure out how to locate this description in the document.\\n\\nSince the user mentioned a specific visual description, I should create a cursor to search for mentions related to lunar craters and their features. The cursor should have a broad filter to capture any paragraphs discussing lunar craters, including their appearance. Using \\\"All paragraphs\\\" as the filter makes sense here to ensure we don't miss any relevant sections.\\n\\nNext, I'll call the cursor-create_cursor function with the name \\\"lunar_crater_cursor\\\" and the filter description \\\"All paragraphs mentioning lunar craters or their features\\\". This should stream the document in portions, filtering each paragraph as it goes.\\n\\nOnce the cursor is created, I need to run the agent to scan through the document. The task description should be to find the first mention of the lunar crater's visualization as described. Using run_agent with the cursor name and a task description that matches the user's query will help the agent identify the relevant paragraph.\\n\\nI should check the output of the agent's response. If the first evidence item contains the description, that's the answer. If not, I'll need to continue scanning by calling run_agent again with the same cursor. It's important to note that the answer might be in a previous batch, so I should review the evidence items from earlier steps if necessary.\\n\\nIf the description is found in a paragraph, I'll need to note the pointerLabel and include it in the summary. If not, I'll inform the user that the document doesn't contain the information. Making sure to use the correct functions and parameters as specified is crucial here to avoid missing any parts of the document.\\n\",\"tool_calls\":[{\"id\":\"call_qsqtxrle\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_cursor\",\"arguments\":\"{\\\"filterDescription\\\":\\\"All paragraphs mentioning lunar craters or their features\\\",\\\"maxBytes\\\":1048576,\\\"maxElements\\\":1000,\\\"name\\\":\\\"lunar_crater_cursor\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1291,\"completion_tokens\":435,\"total_tokens\":1726}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 20:11:00 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

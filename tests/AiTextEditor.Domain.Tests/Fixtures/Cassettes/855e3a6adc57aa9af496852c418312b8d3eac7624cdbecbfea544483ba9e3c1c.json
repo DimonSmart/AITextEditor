@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-497\",\"object\":\"chat.completion\",\"created\":1766416550,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"decision\\\": \\\"continue\\\",\\n  \\\"newEvidence\\\": [\\n    {\\n      \\\"pointer\\\": \\\"9:1.1.1.p6\\\",\\n      \\\"excerpt\\\": \\\"Чтобы понять, как выглядит такой лунный цирк, или кратер, вообразите себе огромное круглое поле, в поперечнике километров двадцать, тридцать, пятьдесят или даже сто, и представьте, что это огромное круглое поле окружено земляным валом или горой высотой всего в два или три километра, – вот и получится лунный цирк, или кратер.\\\",\\n      \\\"reason\\\": \\\"The paragraph describes a lunar crater as an enormous circular field surrounded by an earth embankment, matching the task's context.\\\"\\n    }\\n  ]\\n}\",\"reasoning\":\"Okay, let's tackle this task. The goal is to find the paragraph describing the lunar crater visualization as an enormous circular field with an earth embankment along the edge. The context mentions looking for paragraphs containing the keywords 'визуализация лунного кратера', 'огромного круглого поля', and 'земляной вал по краю'. \\n\\nFirst, I'll go through each item in the batch. The first item (pointer 8:1.1.1.p5) talks about a lunar crater but doesn't mention the specific terms. The second item (pointer 9:1.1.1.p6) seems relevant. It mentions \\\"огромное круглое поле\\\" (enormous circular field) and \\\"земляной вал или горой высотой\\\" (earth embankment or hill). That matches two of the keywords. The third item (pointer 10:1.1.1.p7) discusses the formation theories but not the visualization. The fourth item (pointer 11:1.1.1.p8) talks about baking pancakes, which isn't related.\\n\\nSo, the paragraph at pointer 9:1.1.1.p6 has the required elements. The excerpt includes the keywords 'огромного круглого поля' and 'земляной вал', which align with the task's context. Even though 'визуализация лунного кратера' isn't explicitly in the excerpt, the description of the circular field and embankment fits the visualization described in the task. Since the user might consider this as the visualization, it's a valid match. The other paragraphs don't have the necessary terms. Therefore, this is the correct evidence.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1856,\"completion_tokens\":557,\"total_tokens\":2413}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 15:15:50 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

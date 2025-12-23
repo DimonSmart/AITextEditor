@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-198\",\"object\":\"chat.completion\",\"created\":1766518536,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"done\\\",\\\"newEvidence\\\":[{\\\"pointer\\\":\\\"8:1.1.1.p5\\\",\\\"excerpt\\\":\\\"Впрочем, главное было не это. Главное было то, что Знайка тоже побывал в Солнечном городе. Там он познакомился с учёными малышками Фуксией и Селёдочкой, которые в то время готовили свой второй полёт на Луну. Знайка тоже включился в работу по постройке космической ракеты и, когда ракета была готова, совершил с Фуксией и Селёдочкой межпланетное путешествие. Прилетев на Луну, наши отважные путешественники обследовали один из небольших лунных кратеров в районе лунного Моря Ясности, побывали в пещере, которая находилась в центре этого кратера и произвели наблюдения над изменением силы тяжести. На Луне, как известно, сила тяжести значительно меньше, чем на Земле, и поэтому наблюдения над изменением силы тяжести имеют большое научное значение. Пробыв на Луне около четырёх часов, Знайка и его спутницы принуждены были поскорей отправиться в обратный путь, так как запасы воздуха были у них на исходе. Всем известно, что на Луне воздуха нет, и, чтоб не задохнуться, всегда надо брать с собой запас воздуха. В сгущённом виде, конечно.\\\",\\\"reason\\\":\\\"Упоминается Фуксия как учёная малышка в компании Знайки.\\\"}]}\",\"reasoning\":\"Okay, let's tackle this task. The user wants the first mention of \\\"Фуксия\\\" in the provided batch. The snapshot shows evidenceCount is 0, so we need to find the first occurrence in the current batch.\\n\\nLooking at the first item's markdown: \\\"Там он познакомился с учёными малышками Фуксией и Селёдочкой...\\\" Here, \\\"Фуксией\\\" is mentioned. The pointer is 8:1.1.1.p5. Since this is the first occurrence in the batch, it's the first mention. The reason is that the excerpt directly states \\\"Фуксией\\\", which matches the task. The second paragraph doesn't mention Фуксия again. So, the newEvidence should include this pointer and excerpt. Since maxEvidenceCount is 1, and evidenceCount was 0, adding this one makes it 1, so decision should be \\\"done\\\".\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1302,\"completion_tokens\":605,\"total_tokens\":1907}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 23 Dec 2025 19:35:36 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-792\",\"object\":\"chat.completion\",\"created\":1766435892,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this. The task is to find the first mention of Ponchik throwing old costumes into the Ogurcovna River. The context is all paragraphs mentioning both Ponchik and the Ogurcovna River. The snapshot shows that there's already 1 piece of evidence, with the pointer \\\"6:1.1.1.p3\\\". But the current batch doesn't include that pointer. The items in the current batch are paragraphs 12:1.1.1.p9, 13:1.1.1.p10, and 14:1.1.1.p11.\\n\\nLooking at the markdown content of these paragraphs: the first one talks about the Moon's surface and bubbles, not mentioning Ponchik or the river. The second paragraph mentions astronomers and vulcanologists laughing at Znayka's theory, still no Ponchik or river. The third starts with vulcanologists saying something, but again, no mention of Ponchik or Ogurcovna River. \\n\\nSince none of the current batch items mention Ponchik or the Ogurcovna River, there's no new evidence to add. The decision should be \\\"not_found\\\" because the required content isn't present here. The user might need to check subsequent batches.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1100,\"completion_tokens\":283,\"total_tokens\":1383}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 20:38:12 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

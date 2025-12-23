@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-941\",\"object\":\"chat.completion\",\"created\":1766413950,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"newEvidence\\\":[]}\",\"reasoning\":\"Okay, let's tackle this task. The goal is to find the second mention of \\\"профессора Звёздочкина\\\" in the provided text. First, I need to scan through each paragraph in the batch items to locate any instances of this name. \\n\\nStarting with the first paragraph (8:1.1.1.p5), I'll check if the name appears here. Scanning through the text, I don't see \\\"профессора Звёздочкина\\\" mentioned here. The paragraph talks about Знайка and his adventures on the Moon, meeting Фуксией and Селёдочкой. No mention of Звёздочкина here.\\n\\nNext, the second paragraph (9:1.1.1.p6) discusses Знайка's return to the Цветочный город and his stories about the Moon. The astronomer Стекляшкин is mentioned, but again, no sign of Звёздочкина. \\n\\nMoving to the third paragraph (10:1.1.1.p7), the text mentions астрономы in Солнечном городе arguing about the origin of lunar craters. Still, no mention of Звёздочкина. \\n\\nThe fourth paragraph (11:1.1.1.p8) talks about Знайка's own theory and his observations with Стекляшкин. Again, no reference to Звёздочкина. \\n\\nWait, maybe I missed something. Let me go through each paragraph again carefully. The task specifies that the mention shouldn't be in a heading, so I'm only looking at paragraph content. \\n\\nLooking again, none of the paragraphs mention \\\"профессора Звёздочкина\\\". The name doesn't appear in any of the provided texts. Therefore, there are no matches. The snapshot's evidenceCount is 0, and since the current batch doesn't have any mentions, the decision should be \\\"not_found\\\". \\n\\nBut wait, the user's task says to find the second mention. If there are zero mentions, then the answer is \\\"not_found\\\". The output should reflect that no evidence was found in the current batch. So the newEvidence array will be empty, and the decision is \\\"not_found\\\".\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1829,\"completion_tokens\":484,\"total_tokens\":2313}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 22 Dec 2025 14:32:30 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}
