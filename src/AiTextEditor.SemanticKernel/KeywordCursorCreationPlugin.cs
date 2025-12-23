@@ -12,7 +12,7 @@ public sealed class KeywordCursorCreationPlugin(IKeywordCursorRegistry cursorReg
 
     [KernelFunction("create_keyword_cursor")]
     [Description("Create a keyword cursor that yields matching document items in order.")]
-    public string CreateKeywordCursor([Description("Keywords to locate in the document.")] string[] keywords)
+    public string CreateKeywordCursor([Description("Keywords to locate in the document. Use word stems or base forms to ensure matching against inflected forms.")] string[] keywords)
     {
         var cursorName = cursorRegistry.CreateCursor(keywords);
         logger.LogInformation("create_keyword_cursor: cursor={Cursor}", cursorName);
