@@ -1,5 +1,7 @@
 using System;
+using System.Net;
 using System.Net.Http.Headers;
+using System.Net.Sockets;
 using AiTextEditor.Domain.Tests.Infrastructure;
 using AiTextEditor.SemanticKernel;
 using AiTextEditor.Lib.Infrastructure;
@@ -36,11 +38,47 @@ public static class TestLlmConfiguration
         var apiKey = Environment.GetEnvironmentVariable("LLM_API_KEY");
 
         var ignoreSsl = Environment.GetEnvironmentVariable("LLM_IGNORE_SSL_ERRORS") == "true";
-        var innerHandler = new HttpClientHandler();
+        
+        var innerHandler = new SocketsHttpHandler();
         if (ignoreSsl)
         {
-            innerHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+            innerHandler.SslOptions.RemoteCertificateValidationCallback = (message, cert, chain, errors) => true;
         }
+
+        innerHandler.ConnectCallback = async (context, cancellationToken) =>
+        {
+            var host = context.DnsEndPoint.Host;
+            // Fix for "No such host is known" when host contains port
+            if (host.Contains(':') && !host.StartsWith('['))
+            {
+                var parts = host.Split(':');
+                if (parts.Length == 2 && int.TryParse(parts[1], out _))
+                {
+                    host = parts[0];
+                }
+            }
+
+            var entry = await Dns.GetHostEntryAsync(host, cancellationToken);
+            var ip = entry.AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork) 
+                     ?? entry.AddressList.FirstOrDefault();
+
+            if (ip == null)
+            {
+                throw new SocketException((int)SocketError.HostNotFound);
+            }
+
+            var socket = new Socket(ip.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            try
+            {
+                await socket.ConnectAsync(new IPEndPoint(ip, context.DnsEndPoint.Port), cancellationToken);
+                return new NetworkStream(socket, ownsSocket: true);
+            }
+            catch
+            {
+                socket.Dispose();
+                throw;
+            }
+        };
 
         HttpMessageHandler finalHandler = innerHandler;
 
