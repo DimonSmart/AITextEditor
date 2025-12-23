@@ -6,4 +6,5 @@ public interface INamedCursorStream
 {
     CursorPortion NextPortion();
     bool IsComplete { get; }
+    string? FilterDescription { get; }
 }

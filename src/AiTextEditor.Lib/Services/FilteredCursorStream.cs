@@ -15,6 +15,7 @@ public abstract class FilteredCursorStream : INamedCursorStream
     private bool isComplete;
 
     public bool IsComplete => isComplete;
+    public virtual string? FilterDescription => null;
 
     protected FilteredCursorStream(LinearDocument document, int maxElements, int maxBytes, string? startAfterPointer, ILogger? logger)
     {

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace AiTextEditor.Lib.Services;
 
-public sealed class CursorStream
+public sealed class CursorStream : INamedCursorStream
 {
     private readonly LinearDocument _linearDocument;
     private readonly int _maxElements;

@@ -6,18 +6,18 @@ namespace AiTextEditor.SemanticKernel;
 
 public class CursorRegistry
 {
-    private readonly Dictionary<string, CursorStream> cursors = [];
+    private readonly Dictionary<string, INamedCursorStream> cursors = [];
     private readonly Dictionary<string, CursorAgentState> agentStates = [];
     private readonly Dictionary<string, int> agentSteps = [];
 
-    public void RegisterCursor(string name, CursorStream cursor)
+    public void RegisterCursor(string name, INamedCursorStream cursor)
     {
         cursors[name] = cursor;
         agentStates[name] = new CursorAgentState(Array.Empty<EvidenceItem>());
         agentSteps[name] = 0;
     }
 
-    public bool TryGetCursor(string name, out CursorStream? cursor) => cursors.TryGetValue(name, out cursor);
+    public bool TryGetCursor(string name, out INamedCursorStream? cursor) => cursors.TryGetValue(name, out cursor);
     
     public bool TryGetContext(string name, out string? context)
     {

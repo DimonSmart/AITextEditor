@@ -104,6 +104,17 @@ public sealed class SemanticKernelEngine
             loggerFactory.CreateLogger<AgentPlugin>());
         kernel.Plugins.AddFromObject(agentPlugin, "agent");
 
+        var keywordCursorRegistry = new KeywordCursorRegistry(
+            documentContext,
+            limits,
+            cursorRegistry,
+            loggerFactory.CreateLogger<KeywordCursorRegistry>());
+
+        var keywordCursorCreationPlugin = new KeywordCursorCreationPlugin(
+            keywordCursorRegistry,
+            loggerFactory.CreateLogger<KeywordCursorCreationPlugin>());
+        kernel.Plugins.AddFromObject(keywordCursorCreationPlugin, "keyword_cursor");
+
         var logger = loggerFactory.CreateLogger<SemanticKernelEngine>();
         logger.LogInformation("Kernel built with model {ModelId} at {Endpoint}", modelId, endpoint);
 
@@ -114,6 +125,7 @@ public sealed class SemanticKernelEngine
             You are a QA assistant for a markdown book. Use tools to inspect the document.
             Workflow:
             - For location questions, create a cursor (e.g. name="search_cursor"), then iterate using `run_agent`.
+            - For specific keyword search, prefer `create_keyword_cursor` over generic `create_cursor`.
             - For multi-paragraph concepts (like dialogue), use a VERY BROAD filter (e.g. "All paragraphs") to ensure you don't miss anything. Do NOT filter by character names.
             - CRITICAL: 'run_agent' scans ONLY ONE BATCH (10-20 items). It returns "Status: More items available" if there is more text.
             - IF 'run_agent' returns "not_found" AND "Status: More items available":

@@ -29,6 +29,8 @@ public sealed class KeywordCursorStream : FilteredCursorStream
         this.keywords = normalized;
     }
 
+    public override string? FilterDescription => $"Keywords: {string.Join(", ", keywords)}";
+
     protected override bool IsMatch(LinearItem item)
     {
         return keywords.Any(keyword =>

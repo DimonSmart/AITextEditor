@@ -12,12 +12,14 @@ public sealed class KeywordCursorRegistry : IKeywordCursorRegistry
     private readonly IDocumentContext documentContext;
     private readonly CursorAgentLimits limits;
     private readonly ILogger<KeywordCursorRegistry> logger;
+    private readonly CursorRegistry mainRegistry;
     private readonly ConcurrentDictionary<string, KeywordCursorStream> cursors = new(StringComparer.OrdinalIgnoreCase);
 
-    public KeywordCursorRegistry(IDocumentContext documentContext, CursorAgentLimits limits, ILogger<KeywordCursorRegistry> logger)
+    public KeywordCursorRegistry(IDocumentContext documentContext, CursorAgentLimits limits, CursorRegistry mainRegistry, ILogger<KeywordCursorRegistry> logger)
     {
         this.documentContext = documentContext ?? throw new ArgumentNullException(nameof(documentContext));
         this.limits = limits ?? throw new ArgumentNullException(nameof(limits));
+        this.mainRegistry = mainRegistry ?? throw new ArgumentNullException(nameof(mainRegistry));
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -32,6 +34,8 @@ public sealed class KeywordCursorRegistry : IKeywordCursorRegistry
         {
             throw new InvalidOperationException("keyword_cursor_registry_add_failed");
         }
+
+        mainRegistry.RegisterCursor(cursorName, cursor);
 
         logger.LogInformation("keyword_cursor_created: cursor={Cursor}", cursorName);
         return cursorName;
