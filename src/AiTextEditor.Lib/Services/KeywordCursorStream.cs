@@ -1,0 +1,38 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using AiTextEditor.Lib.Model;
+using Microsoft.Extensions.Logging;
+
+namespace AiTextEditor.Lib.Services;
+
+public sealed class KeywordCursorStream : FilteredCursorStream
+{
+    private readonly IReadOnlyList<string> keywords;
+
+    public KeywordCursorStream(LinearDocument document, IEnumerable<string> keywords, int maxElements, int maxBytes, string? startAfterPointer, ILogger? logger = null)
+        : base(document, maxElements, maxBytes, startAfterPointer, logger)
+    {
+        ArgumentNullException.ThrowIfNull(keywords);
+
+        var normalized = keywords
+            .Select(keyword => keyword?.Trim())
+            .Where(keyword => !string.IsNullOrWhiteSpace(keyword))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+
+        if (normalized.Length == 0)
+        {
+            throw new ArgumentException("At least one keyword is required.", nameof(keywords));
+        }
+
+        this.keywords = normalized;
+    }
+
+    protected override bool IsMatch(LinearItem item)
+    {
+        return keywords.Any(keyword =>
+            item.Text.Contains(keyword, StringComparison.OrdinalIgnoreCase)
+            || item.Markdown.Contains(keyword, StringComparison.OrdinalIgnoreCase));
+    }
+}

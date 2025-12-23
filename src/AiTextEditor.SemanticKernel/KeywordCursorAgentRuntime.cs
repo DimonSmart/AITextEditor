@@ -1,7 +1,5 @@
 using System;
 using System.Threading;
-using System.Threading.Tasks;
-using AiTextEditor.Lib.Model;
 using AiTextEditor.Lib.Services;
 using AiTextEditor.Lib.Services.SemanticKernel;
 using Microsoft.Extensions.Logging;
@@ -9,22 +7,22 @@ using Microsoft.SemanticKernel.ChatCompletion;
 
 namespace AiTextEditor.SemanticKernel;
 
-public sealed class QueryCursorAgentRuntime : NamedCursorAgentRuntimeBase<QueryCursorStream>, IQueryCursorAgentRuntime
+public sealed class KeywordCursorAgentRuntime : NamedCursorAgentRuntimeBase<KeywordCursorStream>, IKeywordCursorAgentRuntime
 {
-    private readonly IQueryCursorRegistry cursorRegistry;
+    private readonly IKeywordCursorRegistry cursorRegistry;
 
-    public QueryCursorAgentRuntime(
-        IQueryCursorRegistry cursorRegistry,
+    public KeywordCursorAgentRuntime(
+        IKeywordCursorRegistry cursorRegistry,
         IChatCompletionService chatService,
         ICursorAgentPromptBuilder promptBuilder,
         ICursorAgentResponseParser responseParser,
         ICursorEvidenceCollector evidenceCollector,
         CursorAgentLimits limits,
-        ILogger<QueryCursorAgentRuntime> logger)
-        : base(chatService, promptBuilder, responseParser, evidenceCollector, limits, logger, "query_cursor")
+        ILogger<KeywordCursorAgentRuntime> logger)
+        : base(chatService, promptBuilder, responseParser, evidenceCollector, limits, logger, "keyword_cursor")
     {
         this.cursorRegistry = cursorRegistry ?? throw new ArgumentNullException(nameof(cursorRegistry));
     }
 
-    protected override QueryCursorStream GetCursor(string cursorName) => cursorRegistry.GetCursor(cursorName);
+    protected override KeywordCursorStream GetCursor(string cursorName) => cursorRegistry.GetCursor(cursorName);
 }
