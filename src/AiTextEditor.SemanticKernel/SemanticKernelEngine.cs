@@ -80,9 +80,18 @@ public sealed class SemanticKernelEngine
         kernel.FunctionInvocationFilters.Add(functionLogger);
         kernel.AutoFunctionInvocationFilters.Add(functionLogger);
 
+        var chatService = kernel.GetRequiredService<IChatCompletionService>();
         var cursorAgentRuntime = kernel.Services.GetRequiredService<ICursorAgentRuntime>();
         var limits = kernel.Services.GetRequiredService<CursorAgentLimits>();
         var cursorRegistry = new CursorRegistry();
+        var chatHistoryCompressor = new FunctionCallAwareChatHistoryCompressor(limits);
+        var chatCursorAgentRuntime = new ChatCursorAgentRuntime(
+            kernel,
+            cursorRegistry,
+            chatService,
+            chatHistoryCompressor,
+            limits,
+            loggerFactory.CreateLogger<ChatCursorAgentRuntime>());
 
         var editorPlugin = new EditorPlugin(
             mcpServer,
@@ -104,6 +113,17 @@ public sealed class SemanticKernelEngine
             loggerFactory.CreateLogger<AgentPlugin>());
         kernel.Plugins.AddFromObject(agentPlugin, "agent");
 
+        var chatCursorAgentPlugin = new ChatCursorAgentPlugin(
+            chatCursorAgentRuntime,
+            loggerFactory.CreateLogger<ChatCursorAgentPlugin>());
+        kernel.Plugins.AddFromObject(chatCursorAgentPlugin, "chat_cursor_agent");
+
+        var chatCursorToolsPlugin = new ChatCursorTools(
+            cursorRegistry,
+            limits,
+            loggerFactory.CreateLogger<ChatCursorTools>());
+        kernel.Plugins.AddFromObject(chatCursorToolsPlugin, "chat_cursor_tools");
+
         var keywordCursorRegistry = new KeywordCursorRegistry(
             documentContext,
             limits,
@@ -118,20 +138,16 @@ public sealed class SemanticKernelEngine
         var logger = loggerFactory.CreateLogger<SemanticKernelEngine>();
         logger.LogInformation("Kernel built with model {ModelId} at {Endpoint}", modelId, endpoint);
 
-        var chatService = kernel.GetRequiredService<IChatCompletionService>();
         var history = new ChatHistory();
         history.AddSystemMessage(
             """
             You are a QA assistant for a markdown book. Use tools to inspect the document.
             Workflow:
-            - For location questions, create a cursor (e.g. name="search_cursor"), then iterate using `run_agent`.
+            - Prefer the chat-based cursor agent: create a cursor (e.g. name="search_cursor"), then call `run_chat_cursor_agent` with that cursor name.
+            - `run_chat_cursor_agent` will pull batches via the `read_cursor_batch` tool until it finds the answer or the cursor is exhausted.
             - For specific keyword search, prefer `create_keyword_cursor` over generic `create_cursor`. Use word stems to match all case endings.
             - For multi-paragraph concepts (like dialogue), use a VERY BROAD filter (e.g. "All paragraphs") to ensure you don't miss anything. Do NOT filter by character names.
-            - CRITICAL: 'run_agent' scans ONLY ONE BATCH (10-20 items). It returns "Status: More items available" if there is more text.
-            - IF 'run_agent' returns "not_found" AND "Status: More items available":
-              YOU MUST CALL 'run_agent' AGAIN with the SAME cursorName.
-              DO NOT STOP. REPEAT 'run_agent' UNTIL you find the answer OR status is "cursor_complete".
-            - Stop ONLY when decision is "done" OR "cursor_complete" OR ("not_found" AND hasMore=false).
+            - The legacy `run_agent` is available but should not be used unless explicitly requested.
             - Be careful with counting mentions: a single paragraph may contain MULTIPLE mentions. Read the text carefully.
             - CHECK PREVIOUS EVIDENCE: The answer might be in a paragraph found in a previous step.
             - DIALOGUE: A sequence of paragraphs where different characters speak IS A DIALOGUE. Report it.

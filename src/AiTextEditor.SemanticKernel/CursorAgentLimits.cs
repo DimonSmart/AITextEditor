@@ -6,6 +6,8 @@ public sealed class CursorAgentLimits
 
     public int MaxStepsLimit { get; init; } = 512;
 
+    public int MaxChatMessages { get; init; } = 50;
+
     public int DefaultMaxFound { get; init; } = 20;
 
     public int SnapshotEvidenceLimit { get; init; } = 5;
