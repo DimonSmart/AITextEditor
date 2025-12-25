@@ -50,7 +50,7 @@ public sealed class SemanticKernelEngine
         builder.Services.AddSingleton<ICursorAgentPromptBuilder, CursorAgentPromptBuilder>();
         builder.Services.AddSingleton<ICursorAgentResponseParser, CursorAgentResponseParser>();
         builder.Services.AddSingleton<ICursorEvidenceCollector, CursorEvidenceCollector>();
-        builder.Services.AddSingleton<ICursorAgentRuntime, CursorAgentRuntime>();
+        // builder.Services.AddSingleton<ICursorAgentRuntime, CursorAgentRuntime>();
         builder.Services.AddSingleton<ILoggerFactory>(loggerFactory);
         builder.Services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
         builder.Services.AddSingleton<FunctionInvocationLoggingFilter>();
@@ -81,7 +81,7 @@ public sealed class SemanticKernelEngine
         kernel.AutoFunctionInvocationFilters.Add(functionLogger);
 
         var chatService = kernel.GetRequiredService<IChatCompletionService>();
-        var cursorAgentRuntime = kernel.Services.GetRequiredService<ICursorAgentRuntime>();
+        // var cursorAgentRuntime = kernel.Services.GetRequiredService<ICursorAgentRuntime>();
         var limits = kernel.Services.GetRequiredService<CursorAgentLimits>();
         var cursorRegistry = new CursorRegistry();
         var chatHistoryCompressor = new FunctionCallAwareChatHistoryCompressor(limits);
@@ -106,12 +106,12 @@ public sealed class SemanticKernelEngine
             loggerFactory.CreateLogger<CursorPlugin>());
         kernel.Plugins.AddFromObject(cursorPlugin, "cursor");
 
-        var agentPlugin = new AgentPlugin(
-            cursorRegistry,
-            cursorAgentRuntime,
-            limits,
-            loggerFactory.CreateLogger<AgentPlugin>());
-        kernel.Plugins.AddFromObject(agentPlugin, "agent");
+        // var agentPlugin = new AgentPlugin(
+        //     cursorRegistry,
+        //     cursorAgentRuntime,
+        //     limits,
+        //     loggerFactory.CreateLogger<AgentPlugin>());
+        // kernel.Plugins.AddFromObject(agentPlugin, "agent");
 
         var chatCursorAgentPlugin = new ChatCursorAgentPlugin(
             chatCursorAgentRuntime,
@@ -147,7 +147,7 @@ public sealed class SemanticKernelEngine
             - `run_chat_cursor_agent` will pull batches via the `read_cursor_batch` tool until it finds the answer or the cursor is exhausted.
             - For specific keyword search, prefer `create_keyword_cursor` over generic `create_cursor`. Use word stems to match all case endings.
             - For multi-paragraph concepts (like dialogue), use a VERY BROAD filter (e.g. "All paragraphs") to ensure you don't miss anything. Do NOT filter by character names.
-            - The legacy `run_agent` is available but should not be used unless explicitly requested.
+            // - The legacy `run_agent` is available but should not be used unless explicitly requested.
             - Be careful with counting mentions: a single paragraph may contain MULTIPLE mentions. Read the text carefully.
             - CHECK PREVIOUS EVIDENCE: The answer might be in a paragraph found in a previous step.
             - DIALOGUE: A sequence of paragraphs where different characters speak IS A DIALOGUE. Report it.

@@ -1,3 +1,4 @@
+/*
 using System;
 using System.Threading;
 using AiTextEditor.Lib.Services;
@@ -26,3 +27,4 @@ public sealed class KeywordCursorAgentRuntime : NamedCursorAgentRuntimeBase<Keyw
 
     protected override KeywordCursorStream GetCursor(string cursorName) => cursorRegistry.GetCursor(cursorName);
 }
+*/

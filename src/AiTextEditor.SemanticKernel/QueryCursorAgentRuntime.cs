@@ -1,3 +1,4 @@
+/*
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,3 +29,4 @@ public sealed class QueryCursorAgentRuntime : NamedCursorAgentRuntimeBase<QueryC
 
     protected override QueryCursorStream GetCursor(string cursorName) => cursorRegistry.GetCursor(cursorName);
 }
+*/

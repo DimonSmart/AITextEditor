@@ -1,3 +1,4 @@
+/*
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -300,3 +301,4 @@ public sealed class CursorAgentRuntime : ICursorAgentRuntime
         return text[..maxLength] + $"... (+{text.Length - maxLength} chars)";
     }
 }
+*/

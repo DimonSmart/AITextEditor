@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-482\",\"object\":\"chat.completion\",\"created\":1766678192,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's tackle this query. The user is asking in which paragraph Znayka compares the lunar surface to a well-cooked blini and explains the bubbles of steam. First, I need to recall the tools available. The user mentioned using a keyword cursor, so I should create one with the relevant keywords.\\n\\nThe keywords here are \\\"лунная поверхность\\\" (lunar surface), \\\"блины\\\" (blini), and \\\"пузырьки пара\\\" (steam bubbles). Using the keyword_cursor-create_keyword_cursor function with these terms should help locate the relevant section. \\n\\nOnce the cursor is created, the next step is to read the document using the read_cursor_batch tool. The response from the tool will give the pointers to the matching paragraphs. I need to check each paragraph to confirm if it's the one where Znayka makes the comparison. Since the user mentioned a specific comparison and explanation, I should look for a paragraph that includes all three keywords in context. \\n\\nAlso, considering that the answer might be in a previous batch, I should keep track of the pointers and verify if the information is already found. If not, continue reading the next portions until the relevant paragraph is identified. Finally, present the answer in Russian, including the semantic pointer if applicable.\\n\",\"tool_calls\":[{\"id\":\"call_iq8xwl9q\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"chat_cursor_tools-read_cursor_batch\",\"arguments\":\"{\\\"cursorName\\\":\\\"keyword_cursor_e5bdaa2ed2434d54ba68a9228f61ae79\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1277,\"completion_tokens\":320,\"total_tokens\":1597}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 25 Dec 2025 15:56:32 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}

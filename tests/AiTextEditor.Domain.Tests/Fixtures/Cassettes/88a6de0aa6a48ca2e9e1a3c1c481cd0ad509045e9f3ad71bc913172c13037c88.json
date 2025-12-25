@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-376\",\"object\":\"chat.completion\",\"created\":1766678123,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's tackle this query. The user is asking in which paragraph Znayka compares the lunar surface to a well-baked blini and explains the bubbles of steam. First, I need to figure out the right approach.\\n\\nThe user mentioned Znayka, which I know is a character from Soviet children's literature, often associated with the story \\\"The Magic Lute\\\" by Vladimir Odoevsky. In that story, Znayka is a clever boy who interacts with various characters, including a fox. However, the specific comparison to blini (which are Russian pancakes) and steam bubbles might be from a different story or a specific part of a book.\\n\\nSince the user is referring to a markdown book, I need to use the provided tools to search through the document. The tools include creating cursors, keyword cursors, and reading document batches. The user wants a specific paragraph where Znayka makes this comparison. \\n\\nFirst, I should check if there's a keyword cursor that can help. The function 'keyword_cursor-create_keyword_cursor' allows searching for keywords. The keywords here would be \\\"лунная поверхность\\\" (lunar surface), \\\"блины\\\" (blini), and \\\"пузырьки пара\\\" (steam bubbles). Using these keywords with stems might help find the relevant section.\\n\\nAlternatively, using a general cursor with a filter might be necessary if the keywords aren't sufficient. But since the user is asking for a specific comparison, using a keyword cursor seems more efficient. \\n\\nI should create a keyword cursor with the keywords \\\"лунная поверхность\\\", \\\"блины\\\", and \\\"пузырьки пара\\\". Then, use the chat_cursor_agent to process the results. The cursor name could be something like \\\"search_cursor\\\". \\n\\nOnce the cursor is created, the agent will read through the document, and the relevant paragraph should be found. It's important to note that the answer might be in a previous batch, so checking previous evidence is necessary. \\n\\nIf the initial search doesn't find the paragraph, maybe expanding the keywords or using a broader filter might help. However, given the specific nature of the query, the keyword approach is more targeted. \\n\\nI should also consider that the user might be referring to a specific story where Znayka describes the Moon's surface in such a way. If the cursor doesn't find it, perhaps the legacy agent might be needed, but the user prefers the chat-based cursor agent. \\n\\nIn summary, the steps are: create a keyword cursor with the relevant terms, run the chat_cursor_agent to process the document, and then retrieve the specific paragraph where the comparison is made.\\n\",\"tool_calls\":[{\"id\":\"call_ao3xk9ie\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"keyword_cursor-create_keyword_cursor\",\"arguments\":\"{\\\"keywords\\\":[\\\"лунная поверхность\\\",\\\"блины\\\",\\\"пузырьки пара\\\"]}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1197,\"completion_tokens\":588,\"total_tokens\":1785}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 25 Dec 2025 15:55:23 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

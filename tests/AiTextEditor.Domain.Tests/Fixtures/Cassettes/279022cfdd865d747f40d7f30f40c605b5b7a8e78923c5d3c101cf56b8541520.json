@@ -1,0 +1,34 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-188\",\"object\":\"chat.completion\",\"created\":1766682763,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's tackle this query. The user wants me to find the first dialogue between two named characters and name them. First, I need to figure out how to approach this using the provided tools.\\n\\nThe user mentioned using the chat-based cursor agent, so I should create a cursor. Since it's a keyword search, maybe the keyword cursor is better. But the task is about dialogues, so I need to filter for those. The tools have a function called create_keyword_cursor, which uses word stems. But dialogues might be in paragraphs with specific formats like \\\"Name: Text\\\" or starting with dashes. \\n\\nWait, the user said to use a very broad filter for multi-paragraph concepts like dialogue. So maybe I should create a cursor that looks for any paragraphs that might be dialogues. The filterDescription for the cursor should be something like \\\"All paragraphs\\\" to ensure I don't miss anything. But how do I identify dialogues between named characters?\\n\\nAlternatively, maybe I should first read the document to get an overview. The editor-read_document function could help, but the user might not want to read the entire document. Since the task is to find the first dialogue between two named characters, perhaps using the keyword cursor with keywords like \\\"said\\\" or \\\"Name:\\\" would help. But the user mentioned using word stems, so maybe \\\"said\\\" as a keyword.\\n\\nWait, the user wants the first occurrence. So maybe using the chat_cursor_agent to process the document in chunks, checking each paragraph for dialogue. The chat_cursor_agent would run the task description, which is to find the first dialogue between two named characters. \\n\\nBut how to structure the cursor? The create_cursor function requires a filterDescription. Maybe the filter is \\\"paragraphs containing dialogue\\\" or \\\"paragraphs with named characters speaking\\\". But since the user wants two named characters, perhaps the filter should look for paragraphs where two names are mentioned in a dialogue format.\\n\\nAlternatively, using the keyword_cursor with keywords like \\\"Name:\\\" or \\\"said\\\" to find potential dialogues. Then, once those are found, check if they involve two named characters. The first such occurrence would be the answer.\\n\\nI think the best approach is to create a keyword cursor with keywords like \\\"said\\\", \\\"Name:\\\", or \\\"–\\\" (dashes) which are common in dialogues. Then, use the chat_cursor_agent to process these items and identify the first dialogue between two named characters. The agent would read the cursor in batches, and the first matching dialogue would be the answer.\\n\\nSo, first, create a keyword cursor with relevant keywords. Then, run the chat_cursor_agent to find the first occurrence. The answer would then be the names of the two characters involved in that dialogue.\\n\",\"tool_calls\":[{\"id\":\"call_i7t9mhzb\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"keyword_cursor-create_keyword_cursor\",\"arguments\":\"{\\\"keywords\\\":[\\\"said\\\",\\\"Name:\\\",\\\"–\\\",\\\"-\\\"]}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1081,\"completion_tokens\":589,\"total_tokens\":1670}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 25 Dec 2025 17:12:43 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

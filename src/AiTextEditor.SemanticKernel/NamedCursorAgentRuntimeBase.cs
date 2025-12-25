@@ -1,3 +1,4 @@
+/*
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -282,3 +283,4 @@ public abstract class NamedCursorAgentRuntimeBase<TCursor> where TCursor : IName
         return text[..maxLength] + $"... (+{text.Length - maxLength} chars)";
     }
 }
+*/

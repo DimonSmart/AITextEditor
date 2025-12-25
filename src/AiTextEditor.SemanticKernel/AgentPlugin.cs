@@ -1,3 +1,4 @@
+/*
 using System.Text;
 using System.Text.Json;
 using System.ComponentModel;
@@ -139,3 +140,4 @@ public sealed class AgentPlugin(
         return sb.ToString();
     }
 }
+*/

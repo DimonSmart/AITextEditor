@@ -1,0 +1,31 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-416\",\"object\":\"chat.completion\",\"created\":1766679101,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's tackle this query. The user wants the first dialogue between two named characters and their names. I need to find the first occurrence where two characters are mentioned by name in a dialogue.\\n\\nFirst, I used the keyword cursor with \\\"said\\\", \\\"Name:\\\", and dialogue markers like dashes. The first item from the cursor is a paragraph that seems to be a monologue, not a dialogue. The second item is a paragraph that mentions \\\"Name:\\\" but only once, so it's not a dialogue between two named characters. The third item is a paragraph that starts with \\\"Name:\\\" again, but still only one name. \\n\\nSince the user specified two named characters, I need to look for a paragraph where two names are present. The next batch might have that. I'll continue reading the next portion to find the first dialogue between two named characters. If I don't find it, I'll need to check further or consider if there's a dialogue in the existing data. But based on the current items, there's no dialogue between two named characters yet. I'll proceed to the next batch.\\n\",\"tool_calls\":[{\"id\":\"call_blupjjo7\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"chat_cursor_tools-read_cursor_batch\",\"arguments\":\"{\\\"cursorName\\\":\\\"keyword_cursor_1da98f2387dc40079046ced11b77c332\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":8928,\"completion_tokens\":281,\"total_tokens\":9209}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 25 Dec 2025 16:11:40 GMT"
+    ],
+    "Server": [
+      "Kestrel"
+    ],
+    "Access-Control-Allow-Credentials": [
+      "true"
+    ],
+    "Access-Control-Allow-Headers": [
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, X-Custom-Header"
+    ],
+    "Access-Control-Allow-Methods": [
+      "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    ],
+    "Access-Control-Allow-Origin": [
+      "*"
+    ],
+    "Access-Control-Expose-Headers": [
+      "Content-Length, Content-Type, Date, Server, X-Cache-Status"
+    ],
+    "Access-Control-Max-Age": [
+      "3600"
+    ]
+  }
+}
