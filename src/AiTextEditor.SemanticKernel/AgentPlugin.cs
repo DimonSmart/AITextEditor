@@ -15,6 +15,8 @@ public sealed class AgentPlugin(
     CursorAgentLimits limits,
     ILogger<AgentPlugin> logger)
 {
+    [KernelFunction("run_agent")]
+    [Description("Runs the legacy cursor agent for a given cursor name.")]
     public async Task<string> RunAgent(
         [Description("Name of the cursor")] string cursorName,
         [Description("Task description for the agent")] string taskDescription,
