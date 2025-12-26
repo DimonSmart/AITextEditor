@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-755\",\"object\":\"chat.completion\",\"created\":1766770372,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We have a keyword cursor that will yield matching document items in order for stem \\\"звёздочк\\\". Need second mention excluding headings. The cursor will likely return each occurrence (maybe each paragraph with the term). We need to fetch batches using read_cursor_batch.\",\"tool_calls\":[{\"id\":\"call_gczc40np\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"chat_cursor_tools-read_cursor_batch\",\"arguments\":\"{\\\"cursorName\\\":\\\"keyword_cursor_0\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":973,\"completion_tokens\":85,\"total_tokens\":1058}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 26 Dec 2025 17:32:52 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -84,14 +84,6 @@ public sealed class SemanticKernelEngine
         // var cursorAgentRuntime = kernel.Services.GetRequiredService<ICursorAgentRuntime>();
         var limits = kernel.Services.GetRequiredService<CursorAgentLimits>();
         var cursorRegistry = new CursorRegistry();
-        var chatHistoryCompressor = new FunctionCallAwareChatHistoryCompressor(limits);
-        var chatCursorAgentRuntime = new ChatCursorAgentRuntime(
-            kernel,
-            cursorRegistry,
-            chatService,
-            chatHistoryCompressor,
-            limits,
-            loggerFactory.CreateLogger<ChatCursorAgentRuntime>());
 
         var editorPlugin = new EditorPlugin(
             mcpServer,
@@ -112,11 +104,6 @@ public sealed class SemanticKernelEngine
         //     limits,
         //     loggerFactory.CreateLogger<AgentPlugin>());
         // kernel.Plugins.AddFromObject(agentPlugin, "agent");
-
-        var chatCursorAgentPlugin = new ChatCursorAgentPlugin(
-            chatCursorAgentRuntime,
-            loggerFactory.CreateLogger<ChatCursorAgentPlugin>());
-        kernel.Plugins.AddFromObject(chatCursorAgentPlugin, "chat_cursor_agent");
 
         var chatCursorToolsPlugin = new ChatCursorTools(
             cursorRegistry,
@@ -144,15 +131,15 @@ public sealed class SemanticKernelEngine
             """
             You are a QA assistant for a markdown book. Use tools to inspect the document.
             Workflow:
-            - Prefer the chat-based cursor agent: create a cursor (e.g. name="search_cursor"), then call `chat_cursor_agent-run_chat_cursor_agent` (note the hyphen) with that cursor name.
-            - `chat_cursor_agent-run_chat_cursor_agent` will pull batches via the `chat_cursor_tools-read_cursor_batch` tool until it finds the answer or the cursor is exhausted.
-            - For specific keyword search, prefer `keyword_cursor-create_keyword_cursor` over generic `cursor-create_cursor`. Use word stems to match all case endings.
+            - Use a single tool path: create a cursor, then read batches directly via `chat_cursor_tools-read_cursor_batch`. Do NOT call `chat_cursor_agent-run_chat_cursor_agent`.
+            - For specific keyword search, always use `keyword_cursor-create_keyword_cursor` (not `cursor-create_cursor`). Provide lowercase word stems, not full inflected forms.
+            - Prefer stems for proper names; avoid generic descriptors (e.g. "professor") unless they are the actual target term.
             - For multi-paragraph concepts (like dialogue), use a VERY BROAD filter (e.g. "All paragraphs") to ensure you don't miss anything. Do NOT filter by character names.
             - Avoid the legacy `agent-run_agent` unless the user explicitly requests it.
             - Be careful with counting mentions: a single paragraph may contain MULTIPLE mentions. Read the text carefully.
             - CHECK PREVIOUS EVIDENCE: The answer might be in a paragraph found in a previous step.
             - DIALOGUE: A sequence of paragraphs where different characters speak IS A DIALOGUE. Report it.
-            - DIALOGUE FORMATS: Look for 'Name: Text', 'Name said, "Text"', OR paragraphs starting with dashes (–/-) where context implies different speakers.
+            - DIALOGUE FORMATS: Look for 'Name: Text', 'Name said, "Text"', OR paragraphs starting with dashes (--/-) where context implies different speakers.
             Return the final answer in Russian and include the semantic pointer when applicable.
             """);
         history.AddUserMessage(userCommand);

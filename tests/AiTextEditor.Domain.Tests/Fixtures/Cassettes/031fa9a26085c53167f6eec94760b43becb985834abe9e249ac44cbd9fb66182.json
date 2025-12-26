@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-116\",\"object\":\"chat.completion\",\"created\":1766770303,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to find first mention of \\\"Пончик\\\" in the markdown book. Use keyword cursor result. Let's read batches.\",\"tool_calls\":[{\"id\":\"call_nlecil1j\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"chat_cursor_tools-read_cursor_batch\",\"arguments\":\"{\\\"cursorName\\\":\\\"keyword_cursor_0\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":904,\"completion_tokens\":58,\"total_tokens\":962}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 26 Dec 2025 17:31:43 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

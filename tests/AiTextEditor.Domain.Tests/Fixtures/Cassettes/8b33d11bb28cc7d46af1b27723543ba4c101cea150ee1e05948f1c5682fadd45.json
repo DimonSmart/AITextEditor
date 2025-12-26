@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-593\",\"object\":\"chat.completion\",\"created\":1766770306,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to find first mention of \\\"профессор Звёздочкин\\\" excluding headings. Use keyword cursor for [\\\"профессор\\\",\\\"Звёздочкин\\\"] maybe stems. Use keyword_cursor_create_keyword_cursor.\",\"tool_calls\":[{\"id\":\"call_pwljsm3h\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"keyword_cursor-create_keyword_cursor\",\"arguments\":\"{\\\"keywords\\\":[\\\"профессор\\\",\\\"звёздочк\\\"]}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":933,\"completion_tokens\":90,\"total_tokens\":1023}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 26 Dec 2025 17:31:46 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

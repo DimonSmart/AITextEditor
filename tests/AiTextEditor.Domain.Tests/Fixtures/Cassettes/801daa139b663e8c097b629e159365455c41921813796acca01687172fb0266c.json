@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-240\",\"object\":\"chat.completion\",\"created\":1766770308,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to find first occurrence of \\\"профессор Звёздочкин\\\" (excluding headings). Use keyword cursor. We have created keyword_cursor_0 with keywords. Need to run chat_cursor_agent with that cursor maybe? Actually keyword cursor yields items, we need to read. Use chat_cursor_agent to read. Let's create a cursor name \\\"search_cursor\\\". Probably we need to create a cursor from keyword cursor? Actually we have a keyword cursor. We can use chat_cursor_agent-run_chat_cursor_agent with cursorName = \\\"keyword_cursor_0\\\"? The spec says chat_cursor_agent-run_chat_cursor_agent expects a cursor name; maybe keyword cursor creates a cursor; its name is keyword_cursor_0. Let's try.\",\"tool_calls\":[{\"id\":\"call_luc6ypzl\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"chat_cursor_agent-run_chat_cursor_agent\",\"arguments\":\"{\\\"cursorName\\\":\\\"keyword_cursor_0\\\",\\\"maxEvidenceCount\\\":1,\\\"startAfterPointer\\\":null,\\\"taskDescription\\\":\\\"Find the first occurrence of the phrase professor Звёздочкин (excluding headings) and return its paragraph and pointer.\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":982,\"completion_tokens\":231,\"total_tokens\":1213}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 26 Dec 2025 17:31:48 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

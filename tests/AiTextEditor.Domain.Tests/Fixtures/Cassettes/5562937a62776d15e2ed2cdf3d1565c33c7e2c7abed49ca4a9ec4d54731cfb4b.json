@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-77\",\"object\":\"chat.completion\",\"created\":1766770369,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"answer\\\": \\\"24:1.1.1.p21\\\",\\n  \\\"pointer\\\": \\\"24:1.1.1.p21\\\"\\n}\",\"reasoning\":\"We need first occurrence (excluding headings) of phrase \\\"professor Звёздочкин\\\". The keyword cursor gave items; first non-heading is pointer 24:1.1.1.p21. That contains the phrase. So answer pointer that. Return JSON with answer and pointer. Answer could be the pointer. Probably answer is the pointer.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1217,\"completion_tokens\":116,\"total_tokens\":1333}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 26 Dec 2025 17:32:49 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

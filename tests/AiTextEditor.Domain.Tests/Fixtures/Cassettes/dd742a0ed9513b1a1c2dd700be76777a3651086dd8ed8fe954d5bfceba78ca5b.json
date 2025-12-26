@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-644\",\"object\":\"chat.completion\",\"created\":1766770374,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Второе упоминание профессора Звёздочкина (исключая заголовки) находится в абзаце с семантическим указателем **25:1.1.1.p22**.\",\"reasoning\":\"We have to find second mention of professor Звёздочкин excluding headings. Let's read items. The first batch includes heading (mention in heading). That's not a paragraph. The next paragraph (pointer 24:...) contains first mention? The heading has \\\"профессора Звёздочкина\\\". That's a mention but headings excluded. The next paragraph contains multiple mentions: \\\"профессор Звёздочкин\\\". That's first mention in body. Need second mention after that, excluding headings. The next paragraph pointer 25: has \\\"Профессор Звёздочкин\\\". That's second mention. So answer pointer 25:1.1.1.p22. Provide answer in Russian with pointer.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1446,\"completion_tokens\":206,\"total_tokens\":1652}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 26 Dec 2025 17:32:54 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}
