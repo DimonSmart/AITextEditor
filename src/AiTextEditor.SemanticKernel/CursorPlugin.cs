@@ -1,4 +1,5 @@
 using AiTextEditor.Lib.Services;
+using AiTextEditor.Lib.Services.SemanticKernel;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using System.ComponentModel;
@@ -7,7 +8,7 @@ namespace AiTextEditor.SemanticKernel;
 
 public sealed class CursorPlugin(
     EditorSession editorSession,
-    CursorRegistry cursorRegistry,
+    ICursorStore cursorRegistry,
     CursorAgentLimits limits,
     ILogger<CursorPlugin> logger)
 {
