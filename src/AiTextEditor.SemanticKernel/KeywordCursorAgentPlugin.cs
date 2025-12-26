@@ -24,12 +24,12 @@ public sealed class KeywordCursorAgentPlugin(
     private readonly IKeywordCursorAgentRuntime cursorAgentRuntime = cursorAgentRuntime;
     private readonly ILogger<KeywordCursorAgentPlugin> logger = logger;
 
-    [KernelFunction("run_keyword_cursor_agent")]
-    [Description("Run a cursor agent against an existing keyword cursor.")]
+    [KernelFunction("run_cursor_agent")]
+    [Description("Run a cursor agent against an existing cursor.")]
     public async Task<string> RunKeywordCursorAgent(
-        [Description("Cursor name returned by create_keyword_cursor.")] string cursorName,
+        [Description("Cursor name returned by any create_cursor_ function.")] string cursorName,
         [Description("Natural language task for the agent.")] string taskDescription,
-        [Description("Pointer after which the cursor should start.")] string? startAfterPointer = null,
+        [Description("Pointer after which the cursor should start. null if should start from the beginning")] string? startAfterPointer = null,
         [Description("Context from previous run to resume.")] string? context = null)
     {
         var request = new CursorAgentRequest(taskDescription, startAfterPointer, context);

@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-40\",\"object\":\"chat.completion\",\"created\":1766755159,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Первое упоминание профессора Звёздочкина (исключая заголовки):  \\n\\\"А действительный член академии астрономических наук профессор Звёздочкин, которому тоже случилось прочитать Знайкину книжку, просто кипел от негодования...\\\"\",\"reasoning\":\"Okay, let's see. The user wants to find the first mention of Professor Zvezdochkin, excluding headers. The cursor name is keyword_cursor_0, and they're using a max evidence count of 1. \\n\\nFirst, I called the read_cursor_batch function with the cursor name. The response had items, including a heading and some paragraphs. The first paragraph mentions Professor Zvezdochkin in the sentence: \\\"А действительный член академии астрономических наук профессор Звёздочкин...\\\" which translates to \\\"And the actual member of the astronomical academy professor Zvezdochkin...\\\" That seems like the first occurrence in the text. Since the user wants to exclude headers, the heading with the SemanticPointer 3:1.1.1 is skipped. The next items are paragraphs, and the first one after the header is the relevant part. The response also indicates there's more content, but since the max evidence count is 1, we stop here. So the answer should be the first paragraph mentioning him.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1483,\"completion_tokens\":304,\"total_tokens\":1787}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 26 Dec 2025 13:19:19 GMT"
+    ]
+  }
+}

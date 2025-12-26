@@ -24,7 +24,7 @@ public sealed class QueryCursorAgentPlugin(
     private readonly IQueryCursorAgentRuntime cursorAgentRuntime = cursorAgentRuntime;
     private readonly ILogger<QueryCursorAgentPlugin> logger = logger;
 
-    [KernelFunction("run_query_cursor_agent")]
+    //[KernelFunction("run_query_cursor_agent")]
     [Description("Run a cursor agent against an existing query cursor.")]
     public async Task<string> RunQueryCursorAgent(
         [Description("Cursor name returned by create_query_cursor.")] string cursorName,

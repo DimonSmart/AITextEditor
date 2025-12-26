@@ -1,8 +1,9 @@
-using System.ComponentModel;
-using System.Text.Json;
+using AiTextEditor.Lib.Common;
+using AiTextEditor.Lib.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
-using AiTextEditor.Lib.Services;
+using System.ComponentModel;
+using System.Text.Json;
 
 namespace AiTextEditor.SemanticKernel;
 
@@ -34,6 +35,6 @@ public sealed class ChatCursorTools(
 
         logger.LogDebug("read_cursor_batch: cursor={Cursor}, count={Count}, hasMore={HasMore}", cursorName, portionView.Items.Count, portionView.HasMore);
 
-        return JsonSerializer.Serialize(response);
+        return JsonSerializer.Serialize(response, SerializationOptions.RelaxedCompact);
     }
 }

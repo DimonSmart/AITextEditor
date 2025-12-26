@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using AiTextEditor.Lib.Common;
 using AiTextEditor.Lib.Model;
 using AiTextEditor.Lib.Services;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
@@ -21,7 +22,7 @@ public interface ICursorAgentPromptBuilder
 
     string BuildFinalizerSystemPrompt();
 
-    string BuildFinalizerUserMessage(string taskDescription, string evidenceJson, bool cursorComplete, int stepsUsed, string? afterPointer);
+    // string BuildFinalizerUserMessage(string taskDescription, string evidenceJson, bool cursorComplete, int stepsUsed, string? afterPointer);
 
     OpenAIPromptExecutionSettings CreateSettings();
 }
@@ -47,13 +48,7 @@ public sealed class CursorAgentPromptBuilder(CursorAgentLimits limits) : ICursor
             maxEvidenceCount = request.MaxEvidenceCount
         };
 
-        var options = new JsonSerializerOptions
-        {
-            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-            WriteIndented = false
-        };
-
-        return JsonSerializer.Serialize(payload, options);
+        return JsonSerializer.Serialize(payload, SerializationOptions.RelaxedCompact);
     }
 
     public string BuildEvidenceSnapshot(CursorAgentState state)
@@ -100,21 +95,21 @@ public sealed class CursorAgentPromptBuilder(CursorAgentLimits limits) : ICursor
 
     public string BuildFinalizerSystemPrompt() => FinalizerSystemPrompt;
 
-    public string BuildFinalizerUserMessage(string taskDescription, string evidenceJson, bool cursorComplete, int stepsUsed, string? afterPointer)
-    {
-        var builder = new StringBuilder();
-        builder.AppendLine("Task description:");
-        builder.AppendLine(taskDescription);
-        builder.AppendLine(string.Empty);
-        builder.AppendLine("Evidence (JSON):");
-        builder.AppendLine(evidenceJson);
-        builder.AppendLine(string.Empty);
-        builder.AppendLine($"cursorComplete: {cursorComplete}");
-        builder.AppendLine($"stepsUsed: {stepsUsed}");
-        builder.AppendLine($"afterPointer: {afterPointer ?? "<none>"}");
-        builder.AppendLine("Return a single JSON object per schema.");
-        return builder.ToString();
-    }
+    // public string BuildFinalizerUserMessage(string taskDescription, string evidenceJson, bool cursorComplete, int stepsUsed, string? afterPointer)
+    // {
+    //     var builder = new StringBuilder();
+    //     builder.AppendLine("Task description:");
+    //     builder.AppendLine(taskDescription);
+    //     builder.AppendLine(string.Empty);
+    //     builder.AppendLine("Evidence (JSON):");
+    //     builder.AppendLine(evidenceJson);
+    //     builder.AppendLine(string.Empty);
+    //     builder.AppendLine($"cursorComplete: {cursorComplete}");
+    //     builder.AppendLine($"stepsUsed: {stepsUsed}");
+    //     builder.AppendLine($"afterPointer: {afterPointer ?? "<none>"}");
+    //     builder.AppendLine("Return a single JSON object per schema.");
+    //     return builder.ToString();
+    // }
 
     public OpenAIPromptExecutionSettings CreateSettings()
     {

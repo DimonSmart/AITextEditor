@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-625\",\"object\":\"chat.completion\",\"created\":1766756511,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Первое упоминание профессора Звёздочкина: «Профессор Звёздочкин впервые представил свой метод...» (semantic pointer: #12345)\",\"reasoning\":\"Okay, let's see. The user asked where in the book the professor Zvёzdочкиn is first mentioned, excluding headers. The assistant used a keyword cursor with the keyword \\\"Звёздочкин\\\" and then ran the chat cursor agent to find the first occurrence. The tool response returned a pointer 12345 with the answer.\\n\\nNow, I need to present the answer in Russian, including the semantic pointer. The answer from the tool is already in Russian, so I just need to format it correctly. The pointer is 12345, so the semantic pointer would be something like #12345. I should make sure to mention that the first mention is at that pointer. Let me check if there's any more steps needed, but since the tool provided the answer directly, I can just relay that information.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1288,\"completion_tokens\":229,\"total_tokens\":1517}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 26 Dec 2025 13:41:51 GMT"
+    ]
+  }
+}

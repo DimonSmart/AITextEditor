@@ -23,17 +23,16 @@ public sealed class KeywordCursorRegistry : IKeywordCursorRegistry
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
+    private int _cursorCounter = 0;
     public string CreateCursor(IEnumerable<string> keywords)
     {
         ArgumentNullException.ThrowIfNull(keywords);
 
-        var cursorName = $"keyword_cursor_{Guid.NewGuid():N}";
+        var cursorName = $"keyword_cursor_{_cursorCounter++}";
         var cursor = new KeywordCursorStream(documentContext.Document, keywords, limits.MaxElements, limits.MaxBytes, null, logger);
 
         if (!cursors.TryAdd(cursorName, cursor))
-        {
             throw new InvalidOperationException("keyword_cursor_registry_add_failed");
-        }
 
         mainRegistry.RegisterCursor(cursorName, cursor);
 
@@ -43,8 +42,6 @@ public sealed class KeywordCursorRegistry : IKeywordCursorRegistry
 
     public KeywordCursorStream GetCursor(string cursorName)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(cursorName);
-
         if (!cursors.TryGetValue(cursorName, out var cursor))
         {
             throw new InvalidOperationException($"keyword_cursor_not_found: {cursorName}");

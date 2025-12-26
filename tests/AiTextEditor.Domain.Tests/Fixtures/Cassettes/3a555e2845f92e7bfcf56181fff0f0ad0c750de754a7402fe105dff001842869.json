@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-857\",\"object\":\"chat.completion\",\"created\":1766754787,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, the user is asking where in the book the professor Zvezdokhin is first mentioned, excluding headers. I need to find the first occurrence of the name \\\"Звёздочкин\\\" in the document.\\n\\nFirst, I'll use the keyword_cursor-create_keyword_cursor function with the keyword \\\"Звёздочкин\\\" to locate all instances. Since the user wants the first mention, I should check the earliest pointer returned by the cursor.\\n\\nOnce the cursor is created, the next step is to read the document portions using the read_cursor_batch tool. I'll start from the beginning, so the startAfterPointer is null. The cursor will yield matching items in order, so the first item should be the initial mention.\\n\\nI need to make sure that the result doesn't include any headers. The cursor's filter might already handle that, but I should verify the context. If the first match is in a paragraph that's part of the main text and not a header, that's the answer. If there are multiple matches, the first one is the correct answer. If the cursor returns no results, then the name isn't mentioned, but I assume it is.\\n\\nAfter getting the first match, I'll note the pointer and the paragraph to confirm it's the first occurrence. Then, I can present the answer in Russian with the semantic pointer.\\n\",\"tool_calls\":[{\"id\":\"call_5zlsu9i3\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"chat_cursor_agent-run_chat_cursor_agent\",\"arguments\":\"{\\\"cursorName\\\":\\\"keyword_cursor_0\\\",\\\"maxEvidenceCount\\\":1,\\\"taskDescription\\\":\\\"Найти первое упоминание профессора Звёздочкина (исключая заголовки)\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1138,\"completion_tokens\":347,\"total_tokens\":1485}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 26 Dec 2025 13:13:07 GMT"
+    ]
+  }
+}
