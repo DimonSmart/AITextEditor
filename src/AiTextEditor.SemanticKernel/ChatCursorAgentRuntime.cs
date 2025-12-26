@@ -1,4 +1,5 @@
 using AiTextEditor.Lib.Model;
+using AiTextEditor.Lib.Services.SemanticKernel;
 using Markdig;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
@@ -16,7 +17,7 @@ namespace AiTextEditor.SemanticKernel;
 public sealed class ChatCursorAgentRuntime
 {
     private readonly Kernel kernel;
-    private readonly CursorRegistry registry;
+    private readonly ICursorStore cursorStore;
     private readonly IChatCompletionService chatService;
     private readonly FunctionCallAwareChatHistoryCompressor compressor;
     private readonly CursorAgentLimits limits;
@@ -24,14 +25,14 @@ public sealed class ChatCursorAgentRuntime
 
     public ChatCursorAgentRuntime(
         Kernel kernel,
-        CursorRegistry registry,
+        ICursorStore cursorStore,
         IChatCompletionService chatService,
         FunctionCallAwareChatHistoryCompressor compressor,
         CursorAgentLimits limits,
         ILogger<ChatCursorAgentRuntime> logger)
     {
         this.kernel = kernel ?? throw new ArgumentNullException(nameof(kernel));
-        this.registry = registry ?? throw new ArgumentNullException(nameof(registry));
+        this.cursorStore = cursorStore ?? throw new ArgumentNullException(nameof(cursorStore));
         this.chatService = chatService ?? throw new ArgumentNullException(nameof(chatService));
         this.compressor = compressor ?? throw new ArgumentNullException(nameof(compressor));
         this.limits = limits ?? throw new ArgumentNullException(nameof(limits));
@@ -44,7 +45,7 @@ public sealed class ChatCursorAgentRuntime
         ArgumentException.ThrowIfNullOrWhiteSpace(request.TaskDescription);
         ArgumentException.ThrowIfNullOrWhiteSpace(request.Context);
 
-        if (!registry.TryGetCursor(request.Context!, out var cursor) || cursor == null)
+        if (!cursorStore.TryGetCursor(request.Context!, out var cursor) || cursor == null)
         {
             throw new InvalidOperationException($"Cursor '{request.Context}' not found.");
         }

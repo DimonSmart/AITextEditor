@@ -1,5 +1,6 @@
 using AiTextEditor.Lib.Common;
 using AiTextEditor.Lib.Services;
+using AiTextEditor.Lib.Services.SemanticKernel;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using System.ComponentModel;
@@ -8,7 +9,7 @@ using System.Text.Json;
 namespace AiTextEditor.SemanticKernel;
 
 public sealed class ChatCursorTools(
-    CursorRegistry registry,
+    ICursorStore registry,
     CursorAgentLimits limits,
     ILogger<ChatCursorTools> logger)
 {
