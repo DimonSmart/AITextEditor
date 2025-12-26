@@ -9,39 +9,31 @@ public class McpServerTests
 {
 
     [Fact]
-    public void LoadDocument_AllowsExplicitId()
+    public void LoadDefaultDocument_AllowsExplicitId()
     {
         var server = new EditorSession();
 
-        var document = server.LoadDocument("# Title", "custom-id");
+        var document = server.LoadDefaultDocument("# Title", "custom-id");
 
         Assert.Equal("custom-id", document.Id);
-        Assert.Same(document, server.GetDocument("custom-id"));
+        Assert.Equal("custom-id", server.GetDefaultDocument().Id);
     }
 
     [Fact]
-    public void GetDocument_ReturnsNullForUnknownId()
+    public void GetItems_ThrowsWhenDefaultDocumentMissing()
     {
         var server = new EditorSession();
 
-        Assert.Null(server.GetDocument("missing"));
-    }
-
-    [Fact]
-    public void GetItems_ThrowsWhenDocumentMissing()
-    {
-        var server = new EditorSession();
-
-        Assert.Throws<InvalidOperationException>(() => server.GetItems("absent"));
+        Assert.Throws<InvalidOperationException>(() => server.GetItems());
     }
 
     [Fact]
     public void GetItems_ReturnsLinearItems()
     {
         var server = new EditorSession();
-        var document = server.LoadDocument("# Title\n\nParagraph");
+        server.LoadDefaultDocument("# Title\n\nParagraph");
 
-        var items = server.GetItems(document.Id);
+        var items = server.GetItems();
 
         Assert.Collection(
             items,
@@ -53,9 +45,9 @@ public class McpServerTests
     public void CreateTargetSet_FiltersDuplicatesAndOutOfRange()
     {
         var server = new EditorSession();
-        var document = server.LoadDocument("# Title\n\nFirst paragraph\n\nSecond paragraph");
+        server.LoadDefaultDocument("# Title\n\nFirst paragraph\n\nSecond paragraph");
 
-        var targetSet = server.CreateTargetSet(document.Id, new[] { 2, 2, 5, -1 });
+        var targetSet = server.CreateTargetSet(new[] { 2, 2, 5, -1 });
 
         Assert.Single(targetSet.Targets);
         Assert.Equal(3, targetSet.Targets[0].Pointer.Id);
@@ -66,16 +58,17 @@ public class McpServerTests
     public void ApplyOperations_ReindexesAndUpdatesSource()
     {
         var server = new EditorSession();
-        var document = server.LoadDocument("# Title\n\nParagraph");
+        var document = server.LoadDefaultDocument("# Title\n\nParagraph");
         var replacement = document.Items[0] with
         {
             Markdown = "# Updated",
             Text = "Updated"
         };
 
-        var updated = server.ApplyOperations(
-            document.Id,
-            new[] { new LinearEditOperation(LinearEditAction.Replace, document.Items[0].Pointer, null, new[] { replacement }) });
+        var updated = server.ApplyOperations(new[]
+        {
+            new LinearEditOperation(LinearEditAction.Replace, document.Items[0].Pointer, null, new[] { replacement })
+        });
 
         Assert.Equal(2, updated.Items.Count);
         Assert.Equal("Updated", updated.Items[0].Text);
@@ -86,9 +79,9 @@ public class McpServerTests
     public void CreateTargetSet_UsesLinearDocumentItems()
     {
         var server = new EditorSession();
-        var document = server.LoadDocument("# Title\n\nParagraph one\n\nParagraph two");
+        var document = server.LoadDefaultDocument("# Title\n\nParagraph one\n\nParagraph two");
 
-        var targetSet = server.CreateTargetSet(document.Id, new[] { 1, 2 }, "command", "label");
+        var targetSet = server.CreateTargetSet(new[] { 1, 2 }, "command", "label");
 
         Assert.Equal(document.Id, targetSet.DocumentId);
         Assert.Equal(2, targetSet.Targets.Count);
@@ -123,18 +116,13 @@ public class McpServerTests
     public void TargetSetLifecycle_AllowsQueryingAndDeletion()
     {
         var server = new EditorSession();
-        var firstDocument = server.LoadDocument("# First\n\nParagraph one");
-        var secondDocument = server.LoadDocument("# Second\n\nParagraph two");
+        server.LoadDefaultDocument("# Title\n\nParagraph one\n\nParagraph two");
 
-        var firstSet = server.CreateTargetSet(firstDocument.Id, new[] { 1 }, label: "first");
-        var secondSet = server.CreateTargetSet(secondDocument.Id, new[] { 1 }, label: "second");
+        var firstSet = server.CreateTargetSet(new[] { 1 }, label: "first");
+        var secondSet = server.CreateTargetSet(new[] { 2 }, label: "second");
 
-        var allSets = server.ListTargetSets(null);
+        var allSets = server.ListDefaultTargetSets();
         Assert.Equal(2, allSets.Count);
-
-        var filteredSets = server.ListTargetSets(firstDocument.Id);
-        Assert.Single(filteredSets);
-        Assert.Equal(firstSet.Id, filteredSets[0].Id);
 
         var fetched = server.GetTargetSet(firstSet.Id);
         Assert.NotNull(fetched);
@@ -145,7 +133,7 @@ public class McpServerTests
         Assert.True(deleted);
         Assert.Null(server.GetTargetSet(firstSet.Id));
 
-        var remainingSets = server.ListTargetSets(null);
+        var remainingSets = server.ListDefaultTargetSets();
         Assert.Single(remainingSets);
         Assert.Equal(secondSet.Id, remainingSets[0].Id);
     }
@@ -162,12 +150,12 @@ public class McpServerTests
     public void ApplyOperations_ThrowsForUnknownTargetPointer()
     {
         var server = new EditorSession();
-        var document = server.LoadDocument("# Title\n\nParagraph");
+        var document = server.LoadDefaultDocument("# Title\n\nParagraph");
 
         var invalidPointer = new SemanticPointer(999, null);
         var replacement = document.Items[0];
 
-        Assert.Throws<InvalidOperationException>(() => server.ApplyOperations(document.Id, new[]
+        Assert.Throws<InvalidOperationException>(() => server.ApplyOperations(new[]
         {
             new LinearEditOperation(LinearEditAction.Replace, invalidPointer, null, new[] { replacement })
         }));

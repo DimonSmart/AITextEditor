@@ -8,15 +8,15 @@ MCP-oriented toolkit around a linear Markdown domain model. The server keeps a s
 - **TargetSet/TargetRef** — named selections of items used for cursor/target set workflows.
 
 ## MCP server surface
-- Load markdown into a cached `LinearDocument` (`McpServer.LoadDocument`).
+- Load markdown into a cached `LinearDocument` (`McpServer.LoadDefaultDocument`).
 - Inspect items for navigation or filtering (`McpServer.GetItems`).
-- Create and manage named target sets (`McpServer.CreateTargetSet`, `ListTargetSets`, `GetTargetSet`, `DeleteTargetSet`).
+- Create and manage named target sets (`McpServer.CreateTargetSet`, `ListDefaultTargetSets`, `GetTargetSet`, `DeleteTargetSet`).
 - Apply `LinearEditOperation` batches to the cached document with consistent reindexing (`McpServer.ApplyOperations`).
 
 Versioning, diffing, and long-running orchestration remain outside of the server; it only maintains the latest in-memory state.
 
 ## Streaming navigation agent
-Long scans run through a streaming navigation agent that works in bounded batches instead of sending the full book to the LLM. The agent builds a local cursor inside a single `RunCursorAgent` call, streams items forward or backward with per-call limits, and finishes with a concise JSON action. The chat-driven agent is the primary path; the legacy `run_agent` flow is obsolete. Keyword cursors provide a fast, LLM-free filter when only literal matches are needed. See `docs/streaming-agent.md` for details on cursor types, prompt shape, and plugin functions.
+Long scans run through a streaming navigation agent that works in bounded batches instead of sending the full book to the LLM. The agent builds a local cursor inside a single `RunCursorAgent` call, streams items forward or backward with per-call limits, and finishes with a concise JSON action. The chat-driven agent is the primary path; keyword cursors provide a fast, LLM-free filter when only literal matches are needed. See `docs/streaming-agent.md` for details on cursor types, prompt shape, and plugin functions.
 
 ## Console demo
 Run the console sample with optional parameters for custom inputs:

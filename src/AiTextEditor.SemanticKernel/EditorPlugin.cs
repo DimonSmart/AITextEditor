@@ -1,10 +1,7 @@
 using System;
-using System.Text;
-using System.Text.Json;
 using System.ComponentModel;
 using AiTextEditor.Lib.Model;
 using AiTextEditor.Lib.Services;
-using AiTextEditor.Lib.Services.SemanticKernel;
 using Microsoft.SemanticKernel;
 using Microsoft.Extensions.Logging;
 
@@ -66,21 +63,5 @@ public sealed class EditorPlugin(
         ArgumentException.ThrowIfNullOrWhiteSpace(message);
         logger.LogInformation("ShowUserMessage: {Message}", message);
         context.UserMessages.Add(message);
-    }
-
-    [Obsolete("Avoid reading the entire document; use cursor-based tools instead.")]
-    [KernelFunction("read_document")]
-    public string ReadDocument()
-    {
-        logger.LogInformation("ReadDocument invoked");
-        var builder = new StringBuilder();
-        foreach (var item in server.GetItems())
-        {
-            builder.AppendLine($"{item.Pointer.ToCompactString()}: {item.Text}");
-        }
-
-        var content = builder.ToString();
-        context.LastDocumentSnapshot = content;
-        return content;
     }
 }

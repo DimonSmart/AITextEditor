@@ -26,14 +26,14 @@ public class EditorSession
         this.targetSets = targetSets;
     }
 
-    [Obsolete("Single-document runtime; prefer LoadDefaultDocument instead.")]
-    public LinearDocument LoadDocument(string markdown, string? documentId = null)
+    public LinearDocument LoadDefaultDocument(string markdown, string? documentId = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(markdown);
         if (documentId != null && string.IsNullOrWhiteSpace(documentId))
         {
             throw new ArgumentException("Document id cannot be empty or whitespace when provided.", nameof(documentId));
         }
+
         var document = repository.LoadFromMarkdown(markdown);
         if (!string.IsNullOrWhiteSpace(documentId))
         {
@@ -41,22 +41,8 @@ public class EditorSession
         }
 
         documents[document.Id] = document;
-        return document;
-    }
-
-    public LinearDocument LoadDefaultDocument(string markdown, string? documentId = null)
-    {
-        var document = LoadDocument(markdown, documentId);
         defaultDocumentId = document.Id;
         return document;
-    }
-
-    [Obsolete("Single-document runtime; avoid addressing documents by id.")]
-    public LinearDocument? GetDocument(string documentId)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(documentId);
-
-        return documents.TryGetValue(documentId, out var document) ? document : null;
     }
 
     public LinearDocument GetDefaultDocument()
@@ -64,48 +50,23 @@ public class EditorSession
         return GetDocumentOrThrow(GetDefaultDocumentId());
     }
 
-    [Obsolete("Single-document runtime; use GetItems() instead.")]
-    public IReadOnlyList<LinearItem> GetItems(string documentId)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(documentId);
-        var document = GetDocumentOrThrow(documentId);
-        return document.Items;
-    }
-
     public IReadOnlyList<LinearItem> GetItems()
     {
-        return GetItems(GetDefaultDocumentId());
+        return GetDefaultDocument().Items;
     }
 
-    [Obsolete("Single-document runtime; use CreateTargetSet(IEnumerable<int>, ...) instead.")]
-    public TargetSet CreateTargetSet(string documentId, IEnumerable<int> itemIndices, string? userCommand = null, string? label = null)
+    public TargetSet CreateTargetSet(IEnumerable<int> itemIndices, string? userCommand = null, string? label = null)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(documentId);
         ArgumentNullException.ThrowIfNull(itemIndices);
-        var document = GetDocumentOrThrow(documentId);
+
+        var document = GetDefaultDocument();
         var items = itemIndices
             .Distinct()
             .Where(index => index >= 0 && index < document.Items.Count)
             .Select(index => document.Items[index])
             .ToList();
 
-        return targetSets.Create(documentId, items, userCommand, label);
-    }
-
-    public TargetSet CreateTargetSet(IEnumerable<int> itemIndices, string? userCommand = null, string? label = null)
-    {
-        return CreateTargetSet(GetDefaultDocumentId(), itemIndices, userCommand, label);
-    }
-
-    [Obsolete("Single-document runtime; use ListDefaultTargetSets().")]
-    public IReadOnlyList<TargetSet> ListTargetSets(string? documentId)
-    {
-        if (documentId != null && string.IsNullOrWhiteSpace(documentId))
-        {
-            throw new ArgumentException("Document id cannot be whitespace.", nameof(documentId));
-        }
-
-        return targetSets.List(documentId);
+        return targetSets.Create(document.Id, items, userCommand, label);
     }
 
     public IReadOnlyList<TargetSet> ListDefaultTargetSets()
@@ -125,26 +86,20 @@ public class EditorSession
         return targetSets.Delete(targetSetId);
     }
 
-    [Obsolete("Single-document runtime; use ApplyOperations(IEnumerable<LinearEditOperation>).")]
-    public LinearDocument ApplyOperations(string documentId, IEnumerable<LinearEditOperation> operations)
+    public LinearDocument ApplyOperations(IEnumerable<LinearEditOperation> operations)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(documentId);
         ArgumentNullException.ThrowIfNull(operations);
+
+        var documentId = GetDefaultDocumentId();
         var document = GetDocumentOrThrow(documentId);
         var updated = editor.Apply(document, operations);
         documents[documentId] = updated;
         return updated;
     }
 
-    public LinearDocument ApplyOperations(IEnumerable<LinearEditOperation> operations)
-    {
-        return ApplyOperations(GetDefaultDocumentId(), operations);
-    }
-
     private LinearDocument GetDocumentOrThrow(string documentId)
     {
-        var document = GetDocument(documentId);
-        if (document == null)
+        if (!documents.TryGetValue(documentId, out var document))
         {
             throw new InvalidOperationException($"Document '{documentId}' is not loaded.");
         }
