@@ -22,7 +22,7 @@ public interface ICursorAgentPromptBuilder
 
     string BuildFinalizerSystemPrompt();
 
-    // string BuildFinalizerUserMessage(string taskDescription, string evidenceJson, bool cursorComplete, int stepsUsed, string? afterPointer);
+    string BuildFinalizerUserMessage(string taskDescription, string evidenceJson, bool cursorComplete, int stepsUsed, string? afterPointer);
 
     OpenAIPromptExecutionSettings CreateSettings();
 }
@@ -95,21 +95,22 @@ public sealed class CursorAgentPromptBuilder(CursorAgentLimits limits) : ICursor
 
     public string BuildFinalizerSystemPrompt() => FinalizerSystemPrompt;
 
-    // public string BuildFinalizerUserMessage(string taskDescription, string evidenceJson, bool cursorComplete, int stepsUsed, string? afterPointer)
-    // {
-    //     var builder = new StringBuilder();
-    //     builder.AppendLine("Task description:");
-    //     builder.AppendLine(taskDescription);
-    //     builder.AppendLine(string.Empty);
-    //     builder.AppendLine("Evidence (JSON):");
-    //     builder.AppendLine(evidenceJson);
-    //     builder.AppendLine(string.Empty);
-    //     builder.AppendLine($"cursorComplete: {cursorComplete}");
-    //     builder.AppendLine($"stepsUsed: {stepsUsed}");
-    //     builder.AppendLine($"afterPointer: {afterPointer ?? "<none>"}");
-    //     builder.AppendLine("Return a single JSON object per schema.");
-    //     return builder.ToString();
-    // }
+    public string BuildFinalizerUserMessage(string taskDescription, string evidenceJson, bool cursorComplete, int stepsUsed, string? afterPointer)
+    {
+        var builder = new StringBuilder();
+        builder.AppendLine("Task:");
+        builder.AppendLine(taskDescription);
+        builder.AppendLine();
+        builder.AppendLine("Evidence JSON:");
+        builder.AppendLine(evidenceJson);
+        builder.AppendLine();
+        builder.AppendLine($"cursorComplete: {cursorComplete}");
+        builder.AppendLine($"stepsUsed: {stepsUsed}");
+        builder.AppendLine($"afterPointer: {afterPointer ?? "<none>"}");
+        builder.AppendLine();
+        builder.AppendLine("Return exactly one JSON object that follows the schema from the system message. Do not add code fences or explanations.");
+        return builder.ToString();
+    }
 
     public OpenAIPromptExecutionSettings CreateSettings()
     {
@@ -129,6 +130,7 @@ public sealed class CursorAgentPromptBuilder(CursorAgentLimits limits) : ICursor
         };
     }
 
+    // Clarifies output fields (including progress and needMoreContext) and enforces verbatim excerpts so small models match the parser.
     private const string CursorAgentSystemPrompt = """
 You are CursorAgent, an automated batch text scanning engine.
 
@@ -150,7 +152,9 @@ Output schema (JSON):
   "batchFound": true|false,
   "newEvidence": [
     { "pointer": "...", "excerpt": "...", "reason": "..." }
-  ]
+  ],
+  "progress": "...",
+  "needMoreContext": true|false
 }
 
 Evidence rules:
@@ -163,6 +167,8 @@ Evidence rules:
   - MUST be local and factual: explain what in the excerpt matches the task.
   - MUST NOT claim any document-wide ordering or position (no "first", "second", "nth", "earlier", "later", "previous", "next", "last").
   - You MAY use snapshot.evidenceCount ONLY for counting/progress decisions, not for describing the excerpt.
+- progress: optional, <=1 sentence, short summary of what you found in this batch (or leave empty/null if nothing new).
+- needMoreContext: set true only if the batch is too short/ambiguous and you must read further before making progress.
 
 Scanning Strategy:
 - READ THE FULL TEXT of each item. Mentions may be buried in the middle of long paragraphs.
@@ -178,6 +184,7 @@ Content preference:
 - Ignore headings/metadata unless the task explicitly asks for them.
 """;
 
+    // Aligns finalizer fields with the parser (explicit excerpt + markdown) and bans extra text to keep outputs JSON-only.
     private const string FinalizerSystemPrompt = """
 You are CursorAgentFinalizer. Given evidence collected by CursorAgent, decide if the task is resolved.
 
@@ -193,6 +200,7 @@ Schema (JSON):
 {
   "decision": "success|not_found",
   "semanticPointerFrom": "...",
+  "excerpt": "...",
   "whyThis": "...",
   "markdown": "...",
   "summary": "..."
@@ -201,6 +209,7 @@ Schema (JSON):
 Rules:
 - Use provided evidence only; do not invent pointers or excerpts.
 - semanticPointerFrom MUST be one of the evidence pointers when decision="success".
+- excerpt MUST be copied verbatim from the chosen evidence excerpt.
 - markdown MUST be copied from the chosen evidence excerpt (verbatim).
 - Treat evidence.reason as local rationale only. It is NOT proof of document-wide ordering.
 

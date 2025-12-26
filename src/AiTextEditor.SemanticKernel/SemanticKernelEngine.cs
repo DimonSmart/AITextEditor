@@ -139,6 +139,7 @@ public sealed class SemanticKernelEngine
         logger.LogInformation("Kernel built with model {ModelId} at {Endpoint}", modelId, endpoint);
 
         var history = new ChatHistory();
+        // Simplifies the workflow instructions for small models and removes inline comments that could be mistaken as literal output.
         history.AddSystemMessage(
             """
             You are a QA assistant for a markdown book. Use tools to inspect the document.
@@ -147,7 +148,7 @@ public sealed class SemanticKernelEngine
             - `run_chat_cursor_agent` will pull batches via the `read_cursor_batch` tool until it finds the answer or the cursor is exhausted.
             - For specific keyword search, prefer `create_keyword_cursor` over generic `create_cursor`. Use word stems to match all case endings.
             - For multi-paragraph concepts (like dialogue), use a VERY BROAD filter (e.g. "All paragraphs") to ensure you don't miss anything. Do NOT filter by character names.
-            // - The legacy `run_agent` is available but should not be used unless explicitly requested.
+            - Avoid the legacy `run_agent` unless the user explicitly requests it.
             - Be careful with counting mentions: a single paragraph may contain MULTIPLE mentions. Read the text carefully.
             - CHECK PREVIOUS EVIDENCE: The answer might be in a paragraph found in a previous step.
             - DIALOGUE: A sequence of paragraphs where different characters speak IS A DIALOGUE. Report it.
