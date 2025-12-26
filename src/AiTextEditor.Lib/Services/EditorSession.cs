@@ -1,3 +1,4 @@
+using System;
 using AiTextEditor.Lib.Model;
 
 namespace AiTextEditor.Lib.Services;
@@ -25,6 +26,7 @@ public class EditorSession
         this.targetSets = targetSets;
     }
 
+    [Obsolete("Single-document runtime; prefer LoadDefaultDocument instead.")]
     public LinearDocument LoadDocument(string markdown, string? documentId = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(markdown);
@@ -49,6 +51,7 @@ public class EditorSession
         return document;
     }
 
+    [Obsolete("Single-document runtime; avoid addressing documents by id.")]
     public LinearDocument? GetDocument(string documentId)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(documentId);
@@ -61,6 +64,7 @@ public class EditorSession
         return GetDocumentOrThrow(GetDefaultDocumentId());
     }
 
+    [Obsolete("Single-document runtime; use GetItems() instead.")]
     public IReadOnlyList<LinearItem> GetItems(string documentId)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(documentId);
@@ -73,6 +77,7 @@ public class EditorSession
         return GetItems(GetDefaultDocumentId());
     }
 
+    [Obsolete("Single-document runtime; use CreateTargetSet(IEnumerable<int>, ...) instead.")]
     public TargetSet CreateTargetSet(string documentId, IEnumerable<int> itemIndices, string? userCommand = null, string? label = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(documentId);
@@ -92,6 +97,7 @@ public class EditorSession
         return CreateTargetSet(GetDefaultDocumentId(), itemIndices, userCommand, label);
     }
 
+    [Obsolete("Single-document runtime; use ListDefaultTargetSets().")]
     public IReadOnlyList<TargetSet> ListTargetSets(string? documentId)
     {
         if (documentId != null && string.IsNullOrWhiteSpace(documentId))
@@ -119,6 +125,7 @@ public class EditorSession
         return targetSets.Delete(targetSetId);
     }
 
+    [Obsolete("Single-document runtime; use ApplyOperations(IEnumerable<LinearEditOperation>).")]
     public LinearDocument ApplyOperations(string documentId, IEnumerable<LinearEditOperation> operations)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(documentId);
