@@ -1,3 +1,4 @@
+using System;
 using System.Text;
 using System.Text.Json;
 using System.ComponentModel;
@@ -67,6 +68,7 @@ public sealed class EditorPlugin(
         context.UserMessages.Add(message);
     }
 
+    [Obsolete("Avoid reading the entire document; use cursor-based tools instead.")]
     [KernelFunction("read_document")]
     public string ReadDocument()
     {
