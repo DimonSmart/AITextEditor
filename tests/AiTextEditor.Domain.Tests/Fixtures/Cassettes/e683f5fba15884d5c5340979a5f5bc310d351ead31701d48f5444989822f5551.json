@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-650\",\"object\":\"chat.completion\",\"created\":1766766892,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Второе упоминание профессора Звёздочкина находится в пункте **25:1.1.1.p22**.\",\"reasoning\":\"We have a cursor with items. Need second mention of professor Zvezdochkin, excluding headings.\\n\\nFirst mention: appears in paragraph 24:1.1.1.p21 (the first paragraph containing his name). Second mention would be in next paragraph 25:1.1.1.p22.\\n\\nThus answer pointer: 25:1.1.1.p22. Provide answer in Russian.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1386,\"completion_tokens\":122,\"total_tokens\":1508}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 26 Dec 2025 16:34:52 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -15,13 +15,13 @@ public sealed class EditorPlugin(
     SemanticKernelContext context,
     ILogger<EditorPlugin> logger)
 {
-    [KernelFunction("list_pointers")]
-    public string ListPointers()
-    {
-        logger.LogInformation("ListPointers invoked");
-        var items = server.GetItems();
-        return string.Join("\n", items.Select(item => $"{item.Pointer.ToCompactString()}: {item.Text}"));
-    }
+ //   [KernelFunction("list_pointers")]
+ //   public string ListPointers()
+ //   {
+ //       logger.LogInformation("ListPointers invoked");
+ //       var items = server.GetItems();
+ //       return string.Join("\n", items.Select(item => $"{item.Pointer.ToCompactString()}: {item.Text}"));
+ //   }
 
     [KernelFunction("get_default_document_id")]
     public string GetDefaultDocumentId()

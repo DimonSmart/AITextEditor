@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-828\",\"object\":\"chat.completion\",\"created\":1766766157,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to locate second mention of professor Звёздочкин (Zvezdochnik?) in the book, excluding headings. Need to use tools to read the document, probably via cursor.\\n\\nFirst, list pointers? Use editor_list_pointers.\",\"tool_calls\":[{\"id\":\"call_pf2ynmh8\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"editor-list_pointers\",\"arguments\":\"{}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":878,\"completion_tokens\":73,\"total_tokens\":951}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 26 Dec 2025 16:22:37 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-238\",\"object\":\"chat.completion\",\"created\":1766766889,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to locate the second mention of \\\"профессора Звёздочкина\\\" (professor Zvezdochkin) in the book, excluding headings. Need to find the second occurrence.\\n\\nWe should search the document. Use keyword cursor for \\\"Звёздочк\\\" stem? Let's try create keyword cursor with keyword \\\"Звёздочк\\\" to match Zvezdochkin.\",\"tool_calls\":[{\"id\":\"call_iewu3ad6\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"keyword_cursor-create_keyword_cursor\",\"arguments\":\"{\\\"keywords\\\":[\\\"Звёздочк\\\"]}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":868,\"completion_tokens\":120,\"total_tokens\":988}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 26 Dec 2025 16:34:49 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

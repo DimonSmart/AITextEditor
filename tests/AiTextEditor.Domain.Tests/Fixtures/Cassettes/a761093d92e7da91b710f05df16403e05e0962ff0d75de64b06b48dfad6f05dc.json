@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-12\",\"object\":\"chat.completion\",\"created\":1766765429,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Первое упоминание профессора\u202FЗвёздочкина (не учитывая заголовки) находится в абзаце\u202F**24:1.1.1.p21**. \\n\\n\\u003e «…действительный член академии астрономических наук **профессор Звёздочкин**, которому тоже случилось прочитать Знайкину книжку, просто кипел от негодования…»\",\"reasoning\":\"We have a keyword cursor returning heading and two paragraphs. Need first mention of professor Zvezdochkin, excluding headings. The first paragraph (SemanticPointer 24:1.1.1.p21) contains mention. So answer: that paragraph. Provide pointer.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1398,\"completion_tokens\":152,\"total_tokens\":1550}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 26 Dec 2025 16:10:30 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}
