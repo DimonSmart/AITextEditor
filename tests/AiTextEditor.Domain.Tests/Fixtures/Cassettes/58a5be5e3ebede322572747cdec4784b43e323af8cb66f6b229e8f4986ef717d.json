@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-477\",\"object\":\"chat.completion\",\"created\":1766768687,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Второе упоминание (не считая заголовков) находится в следующем абзаце:\\n\\n**Текст абзаца:**  \\n«Профессор Звёздочкин и предложил академии астрономических наук устроить обсуждение Знайкиной книги и разобрать её, как он выразился, по косточкам, с тем чтобы никому больше не повадно было такие книги писать. Академия дала согласие и послала приглашение Знайке. Знайка приехал, и обсуждение состоялось. Оно началось, как и полагается в таких случаях, с доклада, который вызвался сделать сам профессор Звёздочкин.»\\n\\n**Семантический указатель:** `25:1.1.1.p22`\",\"reasoning\":\"We need second mention of professor Звёздочкина, excluding headings. The headings include \\\"### Как Знайка победил профессора Звёздочкина\\\". That's a heading with mention, but exclude headings. The first paragraph mention after heading is SemanticPointer 24:1.1.1.p21. That's first mention in body (paragraph). Next paragraph 25:1.1.1.p22 contains another mention (again professor). That would be second mention. Need to return paragraph text and semantic pointer. Provide answer in Russian.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2757,\"completion_tokens\":290,\"total_tokens\":3047}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 26 Dec 2025 17:04:47 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-914\",\"object\":\"chat.completion\",\"created\":1766768684,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need second mention of \\\"профессор Звёздочкина\\\". The keyword cursor will locate occurrences of \\\"звёздочк\\\". But we need to track occurrences, excluding headings. We must search entire document. Use keyword cursor to get items. Then iterate through batches to count mentions. Use chat_cursor_agent perhaps or manually read batches? Could use read_cursor_batch on keyword_cursor? There's no read tool for keyword cursor, but maybe same read cursor. Actually we created keyword_cursor_1 as a cursor? The tool creates a keyword cursor, but we likely need to read it using read_cursor_batch as well. Let's try reading from that cursor.\",\"tool_calls\":[{\"id\":\"call_lot5er7k\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"chat_cursor_tools-read_cursor_batch\",\"arguments\":\"{\\\"cursorName\\\":\\\"keyword_cursor_1\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":2284,\"completion_tokens\":166,\"total_tokens\":2450}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 26 Dec 2025 17:04:45 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

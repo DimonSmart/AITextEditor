@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-616\",\"object\":\"chat.completion\",\"created\":1766768662,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"answer\\\": \\\"Эта Знайкина книжка наделала много шума. Все коротышки с увлечением читали её. Многие учёные хвалили эту книжку за то, что она интересно написана, но всё же высказывали недовольство тем, что она научно не обоснована. А действительный член академии астрономических наук профессор Звёздочкин, которому тоже случилось прочитать Знайкину книжку, просто кипел от негодования и говорил, что книга эта – вовсе не книга, а какая‑то, как он выразился, чёртова чепуха. Этот профессор Звёздочкин был не то чтобы какой‑нибудь очень сердитый субъект. Нет, он был довольно добрый коротышка, но очень, как бы это сказать, требовательный, непримиримый. Во всяком деле он ценил больше всего точность, порядок и терпеть не мог никаких фантазий, то есть выдумок.\\\",\\n  \\\"pointer\\\": \\\"24:1.1.1.p21\\\"\\n}\",\"reasoning\":\"We need the first occurrence (excluding headings) of name 'Звёздочкин' in the document. The first returned paragraph contains it. We must return paragraph text and its pointer. The pointer is \\\"24:1.1.1.p21\\\". Provide answer in Russian. JSON with answer and pointer.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1213,\"completion_tokens\":312,\"total_tokens\":1525}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 26 Dec 2025 17:04:22 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

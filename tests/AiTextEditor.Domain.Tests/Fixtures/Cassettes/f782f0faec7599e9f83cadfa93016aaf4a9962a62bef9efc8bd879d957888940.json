@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-479\",\"object\":\"chat.completion\",\"created\":1766768664,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to find second mention of \\\"профессор Звёздочкин\\\" (maybe \\\"Звёздочкин\\\"? The user wrote \\\"Звёздочкина\\\" (female). Should search for that text. Use keyword cursor. Let's create keyword cursor for stem \\\"звёздочк\\\". Use function.\",\"tool_calls\":[{\"id\":\"call_8jxfzdwm\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"keyword_cursor-create_keyword_cursor\",\"arguments\":\"{\\\"keywords\\\":[\\\"звёздочк\\\"]}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":859,\"completion_tokens\":104,\"total_tokens\":963}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 26 Dec 2025 17:04:24 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

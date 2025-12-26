@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-403\",\"object\":\"chat.completion\",\"created\":1766769125,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"The agent returned success but not the result. It likely expects us to then read batches? Actually the chat_cursor_agent_run_chat_cursor_agent will run the agent, which internally reads batches. It might have returned the answer already in result field. The result is JSON with cursorName. That seems odd. Perhaps need to provide maxEvidenceCount and have the agent output the evidence. The result is just a pointer to cursor (??). Maybe we need to read the evidence via returned? Could be we need to read next batch manually. Let's try reading batch.\",\"tool_calls\":[{\"id\":\"call_0ivxi0cg\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"chat_cursor_tools-read_cursor_batch\",\"arguments\":\"{\\\"cursorName\\\":\\\"search_cursor\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1180,\"completion_tokens\":141,\"total_tokens\":1321}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 26 Dec 2025 17:12:05 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-108\",\"object\":\"chat.completion\",\"created\":1766768675,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need second occurrence of phrase \\\"профессор Звёздочкина\\\" (excluding headings). The first occurrence might be in heading \\\"Как Знайка победил профессора Звёздочкина\\\". That's a heading, excluded. Need to find first within paragraph text, then second occurrence.\\n\\nWe haven't seen any paragraph containing phrase yet. Continue reading.\\n\\n\",\"tool_calls\":[{\"id\":\"call_uzzqj9r4\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"chat_cursor_tools-read_cursor_batch\",\"arguments\":\"{\\\"cursorName\\\":\\\"search_cursor\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":2154,\"completion_tokens\":105,\"total_tokens\":2259}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 26 Dec 2025 17:04:35 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

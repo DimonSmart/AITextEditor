@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-567\",\"object\":\"chat.completion\",\"created\":1766768673,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to find second occurrence (excluding headings) of phrase \\\"профессор Звёздочкина\\\". The cursor seems set to search? The initial fetch gave headings including a heading containing phrase but we exclude headings. Need to find paragraphs containing phrase. Continue fetching.\",\"tool_calls\":[{\"id\":\"call_31kzi2ww\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"chat_cursor_tools-read_cursor_batch\",\"arguments\":\"{\\\"cursorName\\\":\\\"search_cursor\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1516,\"completion_tokens\":86,\"total_tokens\":1602}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 26 Dec 2025 17:04:33 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

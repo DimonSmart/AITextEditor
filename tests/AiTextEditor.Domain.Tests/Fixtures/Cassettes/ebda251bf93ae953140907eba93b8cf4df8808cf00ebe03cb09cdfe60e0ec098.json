@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-324\",\"object\":\"chat.completion\",\"created\":1766768668,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We have created a generic cursor named search_cursor that yields all paragraphs. Now we need to run chat cursor agent with proper arguments. Use chat_cursor_agent_run_chat_cursor.\",\"tool_calls\":[{\"id\":\"call_hp72fpd4\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"chat_cursor_agent_run_chat_cursor\",\"arguments\":\"{\\\"cursorName\\\":\\\"search_cursor\\\",\\\"maxEvidenceCount\\\":10,\\\"startAfterPointer\\\":null,\\\"taskDescription\\\":\\\"Find the second occurrence (excluding headings) of the phrase 'профессор Звёздочкина' in the document. Return the paragraph text and its semantic pointer.\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1066,\"completion_tokens\":116,\"total_tokens\":1182}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 26 Dec 2025 17:04:28 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

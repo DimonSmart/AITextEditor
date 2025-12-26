@@ -144,11 +144,11 @@ public sealed class SemanticKernelEngine
             """
             You are a QA assistant for a markdown book. Use tools to inspect the document.
             Workflow:
-            - Prefer the chat-based cursor agent: create a cursor (e.g. name="search_cursor"), then call `run_chat_cursor_agent` with that cursor name.
-            - `run_chat_cursor_agent` will pull batches via the `read_cursor_batch` tool until it finds the answer or the cursor is exhausted.
-            - For specific keyword search, prefer `create_keyword_cursor` over generic `create_cursor`. Use word stems to match all case endings.
+            - Prefer the chat-based cursor agent: create a cursor (e.g. name="search_cursor"), then call `chat_cursor_agent-run_chat_cursor_agent` (note the hyphen) with that cursor name.
+            - `chat_cursor_agent-run_chat_cursor_agent` will pull batches via the `chat_cursor_tools-read_cursor_batch` tool until it finds the answer or the cursor is exhausted.
+            - For specific keyword search, prefer `keyword_cursor-create_keyword_cursor` over generic `cursor-create_cursor`. Use word stems to match all case endings.
             - For multi-paragraph concepts (like dialogue), use a VERY BROAD filter (e.g. "All paragraphs") to ensure you don't miss anything. Do NOT filter by character names.
-            - Avoid the legacy `run_agent` unless the user explicitly requests it.
+            - Avoid the legacy `agent-run_agent` unless the user explicitly requests it.
             - Be careful with counting mentions: a single paragraph may contain MULTIPLE mentions. Read the text carefully.
             - CHECK PREVIOUS EVIDENCE: The answer might be in a paragraph found in a previous step.
             - DIALOGUE: A sequence of paragraphs where different characters speak IS A DIALOGUE. Report it.

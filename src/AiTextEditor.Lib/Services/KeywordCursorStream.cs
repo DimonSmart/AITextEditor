@@ -18,6 +18,8 @@ public sealed class KeywordCursorStream : FilteredCursorStream
         var normalized = keywords
             .Select(keyword => keyword?.Trim())
             .Where(keyword => !string.IsNullOrWhiteSpace(keyword))
+            .Select(keyword => keyword!)
+            .SelectMany(ExpandKeywordVariants)
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .ToArray();
 
@@ -36,5 +38,27 @@ public sealed class KeywordCursorStream : FilteredCursorStream
         return keywords.Any(keyword =>
             item.Text.Contains(keyword, StringComparison.OrdinalIgnoreCase)
             || item.Markdown.Contains(keyword, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static IEnumerable<string> ExpandKeywordVariants(string keyword)
+    {
+        yield return keyword;
+
+        if (keyword.Length < 6)
+        {
+            yield break;
+        }
+
+        const int minLength = 4;
+        for (var trim = 1; trim <= 2; trim++)
+        {
+            var length = keyword.Length - trim;
+            if (length < minLength)
+            {
+                break;
+            }
+
+            yield return keyword.Substring(0, length);
+        }
     }
 }

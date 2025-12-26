@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-602\",\"object\":\"chat.completion\",\"created\":1766768671,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to use read_cursor_batch tool on cursor named search_cursor. The instructions: we have cursor already? The user gave cursorName: search_cursor. So we should call read_cursor_batch with cursorName \\\"search_cursor\\\". Then examine batches to find second occurrence of phrase \\\"профессор Звёздочкина\\\" excluding headings. Need paragraph text and its semantic pointer. We must fetch batches until we find second occurrence. Use only tool outputs.\\n\\nLet's call read_cursor_batch.\",\"tool_calls\":[{\"id\":\"call_5xo4neuy\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"chat_cursor_tools-read_cursor_batch\",\"arguments\":\"{\\\"cursorName\\\":\\\"search_cursor\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":742,\"completion_tokens\":132,\"total_tokens\":874}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 26 Dec 2025 17:04:31 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

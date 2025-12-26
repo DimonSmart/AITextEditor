@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-339\",\"object\":\"chat.completion\",\"created\":1766768680,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"The tool returned empty result? Maybe need to read batches. The chat cursor agent should fetch automatically but maybe need to call read_cursor_batch repeatedly? The result empty might indicate not found yet or need to read evidence. According to spec, run_chat_cursor_agent returns result when found or until exhausted. It gave empty result, maybe not found. Could be that we need to include heading filter exclude headings? The cursor includes all paragraphs including headings. Need to skip headings manually. We may need to retrieve paragraphs and count occurrences. Let's read batches manually.\\n\\n\",\"tool_calls\":[{\"id\":\"call_1eyfmy7g\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"chat_cursor_tools-read_cursor_batch\",\"arguments\":\"{\\\"cursorName\\\":\\\"search_cursor\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1273,\"completion_tokens\":139,\"total_tokens\":1412}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 26 Dec 2025 17:04:40 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

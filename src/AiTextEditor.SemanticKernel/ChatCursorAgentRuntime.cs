@@ -126,9 +126,9 @@ public sealed class ChatCursorAgentRuntime
     private static string BuildSystemPrompt()
     {
         var builder = new StringBuilder();
-        builder.AppendLine("You are ChatCursorAgent. Read the document ONLY via the tool read_cursor_batch.");
+        builder.AppendLine("You are ChatCursorAgent. Read the document ONLY via the tool chat_cursor_tools-read_cursor_batch.");
         builder.AppendLine("Rules:");
-        builder.AppendLine("- Always call read_cursor_batch to fetch the next batch until hasMore=false or you are confident you can answer.");
+        builder.AppendLine("- Always call chat_cursor_tools-read_cursor_batch to fetch the next batch until hasMore=false or you are confident you can answer.");
         builder.AppendLine("- Do NOT fabricate evidence. Use only tool outputs.");
         builder.AppendLine("- Keep the conversation concise; summarize intermediate findings instead of repeating raw text.");
         builder.AppendLine("- Final answer must be in Russian.");
@@ -139,7 +139,7 @@ public sealed class ChatCursorAgentRuntime
         builder.AppendLine("  \"answer\": \"...\",");
         builder.AppendLine("  \"pointer\": \"...\"");
         builder.AppendLine("}");
-        builder.AppendLine("pointer: copy the pointer from read_cursor_batch if available; otherwise use null or an empty string.");
+        builder.AppendLine("pointer: copy the pointer from chat_cursor_tools-read_cursor_batch if available; otherwise use null or an empty string.");
         return builder.ToString();
     }
 }

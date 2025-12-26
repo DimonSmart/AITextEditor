@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-952\",\"object\":\"chat.completion\",\"created\":1766769341,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Второе упоминание профессора Звёздочкина находится в параграфе с семантическим указателем **25:1.1.1.p22**.\",\"reasoning\":\"We need second mention of professor Zvezdochkin (professor Zvezdochkin spelled \\\"профессор Звёздочкин\\\") excluding headings. The keyword cursor returned items, first is a heading (ignore). Then first paragraph (24) includes mention. That's first mention. We need second mention (excluding headings). Next paragraph (25) also includes mention—likely second. So answer: pointer \\\"25:1.1.1.p22\\\". Provide in Russian.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1392,\"completion_tokens\":147,\"total_tokens\":1539}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 26 Dec 2025 17:15:41 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

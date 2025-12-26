@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-189\",\"object\":\"chat.completion\",\"created\":1766768672,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need second occurrence of phrase \\\"профессор Звёздочкина\\\" excluding headings. The first batch includes headings, the phrase appears in heading \\\"Как Знайка победил профессора Звёздочкина\\\". That's a heading, should be ignored. Need to continue reading.\\n\\n\",\"tool_calls\":[{\"id\":\"call_tyi79j39\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"chat_cursor_tools-read_cursor_batch\",\"arguments\":\"{\\\"cursorName\\\":\\\"search_cursor\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":885,\"completion_tokens\":91,\"total_tokens\":976}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 26 Dec 2025 17:04:32 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}
