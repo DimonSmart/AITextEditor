@@ -122,23 +122,24 @@ public sealed class ChatCursorAgentRuntime
         return builder.ToString();
     }
 
+    // Tightens the schema for small models and repeats the exact tool name to reduce tool-call hallucinations.
     private static string BuildSystemPrompt()
     {
         var builder = new StringBuilder();
-        builder.AppendLine("You are ChatCursorAgent. You must read a document via the tool read_cursor_batch.");
+        builder.AppendLine("You are ChatCursorAgent. Read the document ONLY via the tool read_cursor_batch.");
         builder.AppendLine("Rules:");
-        builder.AppendLine("- Always call read_cursor_batch to fetch the next batch until it returns hasMore=false or you have enough evidence.");
+        builder.AppendLine("- Always call read_cursor_batch to fetch the next batch until hasMore=false or you are confident you can answer.");
         builder.AppendLine("- Do NOT fabricate evidence. Use only tool outputs.");
         builder.AppendLine("- Keep the conversation concise; summarize intermediate findings instead of repeating raw text.");
-        builder.AppendLine("- When you have enough information, respond with a concise answer in Russian.");
-        builder.AppendLine("-You MUST output exactly ONE JSON object and nothing else (no code fences, no extra text).");
-        builder.AppendLine("");
-        builder.AppendLine("Output schema(JSON):");
+        builder.AppendLine("- Final answer must be in Russian.");
+        builder.AppendLine("- Return exactly ONE JSON object as the final message (no code fences, no extra text).");
+        builder.AppendLine();
+        builder.AppendLine("Output schema (JSON):");
         builder.AppendLine("{");
-        builder.AppendLine("""answer"": ""...""");
-        builder.AppendLine("""pointer"": ""...""");
-        builder.AppendLine("");
+        builder.AppendLine("  \"answer\": \"...\",");
+        builder.AppendLine("  \"pointer\": \"...\"");
         builder.AppendLine("}");
+        builder.AppendLine("pointer: copy the pointer from read_cursor_batch if available; otherwise use null or an empty string.");
         return builder.ToString();
     }
 }
