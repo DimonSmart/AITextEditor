@@ -130,7 +130,8 @@ public sealed class SemanticKernelEngine
         context.Goal = planResult.State.Goal;
         context.PlanState = planResult.State;
         context.PlanSteps = planResult.Steps;
-        context.PlanSnapshotJson = planResult.State.Serialize();
+        var pendingStopReason = planResult.PlannedStopReason is null ? "pending" : $"pending:{planResult.PlannedStopReason}";
+        context.PlanSnapshotJson = planResult.State.Serialize(pendingStopReason);
         logger.LogInformation("Planned steps: {Steps}", string.Join(" -> ", planResult.Steps.Select(s => $"{s.StepType}:{s.ToolDescription}")));
 
         var history = new ChatHistory();

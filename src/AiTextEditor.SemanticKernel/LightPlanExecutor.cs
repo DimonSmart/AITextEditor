@@ -26,7 +26,7 @@ public interface IPlanStepRunner
     Task<PlanStepOutcome> ExecuteAsync(PlanStep step, CancellationToken cancellationToken);
 }
 
-public sealed record PlanExecutionResult(TaskPlanState State, IReadOnlyList<PlanStep> Steps)
+public sealed record PlanExecutionResult(TaskPlanState State, IReadOnlyList<PlanStep> Steps, string? PlannedStopReason)
 {
     public string BuildPrompt(int maxSteps)
     {
@@ -47,7 +47,8 @@ public sealed record PlanExecutionResult(TaskPlanState State, IReadOnlyList<Plan
 
         builder.AppendLine("Final reply must reflect the goal and the final stop reason.");
         builder.Append("Plan snapshot: ");
-        builder.AppendLine(State.Serialize());
+        var pendingStopReason = PlannedStopReason is null ? "pending" : $"pending:{PlannedStopReason}";
+        builder.AppendLine(State.Serialize(pendingStopReason));
         return builder.ToString();
     }
 }
@@ -103,10 +104,10 @@ public sealed class LightPlanExecutor
         var finalizeStep = new PlanStep(state.StepNumber, PlanStepType.Finalize, "finalize-answer");
         steps.Add(finalizeStep);
         await runner.ExecuteAsync(finalizeStep, cancellationToken).ConfigureAwait(false);
-        state = state.NextStep().WithStopReason(stopReason);
+        state = state.NextStep();
 
-        logger.LogInformation("Light plan completed: {Snapshot}", state.Serialize());
-        return new PlanExecutionResult(state, steps);
+        logger.LogInformation("Light plan completed: {Snapshot}", state.Serialize(stopReason));
+        return new PlanExecutionResult(state, steps, stopReason);
     }
 
     private static string DetermineStopReason(bool goalReached, bool hasMore, bool stepLimitReached)
