@@ -13,7 +13,7 @@ internal static class TestLoggerFactory
         return LoggerFactory.Create(builder =>
         {
             builder.AddProvider(new TestOutputLoggerProvider(output));
-            var logPath = Path.Combine(AppContext.BaseDirectory, "llm_debug.log");
+            var logPath = SimpleFileLoggerProvider.CreateTimestampedPath(Path.Combine(AppContext.BaseDirectory, "llm_debug.log"));
             builder.AddProvider(new SimpleFileLoggerProvider(logPath));
             builder.SetMinimumLevel(LogLevel.Trace);
         });

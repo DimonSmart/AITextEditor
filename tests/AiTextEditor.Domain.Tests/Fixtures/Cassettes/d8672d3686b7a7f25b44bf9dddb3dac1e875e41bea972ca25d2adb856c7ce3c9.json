@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-717\",\"object\":\"chat.completion\",\"created\":1766869694,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We created keyword cursor named default? It's named keyword_cursor_0. Now read first batch.\",\"tool_calls\":[{\"id\":\"call_lb2z0nnu\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"chat_cursor_tools-read_cursor_batch\",\"arguments\":\"{\\\"cursorName\\\":\\\"keyword_cursor_0\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1104,\"completion_tokens\":51,\"total_tokens\":1155}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sat, 27 Dec 2025 21:08:14 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

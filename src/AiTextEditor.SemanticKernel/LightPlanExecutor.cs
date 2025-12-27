@@ -69,6 +69,7 @@ public sealed class LightPlanExecutor
         ArgumentException.ThrowIfNullOrWhiteSpace(goal);
         ArgumentException.ThrowIfNullOrWhiteSpace(userCommand);
 
+        var isSimulation = stepRunner is null;
         var runner = stepRunner ?? new LoggingPlanStepRunner(logger);
 
         var state = TaskPlanState.Start(goal);
@@ -101,13 +102,14 @@ public sealed class LightPlanExecutor
         }
 
         var stopReason = DetermineStopReason(goalReached, hasMore, stepLimitReached);
+        var plannedStopReason = isSimulation ? null : stopReason;
         var finalizeStep = new PlanStep(state.StepNumber, PlanStepType.Finalize, "finalize-answer");
         steps.Add(finalizeStep);
         await runner.ExecuteAsync(finalizeStep, cancellationToken).ConfigureAwait(false);
         state = state.NextStep();
 
-        logger.LogInformation("Light plan completed: {Snapshot}", state.Serialize(stopReason));
-        return new PlanExecutionResult(state, steps, stopReason);
+        logger.LogInformation("Light plan completed: {Snapshot}", state.Serialize(plannedStopReason ?? "pending"));
+        return new PlanExecutionResult(state, steps, plannedStopReason);
     }
 
     private static string DetermineStopReason(bool goalReached, bool hasMore, bool stepLimitReached)

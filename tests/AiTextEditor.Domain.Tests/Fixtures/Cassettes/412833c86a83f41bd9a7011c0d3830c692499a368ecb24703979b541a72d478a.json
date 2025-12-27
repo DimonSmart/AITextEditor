@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-878\",\"object\":\"chat.completion\",\"created\":1766868260,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"**Ответ:**  \\nПончик впервые упоминается в третьем абзаце первого раздела (SemanticPointer: `6:1.1.1.p3`). В тексте говорится: *«Единственным, кто пострадал на этом деле, оказался Пончик»*.  \\n\\n**Стоп-причина:** `no_more_batches` (документ закончился).\",\"reasoning\":\"Okay, let's tackle the question: \\\"Где впервые упоминается Пончик?\\\" which means \\\"Where is Ponchik first mentioned?\\\" The user is asking for the first occurrence of the character Ponchik in the text.\\n\\nFirst, I need to recall the steps taken so far. The assistant started by creating a keyword cursor with the keyword \\\"пончик\\\" (Ponchik). Then, they read the first batch from that cursor, which returned two paragraphs. The first paragraph mentions Ponchik as the one who ended up in trouble after getting all these clothes. The second paragraph continues the story about the moths and the smell. The response indicates that there are no more batches, so the cursor has reached the end.\\n\\nNow, I need to check if the first mention is in the first paragraph. The first paragraph's semantic pointer is \\\"6:1.1.1.p3\\\", and the text says, \\\"Единственным, кто пострадал на этом деле, оказался Пончик.\\\" This translates to \\\"The only one who suffered from this incident was Ponchik.\\\" This seems to be the first mention of Ponchik in the text. The second paragraph further describes his situation but doesn't mention his first appearance. Since the cursor didn't return more batches, the answer should be in the first paragraph. The stop reason is \\\"no_more_batches,\\\" so the assistant should finalize the answer here. The answer in Russian would state that Ponchik is first mentioned in the third paragraph of section 1.1.1, which is pointed to by \\\"6:1.1.1.p3\\\".\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1910,\"completion_tokens\":436,\"total_tokens\":2346}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sat, 27 Dec 2025 20:44:20 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

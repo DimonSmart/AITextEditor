@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-130\",\"object\":\"chat.completion\",\"created\":1766869696,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We have first batch with three paragraphs containing professor Звёздочкин. The question: \\\"Где в книге впервые упоминается профессор Звёздочкин? (исключая заголовки)\\\". So need the location (e.g., chapter/section?) The semantic pointers have format like 24:1.1.1.p21 etc. Likely indicate position: maybe page? Need earliest mention: first paragraph with pointer 24:1.1.1.p21. Need to state that first mention is in paragraph with pointer 24:1.1.1.p21, which is in ... we might need to read context around to get chapter title? But headings excluded. We can maybe read earlier heading to identify location? Could also read more batches to see if earlier mention appears before this. Let's read next batch.\",\"tool_calls\":[{\"id\":\"call_dd22zyrg\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"chat_cursor_tools-read_cursor_batch\",\"arguments\":\"{\\\"cursorName\\\":\\\"keyword_cursor_0\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1618,\"completion_tokens\":205,\"total_tokens\":1823}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sat, 27 Dec 2025 21:08:16 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

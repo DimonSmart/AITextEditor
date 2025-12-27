@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Sockets;
@@ -104,7 +105,8 @@ public static class TestLlmConfiguration
             // Fallback to just file logging if no output helper is provided
             using var factory = LoggerFactory.Create(builder => 
             {
-                builder.AddProvider(new SimpleFileLoggerProvider("llm_debug.log"));
+                var logPath = SimpleFileLoggerProvider.CreateTimestampedPath(Path.Combine(AppContext.BaseDirectory, "llm_debug.log"));
+                builder.AddProvider(new SimpleFileLoggerProvider(logPath));
                 builder.SetMinimumLevel(LogLevel.Trace);
             });
             logger = factory.CreateLogger<LlmRequestLoggingHandler>();

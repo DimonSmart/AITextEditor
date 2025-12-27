@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-131\",\"object\":\"chat.completion\",\"created\":1766868109,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, the user is asking where Ponchik is first mentioned. I need to find the first occurrence in the document. I created a keyword cursor with \\\"пончик\\\" as the keyword. Now, I should read the batches from this cursor.\\n\\nFirst, I'll call read_cursor_batch to get the first portion. If the first mention is there, great. If not, I'll need to read the next batch. Let's start with the first batch.\\n\",\"tool_calls\":[{\"id\":\"call_c42lzt7w\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"chat_cursor_tools-read_cursor_batch\",\"arguments\":\"{\\\"cursorName\\\":\\\"keyword_cursor_0\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1146,\"completion_tokens\":125,\"total_tokens\":1271}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sat, 27 Dec 2025 20:41:49 GMT"
+    ]
+  }
+}

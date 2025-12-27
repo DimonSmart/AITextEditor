@@ -54,6 +54,29 @@ public class SimpleFileLoggerProvider : ILoggerProvider
         _filePath = filePath;
     }
 
+    public static string CreateTimestampedPath(string filePath)
+    {
+        if (string.IsNullOrWhiteSpace(filePath))
+        {
+            throw new ArgumentException("Log file path must be provided.", nameof(filePath));
+        }
+
+        var directory = Path.GetDirectoryName(filePath);
+        var baseName = Path.GetFileNameWithoutExtension(filePath);
+        var extension = Path.GetExtension(filePath);
+        if (string.IsNullOrWhiteSpace(baseName))
+        {
+            baseName = "log";
+        }
+
+        var stamp = DateTime.UtcNow.ToString("yyyyMMdd_HHmmss_fff");
+        var fileName = $"{baseName}_{stamp}_{Environment.ProcessId}{extension}";
+
+        return string.IsNullOrWhiteSpace(directory)
+            ? fileName
+            : Path.Combine(directory, fileName);
+    }
+
     public ILogger CreateLogger(string categoryName)
     {
         return new SimpleFileLogger(categoryName, _filePath);
