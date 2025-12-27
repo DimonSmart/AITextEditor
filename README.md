@@ -12,6 +12,7 @@ MCP-oriented toolkit around a linear Markdown domain model. The server keeps a s
 - Inspect items for navigation or filtering (`McpServer.GetItems`).
 - Create and manage named target sets (`McpServer.CreateTargetSet`, `ListDefaultTargetSets`, `GetTargetSet`, `DeleteTargetSet`).
 - Apply `LinearEditOperation` batches to the cached document with consistent reindexing (`McpServer.ApplyOperations`).
+- Semantic Kernel plugin `editor-create_targets` accepts an array of pointer strings (`string[]`/`IReadOnlyList<string>`) and returns a compact payload with the created `targetSetId`, matched targets (`pointer`, `excerpt`), and optional `invalidPointers`/`warnings` instead of the raw `TargetSet`.
 
 Versioning, diffing, and long-running orchestration remain outside of the server; it only maintains the latest in-memory state.
 
