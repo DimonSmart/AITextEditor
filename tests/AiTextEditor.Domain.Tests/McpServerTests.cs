@@ -83,7 +83,6 @@ public class McpServerTests
 
         var targetSet = server.CreateTargetSet(new[] { 1, 2 }, "command", "label");
 
-        Assert.Equal(document.Id, targetSet.DocumentId);
         Assert.Equal(2, targetSet.Targets.Count);
         Assert.Equal(2, targetSet.Targets[0].Pointer.Id);
         Assert.Equal("1.p1", targetSet.Targets[0].Pointer.Label);

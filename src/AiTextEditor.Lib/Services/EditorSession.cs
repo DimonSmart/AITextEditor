@@ -8,8 +8,7 @@ public class EditorSession
     private readonly MarkdownDocumentRepository repository;
     private readonly LinearDocumentEditor editor;
     private readonly InMemoryTargetSetService targetSets;
-    private readonly Dictionary<string, LinearDocument> documents = new(StringComparer.OrdinalIgnoreCase);
-    private string? defaultDocumentId;
+    private LinearDocument? document;
 
     public EditorSession()
         : this(new MarkdownDocumentRepository(), new LinearDocumentEditor(), new InMemoryTargetSetService())
@@ -40,14 +39,14 @@ public class EditorSession
             document = document with { Id = documentId! };
         }
 
-        documents[document.Id] = document;
-        defaultDocumentId = document.Id;
-        return document;
+        this.document = document;
+        targetSets.Clear();
+        return this.document;
     }
 
     public LinearDocument GetDefaultDocument()
     {
-        return GetDocumentOrThrow(GetDefaultDocumentId());
+        return document ?? throw new InvalidOperationException("No document has been loaded.");
     }
 
     public IReadOnlyList<LinearItem> GetItems()
@@ -66,12 +65,12 @@ public class EditorSession
             .Select(index => document.Items[index])
             .ToList();
 
-        return targetSets.Create(document.Id, items, userCommand, label);
+        return targetSets.Create(items, userCommand, label);
     }
 
     public IReadOnlyList<TargetSet> ListDefaultTargetSets()
     {
-        return targetSets.List(GetDefaultDocumentId());
+        return targetSets.List();
     }
 
     public TargetSet? GetTargetSet(string targetSetId)
@@ -90,30 +89,9 @@ public class EditorSession
     {
         ArgumentNullException.ThrowIfNull(operations);
 
-        var documentId = GetDefaultDocumentId();
-        var document = GetDocumentOrThrow(documentId);
-        var updated = editor.Apply(document, operations);
-        documents[documentId] = updated;
+        var currentDocument = GetDefaultDocument();
+        var updated = editor.Apply(currentDocument, operations);
+        document = updated;
         return updated;
-    }
-
-    private LinearDocument GetDocumentOrThrow(string documentId)
-    {
-        if (!documents.TryGetValue(documentId, out var document))
-        {
-            throw new InvalidOperationException($"Document '{documentId}' is not loaded.");
-        }
-
-        return document;
-    }
-
-    private string GetDefaultDocumentId()
-    {
-        if (string.IsNullOrWhiteSpace(defaultDocumentId))
-        {
-            throw new InvalidOperationException("No default document has been loaded.");
-        }
-
-        return defaultDocumentId;
     }
 }

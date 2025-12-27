@@ -25,7 +25,7 @@ public sealed class EditorPlugin(
     public string GetDefaultDocumentId()
     {
         logger.LogInformation("GetDefaultDocumentId invoked");
-        return server.ListDefaultTargetSets().FirstOrDefault()?.DocumentId ?? server.GetDefaultDocument().Id;
+        return server.GetDefaultDocument().Id;
     }
 
     [KernelFunction("create_targets")]

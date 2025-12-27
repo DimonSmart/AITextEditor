@@ -6,7 +6,6 @@ Console.WriteLine("--- MCP Linear Document Demo ---");
 var server = new EditorSession();
 var inputPath = args.Length > 0 ? args[0] : "sample.md";
 var outputPath = args.Length > 1 ? args[1] : "sample_edited.md";
-var scenario = args.Length > 2 ? args[2] : "sample";
 
 if (!File.Exists(inputPath))
 {
@@ -15,10 +14,10 @@ if (!File.Exists(inputPath))
 }
 
 var markdown = File.ReadAllText(inputPath);
-var document = server.LoadDefaultDocument(markdown, scenario);
+var document = server.LoadDefaultDocument(markdown);
 Console.WriteLine($"Loaded document {document.Id} with {document.Items.Count} items.");
 
-var targetSet = server.CreateTargetSet(Enumerable.Range(0, Math.Min(3, document.Items.Count)), scenario, "first-items");
+var targetSet = server.CreateTargetSet(Enumerable.Range(0, Math.Min(3, document.Items.Count)), "demo", "first-items");
 Console.WriteLine($"Target set {targetSet.Id} created with {targetSet.Targets.Count} targets.");
 
 var operations = new List<LinearEditOperation>();

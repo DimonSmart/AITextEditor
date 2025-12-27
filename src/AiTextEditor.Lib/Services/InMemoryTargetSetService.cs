@@ -6,9 +6,8 @@ public class InMemoryTargetSetService
 {
     private readonly Dictionary<string, TargetSet> store = new(StringComparer.OrdinalIgnoreCase);
 
-    public TargetSet Create(string documentId, IEnumerable<LinearItem> items, string? userCommand = null, string? label = null)
+    public TargetSet Create(IEnumerable<LinearItem> items, string? userCommand = null, string? label = null)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(documentId);
         ArgumentNullException.ThrowIfNull(items);
 
         var itemList = items.ToList();
@@ -20,14 +19,13 @@ public class InMemoryTargetSetService
         var targets = itemList
             .Select(item => new TargetRef(
                 Guid.NewGuid().ToString(),
-                documentId,
                 new SemanticPointer(item.Pointer.Id, item.Pointer.Label),
                 item.Type,
                 item.Markdown,
                 item.Text))
             .ToList();
 
-        var targetSet = TargetSet.Create(documentId, targets, userCommand, label);
+        var targetSet = TargetSet.Create(targets, userCommand, label);
         store[targetSet.Id] = targetSet;
         return targetSet;
     }
@@ -39,16 +37,9 @@ public class InMemoryTargetSetService
         return store.TryGetValue(targetSetId, out var targetSet) ? targetSet : null;
     }
 
-    public IReadOnlyList<TargetSet> List(string? documentId = null)
+    public IReadOnlyList<TargetSet> List()
     {
-        if (documentId == null)
-        {
-            return store.Values.ToList();
-        }
-
-        ArgumentException.ThrowIfNullOrWhiteSpace(documentId);
-
-        return store.Values.Where(t => string.Equals(t.DocumentId, documentId, StringComparison.OrdinalIgnoreCase)).ToList();
+        return store.Values.ToList();
     }
 
     public bool Delete(string targetSetId)
@@ -56,5 +47,10 @@ public class InMemoryTargetSetService
         ArgumentException.ThrowIfNullOrWhiteSpace(targetSetId);
 
         return store.Remove(targetSetId);
+    }
+
+    public void Clear()
+    {
+        store.Clear();
     }
 }
