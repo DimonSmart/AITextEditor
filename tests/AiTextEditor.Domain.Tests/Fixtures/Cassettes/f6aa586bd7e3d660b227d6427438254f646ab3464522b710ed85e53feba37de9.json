@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-676\",\"object\":\"chat.completion\",\"created\":1766871648,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to locate third mention of \\\"профессор Звёздочкин\\\" (or Звёздочкина?). We'll search keywords \\\"профессор\\\" and \\\"звёздочк\\\" stem. Use keyword_cursor-create_keyword_cursor with keywords: [\\\"профессор\\\",\\\"звёздочк\\\"].\\n\\nCreate cursor.\",\"tool_calls\":[{\"id\":\"call_8adxemvp\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"keyword_cursor-create_keyword_cursor\",\"arguments\":\"{\\\"includeHeadings\\\":false,\\\"keywords\\\":[\\\"профессор\\\",\\\"звёздочк\\\"]}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1052,\"completion_tokens\":121,\"total_tokens\":1173}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sat, 27 Dec 2025 21:40:48 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

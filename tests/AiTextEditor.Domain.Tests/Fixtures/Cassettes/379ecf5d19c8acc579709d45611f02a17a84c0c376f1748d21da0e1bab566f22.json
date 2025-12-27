@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-925\",\"object\":\"chat.completion\",\"created\":1766871652,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"**Цель:** Найти в книге третье упоминание профессора\u202FЗвёздочкина (не считая заголовков).  \\n\\n**Результат:** Третье упоминание находится в параграфе с семантическим указателем **`25:1.1.1.p22`**.  \\n\\n**Текст параграфа:**  \\n«Профессор Звёздочкин и предложил академии астрономических наук устроить обсуждение Знайкиной книги…»\\n\\n**Стоп‑reason:** `goal_reached` (найдено требуемое третье упоминание).\",\"reasoning\":\"We need third mention of professor Zvezdochkin, excluding headings. The cursor returned items (paragraphs) containing keywords. We need to count mentions. The first paragraph includes \\\"профессор Звёздочкин\\\" appears maybe twice? Let's read. Paragraph 24: \\\"а действительный член академии астрономических наук профессор Звёздочкин... этот профессор Звёздочкин был...\\\" That's two mentions within same paragraph. But counting mentions? The goal wants third mention overall, excluding headings. Likely count each occurrence sequentially across text. So first two mentions in paragraph 24. Then next occurrence is in paragraph 25: \\\"Профессор Звёздочкин и предложил...\\\" That's third mention. So answer should point to paragraph 25 (SemanticPointer 25:1.1.1.p22). Provide location. Need final answer.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1621,\"completion_tokens\":330,\"total_tokens\":1951}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sat, 27 Dec 2025 21:40:52 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

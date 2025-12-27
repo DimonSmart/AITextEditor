@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-153\",\"object\":\"chat.completion\",\"created\":1766870824,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to find first mention of \\\"профессор Звёздочкин\\\" in the book, excluding headings. Use keyword cursor with keyword \\\"Звёздочкин\\\". Use a cursor. Steps: 0 create cursor, 1 read batch, 2 read batch, then finalize.\\n\\nWe'll create keyword cursor. Use keywords array: word stems. \\\"звёздочк\\\" maybe. We'll use \\\"звёздочкин\\\". Use lowercase. Use keyword_cursor_create_keyword_cursor.\\n\\n\",\"tool_calls\":[{\"id\":\"call_0d1g0y9u\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"keyword_cursor-create_keyword_cursor\",\"arguments\":\"{\\\"includeHeadings\\\":false,\\\"keywords\\\":[\\\"звёздочкин\\\"]}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1046,\"completion_tokens\":146,\"total_tokens\":1192}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sat, 27 Dec 2025 21:27:04 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

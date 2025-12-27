@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-158\",\"object\":\"chat.completion\",\"created\":1766870827,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"**Goal:** Где в книге впервые упоминается профессор Звёздочкин? (исключая заголовки)  \\n**Answer:** Первое упоминание профессора Звёздочкина находится в параграфе с семантическим указателем **24:1.1.1.p21**.  \\n\\n**Stop reason:** goal_reached\",\"reasoning\":\"We have the first mention of \\\"профессор Звёздочкин\\\". The first item returned is semantic pointer 24:1.1.1.p21. That's likely the first occurrence. Need answer location excluding headings (we already filtered). So answer: paragraph with pointer 24:1.1.1.p21. Provide that. Also mention stop reason: goal_reached. Need final step.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1610,\"completion_tokens\":171,\"total_tokens\":1781}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sat, 27 Dec 2025 21:27:07 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}
