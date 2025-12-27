@@ -13,4 +13,12 @@ public sealed class SemanticKernelContext
     public string? LastAnswer { get; set; }
 
     public string? LastCommand { get; set; }
+
+    public string? Goal { get; set; }
+
+    public TaskPlanState? PlanState { get; set; }
+
+    public IReadOnlyList<PlanStep> PlanSteps { get; set; } = Array.Empty<PlanStep>();
+
+    public string? PlanSnapshotJson { get; set; }
 }

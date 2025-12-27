@@ -125,10 +125,19 @@ public sealed class SemanticKernelEngine
         var logger = loggerFactory.CreateLogger<SemanticKernelEngine>();
         logger.LogInformation("Kernel built with model {ModelId} at {Endpoint}", modelId, endpoint);
 
+        var planExecutor = new LightPlanExecutor(limits, loggerFactory.CreateLogger<LightPlanExecutor>());
+        var planResult = await planExecutor.PlanAndRunAsync(userCommand, userCommand).ConfigureAwait(false);
+        context.Goal = planResult.State.Goal;
+        context.PlanState = planResult.State;
+        context.PlanSteps = planResult.Steps;
+        context.PlanSnapshotJson = planResult.State.Serialize();
+        logger.LogInformation("Planned steps: {Steps}", string.Join(" -> ", planResult.Steps.Select(s => $"{s.StepType}:{s.ToolDescription}")));
+
         var history = new ChatHistory();
         // Simplifies the workflow instructions for small models and removes inline comments that could be mistaken as literal output.
+        var planDirective = planResult.BuildPrompt(limits.DefaultMaxSteps);
         history.AddSystemMessage(
-            """
+            $$"""
             You are a QA assistant for a markdown book. Use tools to inspect the document.
             Workflow:
             - Use a single tool path: create a cursor, then read batches directly via `chat_cursor_tools-read_cursor_batch`. Do NOT call `chat_cursor_agent-run_chat_cursor_agent`.
@@ -140,7 +149,9 @@ public sealed class SemanticKernelEngine
             - CHECK PREVIOUS EVIDENCE: The answer might be in a paragraph found in a previous step.
             - DIALOGUE: A sequence of paragraphs where different characters speak IS A DIALOGUE. Report it.
             - DIALOGUE FORMATS: Look for 'Name: Text', 'Name said, "Text"', OR paragraphs starting with dashes (--/-) where context implies different speakers.
-            Return the final answer in Russian and include the semantic pointer when applicable.
+            A lightweight execution plan has been pre-approved. Stick to it and keep the step order intact.
+            {{planDirective}}
+            Return the final answer in Russian and include the semantic pointer when applicable. Always mention the goal and stop reason you observed.
             """);
         history.AddUserMessage(userCommand);
 
