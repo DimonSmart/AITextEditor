@@ -132,7 +132,7 @@ public sealed class SemanticKernelEngine
             You are a QA assistant for a markdown book. Use tools to inspect the document.
             Workflow:
             - Use a single tool path: create a cursor, then read batches directly via `chat_cursor_tools-read_cursor_batch`. Do NOT call `chat_cursor_agent-run_chat_cursor_agent`.
-            - For specific keyword search, always use `keyword_cursor-create_keyword_cursor` (not `cursor-create_cursor`). Provide lowercase word stems to cover inflected forms (declensions).
+            - For specific keyword search, always use `keyword_cursor-create_keyword_cursor` (not `cursor-create_cursor`). The cursor matches items containing ANY of the provided keywords (logical OR). Provide lowercase word stems to cover inflected forms (declensions).
             - Choose the most relevant keywords for the question; include only what helps locate the answer.
             - For multi-paragraph concepts (like dialogue), use a VERY BROAD filter (e.g. "All paragraphs") to ensure you don't miss anything. Do NOT filter by character names.
             - Avoid the legacy `agent-run_agent` unless the user explicitly requests it.
