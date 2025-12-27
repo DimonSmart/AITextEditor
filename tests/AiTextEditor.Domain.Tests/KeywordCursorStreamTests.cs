@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using AiTextEditor.Lib.Model;
 using AiTextEditor.Lib.Services;
 using Xunit;
@@ -46,5 +47,35 @@ public class KeywordCursorStreamTests
         var document = repository.LoadFromMarkdown("# Title");
 
         Assert.Throws<ArgumentException>(() => new KeywordCursorStream(document, Array.Empty<string>(), 5, 1024, null));
+    }
+
+    [Fact]
+    public void KeywordCursorCanSkipHeadings()
+    {
+        var markdown = """
+        # Bob Contacts
+
+        Bob called Alice yesterday.
+
+        ## Bob Notes
+
+        The phone number is +7 999-123-00-00.
+        """;
+
+        var repository = new MarkdownDocumentRepository();
+        var document = repository.LoadFromMarkdown(markdown);
+        var cursor = new KeywordCursorStream(document, new[] { "bob" }, maxElements: 5, maxBytes: 10_000, startAfterPointer: null, includeHeadings: false);
+
+        var readItems = new List<LinearItem>();
+
+        while (!cursor.IsComplete)
+        {
+            var portion = cursor.NextPortion();
+            readItems.AddRange(portion.Items);
+        }
+
+        Assert.All(readItems, item => Assert.NotEqual(LinearItemType.Heading, item.Type));
+        Assert.Contains(readItems, item => item.Markdown.Contains("Bob called", StringComparison.OrdinalIgnoreCase));
+        Assert.Equal(document.Items.Count(item => item.Type != LinearItemType.Heading), readItems.Count);
     }
 }

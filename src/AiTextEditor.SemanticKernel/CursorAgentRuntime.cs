@@ -77,7 +77,7 @@ public sealed class CursorAgentRuntime : ICursorAgentRuntime
         string? stopReason = null;
         var stepsUsed = 0;
 
-        var cursor = new CursorStream(documentContext.Document, limits.MaxElements, limits.MaxBytes, afterPointer, request.Context ?? string.Empty, logger);
+        var cursor = new CursorStream(documentContext.Document, limits.MaxElements, limits.MaxBytes, afterPointer, request.Context ?? string.Empty, logger: logger);
 
         for (var step = 0; step < maxSteps; step++)
         {

@@ -12,10 +12,12 @@ public sealed class QueryCursorCreationPlugin(IQueryCursorRegistry cursorRegistr
 
     [KernelFunction("create_query_cursor")]
     [Description("Create a query cursor that yields matching document items in order.")]
-    public string CreateQueryCursor([Description("Query to locate in the document.")] string query)
+    public string CreateQueryCursor(
+        [Description("Query to locate in the document.")] string query,
+        [Description("Whether headings should be included in cursor output. Defaults to true (include everything).")] bool includeHeadings = true)
     {
-        var cursorName = cursorRegistry.CreateCursor(query);
-        logger.LogInformation("create_query_cursor: cursor={Cursor}", cursorName);
+        var cursorName = cursorRegistry.CreateCursor(query, includeHeadings);
+        logger.LogInformation("create_query_cursor: cursor={Cursor}, includeHeadings={IncludeHeadings}", cursorName, includeHeadings);
         return cursorName;
     }
 }

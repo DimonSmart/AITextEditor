@@ -22,6 +22,7 @@ public sealed class CursorPlugin(
         [Description("Optional override for max elements per portion. Clamped to server limits.")] int maxElements = -1,
         [Description("Optional override for max bytes per portion. Clamped to server limits.")] int maxBytes = -1,
         [Description("Pointer to start after (optional).")] string startAfterPointer = "",
+        [Description("Whether headings should be included in cursor output. Defaults to true (include everything).")] bool includeHeadings = true,
         CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -37,10 +38,10 @@ public sealed class CursorPlugin(
         var actualMaxElements = Math.Min(maxElements > 0 ? maxElements : limits.MaxElements, limits.MaxElements);
         var actualMaxBytes = Math.Min(maxBytes > 0 ? maxBytes : limits.MaxBytes, limits.MaxBytes);
         logger.LogInformation(
-               "CreateCursor: name={Name}, startAfter={StartAfter}, maxElements={MaxElements}, maxBytes={MaxBytes}, filterDescription={filterDescription}",
-               name, startAfterPointer, actualMaxElements, actualMaxBytes, filterDescription);
+               "CreateCursor: name={Name}, startAfter={StartAfter}, maxElements={MaxElements}, maxBytes={MaxBytes}, filterDescription={filterDescription}, includeHeadings={IncludeHeadings}",
+               name, startAfterPointer, actualMaxElements, actualMaxBytes, filterDescription, includeHeadings);
 
-        var cursorStream = new CursorStream(document, actualMaxElements, actualMaxBytes, string.IsNullOrEmpty(startAfterPointer) ? null : startAfterPointer, filterDescription, logger);
+        var cursorStream = new CursorStream(document, actualMaxElements, actualMaxBytes, string.IsNullOrEmpty(startAfterPointer) ? null : startAfterPointer, filterDescription, includeHeadings, logger);
 
         cursorRegistry.RegisterCursor(name, cursorStream);
 

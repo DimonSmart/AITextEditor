@@ -24,19 +24,19 @@ public sealed class QueryCursorRegistry : IQueryCursorRegistry
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public string CreateCursor(string query)
+    public string CreateCursor(string query, bool includeHeadings = true)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(query);
 
         var cursorName = $"query_cursor_{Guid.NewGuid():N}";
-        var cursor = new QueryCursorStream(documentContext.Document, query, limits.MaxElements, limits.MaxBytes, null, logger);
+        var cursor = new QueryCursorStream(documentContext.Document, query, limits.MaxElements, limits.MaxBytes, null, includeHeadings, logger);
 
         if (!cursorStore.TryAddCursor(cursorName, cursor))
         {
             throw new InvalidOperationException("cursor_registry_add_failed");
         }
 
-        logger.LogInformation("query_cursor_created: cursor={Cursor}", cursorName);
+        logger.LogInformation("query_cursor_created: cursor={Cursor}, includeHeadings={IncludeHeadings}", cursorName, includeHeadings);
         return cursorName;
     }
 

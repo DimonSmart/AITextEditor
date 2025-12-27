@@ -14,16 +14,18 @@ public sealed class CursorStream : INamedCursorStream
     private int _currentIndex;
     private bool _isComplete;
     private readonly bool _includeContent = true;
+    private readonly bool _includeHeadings;
     public bool IsComplete => _isComplete;
     public string? FilterDescription => _filterDescription;
 
-    public CursorStream(LinearDocument document, int maxElements, int maxBytes, string? startAfterPointer = null, string? filterDescription = null, ILogger? logger = null)
+    public CursorStream(LinearDocument document, int maxElements, int maxBytes, string? startAfterPointer = null, string? filterDescription = null, bool includeHeadings = true, ILogger? logger = null)
     {
         _linearDocument = document;
         _maxElements = maxElements;
         _maxBytes = maxBytes;
         _filterDescription = filterDescription;
         _logger = logger;
+        _includeHeadings = includeHeadings;
 
         if (!string.IsNullOrEmpty(startAfterPointer))
         {
@@ -74,6 +76,12 @@ public sealed class CursorStream : INamedCursorStream
         while (IsWithinBounds(nextIndex))
         {
             var sourceItem = _linearDocument.Items[nextIndex];
+            if (!_includeHeadings && sourceItem.Type == LinearItemType.Heading)
+            {
+                nextIndex++;
+                continue;
+            }
+
             var projectedItem = _includeContent ? sourceItem : StripText(sourceItem);
             var itemBytes = CalculateSize(projectedItem, _includeContent);
 
