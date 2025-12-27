@@ -10,8 +10,8 @@ public sealed class KeywordCursorStream : FilteredCursorStream
 {
     private readonly IReadOnlyList<string> keywords;
 
-    public KeywordCursorStream(LinearDocument document, IEnumerable<string> keywords, int maxElements, int maxBytes, string? startAfterPointer, ILogger? logger = null)
-        : base(document, maxElements, maxBytes, startAfterPointer, logger)
+    public KeywordCursorStream(LinearDocument document, IEnumerable<string> keywords, int maxElements, int maxBytes, string? startAfterPointer, bool includeHeadings = true, ILogger? logger = null)
+        : base(document, maxElements, maxBytes, startAfterPointer, includeHeadings, logger)
     {
         ArgumentNullException.ThrowIfNull(keywords);
 

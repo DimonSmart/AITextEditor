@@ -8,8 +8,8 @@ public sealed class QueryCursorStream : FilteredCursorStream
 {
     private readonly string query;
 
-    public QueryCursorStream(LinearDocument document, string query, int maxElements, int maxBytes, string? startAfterPointer, ILogger? logger = null)
-        : base(document, maxElements, maxBytes, startAfterPointer, logger)
+    public QueryCursorStream(LinearDocument document, string query, int maxElements, int maxBytes, string? startAfterPointer, bool includeHeadings = true, ILogger? logger = null)
+        : base(document, maxElements, maxBytes, startAfterPointer, includeHeadings, logger)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(query);
         this.query = query.Trim();

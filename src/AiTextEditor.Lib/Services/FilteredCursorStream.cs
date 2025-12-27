@@ -11,18 +11,20 @@ public abstract class FilteredCursorStream : INamedCursorStream
     private readonly int maxElements;
     private readonly int maxBytes;
     private readonly ILogger? logger;
+    private readonly bool includeHeadings;
     private int currentIndex;
     private bool isComplete;
 
     public bool IsComplete => isComplete;
     public virtual string? FilterDescription => null;
 
-    protected FilteredCursorStream(LinearDocument document, int maxElements, int maxBytes, string? startAfterPointer, ILogger? logger)
+    protected FilteredCursorStream(LinearDocument document, int maxElements, int maxBytes, string? startAfterPointer, bool includeHeadings, ILogger? logger)
     {
         this.document = document ?? throw new ArgumentNullException(nameof(document));
         this.maxElements = maxElements;
         this.maxBytes = maxBytes;
         this.logger = logger;
+        this.includeHeadings = includeHeadings;
         currentIndex = ResolveStartIndex(document, startAfterPointer, logger);
     }
 
@@ -42,6 +44,12 @@ public abstract class FilteredCursorStream : INamedCursorStream
         while (IsWithinBounds(nextIndex))
         {
             var sourceItem = document.Items[nextIndex];
+            if (!includeHeadings && sourceItem.Type == LinearItemType.Heading)
+            {
+                nextIndex++;
+                continue;
+            }
+
             if (!IsMatch(sourceItem))
             {
                 nextIndex++;

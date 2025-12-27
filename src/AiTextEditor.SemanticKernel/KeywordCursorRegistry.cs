@@ -26,19 +26,19 @@ public sealed class KeywordCursorRegistry : IKeywordCursorRegistry
     }
 
     private int _cursorCounter = 0;
-    public string CreateCursor(IEnumerable<string> keywords)
+    public string CreateCursor(IEnumerable<string> keywords, bool includeHeadings = true)
     {
         ArgumentNullException.ThrowIfNull(keywords);
 
         var cursorName = $"keyword_cursor_{_cursorCounter++}";
-        var cursor = new KeywordCursorStream(documentContext.Document, keywords, limits.MaxElements, limits.MaxBytes, null, logger);
+        var cursor = new KeywordCursorStream(documentContext.Document, keywords, limits.MaxElements, limits.MaxBytes, null, includeHeadings, logger);
 
         if (!cursorStore.TryAddCursor(cursorName, cursor))
         {
             throw new InvalidOperationException("keyword_cursor_registry_add_failed");
         }
 
-        logger.LogInformation("keyword_cursor_created: cursor={Cursor}", cursorName);
+        logger.LogInformation("keyword_cursor_created: cursor={Cursor}, includeHeadings={IncludeHeadings}", cursorName, includeHeadings);
         return cursorName;
     }
 
