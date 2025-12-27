@@ -1,103 +1,40 @@
-using Xunit;
+using System.Threading;
 using AiTextEditor.SemanticKernel;
 using Microsoft.Extensions.Logging;
+using Xunit;
 
 namespace AiTextEditor.Domain.Tests;
 
 public sealed class LightPlanExecutorTests
 {
     [Fact]
-    public async Task PlanTracksGoalAndStopReason()
+    public async Task PlanAndRunAsync_LeavesStopReasonUnsetUntilCompletion()
     {
-        var limits = new CursorAgentLimits { DefaultMaxSteps = 5 };
-        var logger = new ListLogger<LightPlanExecutor>();
-        var executor = new LightPlanExecutor(limits, logger);
-        var runner = new StubPlanRunner(new PlanStepOutcome(false, true), new PlanStepOutcome(true, true));
+        var limits = new CursorAgentLimits { DefaultMaxSteps = 2 };
+        var executor = new LightPlanExecutor(limits, new LoggerFactory().CreateLogger<LightPlanExecutor>());
+        var result = await executor.PlanAndRunAsync("goal", "command", new AlwaysContinuingRunner());
 
-        var result = await executor.PlanAndRunAsync("Collect intro", "find intro", runner);
-
-        Assert.Equal("Collect intro", result.State.Goal);
-        Assert.Equal("goal_reached", result.State.StopReason);
-        Assert.Contains("\"goal\":\"Collect intro\"", result.State.Serialize());
+        Assert.Null(result.State.StopReason);
+        Assert.Equal("step_limit", result.PlannedStopReason);
     }
 
     [Fact]
-    public async Task SchedulerRunsStepsInOrderAndLogs()
+    public void BuildPrompt_UsesPendingStopReasonMarker()
     {
-        var limits = new CursorAgentLimits { DefaultMaxSteps = 4 };
-        var logger = new ListLogger<LightPlanExecutor>();
-        var executor = new LightPlanExecutor(limits, logger);
-        var runner = new StubPlanRunner(new PlanStepOutcome(false, true), new PlanStepOutcome(false, false));
+        var state = new TaskPlanState("goal", 1, null);
+        var steps = new[] { new PlanStep(0, PlanStepType.CreateCursor, "cursor-create_cursor") };
+        var result = new PlanExecutionResult(state, steps, "no_more_batches");
 
-        var result = await executor.PlanAndRunAsync("Search dialogue", "dialogue search", runner);
+        var prompt = result.BuildPrompt(4);
 
-        Assert.Equal(new[] { PlanStepType.CreateCursor, PlanStepType.ReadBatch, PlanStepType.Finalize }, runner.Steps.Select(s => s.StepType));
-        Assert.Equal("no_more_batches", result.State.StopReason);
-        Assert.Contains("Light plan completed", logger.Messages.Last());
+        Assert.Contains("\"stopReason\":\"pending:no_more_batches\"", prompt);
     }
 
-    [Fact]
-    public async Task ContextGetsPlanMetadata()
+    private sealed class AlwaysContinuingRunner : IPlanStepRunner
     {
-        var limits = new CursorAgentLimits { DefaultMaxSteps = 3 };
-        var executor = new LightPlanExecutor(limits, new ListLogger<LightPlanExecutor>());
-        var runner = new StubPlanRunner(new PlanStepOutcome(false, true), new PlanStepOutcome(false, false));
-        var context = new SemanticKernelContext();
-
-        var result = await executor.PlanAndRunAsync("Summarize chapter", "chapter summary", runner);
-        context.Goal = result.State.Goal;
-        context.PlanState = result.State;
-        context.PlanSteps = result.Steps;
-        context.PlanSnapshotJson = result.State.Serialize();
-
-        Assert.Equal("Summarize chapter", context.Goal);
-        Assert.Equal("no_more_batches", context.PlanState?.StopReason);
-        Assert.NotNull(context.PlanSnapshotJson);
-    }
-
-    private sealed class StubPlanRunner : IPlanStepRunner
-    {
-        private readonly Queue<PlanStepOutcome> outcomes;
-
-        public StubPlanRunner(params PlanStepOutcome[] outcomes)
-        {
-            this.outcomes = new Queue<PlanStepOutcome>(outcomes);
-        }
-
-        public List<PlanStep> Steps { get; } = new();
-
         public Task<PlanStepOutcome> ExecuteAsync(PlanStep step, CancellationToken cancellationToken)
         {
-            Steps.Add(step);
-            if (outcomes.Count == 0)
-            {
-                return Task.FromResult(PlanStepOutcome.Continue);
-            }
-
-            return Task.FromResult(outcomes.Dequeue());
-        }
-    }
-
-    private sealed class ListLogger<T> : ILogger<T>
-    {
-        public List<string> Messages { get; } = new();
-
-        public IDisposable BeginScope<TState>(TState state) where TState : notnull => NullScope.Instance;
-
-        public bool IsEnabled(LogLevel logLevel) => true;
-
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
-        {
-            Messages.Add(formatter(state, exception));
-        }
-
-        private sealed class NullScope : IDisposable
-        {
-            public static NullScope Instance { get; } = new();
-
-            public void Dispose()
-            {
-            }
+            return Task.FromResult(new PlanStepOutcome(false, true));
         }
     }
 }

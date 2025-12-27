@@ -21,13 +21,13 @@ public sealed record TaskPlanState(string Goal, int StepNumber, string? StopReas
         return new TaskPlanState(Goal, StepNumber, stopReason);
     }
 
-    public string Serialize()
+    public string Serialize(string? stopReasonWhenMissing = null)
     {
         var payload = new
         {
             goal = Goal,
             step = StepNumber,
-            stopReason = StopReason
+            stopReason = StopReason ?? stopReasonWhenMissing
         };
 
         return JsonSerializer.Serialize(payload, SerializationOptions.RelaxedCompact);
