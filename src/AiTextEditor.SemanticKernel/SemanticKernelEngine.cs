@@ -125,18 +125,17 @@ public sealed class SemanticKernelEngine
         var logger = loggerFactory.CreateLogger<SemanticKernelEngine>();
         logger.LogInformation("Kernel built with model {ModelId} at {Endpoint}", modelId, endpoint);
 
-        var planExecutor = new LightPlanExecutor(limits, loggerFactory.CreateLogger<LightPlanExecutor>());
-        var planResult = await planExecutor.PlanAndRunAsync(userCommand, userCommand).ConfigureAwait(false);
-        context.Goal = planResult.State.Goal;
-        context.PlanState = planResult.State;
-        context.PlanSteps = planResult.Steps;
-        var pendingStopReason = planResult.PlannedStopReason is null ? "pending" : $"pending:{planResult.PlannedStopReason}";
-        context.PlanSnapshotJson = planResult.State.Serialize(pendingStopReason);
-        logger.LogInformation("Planned steps: {Steps}", string.Join(" -> ", planResult.Steps.Select(s => $"{s.StepType}:{s.ToolDescription}")));
+        var planBuilder = new PlanDirectiveBuilder(limits, loggerFactory.CreateLogger<PlanDirectiveBuilder>());
+        var planDirective = planBuilder.Build(userCommand);
+        context.Goal = planDirective.State.Goal;
+        context.PlanState = planDirective.State;
+        context.PlanSteps = planDirective.Steps;
+        context.PlanSnapshotJson = planDirective.State.Serialize("pending");
+        logger.LogInformation("Planned steps: {Steps}", string.Join(" -> ", planDirective.Steps.Select(s => $"{s.StepType}:{s.ToolDescription}")));
 
         var history = new ChatHistory();
         // Simplifies the workflow instructions for small models and removes inline comments that could be mistaken as literal output.
-        var planDirective = planResult.BuildPrompt(limits.DefaultMaxSteps);
+        var planPrompt = planDirective.BuildPrompt(limits.DefaultMaxSteps);
         history.AddSystemMessage(
             $$"""
             You are a QA assistant for a markdown book. Use tools to inspect the document.
@@ -149,8 +148,8 @@ public sealed class SemanticKernelEngine
             - Be careful with counting mentions: a single paragraph may contain MULTIPLE mentions. Read the text carefully.
             - CHECK PREVIOUS EVIDENCE: The answer might be in a paragraph found in a previous step.
             - The user request can be any task; apply only the rules relevant to the request.
-            A lightweight execution plan has been pre-approved. Stick to it and keep the step order intact.
-            {{planDirective}}
+            A lightweight plan has been pre-approved. Stick to it and keep the step order intact.
+            {{planPrompt}}
             Return the final answer in the same language as the user question and include the semantic pointer when applicable. Always mention the goal and stop reason you observed.
             """);
         history.AddUserMessage(userCommand);
