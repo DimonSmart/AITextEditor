@@ -35,11 +35,26 @@ public sealed record PlanExecutionResult(TaskPlanState State, IReadOnlyList<Plan
         builder.AppendLine($"Step limit: {maxSteps}. Stop reasons: goal_reached, no_more_batches, step_limit.");
         builder.AppendLine("Follow the planned steps and keep the same order:");
 
+        var readBatchListed = false;
         foreach (var step in Steps)
         {
-            builder.Append("- Step ");
-            builder.Append(step.StepNumber);
-            builder.Append(": ");
+            if (step.StepType == PlanStepType.ReadBatch)
+            {
+                if (readBatchListed)
+                {
+                    continue;
+                }
+
+                readBatchListed = true;
+                builder.Append("- ");
+                builder.Append(step.StepType);
+                builder.Append(" via ");
+                builder.Append(step.ToolDescription);
+                builder.AppendLine(" (repeat until goal_reached, no_more_batches, or step_limit)");
+                continue;
+            }
+
+            builder.Append("- ");
             builder.Append(step.StepType);
             builder.Append(" via ");
             builder.AppendLine(step.ToolDescription);

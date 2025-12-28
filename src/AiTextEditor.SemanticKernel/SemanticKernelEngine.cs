@@ -144,15 +144,14 @@ public sealed class SemanticKernelEngine
             - Use a single tool path: create a cursor, then read batches directly via `chat_cursor_tools-read_cursor_batch`. Do NOT call `chat_cursor_agent-run_chat_cursor_agent`.
             - For specific keyword search, always use `keyword_cursor-create_keyword_cursor` (not `cursor-create_cursor`). The cursor matches items containing ANY of the provided keywords (logical OR). Provide lowercase word stems to cover inflected forms (declensions).
             - Choose the most relevant keywords for the question; include only what helps locate the answer.
-            - For multi-paragraph concepts (like dialogue), use a VERY BROAD filter (e.g. "All paragraphs") to ensure you don't miss anything. Do NOT filter by character names.
+            - For multi-paragraph concepts, use a VERY BROAD filter (e.g. "All paragraphs") to ensure you don't miss anything. Do NOT filter by character names.
             - Avoid the legacy `agent-run_agent` unless the user explicitly requests it.
             - Be careful with counting mentions: a single paragraph may contain MULTIPLE mentions. Read the text carefully.
             - CHECK PREVIOUS EVIDENCE: The answer might be in a paragraph found in a previous step.
-            - DIALOGUE: A sequence of paragraphs where different characters speak IS A DIALOGUE. Report it.
-            - DIALOGUE FORMATS: Look for 'Name: Text', 'Name said, "Text"', OR paragraphs starting with dashes (--/-) where context implies different speakers.
+            - The user request can be any task; apply only the rules relevant to the request.
             A lightweight execution plan has been pre-approved. Stick to it and keep the step order intact.
             {{planDirective}}
-            Return the final answer in Russian and include the semantic pointer when applicable. Always mention the goal and stop reason you observed.
+            Return the final answer in the same language as the user question and include the semantic pointer when applicable. Always mention the goal and stop reason you observed.
             """);
         history.AddUserMessage(userCommand);
 
