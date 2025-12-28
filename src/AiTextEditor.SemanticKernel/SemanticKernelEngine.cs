@@ -111,14 +111,10 @@ public sealed class SemanticKernelEngine
             loggerFactory.CreateLogger<ChatCursorTools>());
         kernel.Plugins.AddFromObject(chatCursorToolsPlugin, "chat_cursor_tools");
 
-        var keywordCursorRegistry = new KeywordCursorRegistry(
+        var keywordCursorCreationPlugin = new KeywordCursorCreationPlugin(
             documentContext,
             limits,
             cursorRegistry,
-            loggerFactory.CreateLogger<KeywordCursorRegistry>());
-
-        var keywordCursorCreationPlugin = new KeywordCursorCreationPlugin(
-            keywordCursorRegistry,
             loggerFactory.CreateLogger<KeywordCursorCreationPlugin>());
         kernel.Plugins.AddFromObject(keywordCursorCreationPlugin, "keyword_cursor");
 
