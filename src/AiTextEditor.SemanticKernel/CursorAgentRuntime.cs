@@ -1,20 +1,19 @@
-/*
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using AiTextEditor.Lib.Model;
 using AiTextEditor.Lib.Services;
 using AiTextEditor.Lib.Services.SemanticKernel;
-using DimonSmart.AiUtils;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel.ChatCompletion;
-using Microsoft.SemanticKernel.Connectors.OpenAI;
 
 namespace AiTextEditor.SemanticKernel;
 
 public sealed class CursorAgentRuntime : ICursorAgentRuntime
 {
-    private readonly IDocumentContext documentContext;
+    private readonly ICursorStore cursorStore;
     private readonly IChatCompletionService chatService;
     private readonly ICursorAgentPromptBuilder promptBuilder;
     private readonly ICursorAgentResponseParser responseParser;
@@ -23,7 +22,7 @@ public sealed class CursorAgentRuntime : ICursorAgentRuntime
     private readonly ILogger<CursorAgentRuntime> logger;
 
     public CursorAgentRuntime(
-        IDocumentContext documentContext,
+        ICursorStore cursorStore,
         IChatCompletionService chatService,
         ICursorAgentPromptBuilder promptBuilder,
         ICursorAgentResponseParser responseParser,
@@ -31,16 +30,21 @@ public sealed class CursorAgentRuntime : ICursorAgentRuntime
         CursorAgentLimits limits,
         ILogger<CursorAgentRuntime> logger)
     {
-        this.documentContext = documentContext;
-        this.chatService = chatService;
-        this.promptBuilder = promptBuilder;
-        this.responseParser = responseParser;
-        this.evidenceCollector = evidenceCollector;
-        this.limits = limits;
-        this.logger = logger;
+        this.cursorStore = cursorStore ?? throw new ArgumentNullException(nameof(cursorStore));
+        this.chatService = chatService ?? throw new ArgumentNullException(nameof(chatService));
+        this.promptBuilder = promptBuilder ?? throw new ArgumentNullException(nameof(promptBuilder));
+        this.responseParser = responseParser ?? throw new ArgumentNullException(nameof(responseParser));
+        this.evidenceCollector = evidenceCollector ?? throw new ArgumentNullException(nameof(evidenceCollector));
+        this.limits = limits ?? throw new ArgumentNullException(nameof(limits));
+        this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<CursorAgentStepResult> RunStepAsync(CursorAgentRequest request, CursorPortionView portion, CursorAgentState state, int step, CancellationToken cancellationToken = default)
+    public async Task<CursorAgentStepResult> RunStepAsync(
+        CursorAgentRequest request,
+        CursorPortionView portion,
+        CursorAgentState state,
+        int step,
+        CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
         ArgumentNullException.ThrowIfNull(portion);
@@ -63,9 +67,16 @@ public sealed class CursorAgentRuntime : ICursorAgentRuntime
         return new CursorAgentStepResult(command.Action, command.BatchFound, command.NewEvidence, command.Progress, command.NeedMoreContext, portion.HasMore);
     }
 
-    public async Task<CursorAgentResult> RunAsync(CursorAgentRequest request, CancellationToken cancellationToken = default)
+    public async Task<CursorAgentResult> RunAsync(string cursorName, CursorAgentRequest request, CancellationToken cancellationToken = default)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(cursorName);
         ArgumentNullException.ThrowIfNull(request);
+
+        if (!cursorStore.TryGetCursor(cursorName, out var cursor) || cursor == null)
+        {
+            throw new InvalidOperationException($"cursor_not_found: {cursorName}");
+        }
+
         var maxSteps = Math.Clamp(limits.DefaultMaxSteps, 1, limits.MaxStepsLimit);
         var agentSystemPrompt = promptBuilder.BuildAgentSystemPrompt();
         var taskDefinitionPrompt = promptBuilder.BuildTaskDefinitionPrompt(request);
@@ -76,8 +87,6 @@ public sealed class CursorAgentRuntime : ICursorAgentRuntime
         string? summary = null;
         string? stopReason = null;
         var stepsUsed = 0;
-
-        var cursor = new CursorStream(documentContext.Document, limits.MaxElements, limits.MaxBytes, afterPointer, request.Context ?? string.Empty, logger: logger);
 
         for (var step = 0; step < maxSteps; step++)
         {
@@ -91,8 +100,9 @@ public sealed class CursorAgentRuntime : ICursorAgentRuntime
             var cursorPortionView = CursorPortionView.FromPortion(portion);
             afterPointer = cursorPortionView.Items[^1].SemanticPointer;
             logger.LogDebug(
-                "{Event}: count={Count}, hasMore={HasMore}",
+                "{Event}: cursor={Cursor}, count={Count}, hasMore={HasMore}",
                 cursorPortionView.HasMore ? "cursor_batch" : "cursor_batch_complete",
+                cursorName,
                 cursorPortionView.Items.Count,
                 cursorPortionView.HasMore);
 
@@ -119,8 +129,8 @@ public sealed class CursorAgentRuntime : ICursorAgentRuntime
         }
 
         stopReason ??= "max_steps";
-        var finalCursorComplete = cursor.IsComplete || string.Equals(stopReason, "cursor_complete", StringComparison.OrdinalIgnoreCase);
-        return await BuildResultByFinalizerAsync(request.TaskDescription, cursorAgentState, summary, stopReason, afterPointer, finalCursorComplete, stepsUsed, cancellationToken);
+        var cursorComplete = cursor.IsComplete || string.Equals(stopReason, "cursor_complete", StringComparison.OrdinalIgnoreCase);
+        return await BuildResultByFinalizerAsync(request.TaskDescription, cursorAgentState, summary, stopReason, afterPointer, cursorComplete, stepsUsed, cancellationToken);
     }
 
     private async Task<CursorAgentResult> BuildResultByFinalizerAsync(
@@ -199,7 +209,13 @@ public sealed class CursorAgentRuntime : ICursorAgentRuntime
             cursorComplete);
     }
 
-    private async Task<AgentCommand?> GetNextCommandAsync(string agentSystemPrompt, string taskDefinitionPrompt, string evidenceSnapshot, string batchMessage, CancellationToken cancellationToken, int step)
+    private async Task<AgentCommand?> GetNextCommandAsync(
+        string agentSystemPrompt,
+        string taskDefinitionPrompt,
+        string evidenceSnapshot,
+        string batchMessage,
+        CancellationToken cancellationToken,
+        int step)
     {
         var history = new ChatHistory();
         history.AddSystemMessage(agentSystemPrompt);
@@ -301,4 +317,3 @@ public sealed class CursorAgentRuntime : ICursorAgentRuntime
         return text[..maxLength] + $"... (+{text.Length - maxLength} chars)";
     }
 }
-*/

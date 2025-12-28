@@ -98,13 +98,6 @@ public sealed class SemanticKernelEngine
             loggerFactory.CreateLogger<CursorPlugin>());
         kernel.Plugins.AddFromObject(cursorPlugin, "cursor");
 
-        // var agentPlugin = new AgentPlugin(
-        //     cursorRegistry,
-        //     cursorAgentRuntime,
-        //     limits,
-        //     loggerFactory.CreateLogger<AgentPlugin>());
-        // kernel.Plugins.AddFromObject(agentPlugin, "agent");
-
         var chatCursorToolsPlugin = new ChatCursorTools(
             cursorRegistry,
             limits,
