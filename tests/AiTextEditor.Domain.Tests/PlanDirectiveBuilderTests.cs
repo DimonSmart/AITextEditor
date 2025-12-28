@@ -21,14 +21,14 @@ public sealed class PlanDirectiveBuilderTests
             {
                 Assert.Equal(0, step.StepNumber);
                 Assert.Equal(PlanStepType.CreateCursor, step.StepType);
-                Assert.Equal("keyword_cursor-create_keyword_cursor", step.ToolName);
-                Assert.Equal("cursor-create_cursor", step.ToolFallback);
+                Assert.Equal("cursor-create_keyword_cursor", step.ToolName);
+                Assert.Equal("cursor-create_filtered_cursor", step.ToolFallback);
             },
             step =>
             {
                 Assert.Equal(1, step.StepNumber);
                 Assert.Equal(PlanStepType.ReadBatch, step.StepType);
-                Assert.Equal("chat_cursor_tools-read_cursor_batch", step.ToolName);
+                Assert.Equal("cursor-read_cursor_batch", step.ToolName);
                 Assert.Null(step.ToolFallback);
             },
             step =>

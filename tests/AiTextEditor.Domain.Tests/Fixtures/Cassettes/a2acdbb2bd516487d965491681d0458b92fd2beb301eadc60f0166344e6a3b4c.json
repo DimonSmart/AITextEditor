@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-999\",\"object\":\"chat.completion\",\"created\":1766943999,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Цель: найти первое упоминание профессора Звездочкина.\\nStop reason: goal_reached.\\nОтвет: 1.1.1.p21\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":0,\"completion_tokens\":0,\"total_tokens\":0}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 01 Jan 2000 00:00:00 GMT"
+    ]
+  }
+}

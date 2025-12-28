@@ -75,8 +75,8 @@ public sealed class PlanDirectiveBuilder
 
         var steps = new List<PlanStep>
         {
-            new(0, PlanStepType.CreateCursor, "keyword_cursor-create_keyword_cursor", "cursor-create_cursor"),
-            new(1, PlanStepType.ReadBatch, "chat_cursor_tools-read_cursor_batch"),
+            new(0, PlanStepType.CreateCursor, "cursor-create_keyword_cursor", "cursor-create_filtered_cursor"),
+            new(1, PlanStepType.ReadBatch, "cursor-read_cursor_batch"),
             new(2, PlanStepType.Finalize, "finalize-answer")
         };
 

@@ -26,7 +26,7 @@ public class CursorAgentPlugin(
     [KernelFunction("run_cursor_agent")]
     [Description("Launch a cursor agent with a concise system prompt.")]
     public async Task<string> RunCursorAgent(
-        [Description("Cursor name returned by any create_cursor_ function.")] string cursorName,
+        [Description("Cursor name returned by any create_*_cursor function.")] string cursorName,
         [Description("Natural language task for the agent.")] string taskDescription,
         [Description("Pointer after which the cursor should start.")] string? startAfterPointer = null,
         [Description("Context from previous run to resume.")] string? context = null)
