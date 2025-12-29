@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-774\",\"object\":\"chat.completion\",\"created\":1766961310,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's see. The user wants to find the first dialogue between two named characters and name them. So far, I've tried using keyword cursors with words like \\\"said,\\\" \\\"dialogue,\\\" etc., but didn't find anything. Then I switched to a filtered cursor to get all paragraphs, but the text so far is just descriptions of the setting and doesn't have any direct dialogue between characters. I need to keep reading more paragraphs to find the actual conversation. Let me continue fetching the next batch of paragraphs to check for any dialogues.\\n\",\"tool_calls\":[{\"id\":\"call_kknhagk5\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-read_cursor_batch\",\"arguments\":\"{\\\"cursorName\\\":\\\"all_paragraphs\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":4076,\"completion_tokens\":140,\"total_tokens\":4216}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 28 Dec 2025 22:35:10 GMT"
+    ]
+  }
+}

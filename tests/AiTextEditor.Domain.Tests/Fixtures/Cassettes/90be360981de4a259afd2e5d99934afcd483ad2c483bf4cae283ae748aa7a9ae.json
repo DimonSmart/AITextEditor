@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-83\",\"object\":\"chat.completion\",\"created\":1766960119,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's see. The user is asking in which paragraph Puchik, choosing a darker night, drowned his old clothes in the Ogurcovka River. \\n\\nFirst, I need to recall the previous steps. The assistant created a keyword cursor with the keywords \\\"пончик\\\", \\\"ночка\\\", \\\"утопить\\\", \\\"костюм\\\", \\\"река\\\". Then read the first batch, which returned two paragraphs. The first paragraph (6:1.1.1.p3) mentions Puchik choosing a darker night, tying up his old clothes, and throwing them into the Ogurcovka River. The second paragraph (7:1.1.1.p4) talks about the moths and the smell, but not the specific action of drowning clothes.\\n\\nSo the answer should be the first paragraph, 6:1.1.1.p3. The next step is to check if there are more batches, but since the user's goal is already found in the first batch, the answer is there. The stop reason would be goal_reached.\\n\",\"tool_calls\":[{\"id\":\"call_dh9x99te\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-read_cursor_batch\",\"arguments\":\"{\\\"cursorName\\\":\\\"keyword_cursor_0\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":2002,\"completion_tokens\":251,\"total_tokens\":2253}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 28 Dec 2025 22:15:19 GMT"
+    ]
+  }
+}

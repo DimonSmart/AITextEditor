@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-572\",\"object\":\"chat.completion\",\"created\":1766958813,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's tackle this question. The user is asking about a specific scene in a book where Znayka sarcastically teases Professor about having to \\\"boltаться в центре Луны\\\" (which translates to \\\"swing in the center of the Moon\\\"). First, I need to figure out which part of the document this refers to.\\n\\nThe user mentioned using the cursor-create_keyword_cursor tool with keywords like \\\"znayka,\\\" \\\"professor,\\\" \\\"boltat'sya,\\\" \\\"centr,\\\" and \\\"luna.\\\" The response from the tool gave a batch of items, but the user hasn't provided the actual content yet. Since the assistant can't see the text, they have to rely on the pointers and the context.\\n\\nIn the previous interaction, the assistant created a keyword cursor to find relevant sections. The next step would be to read the cursor batch to get the actual paragraphs. The user's answer depends on locating the exact paragraph where Znayka makes this comment. Since the keywords might not be sufficient, the assistant might need to check if the cursor includes the necessary text. If the batch includes the relevant paragraph, the assistant can then determine the exact location. If not, they might need to adjust the keywords or use a broader filter. However, the user's step limit is 128, so they have to be efficient. The final answer should reference the specific pointer from the cursor batch once the text is available.\\n\",\"tool_calls\":[{\"id\":\"call_rm32xdiy\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-read_cursor_batch\",\"arguments\":\"{\\\"cursorName\\\":\\\"keyword_cursor_0\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1259,\"completion_tokens\":325,\"total_tokens\":1584}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 28 Dec 2025 21:53:33 GMT"
+    ]
+  }
+}

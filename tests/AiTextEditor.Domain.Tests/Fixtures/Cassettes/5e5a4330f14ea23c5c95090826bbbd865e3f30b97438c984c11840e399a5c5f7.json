@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-770\",\"object\":\"chat.completion\",\"created\":1766954838,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Final answer: В документе не найдено упоминаний Фуксии.  \\nStop reason: no_more_batches\",\"reasoning\":\"Okay, the user wants the last mention of Fuchs. I started by creating a keyword cursor with \\\"fuchs\\\" as the keyword. Then I read the first batch, but there were no items. The response said HasMore is false, so maybe there are no matches. But wait, maybe the cursor didn't find any instances. Alternatively, perhaps the keyword isn't sufficient. Maybe I need a broader approach. Wait, the user might have meant a different form of the name. Let me check if \\\"Fuchs\\\" is the correct keyword. Maybe the document uses a different variation. Alternatively, maybe the cursor didn't find anything, so the answer is that there's no mention. But the user is asking for the last one, so if there are none, I should state that. Alternatively, maybe I need to adjust the keywords. Let me try using a broader term or check if there's a different spelling. But according to the tool response, the first batch had no items. Maybe the document doesn't mention Fuchs at all. So the answer would be that there's no mention found.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1227,\"completion_tokens\":255,\"total_tokens\":1482}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 28 Dec 2025 20:47:18 GMT"
+    ]
+  }
+}

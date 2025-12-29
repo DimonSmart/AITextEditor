@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-388\",\"object\":\"chat.completion\",\"created\":1766947745,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"**Ответ:**  \\nПрофессор Звёздочкин впервые упоминается в параграфе **24:1.1.1.p21** (строка с текстом: *\\\"А действительный член академии астрономических наук профессор Звёздочкин...\\\"*).  \\n\\n**Стоп-причина:** `goal_reached`\",\"reasoning\":\"Okay, let's see. The user is asking where Professor Zvezdochkin is first mentioned in the book, excluding headers. I need to find the first occurrence of his name in the text.\\n\\nFirst, I created a keyword cursor with the keywords \\\"профессор\\\" and \\\"звёздочкин\\\" to search for any mentions. Then, I read the first batch of results. The first item in the response is paragraph 21, which mentions \\\"профессор Звёздочкин\\\" in the text. That seems to be the first mention. I should check if there's an earlier mention in the previous batches, but since the first batch starts at the beginning, this is likely the first occurrence. The answer should be in paragraph 21, and the stop reason is goal_reached.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1828,\"completion_tokens\":262,\"total_tokens\":2090}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 28 Dec 2025 18:49:05 GMT"
+    ]
+  }
+}

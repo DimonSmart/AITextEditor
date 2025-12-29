@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-935\",\"object\":\"chat.completion\",\"created\":1767027873,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to locate paragraph where \\\"Знайка сравнивает лунную поверхность с хорошо пропечённым блином и объясняет пузырьки пара\\\". We need to search the book content. Use keyword cursor with keywords: \\\"Знайка\\\", \\\"лунн\\\", \\\"блин\\\", \\\"пар\\\". Use stem words: \\\"знайк\\\", \\\"лунн\\\", \\\"блин\\\", \\\"пар\\\". Create cursor.\",\"tool_calls\":[{\"id\":\"call_tj2az9pb\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_keyword_cursor\",\"arguments\":\"{\\\"includeHeadings\\\":false,\\\"keywords\\\":[\\\"знайк\\\",\\\"лунн\\\",\\\"блин\\\",\\\"пар\\\"]}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1010,\"completion_tokens\":140,\"total_tokens\":1150}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 29 Dec 2025 17:04:34 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

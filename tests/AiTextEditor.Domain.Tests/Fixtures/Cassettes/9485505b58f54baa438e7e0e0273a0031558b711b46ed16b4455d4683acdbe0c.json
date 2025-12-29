@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-726\",\"object\":\"chat.completion\",\"created\":1766954263,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's see. The user is asking where in the document it's described how the astronomers in the Sun City got into a fight and split into volcanologists and meteorite theorists. \\n\\nFirst, I need to recall the steps taken so far. The assistant created a keyword cursor with the keywords related to astronomers, Sun City, splitting, volcanologists, and meteorite theorists. Then, they read batches from the cursor.\\n\\nLooking at the responses, the first batch didn't have the relevant info. The second batch mentioned Znayka's trip and the lunar crater observations but not the conflict. The third batch included a paragraph where it says the astronomers in Sun City argued and split into two groups: volcanologists and meteorite theorists. That's exactly what the user is asking about.\\n\\nSo, the answer should point to that specific paragraph. The semantic pointer for that paragraph is 10:1.1.1.p7. The stop reason is goal_reached because the information was found. No need to read more batches since the answer is here.\\n\",\"tool_calls\":[{\"id\":\"call_o5fvgskr\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-read_cursor_batch\",\"arguments\":\"{\\\"cursorName\\\":\\\"keyword_cursor_0\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":3181,\"completion_tokens\":243,\"total_tokens\":3424}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 28 Dec 2025 20:37:43 GMT"
+    ]
+  }
+}

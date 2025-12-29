@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-193\",\"object\":\"chat.completion\",\"created\":1767026259,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's see. The user wants to find the first dialogue between two named characters and name them. So far, I've tried using keyword cursors with words like \\\"said,\\\" \\\"dialogue,\\\" etc., but didn't find any dialogues. Then I switched to reading all paragraphs, but the text so far is mostly narrative without direct dialogues between named characters.\\n\\nLooking through the paragraphs, the story mentions characters like Знайка, Фуксия, Селёдочка, Пончик, and others, but their interactions are described in third person without direct quotes. The user needs a dialogue where two characters are named by their names. Since the current paragraphs don't have such dialogues, I need to continue reading more of the document.\\n\\nI should keep reading the next batches from the all_paragraphs cursor to check for any dialogues. If there's a section where two characters have a conversation, that's the answer. If not, maybe the answer is in a later part of the document. Let's proceed to the next batch.\\n\",\"tool_calls\":[{\"id\":\"call_nyfes7tq\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-read_cursor_batch\",\"arguments\":\"{\\\"cursorName\\\":\\\"all_paragraphs\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":4658,\"completion_tokens\":244,\"total_tokens\":4902}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 29 Dec 2025 16:37:39 GMT"
+    ]
+  }
+}

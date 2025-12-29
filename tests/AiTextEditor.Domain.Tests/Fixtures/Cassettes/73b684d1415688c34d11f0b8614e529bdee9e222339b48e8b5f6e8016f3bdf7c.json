@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-380\",\"object\":\"chat.completion\",\"created\":1766961078,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's see. The user wants to find the first dialogue between two named characters and name them. So far, the assistant tried using keyword cursors with terms like \\\"said,\\\" \\\"dialogue,\\\" etc., but didn't get any items. Then they switched to a filtered cursor for all paragraphs, which returned some headings but no dialogue.\\n\\nHmm, maybe the keywords aren't capturing the actual dialogue lines. Dialogues often start with a character's name followed by a colon, like \\\"John: Hello...\\\" or use \\\"said\\\" or \\\"exclaimed.\\\" But maybe the document uses different phrasing. Alternatively, the dialogues might be in quotes or have specific formatting.\\n\\nSince the all_paragraphs cursor is returning headings, maybe the actual dialogue is in the subsequent paragraphs. The assistant should continue reading batches from the all_paragraphs cursor to find the first instance where two named characters are mentioned in a dialogue. They need to look for lines that have both names and a dialogue exchange. Also, checking for any mentions of characters' names followed by their lines would help identify the first occurrence.\\n\",\"tool_calls\":[{\"id\":\"call_77k5i8wl\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-read_cursor_batch\",\"arguments\":\"{\\\"cursorName\\\":\\\"all_paragraphs\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1778,\"completion_tokens\":247,\"total_tokens\":2025}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 28 Dec 2025 22:31:18 GMT"
+    ]
+  }
+}

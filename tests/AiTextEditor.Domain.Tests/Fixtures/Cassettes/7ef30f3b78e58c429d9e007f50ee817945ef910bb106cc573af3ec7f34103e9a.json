@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-988\",\"object\":\"chat.completion\",\"created\":1767027935,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to locate where in the book (likely \\\"Тимур и Знайка\\\"? Actually \\\"Знайка\\\" refers to the character from \\\"Приключения Незнайки и его друзей\\\"? The phrase about the professor being forced to \\\"болтаться в центре Луны\\\" (to swing around in the center of the Moon). Need to find location. Use keyword cursor. Keywords: \\\"знайка\\\", \\\"профессор\\\", \\\"луна\\\". Use lowercasing stem: \\\"знайк\\\", \\\"профессор\\\", \\\"лун\\\". Let's create cursor.\",\"tool_calls\":[{\"id\":\"call_4k8p9lsm\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_keyword_cursor\",\"arguments\":\"{\\\"includeHeadings\\\":true,\\\"keywords\\\":[\\\"знайк\\\",\\\"профессор\\\",\\\"лун\\\"]}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1019,\"completion_tokens\":176,\"total_tokens\":1195}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 29 Dec 2025 17:05:36 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-188\",\"object\":\"chat.completion\",\"created\":1766954995,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's tackle this query. The user is asking where in the document it's mentioned that the clothing factory produced everything from rubber bras to synthetic fur coats. First, I need to figure out the right approach.\\n\\nThe user wants to know the specific location in the text where this information is listed. The tools available include creating keyword cursors and reading batches. Since the question is about a specific mention, using a keyword cursor makes sense. The keywords here would be \\\"одёжная фабрика\\\", \\\"выпускала\\\", \\\"всё подряд\\\", \\\"резиновых лифчиков\\\", and \\\"зимних шуб\\\". But maybe I should focus on the main terms related to the factory's product range.\\n\\nWait, the user mentioned \\\"всё подряд, от резиновых лифчиков до зимних шуб из синтетического волокна\\\". So the key terms are \\\"всё подряд\\\", \\\"резиновых лифчиков\\\", \\\"зимних шуб\\\", \\\"синтетического волокна\\\". I should use these as keywords. Also, \\\"одёжная фабрика\\\" is important. Let me create a keyword cursor with these terms. \\n\\nBut the user might have a specific section where this list is mentioned. Maybe the factory's product range is listed in a paragraph that includes these items. Using the keyword cursor with these terms should help locate the relevant paragraphs. I'll start by creating a keyword cursor with these keywords. Then, read the batches to find the exact location. If the cursor returns matching paragraphs, I can check those for the answer. If not, maybe expand the keywords or use a broader filter. But since the user is asking for a specific mention, the keyword approach should work.\\n\",\"tool_calls\":[{\"id\":\"call_1n6ajuh5\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_keyword_cursor\",\"arguments\":\"{\\\"includeHeadings\\\":true,\\\"keywords\\\":[\\\"одёжная фабрика\\\",\\\"выпускала\\\",\\\"всё подряд\\\",\\\"резиновых лифчиков\\\",\\\"зимних шуб\\\",\\\"синтетического волокна\\\"]}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1216,\"completion_tokens\":448,\"total_tokens\":1664}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 28 Dec 2025 20:49:55 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

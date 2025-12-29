@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-130\",\"object\":\"chat.completion\",\"created\":1766954751,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, the user wants the last mention of Fuchs in the document. I started by creating a keyword cursor with \\\"fuchs\\\" to find all instances. Now, I need to read through the batches from that cursor. Since the goal is the last occurrence, I should keep reading batches until there are no more items. Each batch will give me the next set of mentions. I have to make sure to track the latest pointer as I go. If the batches run out, then the last mention is the one I found. Let me continue reading the batches.\\n\",\"tool_calls\":[{\"id\":\"call_2i7xn6vo\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-read_cursor_batch\",\"arguments\":\"{\\\"cursorName\\\":\\\"keyword_cursor_0\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1162,\"completion_tokens\":143,\"total_tokens\":1305}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 28 Dec 2025 20:45:51 GMT"
+    ]
+  }
+}

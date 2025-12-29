@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-900\",\"object\":\"chat.completion\",\"created\":1767028037,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to find the last mention of \\\"Фуксия\\\" (Fuchsia) in the markdown book. Use keyword cursor with keyword \\\"фуксия\\\" (lowercase stem). Create cursor, read batches until find last occurrence. We don't know the document size. We'll create keyword cursor: keywords [\\\"фуксия\\\"]. Then read batches repeatedly until no more batches. We need to capture the last mention's paragraph.\\n\\nWe need to create cursor. Then read repeatedly, storing each batch's items. The final answer should include the content of the last mention and its semantic pointer if exists.\\n\\nWe need to use the tool functions. Let's proceed.\\n\\n\",\"tool_calls\":[{\"id\":\"call_h6j2t5n6\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_keyword_cursor\",\"arguments\":\"{\\\"includeHeadings\\\":true,\\\"keywords\\\":[\\\"фуксия\\\"]}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":948,\"completion_tokens\":169,\"total_tokens\":1117}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 29 Dec 2025 17:07:17 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

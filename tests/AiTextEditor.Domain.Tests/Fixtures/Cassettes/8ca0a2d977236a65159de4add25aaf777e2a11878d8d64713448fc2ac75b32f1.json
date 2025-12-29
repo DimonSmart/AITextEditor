@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-195\",\"object\":\"chat.completion\",\"created\":1766952681,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let me try to figure out how to approach this. The user wants to find the first dialogue between two named characters and name them. The initial step was to create a keyword cursor with words like \\\"said,\\\" \\\"said:,\\\" \\\"quote,\\\" and \\\"quotation\\\" to locate dialogues. The response from the tool was \\\"keyword_cursor_0,\\\" which I assume is the cursor name.\\n\\nNow, I need to read batches from this cursor to find the dialogues. Since the user mentioned \\\"первый диалог\\\" (first dialogue), I should look through the batches in order and identify the first instance where two named characters are mentioned in a dialogue. \\n\\nI'll start by reading the first batch using the cursor-read_cursor_batch function with the cursor name \\\"keyword_cursor_0.\\\" Once I get the batch, I'll check each item to see if it contains a dialogue. The dialogue might be marked with \\\"said,\\\" \\\"said:,\\\" or other quotation indicators. \\n\\nWhen I find a dialogue, I need to extract the names of the characters involved. If the dialogue mentions two names, that's the first occurrence. If not, I'll continue to the next batch. It's important to ensure that the characters are named explicitly, not referred to by titles or descriptions. \\n\\nI should also be careful to check all parts of the text, including headings if they are included, since the cursor was set to include headings. Once I find the first valid dialogue with two named characters, I'll note their names and confirm that this is the earliest occurrence. If there are multiple dialogues in a single batch, I'll check them in order. \\n\\nIf the first batch doesn't have such a dialogue, I'll proceed to the next batch using the same cursor. This process continues until I find the first occurrence or exhaust the cursor's data. If no such dialogue exists, I'll need to inform the user, but given the task, I assume there is at least one.\\n\",\"tool_calls\":[{\"id\":\"call_ayjbpiuh\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-read_cursor_batch\",\"arguments\":\"{\\\"cursorName\\\":\\\"keyword_cursor_0\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1210,\"completion_tokens\":431,\"total_tokens\":1641}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 28 Dec 2025 20:11:21 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

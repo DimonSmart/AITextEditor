@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-959\",\"object\":\"chat.completion\",\"created\":1766952758,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, the user wants to find the first dialogue between two named characters and name them. I started by creating a keyword cursor with words like \\\"said,\\\" \\\"said:,\\\" \\\"quote,\\\" and \\\"quotation\\\" to catch dialogue sections. Then I read the first batch, but it returned no items. Maybe the dialogues don't use those exact keywords. Let me try broader terms. Perhaps \\\"dialogue,\\\" \\\"conversation,\\\" or \\\"character names\\\" might help. Wait, the user needs two named characters, so maybe looking for mentions of names in the same paragraph? Let me adjust the keywords to include \\\"name,\\\" \\\"character,\\\" and \\\"named.\\\" Also, ensure to include headings in case the dialogue is in a section title. Let me create a new cursor with these terms.\\n\",\"tool_calls\":[{\"id\":\"call_ajra3qrb\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_keyword_cursor\",\"arguments\":\"{\\\"includeHeadings\\\":true,\\\"keywords\\\":[\\\"dialogue\\\",\\\"conversation\\\",\\\"name\\\",\\\"character\\\",\\\"named\\\"]}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1275,\"completion_tokens\":199,\"total_tokens\":1474}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 28 Dec 2025 20:12:38 GMT"
+    ]
+  }
+}

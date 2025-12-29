@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-595\",\"object\":\"chat.completion\",\"created\":1766955482,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, the user is asking for the location of the fourth mention of Professor Zvezdokhin in the book, excluding headers. Let me start by understanding the tools available. The cursor-create_keyword_cursor function seems appropriate here since it searches for keywords in the document. The user specified \\\"звёздочкин\\\" as the keyword, so I'll use that. The includeHeadings parameter is set to false to exclude headers.\\n\\nFirst, I need to create a keyword cursor with the keyword \\\"звёздочкин\\\" and includeHeadings as false. Then, read batches from this cursor to find all occurrences. Since the user wants the fourth mention, I'll have to track each occurrence as I read through the batches. \\n\\nWait, the cursor-read_cursor_batch function will return items in order, so I can keep a counter. Each time I get a batch, I'll check each item's text for the keyword. When the counter reaches four, I'll note the pointer of that item. But I need to make sure that each mention is counted correctly, even if the keyword appears multiple times in a single paragraph. The user might consider each separate mention, so I should check each occurrence within the text.\\n\\nAlso, I need to ensure that the cursor is reading the entire document without missing any parts. The function parameters don't have a limit on the number of elements, so the cursor should process all relevant items. Once the fourth occurrence is found, I'll stop and return the pointer. If there are fewer than four mentions, the answer would indicate that, but the user is asking for the fourth, so I'll assume it exists. Let me proceed step by step, reading each batch and counting each mention until I reach four.\\n\",\"tool_calls\":[{\"id\":\"call_u9vz7f3w\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-read_cursor_batch\",\"arguments\":\"{\\\"cursorName\\\":\\\"keyword_cursor_0\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1213,\"completion_tokens\":381,\"total_tokens\":1594}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 28 Dec 2025 20:58:02 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

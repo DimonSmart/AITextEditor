@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-631\",\"object\":\"chat.completion\",\"created\":1766960708,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's see. The user wants to find the first dialogue between two named characters and name them. So far, the keywords tried haven't yielded any results. Maybe the initial keywords like \\\"said,\\\" \\\"dialogue,\\\" etc., aren't catching the right parts of the text. Perhaps the document uses different terms for dialogue or doesn't have direct quotes. Let me think of alternative keywords. Maybe \\\"talk,\\\" \\\"conversation,\\\" \\\"interact,\\\" or even specific character names if they're mentioned early. Wait, but the user said the characters are named by name, so maybe the dialogue starts with their names. Alternatively, maybe the document has sections with character names followed by their lines. Since the previous cursors didn't find anything, perhaps a broader approach is needed. Let me try a new set of keywords that include more variations of dialogue and character mentions. Also, maybe including terms like \\\"character\\\" and \\\"name\\\" again with different stems. Let me create another keyword cursor with these adjusted terms.\\n\",\"tool_calls\":[{\"id\":\"call_1pyz9beu\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_keyword_cursor\",\"arguments\":\"{\\\"includeHeadings\\\":true,\\\"keywords\\\":[\\\"character\\\",\\\"name\\\",\\\"dialogue\\\",\\\"talk\\\",\\\"conversation\\\",\\\"line\\\",\\\"quote\\\",\\\"said\\\",\\\"interact\\\",\\\"speech\\\"]}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1452,\"completion_tokens\":255,\"total_tokens\":1707}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 28 Dec 2025 22:25:08 GMT"
+    ]
+  }
+}

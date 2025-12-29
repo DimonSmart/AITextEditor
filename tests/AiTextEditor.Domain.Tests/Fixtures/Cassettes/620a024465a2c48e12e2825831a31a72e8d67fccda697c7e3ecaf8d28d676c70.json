@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-871\",\"object\":\"chat.completion\",\"created\":1766960622,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's see. The user wants to find the first dialogue between two named characters and name them. So far, the assistant tried using keywords like \\\"said,\\\" \\\"dialogue,\\\" etc., but didn't get any results. Maybe the initial keyword choices weren't specific enough. Let's think about better keywords. Instead of general terms, maybe focus on names and direct speech. Words like \\\"character,\\\" \\\"name,\\\" \\\"dialogue,\\\" \\\"said,\\\" \\\"quote\\\" could work. Also, maybe include terms like \\\"conversation\\\" or \\\"talk.\\\" Wait, the user mentioned \\\"названными по имени,\\\" which means named by name. So perhaps looking for instances where two names are mentioned in a dialogue. Maybe using keywords like \\\"name,\\\" \\\"character,\\\" \\\"said,\\\" \\\"dialogue,\\\" and even \\\"quote\\\" might help. Let me try creating a keyword cursor with these terms again, ensuring to include both names and dialogue indicators. Also, maybe check if the document has sections with character names followed by dialogue. Alternatively, maybe the first occurrence is in a specific chapter or section. But since the user didn't specify the document, I need to rely on keywords. Let me adjust the keywords to include more specific terms related to dialogue and named characters.\\n\",\"tool_calls\":[{\"id\":\"call_5fg9ggev\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_keyword_cursor\",\"arguments\":\"{\\\"includeHeadings\\\":true,\\\"keywords\\\":[\\\"character\\\",\\\"name\\\",\\\"said\\\",\\\"dialogue\\\",\\\"quote\\\",\\\"conversation\\\",\\\"talk\\\"]}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1394,\"completion_tokens\":299,\"total_tokens\":1693}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 28 Dec 2025 22:23:42 GMT"
+    ]
+  }
+}

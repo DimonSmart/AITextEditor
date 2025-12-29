@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-127\",\"object\":\"chat.completion\",\"created\":1766960264,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's see. The user is asking in which paragraph Ponchik, choosing a darker night, drowned his old clothes in the Ogurcovka River. \\n\\nFirst, I need to recall the steps taken so far. The assistant created a keyword cursor with the keywords \\\"пончик\\\", \\\"ночка\\\", \\\"утопить\\\", \\\"костюм\\\", \\\"река\\\". Then, they read batches from the cursor. The first batch returned paragraphs 3 and 4. The second batch had paragraphs 8, 22, 38. Now, the user's next response is the third batch, which includes paragraphs 8, 22, 38. \\n\\nLooking at the content of these paragraphs: \\n\\nParagraph 8 talks about Znayka's theory about the Moon's craters, comparing them to bubbles in a pancake. That's not related to Ponchik's action. \\n\\nParagraph 22 mentions Professor Zvezdочкин discussing Znayka's book, which also isn't relevant. \\n\\nParagraph 38 is a dialogue where Znayka mentions molten substance, still not related. \\n\\nSo, the initial batches didn't find the relevant paragraph. The assistant needs to continue reading more batches. The next step would be to call cursor-read_cursor_batch again with the same cursor name to get the next set of items. \\n\\nThe user's goal is to find the specific paragraph where Ponchik drowns his old clothes. Since the first two batches didn't include that paragraph, the assistant should keep reading until the relevant paragraph is found. The next batch might have the answer. If not, continue until all possibilities are exhausted. \\n\\nThe stop reason could be either finding the paragraph (goal_reached) or no more batches (no_more_batches). Since the user hasn't found it yet, the process continues.\\n\",\"tool_calls\":[{\"id\":\"call_s70uavfq\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-read_cursor_batch\",\"arguments\":\"{\\\"cursorName\\\":\\\"keyword_cursor_0\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":2601,\"completion_tokens\":415,\"total_tokens\":3016}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 28 Dec 2025 22:17:44 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

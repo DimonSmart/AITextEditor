@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-375\",\"object\":\"chat.completion\",\"created\":1766961169,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's see. The user wants to find the first dialogue between two named characters and name them. So, I need to look through the document for any conversations where both characters are mentioned by name. \\n\\nFirst, I tried using keyword cursors with words like \\\"said,\\\" \\\"dialogue,\\\" etc., but didn't find anything. Then I tried a filtered cursor to get all paragraphs, but the initial batches didn't have any dialogues. Now, I'm reading through the paragraphs to check for any mentions of characters followed by their dialogue.\\n\\nLooking at the current paragraph, there's a mention of Незнайка (Nезнайка), Кнопочки, Пачкули Пёстренького, and Вертибутылкина. But the text here is descriptive, not a dialogue. The next paragraph mentions Клёпки, but again, no dialogue. I need to keep reading further batches to find where two characters actually have a conversation. Maybe the dialogues start later in the document. I'll continue checking each paragraph until I find the first instance where two named characters speak.\\n\",\"tool_calls\":[{\"id\":\"call_3b34srnw\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-read_cursor_batch\",\"arguments\":\"{\\\"cursorName\\\":\\\"all_paragraphs\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":2523,\"completion_tokens\":255,\"total_tokens\":2778}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 28 Dec 2025 22:32:49 GMT"
+    ]
+  }
+}

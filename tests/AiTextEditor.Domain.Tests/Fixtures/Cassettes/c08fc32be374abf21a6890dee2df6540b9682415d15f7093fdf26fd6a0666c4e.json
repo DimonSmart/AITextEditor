@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-642\",\"object\":\"chat.completion\",\"created\":1766961251,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's see. The user wants to find the first dialogue between two named characters and name them. So far, I've tried using keyword cursors with words like \\\"said,\\\" \\\"dialogue,\\\" etc., but didn't find anything. Then I switched to a filtered cursor to get all paragraphs, but the initial batches didn't have any dialogues. Now, I need to check further paragraphs.\\n\\nLooking at the latest response, the cursor \\\"all_paragraphs\\\" has more items. The nextAfterPointer is \\\"7:1.1.1.p4,\\\" so I should read the next batch. Let me call cursor-read_cursor_batch with \\\"all_paragraphs\\\" again. If there's a dialogue in the next paragraphs, I'll need to parse the text for named characters talking to each other. If not, maybe I need to adjust the keywords or check other sections. But since the user wants the first occurrence, I'll continue reading the next batch first.\\n\",\"tool_calls\":[{\"id\":\"call_whgvoiuf\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-read_cursor_batch\",\"arguments\":\"{\\\"cursorName\\\":\\\"all_paragraphs\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":3284,\"completion_tokens\":224,\"total_tokens\":3508}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 28 Dec 2025 22:34:11 GMT"
+    ]
+  }
+}

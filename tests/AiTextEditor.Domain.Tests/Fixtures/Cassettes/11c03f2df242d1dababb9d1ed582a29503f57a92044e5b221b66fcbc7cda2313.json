@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-180\",\"object\":\"chat.completion\",\"created\":1766959908,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's tackle this question. The user is asking in which paragraph Pechkin, choosing a darker night, drowned his old costumes in the Ogurcovna River. First, I need to figure out the right approach.\\n\\nThe user provided a specific plan using the tools. The first step is to create a keyword cursor. The keywords should be related to the question. Let's break down the key elements: \\\"Пончик\\\", \\\"потемней ночку\\\", \\\"утопил старые костюмы\\\", \\\"Огурцовой реке\\\". But since the tool requires lowercase word stems, I should use stems like \\\"пончик\\\", \\\"ночка\\\", \\\"утопить\\\", \\\"костюм\\\", \\\"река\\\". \\n\\nWait, the user mentioned \\\"Огурцовой реке\\\" which is a proper noun, so maybe the exact name is important. But the tool's keywords are for matching any part of the text. So including \\\"огурцова\\\" and \\\"река\\\" might help. Also, \\\"утопил\\\" is the verb here. \\n\\nI should create a keyword cursor with these stems. Then read batches until I find the paragraph containing all these elements. Since the user wants the exact paragraph, I need to check each batch. Once found, note the pointer and finalize the answer. Let's proceed step by step as per the plan.\\n\",\"tool_calls\":[{\"id\":\"call_spn7lv5i\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_keyword_cursor\",\"arguments\":\"{\\\"includeHeadings\\\":true,\\\"keywords\\\":[\\\"пончик\\\",\\\"ночка\\\",\\\"утопить\\\",\\\"костюм\\\",\\\"река\\\"]}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1177,\"completion_tokens\":343,\"total_tokens\":1520}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 28 Dec 2025 22:11:48 GMT"
+    ]
+  }
+}

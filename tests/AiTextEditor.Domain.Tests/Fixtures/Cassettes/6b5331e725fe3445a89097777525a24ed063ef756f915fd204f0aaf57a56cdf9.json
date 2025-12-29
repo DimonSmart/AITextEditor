@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-727\",\"object\":\"chat.completion\",\"created\":1767027940,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to find where Znaika sarcastically taunts the professor with phrase about him having to wander in the center of the Moon. Likely in dialogue with Professor Звёздочкин maybe later. We need to continue reading later parts where professor appears. Use keyword search for \\\"профессор\\\" maybe more. Let's search further.\",\"tool_calls\":[{\"id\":\"call_4cdafk3d\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-read_cursor_batch\",\"arguments\":\"{\\\"cursorName\\\":\\\"keyword_cursor_0\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":2328,\"completion_tokens\":101,\"total_tokens\":2429}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 29 Dec 2025 17:05:40 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

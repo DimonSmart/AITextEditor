@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-78\",\"object\":\"chat.completion\",\"created\":1766955750,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's see. The user is asking for the fourth mention of Professor Zvezdochkin in the book, excluding headers. So first, I need to make sure I'm tracking each occurrence correctly.\\n\\nEarlier, I created a keyword cursor with \\\"звёздочкин\\\" and read batches. The first batch had three mentions: the first paragraph (24:1.1.1.p21) mentions him once, the second (25:1.1.1.p22) mentions him again, and the third (26:1.1.1.p23) is another mention. That's three so far.\\n\\nThe next batch included paragraphs 28:1.1.1.p25, 35:1.1.1.p32, and 37:1.1.1.p34. The p25 paragraph has another mention, making it the fourth. The other two in this batch (p32 and p34) are fifth and sixth. But the user wants the fourth, which is in p25. Let me check the pointers again.\\n\\nWait, the first batch's items were p21, p22, p23. Then the next batch was p25, p32, p34. Wait, p24 might be missing? Or maybe the cursor skipped some? Wait, the first batch had p21, p22, p23. Then the next batch started at p23 and read p25? That seems like a jump. Maybe there's a p24 that wasn't included. But according to the tool response, the nextAfterPointer after the first batch was p23, and the next batch included p25. So maybe p24 is not part of the cursor? Or maybe the cursor is reading in chunks, and some paragraphs are skipped. But the user wants the fourth mention. Let me count again.\\n\\nFirst mention: p21 (first paragraph)\\nSecond: p22 (second paragraph)\\nThird: p23 (third paragraph)\\nFourth: p25 (first item in the next batch)\\nSo the fourth mention is in p25. Therefore, the answer should be SemanticPointer 28:1.1.1.p25. But wait, the user wants the fourth mention, so after three in the first batch, the next one is the fourth. So the answer is the first item in the second batch, which is p25. So the final answer is 28:1.1.1.p25.\\n\",\"tool_calls\":[{\"id\":\"call_0c2v30bn\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-read_cursor_batch\",\"arguments\":\"{\\\"cursorName\\\":\\\"keyword_cursor_0\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":2407,\"completion_tokens\":569,\"total_tokens\":2976}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 28 Dec 2025 21:02:30 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

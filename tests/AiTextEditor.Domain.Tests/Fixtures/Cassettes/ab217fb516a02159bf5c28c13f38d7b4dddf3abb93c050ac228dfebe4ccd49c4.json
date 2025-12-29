@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-257\",\"object\":\"chat.completion\",\"created\":1767027880,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"**Ответ:** Знайка сравнивает лунную поверхность с хорошо пропечённым блином и объясняет появление пузырьков пара в абзаце\u202F**«11:1.1.1.p8»**.\\n\\n**Стоп‑причина:** goal_reached.\",\"reasoning\":\"The goal: \\\"В каком абзаце Знайка сравнивает лунную поверхность с хорошо пропечённым блином и объясняет пузырьки пара?\\\" The relevant paragraph is the one describing the pancake analogy and bubble explanation. From the data, that's SemanticPointer \\\"11:1.1.1.p8\\\". It includes the pancake analogy and bubble explanation. So answer: In paragraph with pointer 11:1.1.1.p8. Also provide stop reason: goal_reached.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2989,\"completion_tokens\":174,\"total_tokens\":3163}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 29 Dec 2025 17:04:40 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

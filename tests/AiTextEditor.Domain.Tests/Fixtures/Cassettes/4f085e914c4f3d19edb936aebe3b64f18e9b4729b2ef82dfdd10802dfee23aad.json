@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-413\",\"object\":\"chat.completion\",\"created\":1766960900,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's see. The user wants to find the first dialogue between two named characters and name them. So far, I've tried several keyword searches, but the cursor hasn't returned any items. Maybe the keywords aren't specific enough or maybe the document doesn't have explicit dialogues. Let me think of alternative approaches.\\n\\nWait, maybe the characters are mentioned in a way that doesn't use the keywords I've tried. Perhaps using a broader filter, like all paragraphs, and then looking for mentions of characters followed by their dialogue. Since the user mentioned \\\"названными по имени,\\\" which means named by name, I should focus on paragraphs that mention character names directly.\\n\\nI should create a cursor that includes all paragraphs and then scan through them to find the first instance where two named characters have a dialogue. Let me try that. If I can't find it with keywords, maybe the answer is in a paragraph that wasn't captured by previous filters. Let's proceed with a broader filter.\\n\",\"tool_calls\":[{\"id\":\"call_ohpa1f84\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_filtered_cursor\",\"arguments\":\"{\\\"filterDescription\\\":\\\"true\\\",\\\"includeHeadings\\\":true,\\\"name\\\":\\\"all_paragraphs\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1584,\"completion_tokens\":241,\"total_tokens\":1825}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 28 Dec 2025 22:28:20 GMT"
+    ]
+  }
+}

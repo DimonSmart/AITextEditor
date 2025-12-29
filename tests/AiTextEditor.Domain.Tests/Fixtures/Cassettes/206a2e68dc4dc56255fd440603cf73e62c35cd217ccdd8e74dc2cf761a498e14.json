@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-210\",\"object\":\"chat.completion\",\"created\":1766954607,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Final answer:  \\nВ разделе с SemanticPointer **10:1.1.1.p7** описано, как астрономы в Солнечном городе поссорились и разделились на вулканистов и метеоритчиков.  \\n\\nStop reason: `goal_reached`\",\"reasoning\":\"Okay, let's tackle this query. The user is asking where in the book it's described how the astronomers in the Sun City got into a fight and split into volcanologists and meteoritologists. \\n\\nFirst, I need to recall the steps taken so far. The assistant started by creating a keyword cursor with the keywords related to the question: \\\"астрономы\\\", \\\"солнечном\\\", \\\"разделились\\\", \\\"вулканисты\\\", \\\"метеоритчики\\\". Then, they read batches from the cursor, which is a way to scan through the document for matching content.\\n\\nLooking at the responses from the tool calls, the first batch didn't have the relevant info. The second batch mentioned the Sun City and some construction, but not the conflict. The third batch talked about Znayka's trip to the Moon and the lunar craters. Then, in the fourth batch, there's a paragraph that mentions the astronomers in Sun City arguing about the origin of lunar craters, splitting into two groups: volcanologists and meteoritologists. That's exactly what the user is asking about.\\n\\nSo, the answer should point to that specific paragraph. The SemanticPointer for that paragraph is \\\"10:1.1.1.p7\\\". The user's goal is achieved here, so the stop reason is \\\"goal_reached\\\". The assistant should finalize the answer with this pointer and confirm the stop reason.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":4616,\"completion_tokens\":368,\"total_tokens\":4984}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 28 Dec 2025 20:43:27 GMT"
+    ]
+  }
+}

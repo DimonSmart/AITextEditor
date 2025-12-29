@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-205\",\"object\":\"chat.completion\",\"created\":1766953322,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Знайка сравнивает лунную поверхность с хорошо пропечённым блином и объясняет пузырьки пара в абзаце с указателем **11:1.1.1.p8**.  \\n\\n**Ответ:**  \\nАбзац, где Знайка сравнивает лунную поверхность с блином и объясняет пузырьки пара, находится под указателем `11:1.1.1.p8`.  \\n\\n**Stop reason:** `goal_reached`\",\"reasoning\":\"Okay, let's see. The user is asking in which paragraph Znayka compares the lunar surface to a well-cooked blini and explains the bubbles of steam. \\n\\nFirst, I need to recall the steps taken so far. The assistant created a keyword cursor with the keywords \\\"лунная поверхность\\\", \\\"хорошо пропечённым блином\\\", and \\\"пузырьки пара\\\". Then, they read the cursor batch, and the response included a paragraph that matches these keywords.\\n\\nLooking at the provided paragraph, it starts by mentioning Znayka disagreeing with volcanic and meteorite theories. Then, he observes the lunar surface resembling a well-cooked blini with holes. The paragraph goes on to describe how when the blini is liquid, the surface is smooth, but as it heats up, bubbles form, pop, creating holes. This matches the user's query about the comparison and the explanation of steam bubbles.\\n\\nThe paragraph is under the SemanticPointer \\\"11:1.1.1.p8\\\". Since the cursor read returned this paragraph and HasMore is false, there are no more batches. The answer should be this paragraph. The stop reason is goal_reached because the required information is found.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1634,\"completion_tokens\":384,\"total_tokens\":2018}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 28 Dec 2025 20:22:02 GMT"
+    ]
+  }
+}

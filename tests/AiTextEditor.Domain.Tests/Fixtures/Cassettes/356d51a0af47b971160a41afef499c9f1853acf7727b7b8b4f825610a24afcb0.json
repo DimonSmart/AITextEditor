@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-283\",\"object\":\"chat.completion\",\"created\":1766959640,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"Okay, let's tackle this query. The user is asking where Professor Zvezdokhinn first appears, specifically the one who \\\"kiplied from indignation,\\\" and a brief description of his character.\\n\\nFirst, I need to create a keyword cursor using the keywords \\\"зведокчин\\\" and \\\"кипел.\\\" The user mentioned using lowercase stems, so I'll use those. The cursor will help find relevant paragraphs.\\n\\nNext, I'll read batches from the cursor. The first batch might contain the mention of Professor Zvezdokhinn. I need to check each paragraph for the description of him being indignant. \\n\\nIf the first batch doesn't have it, I'll continue reading subsequent batches. The answer should include the location in the document and a character description. I'll make sure to note the exact paragraph where it's first mentioned and describe his character traits based on the text. \\n\\nI should also check if there's any previous evidence from earlier steps, but since this is the first step, I'll focus on the initial batches. Once found, I'll finalize the answer with the relevant pointer and stop reason.\\n\",\"tool_calls\":[{\"id\":\"call_gobkvlfp\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-read_cursor_batch\",\"arguments\":\"{\\\"cursorName\\\":\\\"keyword_cursor_0\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1250,\"completion_tokens\":260,\"total_tokens\":1510}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 28 Dec 2025 22:07:20 GMT"
+    ]
+  }
+}
