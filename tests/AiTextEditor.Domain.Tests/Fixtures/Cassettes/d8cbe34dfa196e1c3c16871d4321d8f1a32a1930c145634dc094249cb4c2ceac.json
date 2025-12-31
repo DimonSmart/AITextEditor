@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-18\",\"object\":\"chat.completion\",\"created\":1767213297,\"model\":\"gpt-oss:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to find the fourth mention of professor Zvezdichkin (Профессор Звёздочкина). Excluding headings. We need to search the book. Use keyword cursor with keyword \\\"Звёздочкина\\\" or \\\"Звёздочкина\\\" maybe \\\"Звёздочкина\\\". Also \\\"профессор\\\". But we need mention of professor Zvezdichkin. Likely the name appears as \\\"Профессор Звёздочкина\\\". So keyword \\\"Звёздочкина\\\". Use cursor_create_keyword_cursor. Then read batches until we find 4th mention. Excluding headings: set includeHeadings false. Let's do that.\",\"tool_calls\":[{\"id\":\"call_5acsog49\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_keyword_cursor\",\"arguments\":\"{\\\"includeHeadings\\\":false,\\\"keywords\\\":[\\\"Звёздочкина\\\"]}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":927,\"completion_tokens\":184,\"total_tokens\":1111}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Wed, 31 Dec 2025 20:34:57 GMT"
+    ]
+  }
+}
