@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-928\",\"object\":\"chat.completion\",\"created\":1767107410,\"model\":\"gpt-oss:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We still haven't seen a dialogue between two named characters. The keyword search might not capture dialogues. Maybe need to use filtered cursor with filterDescription that looks for quotation marks or dash. Let's try filtered cursor.\",\"tool_calls\":[{\"id\":\"call_jgkmhcjj\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_filtered_cursor\",\"arguments\":\"{\\\"filterDescription\\\":\\\"\\\\\\\"\\\\\\\"\\\",\\\"includeHeadings\\\":true,\\\"maxBytes\\\":-1,\\\"maxElements\\\":-1,\\\"startAfterPointer\\\":\\\"59:1.1.1.p56\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":3216,\"completion_tokens\":101,\"total_tokens\":3317}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 30 Dec 2025 15:10:10 GMT"
+    ]
+  }
+}

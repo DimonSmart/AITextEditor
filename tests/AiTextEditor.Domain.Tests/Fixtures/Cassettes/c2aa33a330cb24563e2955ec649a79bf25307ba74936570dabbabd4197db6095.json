@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-100\",\"object\":\"chat.completion\",\"created\":1767041980,\"model\":\"gpt-oss:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to find first dialogue between two named characters. We need to search entire document. We used keyword cursor but got no items. Maybe the document is large; we need to read more batches. Let's continue reading filtered cursor.\",\"tool_calls\":[{\"id\":\"call_ffvesd8u\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-read_cursor_batch\",\"arguments\":\"{\\\"cursorName\\\":\\\"filtered_cursor_0\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1309,\"completion_tokens\":76,\"total_tokens\":1385}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 29 Dec 2025 20:59:40 GMT"
+    ]
+  }
+}

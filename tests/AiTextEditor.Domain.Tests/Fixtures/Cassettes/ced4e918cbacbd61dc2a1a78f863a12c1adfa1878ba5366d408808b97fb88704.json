@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-499\",\"object\":\"chat.completion\",\"created\":1767041441,\"model\":\"gpt-oss:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"**Goal:** Где впервые упоминается Пончик?  \\n**Stop reason:** goal_reached  \\n\\n**Первое упоминание Пончика** находится в параграфе **6:1.1.1.p3**:\\n\\n\\u003e Все были очень довольны. Единственным, кто пострадал на этом деле, оказался Пончик. Когда Пончик увидел, что теперь можно брать в магазине любую вещь, какая только могла понадобиться, он стал недоумевать: к чему ему вся та куча костюмов, которая накопилась у него дома. Все эти костюмы к тому же вышли из моды, и их всё равно нельзя было носить. Выбрав потемней ночку, Пончик завязал свои старые костюмы в огромный узел, вынес тайком из дома и утопил в Огурцовой реке, а вместо них натаскал себе из магазинов новых костюмов. Кончилось тем, что его комната превратилась в какой-то склад готового платья. Костюмы лежали у него и в шкафу, и на шкафу, и на столе, и под столом, и на книжных полках, висели на стенах, на спинках стульев и даже под потолком, на верёвочках.\",\"reasoning\":\"We got two paragraphs containing \\\"Пончик\\\". The question: \\\"Где впервые упоминается Пончик?\\\" We need to find the first mention. The cursor returned items in order. The first item has pointer \\\"6:1.1.1.p3\\\". That likely is the first mention. We should provide that pointer and the paragraph. The answer: first mention is in paragraph 6:1.1.1.p3. Provide the text. Also mention goal and stop reason. Stop reason: goal_reached.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1627,\"completion_tokens\":403,\"total_tokens\":2030}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 29 Dec 2025 20:50:41 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-679\",\"object\":\"chat.completion\",\"created\":1767118372,\"model\":\"gpt-oss:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Где впервые упоминается Фуксия?  \\n**Ответ:** В параграфе **8:1.1.1.p5**.  \\n**Semantic Pointer:** 8:1.1.1.p5  \\n\\n**Goal:** Где впервые упоминается Фуксия?  \\n**Stop reason:** goal_reached\",\"reasoning\":\"We got two paragraphs containing \\\"Фуксия\\\". The first is at pointer 8:1.1.1.p5. That is likely the first mention. We need to answer: \\\"Где впервые упоминается Фуксия?\\\" Provide semantic pointer. So answer: \\\"В параграфе 8:1.1.1.p5\\\" or \\\"В 8:1.1.1.p5\\\". Provide goal and stop reason.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1511,\"completion_tokens\":170,\"total_tokens\":1681}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 30 Dec 2025 18:12:52 GMT"
+    ]
+  }
+}

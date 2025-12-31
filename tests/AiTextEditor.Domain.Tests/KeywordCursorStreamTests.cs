@@ -75,7 +75,61 @@ public class KeywordCursorStreamTests
         }
 
         Assert.All(readItems, item => Assert.NotEqual(LinearItemType.Heading, item.Type));
+        Assert.Single(readItems);
         Assert.Contains(readItems, item => item.Markdown.Contains("Bob called", StringComparison.OrdinalIgnoreCase));
-        Assert.Equal(document.Items.Count(item => item.Type != LinearItemType.Heading), readItems.Count);
+    }
+
+    [Fact]
+    public void KeywordCursorMatchesRussianInflections()
+    {
+        var markdown = """
+        # Заголовок
+
+        Мы подошли к старому дому на окраине.
+
+        Здесь нет совпадений.
+        """;
+
+        var repository = new MarkdownDocumentRepository();
+        var document = repository.LoadFromMarkdown(markdown);
+        var cursor = new KeywordCursorStream(document, new[] { "старый дом" }, maxElements: 5, maxBytes: 10_000, startAfterPointer: null, includeHeadings: false);
+
+        var readItems = new List<LinearItem>();
+
+        while (!cursor.IsComplete)
+        {
+            var portion = cursor.NextPortion();
+            readItems.AddRange(portion.Items);
+        }
+
+        Assert.Single(readItems);
+        Assert.Contains("старому дому", readItems[0].Text, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void KeywordCursorMatchesEnglishInflections()
+    {
+        var markdown = """
+        # Title
+
+        They were playing games all evening.
+
+        No matches here.
+        """;
+
+        var repository = new MarkdownDocumentRepository();
+        var document = repository.LoadFromMarkdown(markdown);
+        var cursor = new KeywordCursorStream(document, new[] { "play game" }, maxElements: 5, maxBytes: 10_000, startAfterPointer: null, includeHeadings: false);
+
+        var readItems = new List<LinearItem>();
+
+        while (!cursor.IsComplete)
+        {
+            var portion = cursor.NextPortion();
+            readItems.AddRange(portion.Items);
+        }
+
+        Assert.Single(readItems);
+        Assert.Contains("playing games", readItems[0].Text, StringComparison.OrdinalIgnoreCase);
     }
 }

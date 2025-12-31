@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-865\",\"object\":\"chat.completion\",\"created\":1767082817,\"model\":\"gpt-oss:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to read batches.\",\"tool_calls\":[{\"id\":\"call_vtx0bufn\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-read_cursor_batch\",\"arguments\":\"{\\\"cursorName\\\":\\\"keyword_cursor_0\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1080,\"completion_tokens\":36,\"total_tokens\":1116}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 30 Dec 2025 08:20:17 GMT"
+    ]
+  }
+}

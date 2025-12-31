@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-273\",\"object\":\"chat.completion\",\"created\":1767117787,\"model\":\"gpt-oss:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"**Goal:** Где описано, как астрономы в Солнечном городе поссорились и разделились на вулканистов и метеоритчиков?  \\n**Stop reason:** goal_reached  \\n\\nОтвет: Это описано в параграфе **10:1.1.1.p7**.  \\nВ нём говорится: «…в Солнечном городе все астрономы даже поссорились между собой, стараясь разрешить этот сложный вопрос, и разделились на две половины. Одна половина утверждает, что лунные кратеры произошли от вулканов, другая половина говорит, что лунные кратеры – это следы от падения крупных метеоритов. Первую половину астрономов называют поэтому последователями вулканической теории, или попросту вулканистами, а вторую – последователями метеоритной теории, или метеоритчиками.»\",\"reasoning\":\"We have found paragraph 10:1.1.1.p7 that describes the split. The question: \\\"Где описано, как астрономы в Солнечном городе поссорились и разделились на вулканистов и метеоритчиков?\\\" The answer: In paragraph 10:1.1.1.p7. Provide pointer. Also mention goal and stop reason. We reached goal.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2050,\"completion_tokens\":301,\"total_tokens\":2351}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 30 Dec 2025 18:03:07 GMT"
+    ]
+  }
+}

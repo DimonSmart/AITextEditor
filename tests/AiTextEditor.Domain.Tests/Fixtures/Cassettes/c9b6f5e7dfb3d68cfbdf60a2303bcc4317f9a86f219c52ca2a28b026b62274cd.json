@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-198\",\"object\":\"chat.completion\",\"created\":1767119029,\"model\":\"gpt-oss:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to find first appearance of professor Zvezdochkin who \\\"kipped from indignation\\\" and brief description of his character. Use keyword cursor. Keywords: \\\"профессор Звёздочкин\\\", \\\"кипел от негодования\\\". Let's create cursor.\",\"tool_calls\":[{\"id\":\"call_ft6ac1az\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_keyword_cursor\",\"arguments\":\"{\\\"includeHeadings\\\":true,\\\"keywords\\\":[\\\"профессор Звёздочкин\\\",\\\"кипел от негодования\\\"]}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":997,\"completion_tokens\":108,\"total_tokens\":1105}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 30 Dec 2025 18:23:49 GMT"
+    ]
+  }
+}

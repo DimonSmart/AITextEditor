@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-734\",\"object\":\"chat.completion\",\"created\":1767088058,\"model\":\"gpt-oss:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"No items found. Need broader search. Use filtered cursor with \\\"All paragraphs\\\".\",\"tool_calls\":[{\"id\":\"call_kwf2rjfa\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_filtered_cursor\",\"arguments\":\"{\\\"filterDescription\\\":\\\"All paragraphs\\\",\\\"includeHeadings\\\":true}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1058,\"completion_tokens\":50,\"total_tokens\":1108}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 30 Dec 2025 09:47:38 GMT"
+    ]
+  }
+}

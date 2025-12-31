@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-383\",\"object\":\"chat.completion\",\"created\":1767119420,\"model\":\"gpt-oss:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"**Где сказано, что Знайка пробыл на Луне около четырёх часов и пришлось срочно возвращаться из‑за воздуха?**  \\nВ параграфе **8:1.1.1.p5** книги:  \\n\\n\\u003e «…Пробыв на Луне около четырёх часов, Знайка и его спутницы принуждены были поскорей отправиться в обратный путь, так как запасы воздуха были у них на исходе…»\\n\\n**Semantic Pointer:** `8:1.1.1.p5`  \\n\\n**Goal reached.**\",\"reasoning\":\"We got a paragraph containing the info. Need to continue reading to confirm no more. But goal reached. We have the pointer 8:1.1.1.p5. Provide answer.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1768,\"completion_tokens\":171,\"total_tokens\":1939}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 30 Dec 2025 18:30:20 GMT"
+    ]
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-950\",\"object\":\"chat.completion\",\"created\":1767201362,\"model\":\"gpt-oss:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to find the fourth mention of \\\"профессора Звёздочкина\\\" in the book, excluding headings. The book is in Russian, children's book. We need to search for mentions. Use keyword cursor with keyword \\\"профессор Звёздочкина\\\" or \\\"Звёздочкина\\\". But we need to count mentions. We need to find the fourth mention. We should use cursor_create_keyword_cursor with keywords [\\\"профессор\\\", \\\"Звёздочкина\\\"]? But we need to match the phrase. The cursor matches items containing any of the keywords. That might return many items. We need to read through to count mentions. We need to exclude headings. So includeHeadings: false. Let's create keyword cursor with keywords [\\\"профессор Звёздочкина\\\"]? But the cursor matches items containing any of the keywords. If we use phrase, it might match. But better to use \\\"Звёздочкина\\\" to capture all mentions. But we need to ensure we count only mentions of professor. But maybe there are other characters with that name? Probably only professor. So use keyword \\\"Звёздочкина\\\". Let's create cursor.\",\"tool_calls\":[{\"id\":\"call_k9dy67mn\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_keyword_cursor\",\"arguments\":\"{\\\"includeHeadings\\\":false,\\\"keywords\\\":[\\\"Звёздочкина\\\"]}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":901,\"completion_tokens\":289,\"total_tokens\":1190}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Wed, 31 Dec 2025 17:16:02 GMT"
+    ]
+  }
+}

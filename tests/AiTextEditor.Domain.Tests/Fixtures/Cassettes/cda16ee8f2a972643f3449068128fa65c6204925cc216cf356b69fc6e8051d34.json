@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-422\",\"object\":\"chat.completion\",\"created\":1767041274,\"model\":\"gpt-oss:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to search the document for \\\"Пончик\\\". Use cursor-create_keyword_cursor with keyword \\\"пончик\\\" (lowercase). Then read batches until find mention. Then answer. Let's do that.\",\"tool_calls\":[{\"id\":\"call_ai7hzrjd\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_keyword_cursor\",\"arguments\":\"{\\\"includeHeadings\\\":true,\\\"keywords\\\":[\\\"пончик\\\"]}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":946,\"completion_tokens\":75,\"total_tokens\":1021}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 29 Dec 2025 20:47:54 GMT"
+    ]
+  }
+}

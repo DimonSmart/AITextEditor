@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-485\",\"object\":\"chat.completion\",\"created\":1767118613,\"model\":\"gpt-oss:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"**Goal:** Где в книге впервые упоминается профессор Звёздочкин? (исключая заголовки)  \\n**Stop reason:** goal_reached  \\n\\n**Ответ:**  \\nПрофессор Звёздочкин впервые упоминается в параграфе **24:1.1.1.p21**.\",\"reasoning\":\"We need to find first mention of professor Zvezdochkin, excluding headings. The cursor returned items: heading \\\"Как Знайка победил профессора Звёздочкина\\\" (heading includes mention but we exclude headings). Next paragraph 24:1.1.1.p21 contains mention. That is first mention. We need semantic pointer. Provide answer in Russian. Also mention goal and stop reason. Stop reason: no_more_batches? Actually we have more batches but we already found first mention. We can stop. So final answer: pointer 24:1.1.1.p21. Provide goal and stop reason.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1484,\"completion_tokens\":209,\"total_tokens\":1693}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 30 Dec 2025 18:16:53 GMT"
+    ]
+  }
+}

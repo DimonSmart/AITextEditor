@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-514\",\"object\":\"chat.completion\",\"created\":1767117828,\"model\":\"gpt-oss:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to find the last mention of \\\"Фуксия\\\" in the book. Use keyword cursor for \\\"Фуксия\\\". Then read batches until we find the last mention. We need to output the paragraph with pointer. Use cursor_create_keyword_cursor with keyword \\\"Фуксия\\\". Then read batches until no more. We need to keep track of last found. Let's do it.\",\"tool_calls\":[{\"id\":\"call_tbp1997p\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_keyword_cursor\",\"arguments\":\"{\\\"includeHeadings\\\":true,\\\"keywords\\\":[\\\"Фуксия\\\"]}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":924,\"completion_tokens\":112,\"total_tokens\":1036}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 30 Dec 2025 18:03:48 GMT"
+    ]
+  }
+}

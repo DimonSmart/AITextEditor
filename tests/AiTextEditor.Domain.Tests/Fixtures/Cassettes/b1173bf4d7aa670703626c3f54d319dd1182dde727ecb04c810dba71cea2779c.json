@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-88\",\"object\":\"chat.completion\",\"created\":1767118990,\"model\":\"gpt-oss:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"**Goal:** Кто такие Фуксия и Селедочка и где они упоминаются впервые?  \\n**Stop reason:** goal_reached  \\n\\nФуксия и Селедочка – это «учёные малышки», которые вместе с главным героем Знайкой готовили свой второй полёт на Луну.  \\nОни впервые упоминаются в параграфе **8:1.1.1.p5**.\",\"reasoning\":\"We have found paragraphs with mentions of Фуксия and Селедочка. The first paragraph is at pointer 8:1.1.1.p5. That seems to be the first mention. The question: \\\"Кто такие Фуксия и Селедочка и где они упоминаются впервые?\\\" So we need to describe who they are and where first mentioned. The paragraph says: \\\"Там он познакомился с учёными малышками Фуксией и Селёдочкой, которые в то время готовили свой второй полёт на Луну.\\\" So they are \\\"учёные малышки\\\" (scientist girls) preparing second flight to the Moon. So answer: They are scientist girls, first mentioned in paragraph 8:1.1.1.p5. Provide pointer. Also mention goal and stop reason.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1543,\"completion_tokens\":274,\"total_tokens\":1817}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 30 Dec 2025 18:23:10 GMT"
+    ]
+  }
+}

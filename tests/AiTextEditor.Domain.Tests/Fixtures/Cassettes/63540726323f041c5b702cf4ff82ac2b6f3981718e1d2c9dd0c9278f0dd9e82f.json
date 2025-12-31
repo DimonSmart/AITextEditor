@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-70\",\"object\":\"chat.completion\",\"created\":1767082889,\"model\":\"gpt-oss:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"**Ответ:** Пончик утопил старые костюмы в Огурцовой реке в **абзаце\u202F3** (семантический указатель: `6:1.1.1.p3`).  \\n\\n**Цель достигнута.**\",\"reasoning\":\"We got two paragraphs. The question: \\\"В каком абзаце Пончик, выбрав потемней ночку, утопил старые костюмы в Огурцовой реке?\\\" The answer is paragraph 3? Actually the paragraph containing that sentence is the first paragraph returned: \\\"Все были очень довольны...\\\" It says \\\"Выбрав потемней ночку, Пончик ... утопил в Огурцовой реке\\\". That is paragraph 3? The semantic pointer is \\\"6:1.1.1.p3\\\". So answer: paragraph 3. Provide pointer. Stop reason: goal_reached.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1716,\"completion_tokens\":200,\"total_tokens\":1916}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 30 Dec 2025 08:21:29 GMT"
+    ]
+  }
+}

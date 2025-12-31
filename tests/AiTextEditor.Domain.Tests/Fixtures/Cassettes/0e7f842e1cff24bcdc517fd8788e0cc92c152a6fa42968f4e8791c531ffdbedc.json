@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-528\",\"object\":\"chat.completion\",\"created\":1767089001,\"model\":\"gpt-oss:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to find first dialogue between two named characters. Use keyword cursor. Likely keywords: names. But we don't know names. We need to search for dialogues. Maybe use keyword \\\"dialogue\\\" or \\\"said\\\". But better to use filtered cursor with \\\"All paragraphs\\\". But rule: for specific keyword search, always use keyword cursor. But we need to find dialogues between two named characters. We can search for patterns like \\\"—\\\" or quotes. But we don't know names. Maybe use keyword \\\"—\\\" but not allowed. We can use keyword cursor with \\\"dialogue\\\" or \\\"said\\\". But we need to find first dialogue between two named characters. Let's search for \\\"—\\\" maybe not. Let's use keyword cursor with \\\"said\\\" and \\\"asked\\\". That might capture dialogues. Let's try.\",\"tool_calls\":[{\"id\":\"call_lvhjx59f\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_keyword_cursor\",\"arguments\":\"{\\\"includeHeadings\\\":true,\\\"keywords\\\":[\\\"said\\\",\\\"asked\\\"]}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1004,\"completion_tokens\":198,\"total_tokens\":1202}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 30 Dec 2025 10:03:21 GMT"
+    ]
+  }
+}

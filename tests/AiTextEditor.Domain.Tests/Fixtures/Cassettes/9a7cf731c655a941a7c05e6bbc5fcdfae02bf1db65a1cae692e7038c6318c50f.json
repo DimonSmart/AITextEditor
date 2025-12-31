@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-430\",\"object\":\"chat.completion\",\"created\":1767041743,\"model\":\"gpt-oss:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to search the document for \\\"Фуксия\\\" and \\\"Селедочка\\\". Use keyword cursor. Let's create cursor.\",\"tool_calls\":[{\"id\":\"call_7te90vwy\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_keyword_cursor\",\"arguments\":\"{\\\"includeHeadings\\\":true,\\\"keywords\\\":[\\\"фуксия\\\",\\\"селедочка\\\"]}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":973,\"completion_tokens\":66,\"total_tokens\":1039}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 29 Dec 2025 20:55:43 GMT"
+    ]
+  }
+}

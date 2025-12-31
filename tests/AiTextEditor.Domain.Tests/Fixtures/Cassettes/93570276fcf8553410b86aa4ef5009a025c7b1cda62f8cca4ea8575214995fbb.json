@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-839\",\"object\":\"chat.completion\",\"created\":1767118082,\"model\":\"gpt-oss:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"**Goal:** Где перечисляется, что одёжная фабрика выпускала всё подряд, от резиновых лифчиков до зимних шуб из синтетического волокна?  \\n**Stop reason:** goal_reached  \\n\\n**Ответ:** Перечисление находится в параграфе **5:1.1.1.p2**.  \\nТекст: «…по проекту инженера Клёпки была построена большая одёжная фабрика, которая выпускала множество самой разнообразной одежды, начиная с резиновых лифчиков и кончая зимними шубами из синтетического волокна…»\",\"reasoning\":\"We have found the paragraph. The goal: \\\"Где перечисляется, что одёжная фабрика выпускала всё подряд, от резиновых лифчиков до зимних шуб из синтетического волокна?\\\" The answer: It's in paragraph 5:1.1.1.p2. Provide pointer. Also mention goal and stop reason.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1385,\"completion_tokens\":216,\"total_tokens\":1601}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 30 Dec 2025 18:08:02 GMT"
+    ]
+  }
+}

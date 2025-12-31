@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-246\",\"object\":\"chat.completion\",\"created\":1767176304,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Четвёртое упоминание профессора Звёздочкина находится в абзаце с семантическим указателем **26:1.1.1.p23**.\",\"reasoning\":\"We have first batch of 3 items. Need fourth mention of professor \\\"Звёздочкин\\\" (exclude headings). We have mentions in paragraphs. Count occurrences.\\n\\nFirst paragraph: text includes \\\"профессор Звёздочкин\\\" twice? Let's examine: \\\"... астрономических наук профессор Звёздочкин, ... профессор Звёздочкин был...\\\" That's two mentions in same paragraph. So occurrences: 1st mention, 2nd mention.\\n\\nSecond paragraph: includes \\\"профессор Звёздочкин\\\" (once, maybe also later \\\"профессор Звёздочкин\\\" again as \\\"сам профессор Звёздочкин\\\". It says \\\"сам профессор Звёздочкин\\\". That's one mention. So total now 3.\\n\\nThird paragraph: \\\"профессор Звёздочкин\\\" appears once at start. That's fourth mention. So fourth mention is in paragraph with SemanticPointer \\\"26:1.1.1.p23\\\". Need answer location: give pointer. Also possibly verify there aren't other mentions earlier within same paragraphs that could change count but we counted correctly. The first paragraph had two mentions. Good.\\n\\nThus answer: pointer 26:1.1.1.p23.\\n\\nProvide answer in Russian.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1462,\"completion_tokens\":320,\"total_tokens\":1782}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Wed, 31 Dec 2025 10:18:24 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

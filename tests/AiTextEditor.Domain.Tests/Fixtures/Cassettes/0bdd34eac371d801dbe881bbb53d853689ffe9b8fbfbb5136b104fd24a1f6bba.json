@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-149\",\"object\":\"chat.completion\",\"created\":1767089120,\"model\":\"gpt-oss:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to find first dialogue between two named characters. We need to search entire document. We used keyword cursor with \\\"said\\\" and \\\"asked\\\" but got no items. Maybe the dialogue uses quotation marks. We need to search for quotes. Use keyword cursor with \\\"said\\\" might not catch. Let's use filtered cursor with broad filter and read batches until we find a paragraph containing dialogue. We need to read more batches. Let's continue reading.\",\"tool_calls\":[{\"id\":\"call_6frtmx28\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-read_cursor_batch\",\"arguments\":\"{\\\"cursorName\\\":\\\"llm_cursor_1\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1321,\"completion_tokens\":120,\"total_tokens\":1441}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 30 Dec 2025 10:05:20 GMT"
+    ]
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-558\",\"object\":\"chat.completion\",\"created\":1767117954,\"model\":\"gpt-oss:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"**Goal:** Покажи последнее упоминание Фуксии.  \\n**Stop reason:** goal_reached  \\n\\n**Последнее упоминание Фуксии (пункт 70:1.1.1.p67):**  \\n\\u003e Кусочек Луны пошёл по рукам. Каждому хотелось поближе посмотреть на него. Пока коротышки разглядывали камень, передавая его из рук в руки, Знайка рассказывал, как они с Фуксией и Селёдочкой путешествовали по Луне и что там видели. Всем очень понравился Знайкин рассказ. Все остались очень довольны. Только профессор Звёздочкин был не очень доволен. Как только Знайка кончил свой рассказ и сошёл с трибуны, профессор Звёздочкин выскочил на трибуну и сказал:\",\"reasoning\":\"We need to show the last mention of Фуксия. The cursor returned two items: first at 8:1.1.1.p5, second at 70:1.1.1.p67. Since HasMore false, these are all matches. The last mention is the second paragraph at pointer 70:1.1.1.p67. We should output that paragraph with pointer. Also mention goal and stop reason.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1513,\"completion_tokens\":287,\"total_tokens\":1800}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 30 Dec 2025 18:05:54 GMT"
+    ]
+  }
+}

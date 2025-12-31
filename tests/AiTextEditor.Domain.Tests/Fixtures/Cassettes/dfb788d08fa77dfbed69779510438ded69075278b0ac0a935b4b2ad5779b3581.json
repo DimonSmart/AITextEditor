@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-556\",\"object\":\"chat.completion\",\"created\":1767117600,\"model\":\"gpt-oss:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to search the book. Use keyword cursor. Keywords: \\\"астрономы\\\", \\\"Солнечный город\\\", \\\"поссорились\\\", \\\"вулканисты\\\", \\\"метеоритчики\\\". Let's create cursor.\",\"tool_calls\":[{\"id\":\"call_6m29tcsj\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_keyword_cursor\",\"arguments\":\"{\\\"includeHeadings\\\":true,\\\"keywords\\\":[\\\"астрономы\\\",\\\"Солнечный город\\\",\\\"поссорились\\\",\\\"вулканисты\\\",\\\"метеоритчики\\\"]}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":991,\"completion_tokens\":103,\"total_tokens\":1094}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 30 Dec 2025 18:00:00 GMT"
+    ]
+  }
+}

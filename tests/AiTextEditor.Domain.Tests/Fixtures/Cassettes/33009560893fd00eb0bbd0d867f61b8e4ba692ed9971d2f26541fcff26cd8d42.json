@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-522\",\"object\":\"chat.completion\",\"created\":1767041067,\"model\":\"gpt-oss:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"**Goal:** Где в книге впервые упоминается профессор Звёздочкин? (исключая заголовки)  \\n**Answer:** Профессор Звёздочкин впервые упоминается в параграфе\u202F21.  \\n**Semantic pointer:** `24:1.1.1.p21`  \\n\\n**Stop reason:** goal_reached\",\"reasoning\":\"We need to find first mention of professor Zvezdochkin excluding headings. The cursor returned items: heading, paragraph 21, paragraph 22. The first paragraph containing mention is paragraph 21. We need to provide the semantic pointer and location. The question: \\\"Где в книге впервые упоминается профессор Звёздочкин? (исключая заголовки)\\\". So answer: paragraph 21, pointer 24:1.1.1.p21. Provide pointer. Also mention goal and stop reason. We have not reached goal yet? We found first mention. We should stop. Provide final answer.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1505,\"completion_tokens\":214,\"total_tokens\":1719}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 29 Dec 2025 20:44:27 GMT"
+    ]
+  }
+}

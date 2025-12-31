@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-244\",\"object\":\"chat.completion\",\"created\":1767117331,\"model\":\"gpt-oss:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to find paragraph where Znaika compares lunar surface to well-cooked pancake and explains steam bubbles. Use keyword cursor. Keywords: \\\"лунная поверхность\\\", \\\"блин\\\", \\\"пузырьки пара\\\". Let's create cursor.\",\"tool_calls\":[{\"id\":\"call_iryy38l5\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_keyword_cursor\",\"arguments\":\"{\\\"includeHeadings\\\":true,\\\"keywords\\\":[\\\"лунная поверхность\\\",\\\"блин\\\",\\\"пузырьки пара\\\"]}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":986,\"completion_tokens\":96,\"total_tokens\":1082}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 30 Dec 2025 17:55:31 GMT"
+    ]
+  }
+}

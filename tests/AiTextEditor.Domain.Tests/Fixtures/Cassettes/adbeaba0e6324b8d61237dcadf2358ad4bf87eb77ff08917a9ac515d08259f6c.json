@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-662\",\"object\":\"chat.completion\",\"created\":1767106088,\"model\":\"gpt-oss:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to search the document for dialogues between two named characters. Use keyword cursor. Likely keywords: \\\"dialogue\\\", \\\"said\\\", \\\"he said\\\", \\\"she said\\\", but we need named characters. Maybe search for \\\"said\\\" and names. But better to use full scan? The instruction: For multi-paragraph concepts, use a fullscan cursor. But we need first dialogue between two named characters. Could be a paragraph with quotes. Use keyword cursor with keywords like \\\"said\\\", \\\"asked\\\", \\\"replied\\\". But we need names. Might need to read until find a dialogue. Let's try keyword cursor with \\\"said\\\" and \\\"asked\\\". We'll read batches until find a paragraph containing two names and dialogue. We'll need to identify names. Let's proceed.\",\"tool_calls\":[{\"id\":\"call_28lswr2c\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_keyword_cursor\",\"arguments\":\"{\\\"includeHeadings\\\":true,\\\"keywords\\\":[\\\"said\\\",\\\"asked\\\"]}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":944,\"completion_tokens\":189,\"total_tokens\":1133}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 30 Dec 2025 14:48:08 GMT"
+    ]
+  }
+}

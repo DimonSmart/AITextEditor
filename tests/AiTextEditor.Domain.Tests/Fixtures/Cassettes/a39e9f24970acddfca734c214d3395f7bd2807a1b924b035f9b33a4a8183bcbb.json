@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-959\",\"object\":\"chat.completion\",\"created\":1767117462,\"model\":\"gpt-oss:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to find first mention of \\\"Пончик\\\" in the book. Use keyword cursor for \\\"Пончик\\\". Then read batches until find. Use cursor_create_keyword_cursor with keyword \\\"Пончик\\\". Then read batches. Let's do that.\",\"tool_calls\":[{\"id\":\"call_osvj8rhf\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_keyword_cursor\",\"arguments\":\"{\\\"includeHeadings\\\":true,\\\"keywords\\\":[\\\"Пончик\\\"]}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":922,\"completion_tokens\":86,\"total_tokens\":1008}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 30 Dec 2025 17:57:42 GMT"
+    ]
+  }
+}

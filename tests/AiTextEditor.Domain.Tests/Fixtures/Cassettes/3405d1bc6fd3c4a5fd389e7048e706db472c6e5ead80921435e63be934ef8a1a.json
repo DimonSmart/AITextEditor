@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-471\",\"object\":\"chat.completion\",\"created\":1767117671,\"model\":\"gpt-oss:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to find where in the book the description of astronomers in Solar City quarrel and split into volcanologists and meteorite scientists. The cursor returned two paragraphs, but likely not the relevant one. We need to continue reading batches until we find the relevant content. Use cursor-read_cursor_batch again.\",\"tool_calls\":[{\"id\":\"call_tpqetbfv\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-read_cursor_batch\",\"arguments\":\"{\\\"cursorName\\\":\\\"kwd_cursor_0\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1725,\"completion_tokens\":92,\"total_tokens\":1817}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 30 Dec 2025 18:01:11 GMT"
+    ]
+  }
+}

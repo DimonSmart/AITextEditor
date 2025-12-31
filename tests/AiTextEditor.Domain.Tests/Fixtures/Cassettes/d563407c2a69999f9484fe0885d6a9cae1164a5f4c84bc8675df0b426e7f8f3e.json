@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-762\",\"object\":\"chat.completion\",\"created\":1767106181,\"model\":\"gpt-oss:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to find first dialogue between two named characters. We have a filtered cursor with filterDescription \\\"dialogue\\\". We got headings only. Need to read more. Let's read next batch.\",\"tool_calls\":[{\"id\":\"call_9220qhyz\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-read_cursor_batch\",\"arguments\":\"{\\\"cursorName\\\":\\\"llm_cursor_1\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1243,\"completion_tokens\":69,\"total_tokens\":1312}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 30 Dec 2025 14:49:41 GMT"
+    ]
+  }
+}

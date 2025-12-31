@@ -45,12 +45,15 @@ public sealed class SemanticKernelEngine
 
         var builder = Kernel.CreateBuilder();
 
+        var cursorRegistry = new CursorRegistry();
+
         builder.Services.AddSingleton<IDocumentContext>(documentContext);
+        builder.Services.AddSingleton<ICursorStore>(cursorRegistry);
         builder.Services.AddSingleton<CursorAgentLimits>();
         builder.Services.AddSingleton<ICursorAgentPromptBuilder, CursorAgentPromptBuilder>();
         builder.Services.AddSingleton<ICursorAgentResponseParser, CursorAgentResponseParser>();
         builder.Services.AddSingleton<ICursorEvidenceCollector, CursorEvidenceCollector>();
-        // builder.Services.AddSingleton<ICursorAgentRuntime, CursorAgentRuntime>();
+        builder.Services.AddSingleton<ICursorAgentRuntime, CursorAgentRuntime>();
         builder.Services.AddSingleton<ILoggerFactory>(loggerFactory);
         builder.Services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
         builder.Services.AddSingleton<FunctionInvocationLoggingFilter>();
@@ -71,19 +74,13 @@ public sealed class SemanticKernelEngine
             endpoint: new Uri(endpoint),
             httpClient: httpClient);
 
-        //builder.Plugins.AddFromType<CursorAgentPlugin>();
-        //var mcpPlugin = new McpServerPlugin(mcpServer, context, loggerFactory.CreateLogger<McpServerPlugin>());
-        //builder.Plugins.AddFromObject(mcpPlugin, "mcp");
-
         var kernel = builder.Build();
         var functionLogger = kernel.Services.GetRequiredService<FunctionInvocationLoggingFilter>();
         kernel.FunctionInvocationFilters.Add(functionLogger);
         kernel.AutoFunctionInvocationFilters.Add(functionLogger);
 
         var chatService = kernel.GetRequiredService<IChatCompletionService>();
-        // var cursorAgentRuntime = kernel.Services.GetRequiredService<ICursorAgentRuntime>();
         var limits = kernel.Services.GetRequiredService<CursorAgentLimits>();
-        var cursorRegistry = new CursorRegistry();
 
         var editorPlugin = new EditorPlugin(
             mcpServer,
@@ -98,35 +95,37 @@ public sealed class SemanticKernelEngine
             loggerFactory.CreateLogger<CursorPlugin>());
         kernel.Plugins.AddFromObject(cursorPlugin, "cursor");
 
+        var cursorAgentPlugin = new CursorAgentPlugin(
+            kernel.Services.GetRequiredService<ICursorAgentRuntime>(),
+            loggerFactory.CreateLogger<CursorAgentPlugin>());
+        kernel.Plugins.AddFromObject(cursorAgentPlugin, "cursor_agent");
+
         var logger = loggerFactory.CreateLogger<SemanticKernelEngine>();
         logger.LogInformation("Kernel built with model {ModelId} at {Endpoint}", modelId, endpoint);
 
-        var planBuilder = new PlanDirectiveBuilder(limits, loggerFactory.CreateLogger<PlanDirectiveBuilder>());
-        var planDirective = planBuilder.Build(userCommand);
-        context.Goal = planDirective.State.Goal;
-        context.PlanState = planDirective.State;
-        context.PlanSteps = planDirective.Steps;
-        context.PlanSnapshotJson = planDirective.State.Serialize("pending");
-        logger.LogInformation("Planned steps: {Steps}", string.Join(" -> ", planDirective.Steps.Select(s => $"{s.StepType}:{s.ToolDescription}")));
-
         var history = new ChatHistory();
-        // Simplifies the workflow instructions for small models and removes inline comments that could be mistaken as literal output.
-        var planPrompt = planDirective.BuildPrompt(limits.DefaultMaxSteps);
         history.AddSystemMessage(
             $$"""
-            You are a QA assistant for a markdown book. Use tools to inspect the document.
+            You are a Editor assistant for a markdown book. Use tools to inspect the document.
+            Info:
+            -  нига на русском €зыке.
+            -  нига детска€.
+            
+            Terms:
+            - Semantic pointer, pointer to the book paragraph in for like '1:1.1.1.p1'.
+              It is returned by cursors.
+              If you asked to point in a particular place in the book - repospond with Semantic Ponter.
+
             Workflow:
-            - Use a single tool path: create a cursor, then read batches directly via `cursor-read_cursor_batch`. Do NOT call `chat_cursor_agent-run_chat_cursor_agent`.
-            - For specific keyword search, always use `cursor-create_keyword_cursor` (not `cursor-create_filtered_cursor`). The cursor matches items containing ANY of the provided keywords (logical OR). Provide lowercase word stems to cover inflected forms (declensions).
-            - Choose the most relevant keywords for the question; include only what helps locate the answer.
-            - For multi-paragraph concepts, use a VERY BROAD filter (e.g. "All paragraphs") to ensure you don't miss anything. Do NOT filter by character names.
-            - Avoid the legacy `agent-run_agent` unless the user explicitly requests it.
+            - Understand user request, use tools provided to respond.`.
+            - If task could be done with keyword based search - prefer keyword cursor over llm cursor.
+              Choose the most relevant keywords for the question;
+            - ƒл€ keyword cursor передавай ключевые слова в начальной форме; склонени€ и формы будут нормализованы системой.
+            - For multi-paragraph concepts, use a fullscan cursor. 
+            - For long scans, consider running cursor_agent-run_cursor_agent after creating a cursor.
             - Be careful with counting mentions: a single paragraph may contain MULTIPLE mentions. Read the text carefully.
-            - CHECK PREVIOUS EVIDENCE: The answer might be in a paragraph found in a previous step.
-            - The user request can be any task; apply only the rules relevant to the request.
-            A lightweight plan has been pre-approved. Stick to it and keep the step order intact.
-            {{planPrompt}}
-            Return the final answer in the same language as the user question and include the semantic pointer when applicable. Always mention the goal and stop reason you observed.
+            - CHECK PREVIOUS EVIDENCE: The answer might be in a paragraph found in a previous cursor portion.
+            Return the final answer in the same language as the user question and include the semantic pointer when applicable.
             """);
         history.AddUserMessage(userCommand);
 
@@ -217,3 +216,6 @@ public sealed class SemanticKernelEngine
         return text[..maxLength] + $"... (+{text.Length - maxLength} chars)";
     }
 }
+
+
+

@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-460\",\"object\":\"chat.completion\",\"created\":1767083035,\"model\":\"gpt-oss:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"**Ответ:**  \\nДва вертящихся здания на улице\u202FКолокольчиков, со спиральным спуском и чёртовым колесом на крыше, описаны в параграфе\u202F4:1.1.1.p1.\\n\\n**Цель:** В каком месте описаны два вертящихся здания на улице Колокольчиков, со спиральным спуском и чёртовым колесом на крыше?  \\n**Стоп‑причина:** goal_reached\",\"reasoning\":\"We have the answer in the first paragraph. The question: \\\"В каком месте описаны два вертящихся здания на улице Колокольчиков, со спиральным спуском и чёртовым колесом на крыше?\\\" The answer: \\\"На улице Колокольчиков, в проекте архитектора Вертибутылкина, было построено два вертящихся здания.\\\" The semantic pointer: \\\"4:1.1.1.p1\\\". Provide final answer in Russian, mention goal and stop reason.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1708,\"completion_tokens\":229,\"total_tokens\":1937}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 30 Dec 2025 08:23:55 GMT"
+    ]
+  }
+}

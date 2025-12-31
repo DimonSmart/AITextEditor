@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-604\",\"object\":\"chat.completion\",\"created\":1767082741,\"model\":\"gpt-oss:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Где перечисляется, что одёжная фабрика выпускала всё подряд, от резиновых лифчиков до зимних шуб из синтетического волокна?  \\n**Ответ:** В параграфе, начинающемся с «И это ещё не всё, конечно…», где говорится:  \\n\\u003e «…по проекту инженера Клёпки была построена большая одёжная фабрика, которая выпускала множество самой разнообразной одежды, начиная с резиновых лифчиков и кончая зимними шубами из синтетического волокна…»  \\n**Семантический указатель:** `5:1.1.1.p2`  \\n\\n**Goal reached.**\",\"reasoning\":\"We have the paragraph with the answer. Need to finalize.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1401,\"completion_tokens\":171,\"total_tokens\":1572}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 30 Dec 2025 08:19:01 GMT"
+    ]
+  }
+}

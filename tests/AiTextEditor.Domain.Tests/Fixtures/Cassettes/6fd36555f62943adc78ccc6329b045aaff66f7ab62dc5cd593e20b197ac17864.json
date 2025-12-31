@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-751\",\"object\":\"chat.completion\",\"created\":1767082473,\"model\":\"gpt-oss:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to find last mention of \\\"Фуксия\\\" in the markdown book. Use cursor-create_keyword_cursor with keyword \\\"фуксия\\\" (lowercase). Then read batches until we find mention. We need to show the paragraph containing the last mention. We need to output the semantic pointer. Let's do it.\",\"tool_calls\":[{\"id\":\"call_btbuj4t3\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_keyword_cursor\",\"arguments\":\"{\\\"includeHeadings\\\":true,\\\"keywords\\\":[\\\"фуксия\\\"]}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":948,\"completion_tokens\":99,\"total_tokens\":1047}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Tue, 30 Dec 2025 08:14:33 GMT"
+    ]
+  }
+}

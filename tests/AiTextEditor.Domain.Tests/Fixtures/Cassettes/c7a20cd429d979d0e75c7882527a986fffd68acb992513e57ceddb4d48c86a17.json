@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-126\",\"object\":\"chat.completion\",\"created\":1767041594,\"model\":\"gpt-oss:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"**Goal:** Где в книге четвертое упоминание профессора Звёздочкина? (исключая заголовки)  \\n**Stop reason:** goal_reached  \\n\\n**Ответ:** Четвёртое упоминание профессора Звёздочкина находится в параграфе **28:1.1.1.p25**.\",\"reasoning\":\"We need fourth mention of professor Zvezdochkin excluding headings. We have found mentions: first paragraph 24:1.1.1.p21 contains \\\"профессор Звёздочкин\\\". That's first mention. Next paragraph 25:1.1.1.p22 also contains \\\"профессор Звёздочкин\\\". That's second. Next paragraph 26:1.1.1.p23 contains \\\"профессор Звёздочкин\\\". That's third. Next paragraph 28:1.1.1.p25 contains \\\"профессор Звёздочкин\\\". That's fourth. So answer: paragraph 28:1.1.1.p25. Provide pointer.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2011,\"completion_tokens\":236,\"total_tokens\":2247}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 29 Dec 2025 20:53:14 GMT"
+    ]
+  }
+}
