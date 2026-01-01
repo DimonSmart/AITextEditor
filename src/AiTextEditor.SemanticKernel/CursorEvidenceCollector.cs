@@ -36,19 +36,33 @@ public sealed class CursorEvidenceCollector : ICursorEvidenceCollector
     {
         if (evidence.Count == 0) return evidence;
 
-        var byPointer = portion.Items.ToDictionary(i => i.SemanticPointer, i => i.Markdown, StringComparer.OrdinalIgnoreCase);
+        var byPointer = portion.Items
+            .Select(item => new { NormalizedPointer = NormalizePointer(item.SemanticPointer), item.Markdown })
+            .Where(item => item.NormalizedPointer != null)
+            .ToDictionary(item => item.NormalizedPointer!, item => item.Markdown, StringComparer.OrdinalIgnoreCase);
 
         var normalized = new List<EvidenceItem>(evidence.Count);
         foreach (var item in evidence)
         {
-            if (!byPointer.TryGetValue(item.Pointer, out var markdown))
+            var normalizedPointer = NormalizePointer(item.Pointer);
+            if (normalizedPointer == null || !byPointer.TryGetValue(normalizedPointer, out var markdown))
             {
                 continue;
             }
 
-            normalized.Add(new EvidenceItem(item.Pointer, markdown, item.Reason));
+            normalized.Add(new EvidenceItem(normalizedPointer, markdown, item.Reason));
         }
 
         return normalized;
+    }
+
+    private static string? NormalizePointer(string pointer)
+    {
+        if (string.IsNullOrWhiteSpace(pointer))
+        {
+            return null;
+        }
+
+        return SemanticPointer.TryParse(pointer, out var parsed) ? parsed!.ToCompactString() : null;
     }
 }

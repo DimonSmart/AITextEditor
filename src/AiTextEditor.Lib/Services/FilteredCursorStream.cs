@@ -110,22 +110,24 @@ public abstract class FilteredCursorStream : INamedCursorStream
 
     private static int ResolveStartIndex(LinearDocument document, string? startAfterPointer, ILogger? logger)
     {
+        SemanticPointer? startAfter = null;
         if (!string.IsNullOrEmpty(startAfterPointer))
         {
-            if (!SemanticPointer.TryParse(startAfterPointer, out _))
+            if (!SemanticPointer.TryParse(startAfterPointer, out startAfter))
             {
                 logger?.LogWarning("Invalid pointer format: {Pointer}", startAfterPointer);
-                startAfterPointer = null;
+                startAfter = null;
             }
         }
 
         var startIndex = 0;
-        if (!string.IsNullOrEmpty(startAfterPointer))
+        if (startAfter != null)
         {
+            var targetPointer = startAfter.ToCompactString();
             var foundIndex = -1;
             for (var i = 0; i < document.Items.Count; i++)
             {
-                if (document.Items[i].Pointer.Serialize() == startAfterPointer)
+                if (string.Equals(document.Items[i].Pointer.ToCompactString(), targetPointer, StringComparison.Ordinal))
                 {
                     foundIndex = i;
                     break;

@@ -20,7 +20,6 @@ public class MarkdownLinearizationTests
             {
                 Assert.Equal(0, item.Index);
                 Assert.Equal(LinearItemType.Heading, item.Type);
-                Assert.Equal(1, item.Pointer.Id);
                 Assert.Equal("1", item.Pointer.Label);
                 Assert.Equal("Title", item.Text);
             },
@@ -28,7 +27,6 @@ public class MarkdownLinearizationTests
             {
                 Assert.Equal(1, item.Index);
                 Assert.Equal(LinearItemType.Paragraph, item.Type);
-                Assert.Equal(2, item.Pointer.Id);
                 Assert.Equal("1.p1", item.Pointer.Label);
                 Assert.Equal("Intro paragraph", item.Text);
             },
@@ -36,7 +34,6 @@ public class MarkdownLinearizationTests
             {
                 Assert.Equal(2, item.Index);
                 Assert.Equal(LinearItemType.Heading, item.Type);
-                Assert.Equal(3, item.Pointer.Id);
                 Assert.Equal("1.1", item.Pointer.Label);
                 Assert.Equal("Section", item.Text);
             },
@@ -44,7 +41,6 @@ public class MarkdownLinearizationTests
             {
                 Assert.Equal(3, item.Index);
                 Assert.Equal(LinearItemType.Paragraph, item.Type);
-                Assert.Equal(4, item.Pointer.Id);
                 Assert.Equal("1.1.p1", item.Pointer.Label);
                 Assert.Equal("Paragraph inside section", item.Text);
             },
@@ -52,7 +48,6 @@ public class MarkdownLinearizationTests
             {
                 Assert.Equal(4, item.Index);
                 Assert.Equal(LinearItemType.Paragraph, item.Type);
-                Assert.Equal(5, item.Pointer.Id);
                 Assert.Equal("1.1.p2", item.Pointer.Label);
                 Assert.Equal("Another paragraph", item.Text);
             });
@@ -67,12 +62,9 @@ public class MarkdownLinearizationTests
         var document = repository.LoadFromMarkdown(markdown);
 
         Assert.Equal(3, document.Items.Count);
-        Assert.Equal(1, document.Items[0].Pointer.Id);
         Assert.Equal("1", document.Items[0].Pointer.Label);
         Assert.Equal(LinearItemType.ListItem, document.Items[1].Type);
-        Assert.Equal(2, document.Items[1].Pointer.Id);
         Assert.Equal("1.p1", document.Items[1].Pointer.Label);
-        Assert.Equal(3, document.Items[2].Pointer.Id);
         Assert.Equal("1.p2", document.Items[2].Pointer.Label);
         Assert.Equal("Second item", document.Items[2].Text);
     }

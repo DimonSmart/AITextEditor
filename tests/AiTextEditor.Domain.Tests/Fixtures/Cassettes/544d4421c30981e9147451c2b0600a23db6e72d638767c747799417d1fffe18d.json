@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-136\",\"object\":\"chat.completion\",\"created\":1767289791,\"model\":\"gpt-oss:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Четвёртое упоминание профессора Звёздочкина находится в параграфе **1.1.1.p25**.\",\"reasoning\":\"We need fourth mention of professor Zvezdochkin, excluding headings. We have found mentions in paragraphs: p21, p22, p23, p25, p32, p34. That's 6 mentions. Need fourth mention. Let's count: 1st mention in p21, 2nd in p22, 3rd in p23, 4th in p25. So answer: paragraph 1.1.1.p25. Provide pointer.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1971,\"completion_tokens\":139,\"total_tokens\":2110}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 01 Jan 2026 17:49:51 GMT"
+    ]
+  }
+}

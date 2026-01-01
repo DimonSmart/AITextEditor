@@ -4,10 +4,18 @@ using System.Text.Json.Serialization;
 
 namespace AiTextEditor.Lib.Model;
 
-public sealed class SemanticPointer(int id, string? label = null)
+public sealed class SemanticPointer
 {
-    public int Id { get; } = id;
-    public string? Label { get; } = string.IsNullOrWhiteSpace(label) ? null : label.Trim();
+    public string Label { get; }
+
+    public SemanticPointer(string label)
+    {
+        Label = NormalizeLabel(label);
+        if (string.IsNullOrWhiteSpace(Label))
+        {
+            throw new ArgumentException("Semantic pointer label cannot be empty.", nameof(label));
+        }
+    }
 
     [JsonIgnore]
     public Path Parsed => Path.TryParse(Label, out var p) ? p : default;
@@ -50,29 +58,127 @@ public sealed class SemanticPointer(int id, string? label = null)
         return diff <= tolerance;
     }
 
-    public string ToCompactString()
-        => !string.IsNullOrWhiteSpace(Label) ? $"{Id}:{Label}" : $"{Id}:p{Id}";
+    public string ToCompactString() => Label;
 
     public string Serialize() => JsonSerializer.Serialize(this, SerializationOptions);
 
-    public static bool TryParse(string json, out SemanticPointer? pointer)
+    public static bool TryParse(string raw, out SemanticPointer? pointer)
     {
-        if (string.IsNullOrWhiteSpace(json))
+        pointer = null;
+        if (string.IsNullOrWhiteSpace(raw))
         {
-            pointer = null;
             return false;
         }
 
-        try
+        var trimmed = raw.Trim();
+        string? label = null;
+
+        if (trimmed.StartsWith("{", StringComparison.Ordinal))
         {
-            pointer = JsonSerializer.Deserialize<SemanticPointer>(json, SerializationOptions);
-            return pointer != null;
+            try
+            {
+                using var doc = JsonDocument.Parse(trimmed);
+                if (doc.RootElement.ValueKind != JsonValueKind.Object)
+                {
+                    return false;
+                }
+
+                if (TryReadLabel(doc.RootElement, out var jsonLabel))
+                {
+                    label = jsonLabel;
+                }
+            }
+            catch
+            {
+                return false;
+            }
         }
-        catch
+        else
         {
-            pointer = null;
+            label = trimmed;
+            var colonIndex = trimmed.IndexOf(':');
+            if (colonIndex > 0)
+            {
+                var prefix = trimmed[..colonIndex];
+                var suffix = trimmed[(colonIndex + 1)..];
+                if (IsDigits(prefix) && !string.IsNullOrWhiteSpace(suffix))
+                {
+                    label = suffix;
+                }
+            }
+        }
+
+        if (string.IsNullOrWhiteSpace(label))
+        {
             return false;
         }
+
+        label = NormalizeLabel(label);
+        if (!Path.TryParse(label, out _))
+        {
+            return false;
+        }
+
+        pointer = new SemanticPointer(label);
+        return true;
+    }
+
+    private static bool IsDigits(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return false;
+        }
+
+        foreach (var ch in value)
+        {
+            if (!char.IsDigit(ch))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static bool TryReadLabel(JsonElement root, out string? label)
+    {
+        label = null;
+        foreach (var property in root.EnumerateObject())
+        {
+            if (!string.Equals(property.Name, "label", StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            if (property.Value.ValueKind == JsonValueKind.String)
+            {
+                label = property.Value.GetString();
+            }
+
+            return !string.IsNullOrWhiteSpace(label);
+        }
+
+        return false;
+    }
+
+    private static string NormalizeLabel(string? label)
+    {
+        if (string.IsNullOrWhiteSpace(label))
+        {
+            return string.Empty;
+        }
+
+        var normalized = label.Trim();
+        normalized = normalized.Replace('P', 'p');
+
+        var pIndex = normalized.IndexOf('p');
+        if (pIndex > 0 && normalized[pIndex - 1] != '.')
+        {
+            normalized = normalized.Insert(pIndex, ".");
+        }
+
+        return normalized;
     }
 
     private static JsonSerializerOptions SerializationOptions { get; } = new()

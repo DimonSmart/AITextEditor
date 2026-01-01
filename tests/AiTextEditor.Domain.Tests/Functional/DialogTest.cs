@@ -34,10 +34,10 @@ public class DialogTest
         var result = await engine.RunAsync(markdown, question);
         var answer = result.LastAnswer ?? string.Empty;
 
-        var expected = new SemanticPointer(0, expectedPointer);
+        var expected = new SemanticPointer(expectedPointer);
         var matches = Regex.Matches(answer, @"\b\d+(?:\.\d+)*\.?p\d+\b", RegexOptions.IgnoreCase);
 
-        var found = matches.Select(m => new SemanticPointer(0, m.Value))
+        var found = matches.Select(m => new SemanticPointer(m.Value))
                            .Any(p => p.IsCloseTo(expected, tolerance));
 
         Assert.True(found, $"Expected pointer close to {expectedPointer} (tolerance {tolerance}) not found in answer: {answer}");

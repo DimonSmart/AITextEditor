@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-497\",\"object\":\"chat.completion\",\"created\":1767289731,\"model\":\"gpt-oss:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need fourth mention of professor Zvezdochkin, excluding headings. We have first three mentions in paragraph 1.1.1.p21, p22, p23. Need to find next mention. Use cursor to read more.\",\"tool_calls\":[{\"id\":\"call_jl6yvxdu\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-read_cursor_batch\",\"arguments\":\"{\\\"cursorName\\\":\\\"kwd_cursor_0\\\",\\\"startAfterPointer\\\":\\\"1.1.1.p23\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1478,\"completion_tokens\":91,\"total_tokens\":1569}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 01 Jan 2026 17:48:51 GMT"
+    ]
+  }
+}

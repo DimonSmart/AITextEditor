@@ -112,7 +112,7 @@ public sealed class SemanticKernelEngine
             - Книга детская.
             
             Terms:
-            - Semantic pointer, pointer to the book paragraph in for like '1:1.1.1.p1'.
+            - Semantic pointer, pointer to the book paragraph in for like '1.1.1.p1'.
               It is returned by cursors.
               If you asked to point in a particular place in the book - repospond with Semantic Ponter.
 
@@ -216,6 +216,7 @@ public sealed class SemanticKernelEngine
         return text[..maxLength] + $"... (+{text.Length - maxLength} chars)";
     }
 }
+
 
 
 

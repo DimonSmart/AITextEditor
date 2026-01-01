@@ -38,11 +38,10 @@ public class MarkdownDocumentRepository
         var parsingState = new LinearParsingState();
         var items = new List<LinearItem>();
         var index = 0;
-        var nextId = 1;
 
         foreach (var mdBlock in mdDocument)
         {
-            AppendLinearItems(mdBlock, items, normalized, parsingState, ref index, ref nextId);
+            AppendLinearItems(mdBlock, items, normalized, parsingState, ref index);
         }
 
         return new LinearDocument(Guid.NewGuid().ToString(), Reindex(items), normalized);
@@ -51,20 +50,14 @@ public class MarkdownDocumentRepository
     private static IReadOnlyList<LinearItem> Reindex(IReadOnlyList<LinearItem> items)
     {
         var result = new List<LinearItem>(items.Count);
-        var nextId = items.Select(i => i.Pointer?.Id ?? 0).DefaultIfEmpty(0).Max() + 1;
         for (var i = 0; i < items.Count; i++)
         {
             var item = items[i];
-            var pointer = item.Pointer ?? new SemanticPointer(nextId++, null);
-            if (pointer.Id <= 0)
-            {
-                pointer = new SemanticPointer(nextId++, pointer.Label);
-            }
-
+            var pointer = item.Pointer ?? throw new InvalidOperationException("Linear item is missing a semantic pointer.");
             result.Add(item with
             {
                 Index = i,
-                Pointer = new SemanticPointer(pointer.Id, pointer.Label)
+                Pointer = new SemanticPointer(pointer.Label)
             });
         }
 
@@ -76,16 +69,13 @@ public class MarkdownDocumentRepository
         List<LinearItem> items,
         string source,
         LinearParsingState parsingState,
-        ref int index,
-        ref int nextId)
+        ref int index)
     {
         switch (mdBlock)
         {
             case HeadingBlock heading:
                 var headingText = GetPlainText(heading.Inline);
-                var headingPointer = parsingState.EnterHeading(
-                    nextId++,
-                    heading.Level);
+                var headingPointer = parsingState.EnterHeading(heading.Level);
                 AddLinearItem(
                     items,
                     new LinearItem(
@@ -98,8 +88,7 @@ public class MarkdownDocumentRepository
                 break;
 
             case ParagraphBlock paragraph:
-                var paragraphPointer = parsingState.NextPointer(
-                    nextId++);
+                var paragraphPointer = parsingState.NextPointer();
                 AddLinearItem(
                     items,
                     new LinearItem(
@@ -114,13 +103,12 @@ public class MarkdownDocumentRepository
             case ListBlock list:
                 foreach (var child in list)
                 {
-                    AppendLinearItems(child, items, source, parsingState, ref index, ref nextId);
+                    AppendLinearItems(child, items, source, parsingState, ref index);
                 }
                 break;
 
             case ListItemBlock listItem:
-                var listItemPointer = parsingState.NextPointer(
-                    nextId++);
+                var listItemPointer = parsingState.NextPointer();
                 AddLinearItem(
                     items,
                     new LinearItem(
@@ -135,13 +123,12 @@ public class MarkdownDocumentRepository
             case QuoteBlock quote:
                 foreach (var child in quote)
                 {
-                    AppendLinearItems(child, items, source, parsingState, ref index, ref nextId);
+                    AppendLinearItems(child, items, source, parsingState, ref index);
                 }
                 break;
 
             case CodeBlock code:
-                var codePointer = parsingState.NextPointer(
-                    nextId++);
+                var codePointer = parsingState.NextPointer();
                 AddLinearItem(
                     items,
                     new LinearItem(
@@ -154,8 +141,7 @@ public class MarkdownDocumentRepository
                 break;
 
             case ThematicBreakBlock:
-                var breakPointer = parsingState.NextPointer(
-                    nextId++);
+                var breakPointer = parsingState.NextPointer();
                 AddLinearItem(
                     items,
                     new LinearItem(
@@ -168,8 +154,7 @@ public class MarkdownDocumentRepository
                 break;
 
             case HtmlBlock html:
-                var htmlPointer = parsingState.NextPointer(
-                    nextId++);
+                var htmlPointer = parsingState.NextPointer();
                 AddLinearItem(
                     items,
                     new LinearItem(
@@ -186,13 +171,12 @@ public class MarkdownDocumentRepository
                 {
                     foreach (var child in container)
                     {
-                        AppendLinearItems(child, items, source, parsingState, ref index, ref nextId);
+                        AppendLinearItems(child, items, source, parsingState, ref index);
                     }
                 }
                 else
                 {
-                    var fallbackPointer = parsingState.NextPointer(
-                        nextId++);
+                    var fallbackPointer = parsingState.NextPointer();
                     AddLinearItem(
                         items,
                         new LinearItem(
@@ -282,19 +266,19 @@ public class MarkdownDocumentRepository
         private readonly List<int> headingCounters = [];
         private int paragraphCounter = 0;
 
-        public SemanticPointer EnterHeading(int id, int headingLevel)
+        public SemanticPointer EnterHeading(int headingLevel)
         {
             UpdateHeadingCounters(headingLevel);
             paragraphCounter = 0;
             var label = string.Join('.', headingCounters);
-            return new SemanticPointer(id, label);
+            return new SemanticPointer(label);
         }
 
-        public SemanticPointer NextPointer(int id)
+        public SemanticPointer NextPointer()
         {
             paragraphCounter++;
             var prefix = headingCounters.Count > 0 ? string.Join('.', headingCounters) + "." : string.Empty;
-            return new SemanticPointer(id, $"{prefix}p{paragraphCounter}");
+            return new SemanticPointer($"{prefix}p{paragraphCounter}");
         }
 
         private void UpdateHeadingCounters(int headingLevel)

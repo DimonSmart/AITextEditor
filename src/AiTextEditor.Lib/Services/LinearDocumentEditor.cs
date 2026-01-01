@@ -91,11 +91,11 @@ public class LinearDocumentEditor
     {
         if (operation.TargetPointer != null)
         {
-            var serialized = operation.TargetPointer.Serialize();
-            var index = items.FindIndex(i => string.Equals(i.Pointer.Serialize(), serialized, StringComparison.Ordinal));
+            var targetLabel = operation.TargetPointer.ToCompactString();
+            var index = items.FindIndex(i => string.Equals(i.Pointer.ToCompactString(), targetLabel, StringComparison.Ordinal));
             if (index < 0)
             {
-                throw new InvalidOperationException($"Target pointer '{serialized}' does not exist in the current document.");
+                throw new InvalidOperationException($"Target pointer '{targetLabel}' does not exist in the current document.");
             }
 
             return index;
@@ -132,23 +132,110 @@ public class LinearDocumentEditor
     private static IReadOnlyList<LinearItem> Reindex(IReadOnlyList<LinearItem> items)
     {
         var result = new List<LinearItem>(items.Count);
-        var nextId = items.Select(i => i.Pointer?.Id ?? 0).DefaultIfEmpty(0).Max() + 1;
+        var pointerState = new PointerLabelState();
         for (var i = 0; i < items.Count; i++)
         {
             var item = items[i];
-            var pointer = item.Pointer ?? new SemanticPointer(nextId++, null);
-            if (pointer.Id <= 0)
-            {
-                pointer = new SemanticPointer(nextId++, pointer.Label);
-            }
+            var label = item.Type == LinearItemType.Heading
+                ? pointerState.EnterHeading(ResolveHeadingLevel(item))
+                : pointerState.NextPointer();
 
             result.Add(item with
             {
                 Index = i,
-                Pointer = new SemanticPointer(pointer.Id, pointer.Label)
+                Pointer = new SemanticPointer(label)
             });
         }
 
         return result;
+    }
+
+    private static int ResolveHeadingLevel(LinearItem item)
+    {
+        if (item.Type != LinearItemType.Heading)
+        {
+            return 0;
+        }
+
+        if (string.IsNullOrWhiteSpace(item.Markdown))
+        {
+            return 1;
+        }
+
+        var trimmed = item.Markdown.AsSpan().TrimStart();
+        var level = 0;
+        while (level < trimmed.Length && trimmed[level] == '#')
+        {
+            level++;
+        }
+
+        if (level > 0)
+        {
+            return level;
+        }
+
+        var lines = item.Markdown.Split('\n');
+        if (lines.Length >= 2)
+        {
+            var underline = lines[1].Trim();
+            if (underline.Length > 0 && underline.All(ch => ch == '='))
+            {
+                return 1;
+            }
+
+            if (underline.Length > 0 && underline.All(ch => ch == '-'))
+            {
+                return 2;
+            }
+        }
+
+        return 1;
+    }
+
+    private sealed class PointerLabelState
+    {
+        private readonly List<int> headingCounters = [];
+        private int paragraphCounter;
+
+        public string EnterHeading(int headingLevel)
+        {
+            UpdateHeadingCounters(headingLevel);
+            paragraphCounter = 0;
+            return string.Join('.', headingCounters);
+        }
+
+        public string NextPointer()
+        {
+            paragraphCounter++;
+            var prefix = headingCounters.Count > 0 ? string.Join('.', headingCounters) + "." : string.Empty;
+            return $"{prefix}p{paragraphCounter}";
+        }
+
+        private void UpdateHeadingCounters(int headingLevel)
+        {
+            if (headingLevel <= 0)
+            {
+                headingCounters.Clear();
+                headingCounters.Add(1);
+                return;
+            }
+
+            while (headingCounters.Count < headingLevel)
+            {
+                headingCounters.Add(0);
+            }
+
+            headingCounters[headingLevel - 1]++;
+            for (var i = headingLevel; i < headingCounters.Count; i++)
+            {
+                headingCounters[i] = 0;
+            }
+
+            for (var i = headingCounters.Count - 1; i >= 0; i--)
+            {
+                if (headingCounters[i] != 0) break;
+                headingCounters.RemoveAt(i);
+            }
+        }
     }
 }

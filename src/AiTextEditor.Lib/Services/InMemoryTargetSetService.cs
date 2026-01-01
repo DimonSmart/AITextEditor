@@ -19,7 +19,7 @@ public class InMemoryTargetSetService
         var targets = itemList
             .Select(item => new TargetRef(
                 Guid.NewGuid().ToString(),
-                new SemanticPointer(item.Pointer.Id, item.Pointer.Label),
+                new SemanticPointer(item.Pointer.Label),
                 item.Type,
                 item.Markdown,
                 item.Text))

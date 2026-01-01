@@ -4,9 +4,9 @@ The linear model represents markdown content as a sequential list of items enric
 
 - **LinearDocument** – container with normalized source text and ordered `LinearItem` entries.
 - **LinearItem** – individual piece of content. It stores a sequential `Index`, item `Type`, raw markdown, extracted plain `Text`, and a `SemanticPointer` for navigation.
-- **SemanticPointer** – stable identifier with numeric `Id` and human-readable `Label` (e.g., `1.1.1.p21`). No source offsets are stored.
+- **SemanticPointer** – stable identifier with human-readable `Label` (e.g., `1.1.1.p21`). No source offsets are stored.
 
-Labels are derived from heading/paragraph numbering during parsing, but only Id+Label are persisted.
+Labels are derived from heading/paragraph numbering during parsing and persisted with the document items.
 
 ## MCP-facing operations
 
@@ -18,3 +18,4 @@ The MCP server exposes the domain model through small deterministic operations:
 - **Apply linear edits**: run `LinearEditOperation` sequences against the cached document, reindex items, and return updated markdown.
 
 Versioning is intentionally external (git/diffs). The server keeps only the current linear state and sequentially applies operations without batching semantics.
+

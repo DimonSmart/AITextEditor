@@ -4,7 +4,7 @@ MCP-oriented toolkit around a linear Markdown domain model. The server keeps a s
 
 ## Domain model
 - **LinearDocument** - `Id`, normalized `SourceText`, ordered `LinearItem` list.
-- **LinearItem** - contains `Index`, `Type`, raw `Markdown`, extracted `Text`, and a `SemanticPointer` (numeric `Id` + label like `1.1.p21`).
+- **LinearItem** - contains `Index`, `Type`, raw `Markdown`, extracted `Text`, and a `SemanticPointer` (label like `1.1.p21`).
 - **TargetSet/TargetRef** - named selections of items used for cursor/target set workflows.
 
 ## MCP server surface

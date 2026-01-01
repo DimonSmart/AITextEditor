@@ -21,7 +21,7 @@ public class McpFunctionalTests
 
     [Theory]
     // [InlineData("Где в книге впервые упоминается профессор Звёздочкин? (исключая заголовки)", "1.1.1.p21")]
-    [InlineData("Где в книге четвертое упоминание профессора Звёздочкина? (исключая заголовки)", "28:1.1.1.p25", 1)]
+    [InlineData("Где в книге четвертое упоминание профессора Звёздочкина? (исключая заголовки)", "1.1.1.p25", 1)]
     //[InlineData("Где впервые упоминается Пончик?", "1.1.1.p3")]
     //[InlineData("Найди первый диалог между двумя названными по имени персонажами и назови их имена", "1.1.1.p68",2)]
     //[InlineData("Где впервые упоминается Фуксия?", "1.1.1.p5")]
@@ -47,10 +47,10 @@ public class McpFunctionalTests
         var result = await engine.RunAsync(markdown, question);
         var answer = result.LastAnswer ?? string.Empty;
 
-        var expected = new SemanticPointer(0, expectedPointer);
+        var expected = new SemanticPointer(expectedPointer);
         var matches = Regex.Matches(answer, @"\b\d+(?:\.\d+)*\.?p\d+\b", RegexOptions.IgnoreCase);
 
-        var found = matches.Select(m => new SemanticPointer(0, m.Value))
+        var found = matches.Select(m => new SemanticPointer(m.Value))
                            .Any(p => p.IsCloseTo(expected, tolerance));
 
         Assert.True(found, $"Expected pointer close to {expectedPointer} (tolerance {tolerance}) not found in answer: {answer}");

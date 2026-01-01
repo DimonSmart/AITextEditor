@@ -18,8 +18,7 @@ var document = repo.LoadFromMarkdown(markdown);
 var sb = new StringBuilder();
 foreach (var item in document.Items)
 {
-    var pointerLabel = item.Pointer.Label ?? $"p{item.Index}";
-    sb.AppendLine($"{item.Pointer.Id}:{pointerLabel}");
+    sb.AppendLine(item.Pointer.ToCompactString());
     sb.AppendLine(item.Markdown);
     sb.AppendLine();
 }

@@ -49,7 +49,13 @@ public sealed class EditorPlugin(
                 continue;
             }
 
-            normalizedPointers.Add(normalized);
+            if (!SemanticPointer.TryParse(normalized, out var parsed) || parsed == null)
+            {
+                invalidPointers.Add(rawPointer ?? string.Empty);
+                continue;
+            }
+
+            normalizedPointers.Add(parsed.ToCompactString());
         }
 
         var uniquePointers = new List<string>();

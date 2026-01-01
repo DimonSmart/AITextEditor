@@ -50,7 +50,6 @@ public class McpServerTests
         var targetSet = server.CreateTargetSet(new[] { 2, 2, 5, -1 });
 
         Assert.Single(targetSet.Targets);
-        Assert.Equal(3, targetSet.Targets[0].Pointer.Id);
         Assert.Equal("1.p2", targetSet.Targets[0].Pointer.Label);
     }
 
@@ -84,9 +83,7 @@ public class McpServerTests
         var targetSet = server.CreateTargetSet(new[] { 1, 2 }, "command", "label");
 
         Assert.Equal(2, targetSet.Targets.Count);
-        Assert.Equal(2, targetSet.Targets[0].Pointer.Id);
         Assert.Equal("1.p1", targetSet.Targets[0].Pointer.Label);
-        Assert.Equal(3, targetSet.Targets[1].Pointer.Id);
         Assert.Equal("1.p2", targetSet.Targets[1].Pointer.Label);
     }
 
@@ -151,7 +148,7 @@ public class McpServerTests
         var server = new EditorSession();
         var document = server.LoadDefaultDocument("# Title\n\nParagraph");
 
-        var invalidPointer = new SemanticPointer(999, null);
+        var invalidPointer = new SemanticPointer("9.9.p9");
         var replacement = document.Items[0];
 
         Assert.Throws<InvalidOperationException>(() => server.ApplyOperations(new[]

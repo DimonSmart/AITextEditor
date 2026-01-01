@@ -182,7 +182,8 @@ public sealed class CursorAgentRuntime : ICursorAgentRuntime
                cursorComplete);
         }
 
-        if (parsed.Decision != "success" || string.IsNullOrWhiteSpace(parsed.SemanticPointerFrom) || !state.Evidence.Any(e => e.Pointer.Equals(parsed.SemanticPointerFrom, StringComparison.OrdinalIgnoreCase)))
+        var normalizedPointerFrom = NormalizePointer(parsed.SemanticPointerFrom);
+        if (parsed.Decision != "success" || string.IsNullOrWhiteSpace(normalizedPointerFrom) || !state.Evidence.Any(e => e.Pointer.Equals(normalizedPointerFrom, StringComparison.OrdinalIgnoreCase)))
         {
             logger.LogWarning("finalizer_pointer_missing_or_invalid");
             return new CursorAgentResult(
@@ -201,7 +202,7 @@ public sealed class CursorAgentRuntime : ICursorAgentRuntime
         return new CursorAgentResult(
             true,
             finalSummary,
-            parsed.SemanticPointerFrom,
+            normalizedPointerFrom,
             Truncate(parsed.Excerpt, limits.MaxExcerptLength),
             parsed.WhyThis,
             state.Evidence,
@@ -281,6 +282,16 @@ public sealed class CursorAgentRuntime : ICursorAgentRuntime
         "continue" => "continue",
         _ => "continue"
     };
+
+    private static string? NormalizePointer(string? pointer)
+    {
+        if (string.IsNullOrWhiteSpace(pointer))
+        {
+            return null;
+        }
+
+        return SemanticPointer.TryParse(pointer, out var parsed) ? parsed!.ToCompactString() : null;
+    }
 
     private void LogCompletionSkeleton(int step, object? message)
     {

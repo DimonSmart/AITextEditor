@@ -15,7 +15,7 @@ public class EditorPluginTests
         var context = new SemanticKernelContext();
         var plugin = new EditorPlugin(session, context, NullLogger<EditorPlugin>.Instance);
 
-        var result = plugin.CreateTargets("label", new[] { "2:1.p1", "3:1.p2" });
+        var result = plugin.CreateTargets("label", new[] { "1.p1", "1.p2" });
 
         Assert.Equal(context.LastTargetSet?.Id, result.TargetSetId);
         Assert.Empty(result.InvalidPointers);
@@ -25,12 +25,12 @@ public class EditorPluginTests
             result.Targets,
             target =>
             {
-                Assert.Equal("2:1.p1", target.Pointer.ToCompactString());
+                Assert.Equal("1.p1", target.Pointer.ToCompactString());
                 Assert.Equal("Paragraph one", target.Excerpt);
             },
             target =>
             {
-                Assert.Equal("3:1.p2", target.Pointer.ToCompactString());
+                Assert.Equal("1.p2", target.Pointer.ToCompactString());
                 Assert.Equal("Paragraph two", target.Excerpt);
             });
     }
@@ -43,7 +43,7 @@ public class EditorPluginTests
         var context = new SemanticKernelContext();
         var plugin = new EditorPlugin(session, context, NullLogger<EditorPlugin>.Instance);
 
-        var result = plugin.CreateTargets("label", new[] { "2:1.p1", "2:1.p1", "missing", "  " });
+        var result = plugin.CreateTargets("label", new[] { "1.p1", "1.p1", "missing", "  " });
 
         Assert.Single(result.Targets);
         Assert.Contains("missing", result.InvalidPointers);
