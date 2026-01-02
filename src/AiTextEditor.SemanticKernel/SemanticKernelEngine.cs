@@ -109,7 +109,8 @@ public sealed class SemanticKernelEngine
             documentContext,
             rosterService,
             limits,
-            loggerFactory.CreateLogger<CharacterRosterGenerator>());
+            loggerFactory.CreateLogger<CharacterRosterGenerator>(),
+            chatService);
         var characterRosterPlugin = new CharacterRosterPlugin(
             rosterGenerator,
             rosterService,

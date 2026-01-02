@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-533\",\"object\":\"chat.completion\",\"created\":1767368291,\"model\":\"gpt-oss:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to generate character roster. Use tool character_roster_generate_character_roster with detailed true. Then get roster.\",\"tool_calls\":[{\"id\":\"call_z7qxfc72\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"character_roster-generate_character_roster\",\"arguments\":\"{\\\"detailed\\\":true}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1111,\"completion_tokens\":54,\"total_tokens\":1165}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 02 Jan 2026 15:38:11 GMT"
+    ]
+  }
+}

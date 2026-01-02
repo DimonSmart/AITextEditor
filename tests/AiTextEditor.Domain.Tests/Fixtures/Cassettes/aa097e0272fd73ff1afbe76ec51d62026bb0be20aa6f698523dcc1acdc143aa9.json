@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-974\",\"object\":\"chat.completion\",\"created\":1767363226,\"model\":\"gpt-oss:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Первое ощущение, которое я испытал при потере веса, было таким, будто из‑под меня незаметно убрали сиденье, и мне не на чем стало сидеть.\",\"reasoning\":\"We need to answer: \\\"Какой был первый опыт, который вы испытали при потере веса?\\\" The user asks: \\\"Какой был первый опыт, который вы испытали при потере веса?\\\" They want the first experience when losing weight (i.e., experiencing weightlessness). The context: The user is presumably the narrator of the story, describing their experience in a rocket. The question: \\\"Какой был первый опыт, который вы испытали при потере веса?\\\" The answer: \\\"Первое моё ощущение при потере веса было, будто из-под меня незаметно убрали сиденье и мне не на чем стало сидеть.\\\" So the answer: The first experience was feeling as if the seat had been removed from under you, leaving you with nothing to sit on. So we should answer that.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":8192,\"completion_tokens\":216,\"total_tokens\":8408}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 02 Jan 2026 14:13:46 GMT"
+    ]
+  }
+}

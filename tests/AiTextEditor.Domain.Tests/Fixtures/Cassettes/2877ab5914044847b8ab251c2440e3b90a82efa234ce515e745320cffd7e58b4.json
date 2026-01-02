@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-691\",\"object\":\"chat.completion\",\"created\":1767381180,\"model\":\"gpt-oss:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to get roster. Use get_character_roster.\",\"tool_calls\":[{\"id\":\"call_gfp2mjjr\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"character_roster-get_character_roster\",\"arguments\":\"{}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1194,\"completion_tokens\":37,\"total_tokens\":1231}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 02 Jan 2026 19:13:00 GMT"
+    ]
+  }
+}

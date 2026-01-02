@@ -117,7 +117,7 @@ public static class TestLlmConfiguration
         var client = new HttpClient(loggingHandler)
         {
             BaseAddress = new Uri(normalizedBaseUrl),
-            Timeout = TimeSpan.FromMinutes(20)
+            Timeout = ResolveTimeout()
         };
 
         if (!string.IsNullOrWhiteSpace(apiKey))
@@ -126,6 +126,19 @@ public static class TestLlmConfiguration
         }
 
         return (client, apiKey);
+    }
+
+    private static TimeSpan ResolveTimeout()
+    {
+        var raw = Environment.GetEnvironmentVariable("LLM_TIMEOUT_MINUTES");
+        if (!string.IsNullOrWhiteSpace(raw) &&
+            int.TryParse(raw, out var minutes) &&
+            minutes > 0)
+        {
+            return TimeSpan.FromMinutes(minutes);
+        }
+
+        return TimeSpan.FromMinutes(120);
     }
 
     private sealed class BasicAuthHandler : DelegatingHandler

@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-919\",\"object\":\"chat.completion\",\"created\":1767361132,\"model\":\"gpt-oss:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to create a character roster. Then find character \\\"Знайка\\\" in the roster, update its description to \\\"Главный из коротышек\\\" using upsert_character with characterId from roster. Then return JSON of the roster.\\n\\nWe need to inspect the roster. Use character_roster_get_character_roster.\",\"tool_calls\":[{\"id\":\"call_stm3yfxg\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"character_roster-get_character_roster\",\"arguments\":\"{}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1169,\"completion_tokens\":90,\"total_tokens\":1259}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 02 Jan 2026 13:38:52 GMT"
+    ]
+  }
+}

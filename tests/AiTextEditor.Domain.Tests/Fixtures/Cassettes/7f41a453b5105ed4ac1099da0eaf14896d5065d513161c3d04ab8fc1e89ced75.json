@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-565\",\"object\":\"chat.completion\",\"created\":1767363270,\"model\":\"gpt-oss:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"pass\\\": false, \\\"reason\\\": \\\"not present\\\"}\",\"reasoning\":\"We need to evaluate whether TEXT satisfies CHECK. The TEXT is a Russian sentence about losing weight. The CHECK says: \\\"В каталоге есть персонаж Знайка с описанием 'Главный из коротышек'.\\\" That is a statement about a catalog containing a character named Знайка with description \\\"Главный из коротышек\\\". The TEXT does not mention a catalog, a character named Знайка, or that description. So the TEXT does not satisfy the CHECK. Therefore pass=false. Provide reason: \\\"not present\\\".\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":191,\"completion_tokens\":130,\"total_tokens\":321}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 02 Jan 2026 14:14:30 GMT"
+    ]
+  }
+}

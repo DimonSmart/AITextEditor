@@ -155,7 +155,24 @@ public sealed class CharacterRosterService
             Name = profile.Name.Trim(),
             Description = profile.Description?.Trim() ?? string.Empty,
             Aliases = aliases,
-            FirstPointer = string.IsNullOrWhiteSpace(profile.FirstPointer) ? null : profile.FirstPointer.Trim()
+            FirstPointer = string.IsNullOrWhiteSpace(profile.FirstPointer) ? null : profile.FirstPointer.Trim(),
+            Gender = NormalizeGender(profile.Gender)
+        };
+    }
+
+    private static string NormalizeGender(string? raw)
+    {
+        if (string.IsNullOrWhiteSpace(raw))
+        {
+            return "unknown";
+        }
+
+        return raw.Trim().ToLowerInvariant() switch
+        {
+            "male" or "m" or "man" => "male",
+            "female" or "f" or "woman" => "female",
+            "unknown" => "unknown",
+            _ => "unknown"
         };
     }
 

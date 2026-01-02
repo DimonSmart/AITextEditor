@@ -21,9 +21,11 @@ public sealed class CharacterRosterPlugin(
 
     [KernelFunction("generate_character_roster")]
     [Description("Scan the document and build a character roster from detected name mentions.")]
-    public async Task<object> GenerateCharacterRosterAsync(CancellationToken cancellationToken = default)
+    public async Task<object> GenerateCharacterRosterAsync(bool detailed = true, CancellationToken cancellationToken = default)
     {
-        var roster = await generator.GenerateAsync(cancellationToken);
+        var roster = detailed
+            ? await generator.GenerateDossiersAsync(cancellationToken)
+            : await generator.GenerateAsync(cancellationToken);
         logger.LogInformation("Character roster generated: {RosterId} v{Version}", roster.RosterId, roster.Version);
         return new { rosterId = roster.RosterId, version = roster.Version };
     }
@@ -42,6 +44,7 @@ public sealed class CharacterRosterPlugin(
                 id = c.CharacterId,
                 name = c.Name,
                 description = c.Description,
+                gender = c.Gender,
                 aliases = c.Aliases,
                 firstPointer = c.FirstPointer
             })
@@ -55,6 +58,7 @@ public sealed class CharacterRosterPlugin(
     public object UpsertCharacter(
         string name,
         string description = "",
+        string gender = "unknown",
         string[]? aliases = null,
         string? firstPointer = null,
         string? characterId = null)
@@ -68,7 +72,8 @@ public sealed class CharacterRosterPlugin(
             name.Trim(),
             description?.Trim() ?? string.Empty,
             normalizedAliases,
-            string.IsNullOrWhiteSpace(firstPointer) ? null : firstPointer.Trim());
+            string.IsNullOrWhiteSpace(firstPointer) ? null : firstPointer.Trim(),
+            gender);
 
         var saved = rosterService.UpsertCharacter(profile);
         logger.LogInformation("Character upserted: {CharacterId}", saved.CharacterId);
@@ -79,6 +84,7 @@ public sealed class CharacterRosterPlugin(
     [KernelFunction("refresh_character_roster")]
     [Description("Refresh the character roster. Provide changed semantic pointers to re-index partially, or omit to rebuild fully.")]
     public async Task<object> RefreshCharacterRosterAsync(
+        bool detailed = true,
         string[]? changedPointers = null,
         CancellationToken cancellationToken = default)
     {
@@ -87,16 +93,22 @@ public sealed class CharacterRosterPlugin(
 
         if (pointerCount == 0)
         {
-            roster = await generator.GenerateAsync(cancellationToken);
+            roster = detailed
+                ? await generator.GenerateDossiersAsync(cancellationToken)
+                : await generator.GenerateAsync(cancellationToken);
         }
         else if (pointerCount > limits.MaxElements)
         {
             logger.LogInformation("RefreshCharacterRoster: too many pointers ({Count}), running full generation.", pointerCount);
-            roster = await generator.GenerateAsync(cancellationToken);
+            roster = detailed
+                ? await generator.GenerateDossiersAsync(cancellationToken)
+                : await generator.GenerateAsync(cancellationToken);
         }
         else
         {
-            roster = await generator.RefreshAsync(changedPointers!, cancellationToken);
+            roster = detailed
+                ? await generator.RefreshDossiersAsync(changedPointers!, cancellationToken)
+                : await generator.RefreshAsync(changedPointers!, cancellationToken);
         }
 
         return new { rosterId = roster.RosterId, version = roster.Version };

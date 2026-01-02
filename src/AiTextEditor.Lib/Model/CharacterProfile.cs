@@ -7,4 +7,5 @@ public sealed record CharacterProfile(
     string Name,
     string Description,
     IReadOnlyList<string> Aliases,
-    string? FirstPointer);
+    string? FirstPointer,
+    string Gender = "unknown");
