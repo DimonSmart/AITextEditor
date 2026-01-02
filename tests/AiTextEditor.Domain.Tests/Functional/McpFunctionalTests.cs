@@ -1,8 +1,10 @@
 using AiTextEditor.Domain.Tests.Infrastructure;
 using AiTextEditor.SemanticKernel;
+using AiTextEditor.Lib.Common;
 using AiTextEditor.Lib.Services;
 using Microsoft.Extensions.Logging;
 using AiTextEditor.Lib.Model;
+using DimonSmart.AiUtils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
@@ -66,7 +68,7 @@ public class McpFunctionalTests
 
     [Theory]
     [InlineData(
-        "Создай каталог персонажей книги. Используй инструменты character_roster.generate_character_roster и character_roster.get_character_roster. Верни только JSON каталога.",
+        "Создай каталог персонажей книги. Используй инструменты character_roster.generate_character_dossiers и character_roster.get_character_roster. Верни только JSON каталога.",
         null,
         true)]
     [InlineData(
@@ -84,11 +86,12 @@ public class McpFunctionalTests
         var answer = result.LastAnswer ?? string.Empty;
         if (string.IsNullOrWhiteSpace(llmCheck))
         {
-            if (!LooksLikeRosterJson(answer))
+            if (!TryExtractRosterJson(answer, out var rosterJson))
             {
-                answer = await BuildRosterJsonAsync(markdown, loggerFactory, httpClient);
+                rosterJson = await BuildRosterJsonAsync(markdown, loggerFactory, httpClient);
             }
 
+            answer = rosterJson;
             var outputPath = Path.Combine(AppContext.BaseDirectory, "character_roster_output.json");
             answer = FormatJson(answer);
             File.WriteAllText(outputPath, answer);
@@ -173,16 +176,40 @@ public class McpFunctionalTests
         }
     }
 
-    private static bool LooksLikeRosterJson(string text)
+    private static bool TryExtractRosterJson(string text, out string rosterJson)
     {
+        rosterJson = string.Empty;
         if (string.IsNullOrWhiteSpace(text))
         {
             return false;
         }
 
-        var trimmed = text.TrimStart();
-        return trimmed.StartsWith("{", StringComparison.Ordinal) &&
-               trimmed.Contains("\"characters\"", StringComparison.OrdinalIgnoreCase);
+        foreach (var candidate in JsonExtractor.ExtractAllJsons(text))
+        {
+            if (IsRosterJson(candidate))
+            {
+                rosterJson = candidate;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool IsRosterJson(string json)
+    {
+        try
+        {
+            using var doc = JsonDocument.Parse(json);
+            var root = doc.RootElement;
+            return root.ValueKind == JsonValueKind.Object &&
+                   root.TryGetProperty("characters", out var characters) &&
+                   characters.ValueKind == JsonValueKind.Array;
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     private static IChatCompletionService CreateChatService(HttpClient httpClient)
@@ -243,7 +270,8 @@ public class McpFunctionalTests
             limits,
             loggerFactory.CreateLogger<CharacterRosterPlugin>());
 
-        await plugin.GenerateCharacterRosterAsync(detailed: true);
-        return plugin.GetCharacterRoster();
+        await plugin.GenerateCharacterDossiersAsync();
+        var roster = plugin.GetCharacterRoster();
+        return JsonSerializer.Serialize(roster, SerializationOptions.RelaxedCompact);
     }
 }

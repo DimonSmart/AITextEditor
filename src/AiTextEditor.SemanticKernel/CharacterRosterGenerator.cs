@@ -224,7 +224,8 @@ public sealed class CharacterRosterGenerator
                 return;
             }
 
-            if (!string.Equals(candidate.Name, CanonicalName, StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(candidate.Name, CanonicalName, StringComparison.OrdinalIgnoreCase) &&
+                !IsInflectionAlias(CanonicalName, candidate.Name))
             {
                 aliases.Add(candidate.Name.Trim());
             }
@@ -296,7 +297,7 @@ public sealed class CharacterRosterGenerator
         var roster = BuildRosterFromAccumulators(accumulators);
         if (includeDossiers)
         {
-            roster = await EnrichWithDossiersAsync(roster, accumulators.Values.ToList(), preserveNonDossiers: false, cancellationToken);
+            roster = await EnrichWithDossiersAsync(roster, accumulators.Values.ToList(), preserveNonDossiers: true, cancellationToken);
         }
 
         rosterService.ReplaceRoster(roster.Characters);
@@ -412,11 +413,87 @@ public sealed class CharacterRosterGenerator
         var aliases = profile.Aliases
             .Append(profile.Name)
             .Where(a => !string.IsNullOrWhiteSpace(a))
+            .Where(a => !IsInflectionAlias(canonicalName, a))
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .OrderBy(a => a, StringComparer.OrdinalIgnoreCase)
             .ToList();
 
         return aliases;
+    }
+
+    private static bool IsInflectionAlias(string canonicalName, string alias)
+    {
+        if (string.IsNullOrWhiteSpace(canonicalName) || string.IsNullOrWhiteSpace(alias))
+        {
+            return false;
+        }
+
+        var trimmedCanonical = canonicalName.Trim();
+        var trimmedAlias = alias.Trim();
+        if (string.Equals(trimmedCanonical, trimmedAlias, StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        if (trimmedCanonical.Contains(' ') || trimmedCanonical.Contains('-') ||
+            trimmedAlias.Contains(' ') || trimmedAlias.Contains('-'))
+        {
+            return false;
+        }
+
+        if (!IsLikelyCyrillicWord(trimmedCanonical) || !IsLikelyCyrillicWord(trimmedAlias))
+        {
+            return false;
+        }
+
+        var normalizedCanonical = NormalizeCyrillic(trimmedCanonical);
+        var normalizedAlias = NormalizeCyrillic(trimmedAlias);
+
+        var stemCanonical = StripRussianEnding(normalizedCanonical);
+        var stemAlias = StripRussianEnding(normalizedAlias);
+
+        if (stemCanonical.Length < 3 || stemAlias.Length < 3)
+        {
+            return false;
+        }
+
+        return string.Equals(stemCanonical, stemAlias, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool IsLikelyCyrillicWord(string word)
+    {
+        foreach (var ch in word)
+        {
+            if (!char.IsLetter(ch))
+            {
+                continue;
+            }
+
+            if (ch < '\u0400' || ch > '\u052F')
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static string NormalizeCyrillic(string text)
+    {
+        return text.Trim().ToLowerInvariant().Replace('ё', 'е');
+    }
+
+    private static string StripRussianEnding(string word)
+    {
+        foreach (var ending in RussianCaseEndings)
+        {
+            if (word.EndsWith(ending, StringComparison.Ordinal) && word.Length - ending.Length >= 3)
+            {
+                return word[..^ending.Length];
+            }
+        }
+
+        return word;
     }
 
     private static List<CharacterEvidence> CollectEvidence(IEnumerable<CharacterAccumulator> accumulators)
@@ -653,6 +730,47 @@ public sealed class CharacterRosterGenerator
     private const int DefaultMaxCharacters = 18;
     private const int DefaultMaxEvidencePerCharacter = 5;
     private const int DefaultMaxEvidenceLength = 240;
+
+    private static readonly string[] RussianCaseEndings =
+    [
+        "иями",
+        "ями",
+        "ами",
+        "ыми",
+        "ими",
+        "ого",
+        "его",
+        "ому",
+        "ему",
+        "ые",
+        "ие",
+        "ых",
+        "их",
+        "ая",
+        "яя",
+        "ое",
+        "ее",
+        "ым",
+        "им",
+        "ой",
+        "ей",
+        "ою",
+        "ею",
+        "ью",
+        "ах",
+        "ях",
+        "ам",
+        "ям",
+        "ом",
+        "ем",
+        "а",
+        "я",
+        "е",
+        "и",
+        "ы",
+        "у",
+        "ю"
+    ];
 
     private static readonly HashSet<string> StopWords = new(StringComparer.OrdinalIgnoreCase)
     {
