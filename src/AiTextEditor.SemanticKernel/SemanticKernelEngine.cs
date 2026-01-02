@@ -38,9 +38,14 @@ public sealed class SemanticKernelEngine
         var repository = new MarkdownDocumentRepository();
         var document = repository.LoadFromMarkdown(markdown);
 
-        var documentContext = new DocumentContext(document);
+        var rosterService = new CharacterRosterService();
+        var documentContext = new DocumentContext(document, rosterService);
 
-        var mcpServer = new EditorSession();
+        var mcpServer = new EditorSession(
+            repository,
+            new LinearDocumentEditor(),
+            new InMemoryTargetSetService(),
+            rosterService);
         mcpServer.LoadDefaultDocument(markdown);
 
         var builder = Kernel.CreateBuilder();
@@ -100,6 +105,18 @@ public sealed class SemanticKernelEngine
             loggerFactory.CreateLogger<CursorAgentPlugin>());
         kernel.Plugins.AddFromObject(cursorAgentPlugin, "cursor_agent");
 
+        var rosterGenerator = new CharacterRosterGenerator(
+            documentContext,
+            rosterService,
+            limits,
+            loggerFactory.CreateLogger<CharacterRosterGenerator>());
+        var characterRosterPlugin = new CharacterRosterPlugin(
+            rosterGenerator,
+            rosterService,
+            limits,
+            loggerFactory.CreateLogger<CharacterRosterPlugin>());
+        kernel.Plugins.AddFromObject(characterRosterPlugin, "character_roster");
+
         var logger = loggerFactory.CreateLogger<SemanticKernelEngine>();
         logger.LogInformation("Kernel built with model {ModelId} at {Endpoint}", modelId, endpoint);
 
@@ -108,8 +125,8 @@ public sealed class SemanticKernelEngine
             $$"""
             You are a Editor assistant for a markdown book. Use tools to inspect the document.
             Info:
-            - Книга на русском языке.
-            - Книга детская.
+            - РљРЅРёРіР° РЅР° СЂСѓСЃСЃРєРѕРј СЏР·С‹РєРµ.
+            - РљРЅРёРіР° РґРµС‚СЃРєР°СЏ.
             
             Terms:
             - Semantic pointer, pointer to the book paragraph in for like '1.1.1.p1'.
@@ -120,7 +137,7 @@ public sealed class SemanticKernelEngine
             - Understand user request, use tools provided to respond.`.
             - If task could be done with keyword based search - prefer keyword cursor over llm cursor.
               Choose the most relevant keywords for the question;
-            - Для keyword cursor передавай ключевые слова в начальной форме; склонения и формы будут нормализованы системой.
+            - Р”Р»СЏ keyword cursor РїРµСЂРµРґР°РІР°Р№ РєР»СЋС‡РµРІС‹Рµ СЃР»РѕРІР° РІ РЅР°С‡Р°Р»СЊРЅРѕР№ С„РѕСЂРјРµ; СЃРєР»РѕРЅРµРЅРёСЏ Рё С„РѕСЂРјС‹ Р±СѓРґСѓС‚ РЅРѕСЂРјР°Р»РёР·РѕРІР°РЅС‹ СЃРёСЃС‚РµРјРѕР№.
             - For multi-paragraph concepts, use a fullscan cursor. 
             - For long scans, consider running cursor_agent-run_cursor_agent after creating a cursor.
             - Be careful with counting mentions: a single paragraph may contain MULTIPLE mentions. Read the text carefully.
@@ -216,7 +233,5 @@ public sealed class SemanticKernelEngine
         return text[..maxLength] + $"... (+{text.Length - maxLength} chars)";
     }
 }
-
-
 
 

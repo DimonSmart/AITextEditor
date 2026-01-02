@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using AiTextEditor.Lib.Model;
+using AiTextEditor.Lib.Services;
 
 namespace AiTextEditor.Lib.Services.SemanticKernel;
 
@@ -7,6 +8,7 @@ public interface IDocumentContext
 {
     LinearDocument Document { get; }
     IList<string> SpeechQueue { get; }
+    CharacterRosterService CharacterRosterService { get; }
 }
 
 public interface ICursorAgentRuntime
