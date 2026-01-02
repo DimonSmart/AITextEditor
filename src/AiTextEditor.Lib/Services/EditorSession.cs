@@ -8,21 +8,28 @@ public class EditorSession
     private readonly MarkdownDocumentRepository repository;
     private readonly LinearDocumentEditor editor;
     private readonly InMemoryTargetSetService targetSets;
+    private readonly CharacterRosterService characterRosterService;
     private LinearDocument? document;
 
     public EditorSession()
-        : this(new MarkdownDocumentRepository(), new LinearDocumentEditor(), new InMemoryTargetSetService())
+        : this(
+            new MarkdownDocumentRepository(),
+            new LinearDocumentEditor(),
+            new InMemoryTargetSetService(),
+            new CharacterRosterService())
     {
     }
 
     public EditorSession(
         MarkdownDocumentRepository repository,
         LinearDocumentEditor editor,
-        InMemoryTargetSetService targetSets)
+        InMemoryTargetSetService targetSets,
+        CharacterRosterService characterRosterService)
     {
         this.repository = repository;
         this.editor = editor;
         this.targetSets = targetSets;
+        this.characterRosterService = characterRosterService;
     }
 
     public LinearDocument LoadDefaultDocument(string markdown, string? documentId = null)
@@ -93,5 +100,10 @@ public class EditorSession
         var updated = editor.Apply(currentDocument, operations);
         document = updated;
         return updated;
+    }
+
+    public CharacterRosterService GetCharacterRosterService()
+    {
+        return characterRosterService;
     }
 }
