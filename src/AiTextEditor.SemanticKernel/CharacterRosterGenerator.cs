@@ -496,9 +496,9 @@ public sealed class CharacterRosterGenerator
         return word;
     }
 
-    private static List<CharacterEvidence> CollectEvidence(IEnumerable<CharacterAccumulator> accumulators)
+    private List<CharacterEvidence> CollectEvidence(IEnumerable<CharacterAccumulator> accumulators)
     {
-        var filtered = accumulators
+        var evidence = accumulators
             .Where(acc => acc.Candidates.Count > 0)
             .Where(acc => IsLikelyCharacterName(acc.CanonicalName))
             .Select(acc => new CharacterEvidence(
@@ -509,11 +509,15 @@ public sealed class CharacterRosterGenerator
                     .ToList()))
             .Where(ev => ev.Mentions.Count >= DefaultMinMentions || ev.Mentions.Any(m => m.Phrase.Length >= DefaultMinMentionLength))
             .OrderByDescending(ev => ev.Mentions.Count)
-            .Take(DefaultMaxCharacters)
-            .Select(ev => ev with { Mentions = ev.Mentions.Take(DefaultMaxEvidencePerCharacter).ToList() })
-            .ToList();
+            .Select(ev => ev with { Mentions = ev.Mentions.Take(DefaultMaxEvidencePerCharacter).ToList() });
 
-        return filtered;
+        var maxCharacters = limits.CharacterRosterMaxCharacters;
+        if (maxCharacters.HasValue && maxCharacters.Value > 0)
+        {
+            evidence = evidence.Take(maxCharacters.Value);
+        }
+
+        return evidence.ToList();
     }
 
     private async Task<Dictionary<string, CharacterDossierSummary>> SummarizeWithLlmAsync(
@@ -727,7 +731,6 @@ public sealed class CharacterRosterGenerator
 
     private const int DefaultMinMentions = 2;
     private const int DefaultMinMentionLength = 30;
-    private const int DefaultMaxCharacters = 18;
     private const int DefaultMaxEvidencePerCharacter = 5;
     private const int DefaultMaxEvidenceLength = 240;
 
@@ -899,6 +902,5 @@ Return JSON ONLY. Schema:
 }
 """;
 }
-
 
 

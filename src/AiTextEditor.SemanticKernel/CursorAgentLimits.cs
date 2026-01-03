@@ -10,6 +10,8 @@ public sealed class CursorAgentLimits
 
     public int DefaultMaxFound { get; init; } = 20;
 
+    public int? CharacterRosterMaxCharacters { get; init; }
+
     public int SnapshotEvidenceLimit { get; init; } = 5;
 
     public int MaxSummaryLength { get; init; } = 500;
