@@ -43,6 +43,40 @@ public sealed class CharacterRosterGenerator
         return GenerateInternalAsync(includeDossiers: true, cancellationToken);
     }
 
+    public async Task<CharacterRoster> GenerateFromEvidenceAsync(
+        IReadOnlyList<EvidenceItem> evidence,
+        bool includeDossiers = false,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(evidence);
+        cancellationToken.ThrowIfCancellationRequested();
+
+        if (evidence.Count == 0)
+        {
+            return rosterService.GetRoster();
+        }
+
+        var candidates = evidence
+            .Where(e => !string.IsNullOrWhiteSpace(e.Excerpt) && !string.IsNullOrWhiteSpace(e.Pointer))
+            .SelectMany(e => ExtractCandidates(e.Excerpt, e.Pointer!))
+            .ToList();
+
+        if (candidates.Count == 0)
+        {
+            return rosterService.GetRoster();
+        }
+
+        var accumulators = BuildAccumulatorsFromCandidates(candidates, null);
+        var roster = BuildRosterFromAccumulators(accumulators);
+        if (includeDossiers)
+        {
+            roster = await EnrichWithDossiersAsync(roster, accumulators.Values.ToList(), preserveNonDossiers: true, cancellationToken);
+        }
+
+        rosterService.ReplaceRoster(roster.Characters);
+        return rosterService.GetRoster();
+    }
+
     public Task<CharacterRoster> RefreshAsync(IReadOnlyCollection<string>? changedPointers, CancellationToken cancellationToken = default)
     {
         return RefreshInternalAsync(changedPointers, includeDossiers: false, cancellationToken);
@@ -61,13 +95,17 @@ public sealed class CharacterRosterGenerator
         }
 
         var text = string.IsNullOrWhiteSpace(item.Text) ? item.Markdown : item.Text;
-        if (string.IsNullOrWhiteSpace(text))
+        return ExtractCandidates(text, item.Pointer.ToCompactString());
+    }
+
+    private static List<CharacterCandidate> ExtractCandidates(string? text, string pointer)
+    {
+        if (string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(pointer))
         {
             return [];
         }
 
         var sentences = SplitSentences(text);
-        var pointer = item.Pointer.ToCompactString();
         var candidates = new List<CharacterCandidate>();
 
         for (var i = 0; i < sentences.Count; i++)
@@ -902,5 +940,3 @@ Return JSON ONLY. Schema:
 }
 """;
 }
-
-

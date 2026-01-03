@@ -119,7 +119,8 @@ public sealed class CursorAgentRuntime : ICursorAgentRuntime
             }
 
             var updatedSummary = string.IsNullOrWhiteSpace(command.Progress) ? summary : Truncate(command.Progress, limits.MaxSummaryLength);
-            cursorAgentState = evidenceCollector.AppendEvidence(cursorAgentState, cursorPortionView, command.NewEvidence ?? Array.Empty<EvidenceItem>(), limits.DefaultMaxFound);
+            var maxEvidenceCount = request.MaxEvidenceCount ?? limits.DefaultMaxFound;
+            cursorAgentState = evidenceCollector.AppendEvidence(cursorAgentState, cursorPortionView, command.NewEvidence ?? Array.Empty<EvidenceItem>(), maxEvidenceCount);
             summary = updatedSummary ?? summary;
 
             if (ShouldStop(command.Action, cursorPortionView.HasMore, stepsUsed, maxSteps, out stopReason))
