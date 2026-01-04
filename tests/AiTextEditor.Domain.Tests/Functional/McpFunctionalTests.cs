@@ -2,6 +2,7 @@ using AiTextEditor.Domain.Tests.Infrastructure;
 using AiTextEditor.SemanticKernel;
 using AiTextEditor.Lib.Common;
 using AiTextEditor.Lib.Services;
+using AiTextEditor.Lib.Services.SemanticKernel;
 using Microsoft.Extensions.Logging;
 using AiTextEditor.Lib.Model;
 using DimonSmart.AiUtils;
@@ -108,6 +109,94 @@ public class McpFunctionalTests
 
         var evaluation = await LlmAssert.EvaluateAsync(httpClient, answer, llmCheck, output);
         Assert.True(evaluation.Pass, $"LLM assert failed: {evaluation.Reason}. Raw: {evaluation.RawResponse}");
+    }
+
+    [Fact]
+    public async Task CharacterRosterCursorOrchestrator_ReturnsFullListForLargeCatalog()
+    {
+        var names = new[]
+        {
+            "Альфа",
+            "Бета",
+            "Гамма",
+            "Дельта",
+            "Эпсилон",
+            "Дзета",
+            "Эта",
+            "Тета",
+            "Йота",
+            "Каппа",
+            "Лямбда",
+            "Мю",
+            "Ню",
+            "Кси",
+            "Омикрон",
+            "Пи",
+            "Ро",
+            "Сигма",
+            "Тау",
+            "Ипсилон"
+        };
+
+        var markdownBuilder = new StringBuilder("# Characters\n\n");
+        foreach (var name in names)
+        {
+            markdownBuilder.AppendLine($"{name} отправился исследовать далёкий город и встретил старых знакомых.");
+            markdownBuilder.AppendLine();
+        }
+
+        var markdown = markdownBuilder.ToString();
+        var repository = new MarkdownDocumentRepository();
+        var document = repository.LoadFromMarkdown(markdown);
+        var rosterService = new CharacterRosterService();
+        var documentContext = new DocumentContext(document, rosterService);
+
+        using var loggerFactory = TestLoggerFactory.Create(output);
+
+        var limits = new CursorAgentLimits
+        {
+            CharacterRosterMaxCharacters = 18,
+            DefaultMaxFound = 10,
+            MaxElements = 10,
+            MaxBytes = 32_000
+        };
+
+        var generator = new CharacterRosterGenerator(
+            documentContext,
+            rosterService,
+            limits,
+            loggerFactory.CreateLogger<CharacterRosterGenerator>(),
+            chatService: null);
+
+        var directRoster = await generator.GenerateAsync();
+        Assert.Equal(limits.CharacterRosterMaxCharacters, directRoster.Characters.Count);
+
+        var evidence = names
+            .Select((name, index) => new EvidenceItem($"1.1.p{index + 1}", $"{name} отправился исследовать далёкий город.", "characters"))
+            .ToList();
+
+        var orchestrator = new CharacterRosterCursorOrchestrator(
+            documentContext,
+            new CursorRegistry(),
+            new FixedEvidenceCursorAgentRuntime(evidence),
+            generator,
+            limits,
+            loggerFactory.CreateLogger<CharacterRosterCursorOrchestrator>());
+
+        var plugin = new CharacterRosterPlugin(
+            generator,
+            orchestrator,
+            rosterService,
+            limits,
+            loggerFactory.CreateLogger<CharacterRosterPlugin>());
+
+        await plugin.GenerateCharacterRosterAsync();
+
+        var roster = plugin.GetCharacterRoster();
+
+        Assert.Equal(names.Length, roster.Characters.Count);
+        Assert.Contains(roster.Characters, c => c.Name.Contains(names[0], StringComparison.OrdinalIgnoreCase));
+        Assert.Contains(roster.Characters, c => c.Name.Contains(names[^1], StringComparison.OrdinalIgnoreCase));
     }
 
     [Fact]
@@ -264,14 +353,49 @@ public class McpFunctionalTests
             limits,
             loggerFactory.CreateLogger<CharacterRosterGenerator>(),
             chatService);
+        var cursorStore = new CursorRegistry();
+        var orchestrator = new CharacterRosterCursorOrchestrator(
+            documentContext,
+            cursorStore,
+            new NoOpCursorAgentRuntime(),
+            generator,
+            limits,
+            loggerFactory.CreateLogger<CharacterRosterCursorOrchestrator>());
         var plugin = new CharacterRosterPlugin(
             generator,
+            orchestrator,
             rosterService,
             limits,
             loggerFactory.CreateLogger<CharacterRosterPlugin>());
 
-        await plugin.GenerateCharacterDossiersAsync();
+        await plugin.GenerateCharacterDossiersAsync(useCursorAgent: false);
         var roster = plugin.GetCharacterRoster();
         return JsonSerializer.Serialize(roster, SerializationOptions.RelaxedCompact);
+    }
+
+    private sealed class NoOpCursorAgentRuntime : ICursorAgentRuntime
+    {
+        public Task<CursorAgentResult> RunAsync(string cursorName, CursorAgentRequest request, CancellationToken cancellationToken = default)
+        {
+            throw new NotSupportedException();
+        }
+
+        public Task<CursorAgentStepResult> RunStepAsync(CursorAgentRequest request, CursorPortionView portion, CursorAgentState state, int step, CancellationToken cancellationToken = default)
+        {
+            throw new NotSupportedException();
+        }
+    }
+
+    private sealed class FixedEvidenceCursorAgentRuntime(IReadOnlyList<EvidenceItem> evidence) : ICursorAgentRuntime
+    {
+        public Task<CursorAgentResult> RunAsync(string cursorName, CursorAgentRequest request, CancellationToken cancellationToken = default)
+        {
+            return Task.FromResult(new CursorAgentResult(true, "ok", evidence, CursorComplete: true));
+        }
+
+        public Task<CursorAgentStepResult> RunStepAsync(CursorAgentRequest request, CursorPortionView portion, CursorAgentState state, int step, CancellationToken cancellationToken = default)
+        {
+            throw new NotSupportedException();
+        }
     }
 }
