@@ -9,17 +9,20 @@ namespace AiTextEditor.SemanticKernel;
 public sealed class CharacterRosterPlugin
 {
     private readonly CharacterRosterGenerator _generator;
+    private readonly CharacterRosterCursorOrchestrator _orchestrator;
     private readonly CharacterRosterService _rosterService;
     private readonly CursorAgentLimits _limits;
     private readonly ILogger<CharacterRosterPlugin> _logger;
 
     public CharacterRosterPlugin(
         CharacterRosterGenerator generator,
+        CharacterRosterCursorOrchestrator orchestrator,
         CharacterRosterService rosterService,
         CursorAgentLimits limits,
         ILogger<CharacterRosterPlugin> logger)
     {
         _generator = generator ?? throw new ArgumentNullException(nameof(generator));
+        _orchestrator = orchestrator ?? throw new ArgumentNullException(nameof(orchestrator));
         _rosterService = rosterService ?? throw new ArgumentNullException(nameof(rosterService));
         _limits = limits ?? throw new ArgumentNullException(nameof(limits));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -27,16 +30,20 @@ public sealed class CharacterRosterPlugin
 
     [KernelFunction("generate_character_roster")]
     [Description("Fast scan of the document and build a compact character roster from detected name mentions.")]
-    public Task<CharacterRosterCommandResult> GenerateCharacterRosterAsync(CancellationToken cancellationToken = default)
+    public Task<CharacterRosterCommandResult> GenerateCharacterRosterAsync(
+        bool useCursorAgent = true,
+        CancellationToken cancellationToken = default)
     {
-        return GenerateAsync(RosterDetailLevel.Roster, cancellationToken);
+        return GenerateAsync(RosterDetailLevel.Roster, useCursorAgent, cancellationToken);
     }
 
     [KernelFunction("generate_character_dossiers")]
     [Description("Scan the document and build a detailed character dossier catalog (slower, uses LLM).")]
-    public Task<CharacterRosterCommandResult> GenerateCharacterDossiersAsync(CancellationToken cancellationToken = default)
+    public Task<CharacterRosterCommandResult> GenerateCharacterDossiersAsync(
+        bool useCursorAgent = true,
+        CancellationToken cancellationToken = default)
     {
-        return GenerateAsync(RosterDetailLevel.Dossiers, cancellationToken);
+        return GenerateAsync(RosterDetailLevel.Dossiers, useCursorAgent, cancellationToken);
     }
 
     [KernelFunction("get_character_roster")]
@@ -108,11 +115,12 @@ public sealed class CharacterRosterPlugin
         return RefreshAsync(RosterDetailLevel.Dossiers, changedPointers, cancellationToken);
     }
 
-    private async Task<CharacterRosterCommandResult> GenerateAsync(RosterDetailLevel detailLevel, CancellationToken cancellationToken)
+    private async Task<CharacterRosterCommandResult> GenerateAsync(
+        RosterDetailLevel detailLevel,
+        bool useCursorAgent,
+        CancellationToken cancellationToken)
     {
-        var roster = detailLevel == RosterDetailLevel.Dossiers
-            ? await _generator.GenerateDossiersAsync(cancellationToken)
-            : await _generator.GenerateAsync(cancellationToken);
+        var roster = await GenerateWithModeAsync(detailLevel, useCursorAgent, cancellationToken);
 
         _logger.LogInformation("Character roster generated: {RosterId} v{Version}", roster.RosterId, roster.Version);
         return new CharacterRosterCommandResult(roster.RosterId, roster.Version);
@@ -126,13 +134,13 @@ public sealed class CharacterRosterPlugin
         var normalized = NormalizePointers(changedPointers);
         if (normalized.Count == 0)
         {
-            return await GenerateAsync(detailLevel, cancellationToken);
+            return await GenerateAsync(detailLevel, useCursorAgent: true, cancellationToken);
         }
 
         if (normalized.Count > _limits.MaxElements)
         {
             _logger.LogInformation("RefreshCharacterRoster: too many pointers ({Count}), running full generation.", normalized.Count);
-            return await GenerateAsync(detailLevel, cancellationToken);
+            return await GenerateAsync(detailLevel, useCursorAgent: true, cancellationToken);
         }
 
         CharacterRoster roster = detailLevel == RosterDetailLevel.Dossiers
@@ -140,6 +148,21 @@ public sealed class CharacterRosterPlugin
             : await _generator.RefreshAsync(normalized, cancellationToken);
 
         return new CharacterRosterCommandResult(roster.RosterId, roster.Version);
+    }
+
+    private async Task<CharacterRoster> GenerateWithModeAsync(
+        RosterDetailLevel detailLevel,
+        bool useCursorAgent,
+        CancellationToken cancellationToken)
+    {
+        if (useCursorAgent)
+        {
+            return await _orchestrator.BuildRosterAsync(detailLevel == RosterDetailLevel.Dossiers, cancellationToken);
+        }
+
+        return detailLevel == RosterDetailLevel.Dossiers
+            ? await _generator.GenerateDossiersAsync(cancellationToken)
+            : await _generator.GenerateAsync(cancellationToken);
     }
 
     private static List<string> NormalizePointers(string[]? changedPointers)

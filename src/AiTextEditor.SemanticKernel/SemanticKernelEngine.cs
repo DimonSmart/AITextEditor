@@ -52,6 +52,7 @@ public sealed class SemanticKernelEngine
 
         var cursorRegistry = new CursorRegistry();
 
+        builder.Services.AddSingleton(rosterService);
         builder.Services.AddSingleton<IDocumentContext>(documentContext);
         builder.Services.AddSingleton<ICursorStore>(cursorRegistry);
         builder.Services.AddSingleton<CursorAgentLimits>();
@@ -59,6 +60,21 @@ public sealed class SemanticKernelEngine
         builder.Services.AddSingleton<ICursorAgentResponseParser, CursorAgentResponseParser>();
         builder.Services.AddSingleton<ICursorEvidenceCollector, CursorEvidenceCollector>();
         builder.Services.AddSingleton<ICursorAgentRuntime, CursorAgentRuntime>();
+        builder.Services.AddSingleton<CharacterRosterGenerator>(sp =>
+            new CharacterRosterGenerator(
+                sp.GetRequiredService<IDocumentContext>(),
+                sp.GetRequiredService<CharacterRosterService>(),
+                sp.GetRequiredService<CursorAgentLimits>(),
+                sp.GetRequiredService<ILogger<CharacterRosterGenerator>>(),
+                sp.GetRequiredService<IChatCompletionService>()));
+        builder.Services.AddSingleton<CharacterRosterCursorOrchestrator>(sp =>
+            new CharacterRosterCursorOrchestrator(
+                sp.GetRequiredService<IDocumentContext>(),
+                sp.GetRequiredService<ICursorStore>(),
+                sp.GetRequiredService<ICursorAgentRuntime>(),
+                sp.GetRequiredService<CharacterRosterGenerator>(),
+                sp.GetRequiredService<CursorAgentLimits>(),
+                sp.GetRequiredService<ILogger<CharacterRosterCursorOrchestrator>>()));
         builder.Services.AddSingleton<ILoggerFactory>(loggerFactory);
         builder.Services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
         builder.Services.AddSingleton<FunctionInvocationLoggingFilter>();
@@ -105,14 +121,11 @@ public sealed class SemanticKernelEngine
             loggerFactory.CreateLogger<CursorAgentPlugin>());
         kernel.Plugins.AddFromObject(cursorAgentPlugin, "cursor_agent");
 
-        var rosterGenerator = new CharacterRosterGenerator(
-            documentContext,
-            rosterService,
-            limits,
-            loggerFactory.CreateLogger<CharacterRosterGenerator>(),
-            chatService);
+        var rosterGenerator = kernel.Services.GetRequiredService<CharacterRosterGenerator>();
+        var rosterOrchestrator = kernel.Services.GetRequiredService<CharacterRosterCursorOrchestrator>();
         var characterRosterPlugin = new CharacterRosterPlugin(
             rosterGenerator,
+            rosterOrchestrator,
             rosterService,
             limits,
             loggerFactory.CreateLogger<CharacterRosterPlugin>());
@@ -234,5 +247,4 @@ public sealed class SemanticKernelEngine
         return text[..maxLength] + $"... (+{text.Length - maxLength} chars)";
     }
 }
-
 
