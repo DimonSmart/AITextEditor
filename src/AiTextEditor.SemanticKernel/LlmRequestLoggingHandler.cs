@@ -32,6 +32,7 @@ public class LlmRequestLoggingHandler : DelegatingHandler
 
         if (response.Content != null)
         {
+            ForceUtf8(response.Content);
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
             _logger.LogTrace("LLM Response: {StatusCode}\n{Content}", response.StatusCode, content);
         }
@@ -41,5 +42,26 @@ public class LlmRequestLoggingHandler : DelegatingHandler
         }
 
         return response;
+    }
+
+    private static void ForceUtf8(HttpContent content)
+    {
+        var contentType = content.Headers.ContentType;
+        if (contentType == null)
+        {
+            return;
+        }
+
+        var mediaType = contentType.MediaType;
+        if (string.IsNullOrWhiteSpace(mediaType))
+        {
+            return;
+        }
+
+        if (mediaType.StartsWith("application/json", System.StringComparison.OrdinalIgnoreCase) ||
+            mediaType.StartsWith("text/", System.StringComparison.OrdinalIgnoreCase))
+        {
+            contentType.CharSet = "utf-8";
+        }
     }
 }

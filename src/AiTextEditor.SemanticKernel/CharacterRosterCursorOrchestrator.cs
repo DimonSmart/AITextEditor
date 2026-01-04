@@ -61,7 +61,7 @@ public sealed class CharacterRosterCursorOrchestrator
         var evidence = result.Evidence ?? Array.Empty<EvidenceItem>();
         logger.LogInformation("CharacterRosterCursorOrchestrator: evidence collected {Count}, cursorComplete={CursorComplete}", evidence.Count, result.CursorComplete);
 
-        return await generator.GenerateFromEvidenceAsync(evidence, includeDossiers, cancellationToken);
+        return await generator.GenerateFromEvidenceAsync(evidence, cancellationToken);
     }
 
     private string CreateCursorName() => $"roster_cursor_{cursorCounter++}";

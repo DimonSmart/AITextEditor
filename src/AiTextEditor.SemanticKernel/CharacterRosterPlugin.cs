@@ -143,9 +143,7 @@ public sealed class CharacterRosterPlugin
             return await GenerateAsync(detailLevel, useCursorAgent: true, cancellationToken);
         }
 
-        CharacterRoster roster = detailLevel == RosterDetailLevel.Dossiers
-            ? await _generator.RefreshDossiersAsync(normalized, cancellationToken)
-            : await _generator.RefreshAsync(normalized, cancellationToken);
+        CharacterRoster roster = await _generator.RefreshAsync(normalized, cancellationToken);
 
         return new CharacterRosterCommandResult(roster.RosterId, roster.Version);
     }
@@ -160,9 +158,7 @@ public sealed class CharacterRosterPlugin
             return await _orchestrator.BuildRosterAsync(detailLevel == RosterDetailLevel.Dossiers, cancellationToken);
         }
 
-        return detailLevel == RosterDetailLevel.Dossiers
-            ? await _generator.GenerateDossiersAsync(cancellationToken)
-            : await _generator.GenerateAsync(cancellationToken);
+        return await _generator.GenerateAsync(cancellationToken);
     }
 
     private static List<string> NormalizePointers(string[]? changedPointers)

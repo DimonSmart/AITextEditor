@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
+using System.Text;
 
 namespace AiTextEditor.Lib.Infrastructure;
 
@@ -9,6 +10,7 @@ public class SimpleFileLogger : ILogger
     private readonly string _categoryName;
     private readonly string _filePath;
     private static readonly object _lock = new object();
+    private static readonly Encoding LogEncoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: true);
 
     public SimpleFileLogger(string categoryName, string filePath)
     {
@@ -35,7 +37,7 @@ public class SimpleFileLogger : ILogger
         {
             try
             {
-                File.AppendAllText(_filePath, logRecord + Environment.NewLine);
+                File.AppendAllText(_filePath, logRecord + Environment.NewLine, LogEncoding);
             }
             catch
             {

@@ -59,14 +59,14 @@ public sealed class CharacterRosterGeneratorTests
             NullLogger<CharacterRosterGenerator>.Instance,
             chatService);
 
-        var roster = await generator.GenerateDossiersAsync();
+        var roster = await generator.GenerateAsync();
 
         Assert.Equal(names.Length, roster.Characters.Count);
         Assert.NotNull(chatService.LastUserMessage);
 
         using var json = JsonDocument.Parse(chatService.LastUserMessage!);
-        var characters = json.RootElement.GetProperty("characters");
-        Assert.Equal(names.Length, characters.GetArrayLength());
+        var paragraphs = json.RootElement.GetProperty("paragraphs");
+        Assert.Equal(names.Length, paragraphs.GetArrayLength());
     }
 
     private static string BuildMarkdown(IEnumerable<string> names)
@@ -94,9 +94,10 @@ public sealed class CharacterRosterGeneratorTests
             CancellationToken cancellationToken = default)
         {
             LastUserMessage = chatHistory.LastOrDefault(m => m.Role == AuthorRole.User)?.Content;
+            var payload = BuildCharacterPayload(LastUserMessage);
             var result = new List<ChatMessageContent>
             {
-                new(AuthorRole.Assistant, string.Empty)
+                new(AuthorRole.Assistant, payload)
             };
 
             return Task.FromResult<IReadOnlyList<ChatMessageContent>>(result);
@@ -109,7 +110,56 @@ public sealed class CharacterRosterGeneratorTests
             CancellationToken cancellationToken = default)
         {
             LastUserMessage = chatHistory.LastOrDefault(m => m.Role == AuthorRole.User)?.Content;
+            _ = BuildCharacterPayload(LastUserMessage);
             return AsyncEnumerable.Empty<StreamingChatMessageContent>();
+        }
+
+        private static string BuildCharacterPayload(string? prompt)
+        {
+            if (string.IsNullOrWhiteSpace(prompt))
+            {
+                return "[]";
+            }
+
+            try
+            {
+                using var json = JsonDocument.Parse(prompt);
+                if (!json.RootElement.TryGetProperty("paragraphs", out var paragraphs) || paragraphs.ValueKind != JsonValueKind.Array)
+                {
+                    return "[]";
+                }
+
+                var characters = new List<Dictionary<string, object?>>();
+                foreach (var paragraph in paragraphs.EnumerateArray())
+                {
+                    if (!paragraph.TryGetProperty("text", out var textElement) || textElement.ValueKind != JsonValueKind.String)
+                    {
+                        continue;
+                    }
+
+                    var text = textElement.GetString() ?? string.Empty;
+                    var name = text.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                                   .FirstOrDefault();
+                    if (string.IsNullOrWhiteSpace(name))
+                    {
+                        continue;
+                    }
+
+                    characters.Add(new Dictionary<string, object?>
+                    {
+                        ["canonicalName"] = name,
+                        ["aliases"] = Array.Empty<string>(),
+                        ["gender"] = "unknown",
+                        ["description"] = name
+                    });
+                }
+
+                return JsonSerializer.Serialize(characters);
+            }
+            catch
+            {
+                return "[]";
+            }
         }
     }
 }
