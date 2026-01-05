@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-590\",\"object\":\"chat.completion\",\"created\":1767596662,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"[\\n  {\\n    \\\"canonicalName\\\": \\\"Звёздочкина\\\",\\n    \\\"aliases\\\": [],\\n    \\\"gender\\\": \\\"unknown\\\",\\n    \\\"description\\\": \\\"Звёздочкина был схвачен двумя коротышками, которые схватили его за шиворот и за ноги, а затем поволокли на улицу и посадили в сквере на траву.\\\"\\n  }\\n]\",\"reasoning\":\"We need to extract characters (people) mentioned. The paragraph is Russian. It mentions \\\"Двое коротышек\\\" (two shorties), \\\"Звёздочкина\\\". The text: \\\"Двое коротышек снова бросились на трибуну, один схватил Звёздочкина за шиворот, другой за ноги, и поволокли его прямо на улицу. Там его посадили в скверике на траву и сказали:\\\" So characters: \\\"Звёздочкина\\\". The two shorties are not named, just described as \\\"Двое коротышек\\\". Since they are not given a name, we might skip them because not specific. The rule says identify only PEOPLE/CHARACTERS mentioned. \\\"Двое коротышек\\\" is a group, not an individual. Likely skip because no name. So only character is \\\"Звёздочкина\\\". Gender? The name ending with -ина suggests female (maybe). But we need grounded evidence: not explicit gender. However can infer? The rules: Use gender \\\"unknown\\\" if not supported by evidence. Since text does not state gender, we should use unknown. Description: \\\"Звёздочкина был схвачен двумя коротышками, схвачен за шиворот и за ноги, затем поволокли его на улицу, посадили в сквере на траву.\\\" Provide 1-3 sentences. Need canonicalName normalized nominative when applicable. \\\"Звёздочкина\\\" likely already nominative (assuming surname). Aliases: maybe \\\"его\\\" refers to same person, but \\\"его\\\" is pronoun, not alias. So none. Provide empty array? Should be [].\\n\\nThus JSON array with one object.\\n\\nLet's craft.\\n\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":413,\"completion_tokens\":466,\"total_tokens\":879}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:04:22 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

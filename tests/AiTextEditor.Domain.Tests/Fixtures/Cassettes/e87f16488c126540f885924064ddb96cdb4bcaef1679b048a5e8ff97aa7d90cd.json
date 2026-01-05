@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-667\",\"object\":\"chat.completion\",\"created\":1767596577,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"[{\\n  \\\"canonicalName\\\": \\\"Знайка\\\",\\n  \\\"aliases\\\": [],\\n  \\\"gender\\\": \\\"male\\\",\\n  \\\"description\\\": \\\"Знайка остановился, после чего коротышки завопили, требуя продолжения рассказа. Его остановка стала поводом для реакции группы коротышек.\\\"\\n}]\",\"reasoning\":\"We need extract characters (people) from the given paragraphs.\\n\\nParagraph 1.1.1.p54: text: \\\"– Расскажите, что вы чувствовали? Что вы испытывали? – закричал кто-то.\\\" No names, just \\\"кто-то\\\" (someone). No characters.\\n\\nParagraph 1.1.1.p55: It's a monologue, likely first-person narrator, but no name. No explicit person name. Could possibly be \\\"я\\\" but that's not a name. So skip.\\n\\nParagraph 1.1.1.p56: text: \\\"– Рассказывайте! Рассказывайте ещё! – завоз...завопили коротышки хором, увидев, что Знайка остановился.\\\" Here we have \\\"Знайка\\\". That is a character name (from \\\"Приключения Незнайки\\\" perhaps). So we extract \\\"Знайка\\\". Also \\\"коротышки\\\" is plural noun, not specific person.\\n\\nThus we have one character: canonical name \\\"Знайка\\\". Aliases: maybe none, but there could be lowercase \\\"знайка\\\"? The same spelling but we may include \\\"Знайка\\\" only. No other forms. Gender: likely male (in original story, Знайка is male). But we need evidence from text? Not directly indicated gender. It says \\\"Знайка остановился\\\". Verb \\\"остановился\\\" is masculine past tense, indicating male. So gender male.\\n\\nDescription: Based on text: \\\"Знайка\\\" is mentioned as someone who stopped, causing short people (\\\"коротышки\\\") to cheer. So \\\"Знайка\\\" is a person who stopped, observed by коротышки. Provide 1-3 sentences.\\n\\nThus output JSON array with one object.\\n\\nMake sure no markdown.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":679,\"completion_tokens\":448,\"total_tokens\":1127}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:02:57 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

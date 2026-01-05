@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-174\",\"object\":\"chat.completion\",\"created\":1767597257,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We have roster, need to update Zнайка description to \\\"Главный из коротышек\\\". Use upsert_character with characterId from roster. Find Zнайка id: \\\"cc208a650bef4355863009f710e1e5c0\\\". Use upsert.\",\"tool_calls\":[{\"id\":\"call_4bnfr3ts\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"character_roster-upsert_character\",\"arguments\":\"{\\\"aliases\\\":[\\\"блинист\\\",\\\"Знайк\\\",\\\"Знайке\\\",\\\"Знайки\\\",\\\"Знайкин\\\",\\\"Знайкино\\\",\\\"Знайкиной\\\",\\\"Знайку\\\"],\\\"characterId\\\":\\\"cc208a650bef4355863009f710e1e5c0\\\",\\\"description\\\":\\\"Главный из коротышек\\\",\\\"gender\\\":\\\"male\\\",\\\"name\\\":\\\"Знайка\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":2854,\"completion_tokens\":175,\"total_tokens\":3029}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:14:17 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

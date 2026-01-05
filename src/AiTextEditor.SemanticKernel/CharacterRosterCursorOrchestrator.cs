@@ -51,18 +51,103 @@ public sealed class CharacterRosterCursorOrchestrator
 
         logger.LogInformation("CharacterRosterCursorOrchestrator: cursor created {Cursor}", cursorName);
 
+        var maxEvidenceCount = Math.Max(limits.DefaultMaxFound, documentContext.Document.Items.Count);
         var request = new CursorAgentRequest(
             "Collect ALL character mentions across the book. Return every paragraph where a person appears. Use evidence.pointer and evidence.excerpt exactly from batch items.",
             StartAfterPointer: null,
-            Context: "Include aliases and nicknames. Do not stop early; scan the whole book.",
-            MaxEvidenceCount: Math.Max(limits.DefaultMaxFound, 500));
+            Context: "Include aliases and nicknames. Count only named individuals or stable titles tied to a person; ignore generic groups/roles. Do not stop early; scan the whole book.",
+            MaxEvidenceCount: maxEvidenceCount);
 
-        var result = await cursorAgentRuntime.RunAsync(cursorName, request, cancellationToken);
-        var evidence = result.Evidence ?? Array.Empty<EvidenceItem>();
-        logger.LogInformation("CharacterRosterCursorOrchestrator: evidence collected {Count}, cursorComplete={CursorComplete}", evidence.Count, result.CursorComplete);
+        var cursorAgentState = new CursorAgentState(Array.Empty<EvidenceItem>());
+        var seenPointers = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var maxSteps = Math.Clamp(limits.DefaultMaxSteps, 1, limits.MaxStepsLimit);
+        var stepsUsed = 0;
 
-        return await generator.GenerateFromEvidenceAsync(evidence, cancellationToken);
+        for (var step = 0; step < maxSteps; step++)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var portion = cursor.NextPortion();
+            if (!portion.Items.Any())
+            {
+                break;
+            }
+
+            var cursorPortionView = CursorPortionView.FromPortion(portion);
+            var command = await cursorAgentRuntime.RunStepAsync(request, cursorPortionView, cursorAgentState, step, cancellationToken);
+            stepsUsed = step + 1;
+
+            var normalizedEvidence = NormalizeEvidenceBatch(command.NewEvidence, cursorPortionView, seenPointers);
+            if (normalizedEvidence.Count > 0)
+            {
+                var maxEvidenceForState = request.MaxEvidenceCount ?? limits.DefaultMaxFound;
+                cursorAgentState = cursorAgentState.WithEvidence(normalizedEvidence, maxEvidenceForState);
+                await generator.UpdateFromEvidenceBatchAsync(normalizedEvidence, cancellationToken);
+            }
+
+            if (!cursorPortionView.HasMore)
+            {
+                break;
+            }
+
+            if (string.Equals(command.Action, "stop", StringComparison.OrdinalIgnoreCase))
+            {
+                logger.LogDebug("CharacterRosterCursorOrchestrator: agent requested stop early; continuing scan.");
+            }
+        }
+
+        if (stepsUsed >= maxSteps)
+        {
+            logger.LogWarning("CharacterRosterCursorOrchestrator: max steps reached {Steps}", stepsUsed);
+        }
+
+        return documentContext.CharacterRosterService.GetRoster();
     }
 
     private string CreateCursorName() => $"roster_cursor_{cursorCounter++}";
+
+    private static IReadOnlyList<EvidenceItem> NormalizeEvidenceBatch(
+        IReadOnlyList<EvidenceItem>? evidence,
+        CursorPortionView portion,
+        HashSet<string> seenPointers)
+    {
+        if (evidence == null || evidence.Count == 0)
+        {
+            return Array.Empty<EvidenceItem>();
+        }
+
+        var byPointer = portion.Items
+            .Select(item => new { NormalizedPointer = NormalizePointer(item.SemanticPointer), item.Markdown })
+            .Where(item => item.NormalizedPointer != null)
+            .ToDictionary(item => item.NormalizedPointer!, item => item.Markdown, StringComparer.OrdinalIgnoreCase);
+
+        var normalized = new List<EvidenceItem>(evidence.Count);
+        foreach (var item in evidence)
+        {
+            var normalizedPointer = NormalizePointer(item.Pointer);
+            if (normalizedPointer == null || !byPointer.TryGetValue(normalizedPointer, out var markdown))
+            {
+                continue;
+            }
+
+            if (!seenPointers.Add(normalizedPointer))
+            {
+                continue;
+            }
+
+            normalized.Add(new EvidenceItem(normalizedPointer, markdown, item.Reason));
+        }
+
+        return normalized;
+    }
+
+    private static string? NormalizePointer(string? pointer)
+    {
+        if (string.IsNullOrWhiteSpace(pointer))
+        {
+            return null;
+        }
+
+        return SemanticPointer.TryParse(pointer, out var parsed) ? parsed!.ToCompactString() : null;
+    }
 }

@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-323\",\"object\":\"chat.completion\",\"created\":1767596487,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"action\\\":\\\"continue\\\",\\\"batchFound\\\":true,\\\"newEvidence\\\":[{\\\"pointer\\\":\\\"1.1.1.p39\\\",\\\"excerpt\\\":\\\"– Вот видите, сами говорите – жидкость, – усмехнулся Звёздочкин. – Откуда же в Луне взялась пустота, если там была жидкость, садовая вы голова?\\\",\\\"reason\\\":\\\"Paragraph mentions the character Звёздочкин.\\\"},{\\\"pointer\\\":\\\"1.1.1.p40\\\",\\\"excerpt\\\":\\\"– Ну, об этом совсем нетрудно догадаться, – невозмутимо ответил Знайка. – Ведь раскалённая жидкость, окружённая твёрдой оболочкой Луны, продолжала остывать, а остывая, она уменьшалась в объёме. Вы, надо полагать, знаете, что каждое вещество, охлаждаясь, уменьшается в объёме?\\\",\\\"reason\\\":\\\"Paragraph mentions the character Знайка.\\\"},{\\\"pointer\\\":\\\"1.1.1.p41\\\",\\\"excerpt\\\":\\\"– Надо полагать, знаю, – сердито буркнул профессор.\\\",\\\"reason\\\":\\\"Paragraph mentions the character профессор.\\\"}],\\\"progress\\\":\\\"Found three new paragraphs with character mentions.\\\",\\\"needMoreContext\\\":false}\",\"reasoning\":\"We need to extract candidate evidence relevant to the task: collect all character mentions across the book; return every paragraph where a person appears. So we scan current batch items for any person mention.\\n\\nWe have three paragraphs.\\n\\nCheck p39: text includes \\\"Звёздочкин\\\". That's a character name. Also maybe \\\"жидкость\\\" not person. So include.\\n\\np40: includes \\\"Знайка\\\". Also maybe \\\"professor\\\"? Actually the word \\\"профессор\\\" appears later? No, not in this paragraph. So include.\\n\\np41: includes \\\"профессор\\\". That's a title, possibly a character. The excerpt shows \\\"– Надо полагать, знаю, – сердито буркнул профессор.\\\" So include.\\n\\nWe must not include pointers already in recentEvidencePointers: given list includes p32,33,34,35,38. Our pointers are 39,40,41 which are new.\\n\\nThus newEvidence list with three entries.\\n\\nProvide reason: mention of character name.\\n\\nAction: need to see if maxEvidenceCount is 86, we have snapshot evidenceCount 30, adding 3 =33, less than 86, so continue.\\n\\nbatchFound true.\\n\\nneedMoreContext false.\\n\\nprogress maybe summarize.\\n\\nNow format JSON.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1017,\"completion_tokens\":531,\"total_tokens\":1548}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:01:27 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

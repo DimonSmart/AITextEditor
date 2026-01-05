@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-420\",\"object\":\"chat.completion\",\"created\":1767596504,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"action\\\":\\\"continue\\\",\\\"batchFound\\\":true,\\\"newEvidence\\\":[{\\\"pointer\\\":\\\"1.1.1.p42\\\",\\\"excerpt\\\":\\\"– Тогда вам всё должно быть понятно, – обрадованно сказал Знайка. – Если жидкое вещество уменьшалось в объёме, то внутри Луны само собой должно было получаться пустое пространство на манер воздушного пузыря в бутылке. Это пустое пространство делалось всё больше и больше, располагаясь в центральной части Луны, так как остававшаяся жидкой масса притягивалась к твёрдой оболочке Луны, подобно тому как притягивались остатки воды к стенкам бутылки, когда она находилась в состоянии невесомости. Со временем жидкость внутри Луны и вовсе остыла и затвердела, как бы прилипнув к твёрдым стенкам планеты, благодаря чему в Луне образовалась внутренняя полость, которая постепенно могла заполниться воздухом или каким-нибудь другим газом.\\\",\\\"reason\\\":\\\"The paragraph contains a spoken line by the character Знайка.\\\"}],\\\"progress\\\":\\\"Found one paragraph with a character mention.\\\",\\\"needMoreContext\\\":false}\",\"reasoning\":\"We need to extract all character mentions in this batch. Goal: collect every paragraph where a person appears. So we need to check each item for any person name (characters). Items:\\n\\np42 paragraph includes \\\"Знайка\\\". That's a character. Also maybe \\\"Луна\\\"? That's a place. Also \\\"кто-то\\\"? generic, not a name. So we have a match.\\n\\np43 includes \\\"кто-то\\\" (someone) not a specific person name. Probably not a character mention. The instruction: include aliases and nicknames. \\\"кто-то\\\" not a name.\\n\\np44 includes \\\"крики\\\" no name.\\n\\nThus only p42 is new evidence. Need to ensure pointer not in recentEvidencePointers. It is not listed. So include.\\n\\nExcerpt must be exactly the markdown. Reason: mention of Знайка matches task.\\n\\nAction: we have snapshot.evidenceCount=33, max=86. New evidence length=1, total 34 \\u003c86, so continue.\\n\\nbatchFound true.\\n\\nneedMoreContext false.\\n\\nProvide JSON.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1068,\"completion_tokens\":468,\"total_tokens\":1536}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:01:44 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

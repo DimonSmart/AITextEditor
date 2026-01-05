@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-254\",\"object\":\"chat.completion\",\"created\":1767598413,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"[\\n  {\\n    \\\"canonicalName\\\": \\\"Знайка\\\",\\n    \\\"aliases\\\": [],\\n    \\\"gender\\\": \\\"male\\\",\\n    \\\"description\\\": \\\"Знайка не был согласен ни с вулканической, ни с метеоритной теорией происхождения лунных кратеров и создал собственную теорию, сравнивая поверхность Луны с блином, в котором появляются дырки при выпекании.\\\"\\n  },\\n  {\\n    \\\"canonicalName\\\": \\\"Стекляшкин\\\",\\n    \\\"aliases\\\": [\\\"Стекляшкиным\\\"],\\n    \\\"gender\\\": \\\"male\\\",\\n    \\\"description\\\": \\\"Стекляшкин вместе с Знаикой наблюдал Луну в телескоп и стал свидетелем сравнения её поверхности с поверхностью блина.\\\"\\n  }\\n]\",\"reasoning\":\"We need extract characters. Paragraph mentions \\\"Знайка\\\" and \\\"Стекляшкин\\\". Both are persons. Need canonicalName normalized nominative when applicable. Likely they are Russian names (Znaika, Steklyashkin). Provide aliases: maybe just the same forms present. They appear as \\\"Знайка\\\", \\\"Стекляшкиным\\\" (instrumental). So alias for \\\"Стекляшкин\\\" include \\\"Стекляшкиным\\\". For \\\"Знайка\\\", any inflected forms? appears only as \\\"Знайка\\\". Could also have \\\"Знайка\\\" used. No other forms.\\n\\nGender: Znaika is male? In Russian \\\"Знайка\\\" is a male character from \\\"Приключения Незнайки\\\", but not sure evidence. The text says \\\"не был согласен\\\". So male. Gender male.\\n\\nSteklyashkin: \\\"он вместе со Стекляшкиным наблюдал\\\". So male as pronoun \\\"он\\\". Gender male.\\n\\nDescription: 1-3 sentences based on evidence. For Znaika: he disagreed with theories, created his own theory, observed moon etc. Provide concise.\\n\\nFor Steklyashkin: He observed moon with Znaika.\\n\\nReturn JSON array.\\n\\nNeed canonicalName normalized nominative. \\\"Знайка\\\", \\\"Стекляшкин\\\". Aliases: for Znaika none other. For Steklyashkin alias \\\"Стекляшкиным\\\". Ensure unique.\\n\\nProvide gender.\\n\\nOk.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":639,\"completion_tokens\":489,\"total_tokens\":1128}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:33:33 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

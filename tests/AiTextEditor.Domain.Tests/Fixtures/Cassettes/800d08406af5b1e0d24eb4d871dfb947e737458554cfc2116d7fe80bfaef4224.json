@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-911\",\"object\":\"chat.completion\",\"created\":1767598416,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"update\\\":true,\\\"description\\\":\\\"Знайка совершил межпланетное путешествие на Луну вместе с Фуксией и Селёдочкой, приняв участие в строительстве космической ракеты и наблюдая изменение силы тяжести. Он не соглашался с вулканической и метеоритной теориями происхождения лунных кратеров, предложив собственную гипотезу, сравнивая лунную поверхность с блином, в котором появляются дырки при выпекании.\\\"}\",\"reasoning\":\"We need to decide if candidate adds new factual information beyond current. Current description: \\\"Знайка совершил межпланетное путешествие на Луну вместе с Фуксией и Селёдочкой, приняв участие в строительстве космической ракеты и проведя наблюдения за изменением силы тяжести.\\\" Candidate description: \\\"Знайка не был согласен ни с вулканической, ни с метеоритной теорией происхождения лунных кратеров и создал собственную теорию, сравнивая поверхность Луны с блином, в котором появляются дырки при выпекании.\\\"\\n\\nThese are new factual info about his scientific opinions on lunar crater formation theory. That is new facts not in current. So we need to update. Combine both descriptions into 1-3 sentences, coherent, same language Russian. Need to integrate existing facts with new ones; don't drop details.\\n\\nWe have to produce description 1-3 sentences. Let's craft: \\\"Знайка совершил межпланетное путешествие на Луну вместе с Фуксией и Селёдочкой, приняв участие в строительстве космической ракеты и наблюдая изменение силы тяжести. Он не соглашался с вулканической и метеоритной теориями происхождения лунных кратеров, предложив собственную гипотезу, сравнивая лунную поверхность с блином, в котором появляются дырки при выпекании.\\\" That's two sentences.\\n\\nReturn JSON: {\\\"update\\\": true, \\\"description\\\": \\\"...\\\"} Ensure no extra.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":431,\"completion_tokens\":447,\"total_tokens\":878}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:33:36 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-971\",\"object\":\"chat.completion\",\"created\":1767598465,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to extract characters (people) mentioned. Paragraph 1.1.1.p18 mentions \\\"Знайка\\\". That's a character, likely male? In Russian, \\\"Знайка\\\" is a nickname of a boy in \\\"Трое из Простоквашино\\\"? Actually \\\"Знайка\\\" from \\\"Приключения Незнайки и его друзей\\\"? There's a character \\\"Знайка\\\" (male). Gender? Likely male (\\\"он\\\"). Text says \\\"он\\\". So gender male. Provide description: He abandoned his pancake theory after personally visiting Moon, saw crater, etc.\\n\\nWe also need aliases: maybe \\\"Знайка\\\". Any other forms? Not within text. Could include maybe \\\"он\\\" but that's pronoun generic, not alias. So just empty alias list.\\n\\nParagraph 1.1.1.p19 also mentions \\\"Знайка\\\" again. Also \\\"лунные коротышки\\\" (moon dwarfs) and \\\"лунатики\\\". Those are groups, not specific characters. So ignore.\\n\\nThus output array with one object.\\n\\nWe need canonicalName normalized nominative: \\\"Знайка\\\". Alias list maybe empty. Gender male. Description 1-3 sentences based on evidence.\\n\\nWrite description: \\\"Знайка — персонаж, который после личного полёта на Луну отказался от своей блинной теории, увидел кольцевую гору, оказавшуюся остатками разрушившейся кирпичной стены. Он сделал вывод о наличии разумных существ на Луне и опубликовал книгу о лунных коротышках.\\\" That's 2 sentences.\\n\\nReturn JSON array.\\n\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":794,\"completion_tokens\":436,\"total_tokens\":1230}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:34:25 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

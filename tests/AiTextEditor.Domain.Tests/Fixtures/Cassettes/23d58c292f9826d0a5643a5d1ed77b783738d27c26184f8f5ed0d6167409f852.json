@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-824\",\"object\":\"chat.completion\",\"created\":1767597132,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We generated dossiers. Now get roster.\",\"tool_calls\":[{\"id\":\"call_9fipehjo\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"character_roster-get_character_roster\",\"arguments\":\"{}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1274,\"completion_tokens\":33,\"total_tokens\":1307}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:12:12 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

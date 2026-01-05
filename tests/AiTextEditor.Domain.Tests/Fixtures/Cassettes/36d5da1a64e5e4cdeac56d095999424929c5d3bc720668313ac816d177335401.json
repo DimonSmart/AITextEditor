@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-880\",\"object\":\"chat.completion\",\"created\":1767596506,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"[\\n  {\\n    \\\"canonicalName\\\": \\\"Знайка\\\",\\n    \\\"aliases\\\": [],\\n    \\\"gender\\\": \\\"male\\\",\\n    \\\"description\\\": \\\"Знайка — персонаж, который радостно объясняет, как при уменьшении объёма жидкого вещества внутри Луны образуется пустое пространство, заполняющее центральную часть и образующее внутреннюю полость.\\\"\\n  }\\n]\",\"reasoning\":\"We need extract characters. Text mentions \\\"Знайка\\\". Possibly other? Only Знайка. So produce entry. Determine gender? Znaika from Russian children's literature, male? Actually \\\"Знайка\\\" is a male character from \\\"Детство\\\". He is male. So gender male. Aliases: maybe none. canonical name \\\"Знайка\\\". Description: \\\"обрадованно сказал Знайка... explains process...\\\" Provide description. Must be 1-3 sentences, grounded. So: \\\"Знайка — персонаж, который объясняет процесс формирования пустого пространства внутри Луны, отмечая, что жидкое вещество уменьшалось в объёме и образовывалось полое пространство.\\\" That's okay.\\n\\nReturn JSON array.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":539,\"completion_tokens\":244,\"total_tokens\":783}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:01:46 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

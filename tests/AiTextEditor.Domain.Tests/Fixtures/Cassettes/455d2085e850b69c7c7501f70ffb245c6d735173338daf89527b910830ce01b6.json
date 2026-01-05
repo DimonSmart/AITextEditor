@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-380\",\"object\":\"chat.completion\",\"created\":1767598452,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"[\\n  {\\n    \\\"canonicalName\\\": \\\"Знайка\\\",\\n    \\\"aliases\\\": [\\\"Знайку\\\", \\\"блинистом\\\"],\\n    \\\"gender\\\": \\\"unknown\\\",\\n    \\\"description\\\": \\\"Знайка обсуждает, как метеориты, падающие под наклоном, оставляли бы вытянутые или овальные следы на Луне, в отличие от круглых кратеров, наблюдаемых там. Его идеи раздражают вулканистов и метеоритчиков, которые называют его блинистом.\\\"\\n  }\\n]\",\"reasoning\":\"We need to extract characters. Paragraph 1 mentions \\\"Знайка\\\". That's a character (probably male). No other people. Paragraph 2 also mentions \\\"Знайка\\\". Also \\\"вулканисты и метеоритчики\\\" are groups, not characters. So only \\\"Знайка\\\". Need canonicalName normalized nominative form: \\\"Знайка\\\". Aliases: any other forms? In text appears as \\\"Знайка\\\". Also possible case forms: \\\"Знайку\\\" (accusative), \\\"Знайка\\\" is both nominative and genitive? In second paragraph: \\\"не хотели Знайку\\\". That's an inflection. So alias \\\"Знайку\\\". Also maybe \\\"блинист\\\" is a nickname? They called him \\\"блинистом\\\" (instrumental). That's a nickname? The rule: aliases include nicknames. \\\"блинистом\\\" is an insult but a nickname perhaps. Should we include? Probably yes as a nickname form. So include \\\"блинистом\\\". Maybe also \\\"блинист\\\" base. But alias list should be other name forms found, include \\\"блинистом\\\". Also \\\"блинист\\\" not directly in text, only \\\"блинистом\\\". So keep that.\\n\\nGender: Znaika is male? In the original \\\"Знайка\\\" from Russian literature is male, but we must rely on evidence. Text does not specify gender. Might infer male? \\\"Он\\\" not used. We have no pronoun. Could be unknown. According to instructions, use unknown if not supported by evidence. So gender \\\"unknown\\\".\\n\\nDescription: 1-3 sentences based on evidence. Eg: \\\"Знайка обсуждает форму лунных кратеров, отмечая, что метеориты, падающие под наклоном, оставляли бы не круглые, а вытянутые следы. Его идеи вызывают раздражение у вулканистов и метеоритчиков, которые называют его блинистом.\\\" That's 2 sentences.\\n\\nReturn JSON array with one object.\\n\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":587,\"completion_tokens\":548,\"total_tokens\":1135}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:34:12 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

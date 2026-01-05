@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-578\",\"object\":\"chat.completion\",\"created\":1767598441,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"[\\n  {\\n    \\\"canonicalName\\\": \\\"Знайка\\\",\\n    \\\"aliases\\\": [],\\n    \\\"gender\\\": \\\"unknown\\\",\\n    \\\"description\\\": \\\"Знайка отвечал, что вулкан – это очень большая гора, на верхушке которой имеется сравнительно небольшой кратер, то есть отверстие.\\\"\\n  }\\n]\",\"reasoning\":\"We need to extract characters (people) mentioned. Paragraph is in Russian. Text: \\\"Знайка отвечал, что вулкан – это очень большая гора,...\\\" So \\\"Знайка\\\" is a character name (from \\\"Туристический ...\\\", likely from Goncharov?). It is a proper noun, person. So we extract.\\n\\nWe need canonicalName normalized nominative form. In Russian, \\\"Знайка\\\" is already nominative. Aliases: maybe other forms? None in text besides \\\"Знайка\\\". Gender? \\\"Знайка\\\" is male? In Russian literature \\\"Знайка\\\" from \\\"Приключения Незнайки и его друзей\\\" is male (the character \\\"Знайка\\\" is a boy). But we must base on evidence. The text doesn't give gender pronoun. We may infer from name? We should be careful: if gender not evident, set unknown. However name ending with -а could be ambiguous but \\\"Знайка\\\" as a nickname male. However rule: Use evidence; no explicit gender. So likely \\\"unknown\\\". Description: 1-3 sentences based on evidence: e.g., \\\"Знайка answered that a volcano is a very large mountain with a relatively small crater at the top.\\\" Provide description.\\n\\nReturn JSON array with one object.\\n\\nLet's craft.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":483,\"completion_tokens\":346,\"total_tokens\":829}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:34:01 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-624\",\"object\":\"chat.completion\",\"created\":1767598434,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"update\\\":true,\\\"description\\\":\\\"Знайка совершил межпланетное путешествие на Луну вместе с Фуксией и Селёдочкой, участвовал в строительстве космической ракеты, наблюдал изменение силы тяжести и, отвергнув вулканическую и метеоритную теории кратеров, выдвинул гипотезу, сравнивая лунную поверхность с блином, в котором появляются дырки. Кроме того, он написал книгу, в которой утверждал, что поверхность Луны когда‑то была огненно‑жидкой, а затем остывала, формируя кольца.\\\"}\",\"reasoning\":\"We need to decide if candidate adds new factual information beyond current description. Current description mentions interplanetary travel, building rocket, gravity, opposed crater theories, hypothesized like pancake with holes. Candidate says: Znaika is a character who in the text wrote a book describing that the Moon's surface was once fiery-liquid, then cooled forming rings. This is new factual info about a book and hypothesis of fiery-liquid surface forming rings. Not present in current. So there are new facts. Need to create updated description 1-3 sentences, coherent, same language (Russian). Should integrate existing facts and new ones. Include that Znaika authored a book describing that Moon surface was once molten and cooled forming rings. Also keep travel, rocket building, gravity observation, hypothesis comparing surface to pancake with holes, opposition to volcanic/meteroritic theories. Possibly combine.\\n\\nWe must not exceed 3 sentences. Could be two sentences. Example: \\\"Знайка совершил межпланетное путешествие на Луну вместе с Фуксией и Селёдочкой, участвовал в строительстве космической ракеты, наблюдал изменения силы тяжести и, отвергнув вулканическую и метеоритную теории кратеров, выдвинул гипотезу, сравнивая лунную поверхность с блином, в котором появляются дырки. В дополнение к этому он написал книгу, в которой утверждал, что поверхность Луны когда‑то была огненно‑жидкой, а затем остывала, образуя кольца.\\\"\\n\\nThat's two sentences, okay.\\n\\nReturn JSON: {\\\"update\\\": true, \\\"description\\\":\\\"...\\\"} No extra fields.\\n\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":471,\"completion_tokens\":493,\"total_tokens\":964}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:33:54 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

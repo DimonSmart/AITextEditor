@@ -103,10 +103,18 @@ public static class TestLlmConfiguration
         else
         {
             // Fallback to just file logging if no output helper is provided
+            var logBodyEnabled = string.Equals(
+                Environment.GetEnvironmentVariable("LLM_LOG_BODY"),
+                "true",
+                StringComparison.OrdinalIgnoreCase);
             using var factory = LoggerFactory.Create(builder => 
             {
                 var logPath = SimpleFileLoggerProvider.CreateTimestampedPath(Path.Combine(AppContext.BaseDirectory, "llm_debug.log"));
                 builder.AddProvider(new SimpleFileLoggerProvider(logPath));
+                builder.AddFilter("AiTextEditor.SemanticKernel.CursorAgentRuntime", LogLevel.Information);
+                builder.AddFilter("AiTextEditor.SemanticKernel.LlmRequestLoggingHandler", logBodyEnabled ? LogLevel.Trace : LogLevel.Debug);
+                builder.AddFilter("Microsoft.SemanticKernel.Connectors.OpenAI.OpenAIChatCompletionService", LogLevel.Debug);
+                builder.AddFilter("Microsoft.SemanticKernel.KernelFunction", LogLevel.Debug);
                 builder.SetMinimumLevel(LogLevel.Trace);
             });
             logger = factory.CreateLogger<LlmRequestLoggingHandler>();

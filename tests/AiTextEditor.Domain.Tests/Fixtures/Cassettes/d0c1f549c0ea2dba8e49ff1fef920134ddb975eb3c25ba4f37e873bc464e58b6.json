@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-265\",\"object\":\"chat.completion\",\"created\":1767596453,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"[\\n  {\\n    \\\"canonicalName\\\": \\\"Знайка\\\",\\n    \\\"aliases\\\": [],\\n    \\\"gender\\\": \\\"unknown\\\",\\n    \\\"description\\\": \\\"Знайка авторитетно отвечает на вопрос, объясняя, что при свободном перемещении в межпланетном пространстве бутылка находится в состоянии невесомости и уподобляется планете, а её внутреннее течение будет аналогично внутреннему процессу на Луне.\\\"\\n  },\\n  {\\n    \\\"canonicalName\\\": \\\"Звёздочкин\\\",\\n    \\\"aliases\\\": [],\\n    \\\"gender\\\": \\\"unknown\\\",\\n    \\\"description\\\": \\\"Звёздочкин подхватывает разговор, прося объяснить, почему они считают, что внутри Луны пустота.\\\"\\n  }\\n]\",\"reasoning\":\"We need extract characters mentioned: Zнайка (Знайка). Zвёздочкин (Звёздочкин). Also possibly \\\"слушатели\\\" are not characters? They are people but generic plural, no specific name, so skip. Need canonicalName normalized nominative: \\\"Знайка\\\", \\\"Звёздочкин\\\". Aliases: any inflected forms in text. In paragraph 1: \\\"Знайка\\\" appears as \\\"Знайка\\\". No other forms? earlier maybe \\\"Знайка\\\" is nominative. No inflection. In paragraph 2: \\\"Звёздочкин\\\" appears as \\\"Звёздочкин\\\". Also maybe \\\"Звёздочкин\\\" referenced as \\\"Звёздочкин\\\"? No other forms. Gender? Unknown? Names may be male? In Russian fairy tale \\\"Знайка\\\" is male (from \\\"Приключения Незнайки\\\"? Actually \\\"Знайка\\\" maybe a male character. \\\"Звёздочкин\\\" uncertain. The instruction: use evidence. No gender indicated. So gender unknown.\\n\\nDescription: need 1-3 sentences grounded in evidence. For Знайка: He authoritatively answered, speaking about bottle and Moon. So description: \\\"Знайка is a speaker who authoritatively answers a question about the scientific plausibility of a bottle in interplanetary space, explaining that the bottle would be in weightlessness and comparable to a planet.\\\" That's grounded.\\n\\nFor Звёздочкин: He interjects, asking to explain why they assumed the Moon is empty inside. So description accordingly.\\n\\nReturn JSON array.\\n\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":546,\"completion_tokens\":508,\"total_tokens\":1054}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:00:53 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

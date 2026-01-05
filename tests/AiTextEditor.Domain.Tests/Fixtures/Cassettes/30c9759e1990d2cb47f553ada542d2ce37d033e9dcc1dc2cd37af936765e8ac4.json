@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-21\",\"object\":\"chat.completion\",\"created\":1767596611,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"update\\\":true,\\\"description\\\":\\\"Знайка\u202F— коротышка‑учёный, участвовавший в строительстве космической ракеты, совершивший межпланетное путешествие на Луну, где обнаружил остатки гигантской кирпичной стены, высказал гипотезу о древней огненно‑жидкой поверхности, опубликовал книгу о лунных коротышках‑лунатиках и был принят в академию астрономических наук, часто подробно рассказывая о полёте. Во время одного из рассказов он достал из кармана небольшой голубовато‑серый камешек и произнёс несколько слов.\\\"}\",\"reasoning\":\"We need to decide if candidate adds new factual info beyond current description. Candidate description: \\\"Знайка достал из кармана небольшой камешек голубовато‑серого цвета и сказал.\\\" That's a new fact: He took out a small bluish-gray stone from his pocket and said. This is a new factual detail (action and object) not present in current description. So update should be true. Need to produce integrated description 1-3 sentences, coherent, same language (Russian). Must include existing facts and new fact, not drop relevant details. So we need to summarize key facts plus the new one. Must be 1-3 sentences. Could be two sentences: first sentence: summarize his role and achievements. Second sentence: mention he took out a small bluish-gray stone from his pocket and spoke. Ensure includes gender? Not needed. Keep details. Let's craft:\\n\\n\\\"Знайка\u202F— коротышка‑учёный, участвовавший в строительстве космической ракеты, совершивший межпланетное путешествие на Луну, где обнаружил остатки гигантской кирпичной стены, высказал гипотезу о древней огненно‑жидкой поверхности, опубликовал книгу о лунных коротышках‑лунатиках и был принят в академию астрономических наук, часто подробно рассказывая о полёте. Во время одного из рассказов он достал из кармана небольшой голубовато‑серый камешек и произнёс несколько слов.\\\"\\n\\nThat's 2 sentences. Ensure not exceeding 3. Good. Return JSON.\\n\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":514,\"completion_tokens\":496,\"total_tokens\":1010}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:03:31 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

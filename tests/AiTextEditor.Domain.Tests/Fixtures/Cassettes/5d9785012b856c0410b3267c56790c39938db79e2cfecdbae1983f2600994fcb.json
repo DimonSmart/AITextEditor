@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-394\",\"object\":\"chat.completion\",\"created\":1767596540,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"[\\n  {\\n    \\\"canonicalName\\\": \\\"Звёздочкин\\\",\\n    \\\"aliases\\\": [\\\"Звёздочкина\\\"],\\n    \\\"gender\\\": \\\"male\\\",\\n    \\\"description\\\": \\\"Звёздочкин был захвачен двумя коротышками, схвачен за шиворот и за ноги, и унесён с трибуны.\\\"\\n  },\\n  {\\n    \\\"canonicalName\\\": \\\"Знайка\\\",\\n    \\\"aliases\\\": [],\\n    \\\"gender\\\": \\\"unknown\\\",\\n    \\\"description\\\": \\\"Знайка оказался на трибуне, где попытался выступить, но сказал, что не может сделать доклад, потому что не подготовился.\\\"\\n  }\\n]\",\"reasoning\":\"We need extract characters. Text Russian. Identify people/characters: \\\"Звёздочкин\\\", \\\"Знайка\\\". Also \\\"коротышки\\\" are a group, not individuals. So characters: Звёздочкина? Actually text: \\\"Звёздочкина\\\" (genitive?) He/she? It is likely surname of a character. Canonical name likely \\\"Звёздочкин\\\". The text uses \\\"Звёздочкина\\\" (probably masculine noun with ending -а for accusative?). Could be \\\"Звёздочкин\\\". We'll treat canonical name as \\\"Звёздочкин\\\". Aliases include \\\"Звёздочкина\\\". Gender? Likely male. But not certain. Could infer from \\\"его\\\" later? In paragraph 2: \\\"Долой Звёздочкина!\\\" no gender pronoun. In paragraph 1: \\\"его с трибуны\\\" refers to \\\"Звёздочкина – ... стащили его\\\". \\\"его\\\" pronoun male. So gender male. Description: He was grabbed by two shorties and taken from the tribune. etc.\\n\\nNext: \\\"Знайка\\\". canonical name \\\"Знайка\\\". Aliases maybe none. Gender unknown? In paragraph 3: \\\"я\\\" first person. Could be male? Not clear. No pronoun. So gender unknown. Description: He/she was taken by shorties to the tribune and tried to speak, saying cannot give report because not prepared.\\n\\nReturn array with two objects.\\n\\nNeed language same as evidence: Russian.\\n\\nProvide JSON array only.\\n\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":502,\"completion_tokens\":484,\"total_tokens\":986}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:02:20 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

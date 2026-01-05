@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-448\",\"object\":\"chat.completion\",\"created\":1767598363,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"action\\\":\\\"continue\\\",\\\"batchFound\\\":false,\\\"newEvidence\\\":[],\\\"progress\\\":\\\"\\\",\\\"needMoreContext\\\":false}\",\"reasoning\":\"We need to scan current batch items for character mentions. Items are headings. The task says ignore headings/metadata unless explicitly asked. It says \\\"Prefer Paragraph/ListItem content. Ignore headings/metadata unless the task explicitly asks for them.\\\" The task does not explicitly ask for headings. So we should not consider headings as evidence. Thus no new evidence.\\n\\nThus batchFound false, action continue, newEvidence empty. progress maybe empty.\\n\\nneedMoreContext? No, we have more batches.\\n\\nReturn JSON accordingly.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":913,\"completion_tokens\":133,\"total_tokens\":1046}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:32:43 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

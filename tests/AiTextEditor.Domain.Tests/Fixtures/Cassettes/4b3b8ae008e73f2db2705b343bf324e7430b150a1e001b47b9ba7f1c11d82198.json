@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-240\",\"object\":\"chat.completion\",\"created\":1767596739,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"update\\\":true,\\\"description\\\":\\\"Знайка — коротышка‑учёный, участвовал в построении космической ракеты и полёте к Луне, где обнаружил гигантскую кирпичную стену, опубликовал книгу о лунных коротышках‑лунатиках и отстаивал гипотезу о древней огненно‑жидкой поверхности Луны. Во время полёта он наблюдал образование пузыря в бутылке, поведение воды в невесомости, объяснял перегрузки ракеты, а когда коротышки воскликнули, чтобы он продолжал рассказывать, он остановился.\\\"}\",\"reasoning\":\"We have current description with many facts about Znaika: shorty-scientist, participated in building rocket, flight to Moon, discovered giant brick wall, published a book, defended hypothesis about ancient fiery-liquid surface, observed bubble formation in bottle, behavior of water in microgravity, compared fluid flow, explained rocket acceleration and G-forces, etc. Candidate description adds: \\\"Знайка – персонаж, который остановился, когда коротышки воскликнули, чтобы он продолжал рассказывать.\\\" This adds a new fact: that Znaika stopped when the shorties shouted for him to continue telling (story). This is new factual info not present in current. So update true. Need to integrate with existing facts, keep 1-3 sentences, same language (Russian). Must include both existing facts and new fact. Must be concise 1-3 sentences. Probably combine: \\\"Знайка — коротышка‑учёный, участвовал в построении космической ракеты и полёте к Луне, где обнаружил гигантскую кирпичную стену, опубликовал книгу о лунных коротышках‑лунатиках и отстаивал гипотезу о древней огненно‑жидкой поверхности Луны. Во время полёта он наблюдал образование пузыря в бутылке, поведение воды в невесомости, объяснял перегрузки ракеты и, когда коротышки воскликнули, чтобы он продолжал рассказывать, он остановился.\\\" That's 2 sentences. Ensure all facts are from both. Good.\\n\\nReturn JSON with update true and description.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":541,\"completion_tokens\":494,\"total_tokens\":1035}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:05:39 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

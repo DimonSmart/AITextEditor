@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-311\",\"object\":\"chat.completion\",\"created\":1767596445,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"update\\\":true,\\\"description\\\":\\\"Профессор Звёздочкин — добрый, требовательный коротышка, действительный член Академии астрономических наук, который не выносит фантазийных выдумок; он выступил с докладом о книге Знайкина, указав, что герой ошибочно принял предметы за кирпичи, что возмутило его. Кроме того, его услышали сердито проворчавшим: «Попал пальцем в небо!», когда он сравнил бутылку с планетой и спросил, насколько это научно.\\\"}\",\"reasoning\":\"We compare current description and candidate description. Current: Professor Zvezdochkin is a member of Academy, kind, demanding short person, doesn't like fanciful inventions, gave talk about Znaik's book, noted Znaik mistaken items for bricks causing indignation. Gender male.\\n\\nCandidate: \\\"Zvezdochkin сердито проворчал: «Попал пальцем в небо!», сравнив бутылку с планетой и спросив, научно ли это.\\\" So adds new fact: He angrily muttered \\\"Попал пальцем в небо!\\\", comparing a bottle to a planet and asking if it's scientific. This is new factual info about his behavior (angry muttering, comparing bottle to planet). Also candidate gender unknown, alias none.\\n\\nThe new facts are not present in current. So update true. Need to produce description 1-3 sentences, coherent, same language (Russian). Must integrate existing facts with new ones, not drop relevant details.\\n\\nCombine: Professor Zвёздочкин is a short, kind but demanding member of Academy, intolerant of fantasy, gave talk about Znaik's book, noted Znaik mistake, and also was heard angrily muttering \\\"Попал пальцем в небо!\\\", comparing a bottle to a planet and questioning its scientific basis.\\n\\nMake 2-3 sentences. Ensure no invented info. Use gender male? Candidate says unknown, but current says male. We keep male as it's in current. Should we include gender? Not needed. Just description.\\n\\nReturn JSON with update true and description.\\n\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":485,\"completion_tokens\":465,\"total_tokens\":950}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:00:45 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

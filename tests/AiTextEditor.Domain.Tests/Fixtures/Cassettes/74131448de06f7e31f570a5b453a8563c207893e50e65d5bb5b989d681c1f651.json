@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-580\",\"object\":\"chat.completion\",\"created\":1767598430,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"[\\n  {\\n    \\\"canonicalName\\\": \\\"Знайка\\\",\\n    \\\"aliases\\\": [],\\n    \\\"gender\\\": \\\"male\\\",\\n    \\\"description\\\": \\\"Знайка — персонаж, который в тексте сочинил книгу, в которой описал, что поверхность Луны когда‑то была огненно‑жидкой, а затем остывала, образуя кольца.\\\"\\n  }\\n]\",\"reasoning\":\"We need to extract characters (people) from the provided paragraphs.\\n\\nParagraph 1 (1.1.1.p9) mentions \\\"Знайка\\\". That is a name: Znaika (likely in Russian). It is a character. Need canonical name, aliases (inflections, etc.). In Russian, \\\"Знайка\\\" appears as \\\"Знайка\\\". There might be other forms like \\\"Знайка\\\" is probably nominative. No other forms present. Gender? \\\"Знайка\\\" is a male fictional boy in Russian children's books (by Nikolai Nosov). Evidence: \\\"Знайка даже сочинил книжку\\\". The pronoun not provided, but \\\"сочинил\\\" is masculine past verb (masc). So gender male. Description: Based on evidence: He authored a book describing the Moon's surface transformation. Provide 1-3 sentences.\\n\\nParagraph 2 (1.1.1.p10) mentions \\\"астрономы – и вулканисты, и метеоритчики\\\". These are generic groups, not characters. No person names.\\n\\nThus output array with one object.\\n\\nNeed to include aliases: maybe other forms: \\\"Знайка\\\" is the same; no other forms. Could include \\\"Знайки\\\" (genitive) not present. So empty array.\\n\\nBut spec: aliases array should contain other name forms found in the text; if none, provide empty array? Likely yes.\\n\\nThus produce JSON array with object.\\n\\nLet's craft description: \\\"Знайка – персонаж, который в тексте сочинил книгу о прошлом поверхности Луны, описывая её как изначально огненно‑жидкий шар, который со временем охлаждался и образовывал кольца.\\\" Keep within 1-3 sentences.\\n\\nLet's output.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":771,\"completion_tokens\":462,\"total_tokens\":1233}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:33:50 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

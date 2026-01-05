@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-556\",\"object\":\"chat.completion\",\"created\":1767596638,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"update\\\":true,\\\"description\\\":\\\"Селёдочка — маленькая учёная, которая вместе с Фуксией и Знайкой готовила полёт на Луну, помогала строить ракету и участвовала в лунном путешествии. В рассказе Знайки о путешествии по Луне её упоминают как одну из его спутниц.\\\"}\",\"reasoning\":\"We need to compare current description and candidate. Current: \\\"Селёдочка – учёная малышка, совместно с Фуксией и Знайкой готовила полёт на Луну, помогала строить ракету и принимала участие в лунном путешествии.\\\" Gender female, alias.\\n\\nCandidate: \\\"Селёдочка упомянута как одна из спутниц Знайки в его рассказе о путешествии по Луне.\\\" Gender unknown, no aliases. This adds that she is mentioned as one of the companions of Znaika in his story about the Moon journey. Is that new factual info? Current already says she helped prepare flight, helped build rocket, participated in lunar journey, with Znaika. It doesn't say she is mentioned as one of the companions in his story. That is a new fact: she appears as a companion in Znaika's narrative. The current description already states she was involved, but not that she is mentioned as a companion in his story. This is arguably a new fact: that she is mentioned as one of Znaika's companions in his story. That seems not explicitly present. So we should update.\\n\\nNow need to create new description 1-3 sentences, coherent, same language (Russian). Should integrate existing facts + new: She is a young scientist, collaborated with Fuksiya and Znaika to prepare the Moon flight, helped build rocket, participated in journey, and is mentioned as one of Znaika's companions in his story about the Moon.\\n\\nWe must keep gender female? Candidate says unknown, but current says female. Use female since existing info. No need to mention gender.\\n\\nMake 1-3 sentences: maybe two sentences.\\n\\nSentence1: \\\"Селёдочка — маленькая учёная, которая вместе с Фуксией и Знайкой готовила полёт на Луну, помогала строить ракету и участвовала в лунном путешествии.\\\" Sentence2: \\\"В рассказе Знайки о путешествии по Луне её упоминают как одну из его спутниц.\\\"\\n\\nReturn JSON with update true and description.\\n\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":408,\"completion_tokens\":530,\"total_tokens\":938}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:03:58 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

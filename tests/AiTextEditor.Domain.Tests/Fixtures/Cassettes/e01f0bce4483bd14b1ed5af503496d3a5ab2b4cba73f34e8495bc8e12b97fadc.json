@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-886\",\"object\":\"chat.completion\",\"created\":1767597258,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to return JSON catalog after update. We have catalog earlier with many characters; update changed description for Zнайка. Need to get updated roster. Use get_character_roster again.\",\"tool_calls\":[{\"id\":\"call_zhk8644d\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"character_roster-get_character_roster\",\"arguments\":\"{}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":3014,\"completion_tokens\":63,\"total_tokens\":3077}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:14:18 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

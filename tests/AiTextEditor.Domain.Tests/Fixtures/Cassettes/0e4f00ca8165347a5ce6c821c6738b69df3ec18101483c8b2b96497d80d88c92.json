@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-747\",\"object\":\"chat.completion\",\"created\":1767596508,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"update\\\":true,\\\"description\\\":\\\"Профессор, буркнув сердито, ответил на реплику, спросив: «А вы будто болтались?», произнёс фразу «огрызнулся профессор», уточнил, как состояние невесомости связано с темой обсуждения, и согласился, что следует полагать, что он знает.\\\"}\",\"reasoning\":\"We need to decide if candidate adds new factual info beyond current description. Current description: \\\"Профессор, буркнув, ответил на реплику, спросив: «А вы будто болтались?», произнеся фразу «огрызнулся профессор», и уточнил, как состояние невесомости связано с обсуждаемой темой.\\\" So includes that professor burked, answered, asked \\\"А вы будто болтались?\\\", said phrase \\\"огрызнулся профессор\\\", clarified about zero-gravity. Candidate: \\\"Профессор буркнет сердито, соглашаясь, что нужно полагать, что он знает.\\\" This adds that professor will grumble angrily, agreeing that one should assume he knows. Does this add new fact? Current only says professor burked (no emotion). Candidate adds \\\"сердито\\\" (angrily) and \\\"соглашаясь, что нужно полагать, что он знает.\\\" This new info not present in current. So there are new facts: emotional tone (angry) and that he agrees that one should assume he knows. Are these supported? We can only use facts supported by current + candidate. Both are present, so okay. We must produce updated description 1-3 sentences integrating existing and new. Should be in Russian. Provide coherent description: combine that professor burked, angrily, answered, asked, said phrase, clarified zero-gravity, and agreed that one should assume he knows. Let's craft: \\\"Профессор, буркнув сердито, ответил на реплику, спросив: «А вы будто болтались?», произнёс фразу «огрызнулся профессор», уточнил, как состояние невесомости связано с темой обсуждения, и согласился, что следует полагать, что он знает.\\\" That's one sentence (maybe two). It's within 1-3 sentences. Return update true with description.\\n\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":403,\"completion_tokens\":488,\"total_tokens\":891}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:01:48 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

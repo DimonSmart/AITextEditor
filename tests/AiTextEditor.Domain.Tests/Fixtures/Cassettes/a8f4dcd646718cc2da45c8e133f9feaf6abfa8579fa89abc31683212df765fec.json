@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-660\",\"object\":\"chat.completion\",\"created\":1767598558,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"action\\\":\\\"continue\\\",\\\"batchFound\\\":true,\\\"newEvidence\\\":[{\\\"pointer\\\":\\\"1.1.1.p39\\\",\\\"excerpt\\\":\\\"– Вот видите, сами говорите – жидкость, – усмехнулся Звёздочкин. – Откуда же в Луне взялась пустота, если там была жидкость, садовая вы голова?\\\",\\\"reason\\\":\\\"The paragraph includes a spoken line attributed to Звёздочкин, a named individual.\\\"},{\\\"pointer\\\":\\\"1.1.1.p40\\\",\\\"excerpt\\\":\\\"– Ну, об этом совсем нетрудно догадаться, – невозмутимо ответил Знайка. – Ведь раскалённая жидкость, окружённая твёрдой оболочкой Луны, продолжала остывать, а остывая, она уменьшалась в объёме. Вы, надо полагать, знаете, что каждое вещество, охлаждаясь, уменьшается в объёме?\\\",\\\"reason\\\":\\\"The paragraph contains dialogue spoken by Знайка, a named character.\\\"},{\\\"pointer\\\":\\\"1.1.1.p41\\\",\\\"excerpt\\\":\\\"– Надо полагать, знаю, – сердито буркнул профессор.\\\",\\\"reason\\\":\\\"The paragraph features a line spoken by the professor, a stable title tied to a person.\\\"}],\\\"progress\\\":\\\"Found three paragraphs mentioning characters in this batch.\\\",\\\"needMoreContext\\\":false}\",\"reasoning\":\"We need to produce JSON with new evidence from this batch. Task: collect all character mentions across the book, each paragraph where a person appears. We have to include named individuals or stable titles. In this batch we have paragraphs with mentions: \\\"Звёздочкин\\\", \\\"Знайка\\\", \\\"профессор\\\". Those are named individuals or titles (professor is a stable title). They are not in recentEvidencePointers list (which includes up to p38). So we add evidence for pointers 1.1.1.p39, p40, p41.\\n\\nWe need excerpt exactly from markdown field. Provide reason: mention of a person. Provide progress summary perhaps.\\n\\nWe need action: continue because maxEvidenceCount 86, currently evidenceCount 26, new evidence length 3 gives 29 \\u003c86, so continue.\\n\\nbatchFound true.\\n\\nneedMoreContext false.\\n\\nConstruct JSON accordingly.\\n\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1100,\"completion_tokens\":482,\"total_tokens\":1582}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:35:58 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

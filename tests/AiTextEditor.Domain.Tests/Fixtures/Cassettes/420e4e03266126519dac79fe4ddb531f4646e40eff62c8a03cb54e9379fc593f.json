@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-381\",\"object\":\"chat.completion\",\"created\":1767598721,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"update\\\":true,\\\"description\\\":\\\"Звёздочкина — персонаж, которого один из коротышек схватил за шиворот, другого за ноги и поволокли на улицу, где его посадили в сквере на траву. После этого над ним звучит клич «Долой Звёздочкина!».\\\"}\",\"reasoning\":\"We need to see if candidate adds new factual info beyond current. Current description: \\\"Звёздочкина is the subject of a call for removal, expressed as «Долой Звёздочкина!».\\\": So we have that she/ he is subject of a call for removal.\\n\\nCandidate description adds: \\\"Звёздочкина — персонаж, которого один из коротышек схватил за шиворот, другого за ноги и поволокли на улицу, где его посадили в скверике на траву.\\\" So adds facts about being a character grabbed by shorties, dragged onto street, sat on grass in a park.\\n\\nThese are new facts not in current. So update = true. Need to produce new description integrating both facts, 1-3 sentences, coherent, same language (Russian). Should incorporate call for removal and the scene.\\n\\nPotential description: \\\"Звёздочкина — персонаж, которого один из коротышек схватил за шиворот, другого за ноги и поволокли на улицу, где его посадили в сквере на траву; из‑за этого над ним звучит клич «Долой Звёздочкина!». \\\"\\n\\nThat's 2 sentences? Actually it's one sentence with semicolon. Could be two sentences: First sentence about the incident, second about call for removal.\\n\\nMake sure 1-3 sentences. Provide JSON with update true and description.\\n\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":405,\"completion_tokens\":389,\"total_tokens\":794}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:38:41 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

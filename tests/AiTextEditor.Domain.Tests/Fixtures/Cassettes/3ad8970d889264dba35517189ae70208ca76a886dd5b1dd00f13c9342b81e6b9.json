@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-912\",\"object\":\"chat.completion\",\"created\":1767598563,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"[\\n  {\\n    \\\"canonicalName\\\": \\\"Звёздочкин\\\",\\n    \\\"aliases\\\": [],\\n    \\\"gender\\\": \\\"unknown\\\",\\n    \\\"description\\\": \\\"Звёздочкин, усмехнувшись, замечает, что на Луне была жидкость и иронически спрашивает, откуда взялась пустота.\\\"\\n  },\\n  {\\n    \\\"canonicalName\\\": \\\"Знайка\\\",\\n    \\\"aliases\\\": [],\\n    \\\"gender\\\": \\\"unknown\\\",\\n    \\\"description\\\": \\\"Знайка невозмутимо отвечает, что раскалённая жидкость, окружённая твёрдой оболочкой Луны, уменьшается в объёме при охлаждении.\\\"\\n  }\\n]\",\"reasoning\":\"We need to extract characters. Text in Russian.\\n\\nParagraph 1: mentions \\\"Звёздочкин\\\". That's a surname, likely a character. No first name. So canonicalName normalized nominative: \\\"Звёздочкин\\\". Aliases? Possibly \\\"Звёздочкин\\\" only. Gender? Not clear from text; likely male (professor Zvezdochkin?) The text includes \\\"самих говорите – жидкость\\\". No gender clues. Could infer male? In Russian, surname Zvezdochkin could be male. But we must base on evidence. There's no explicit gender. Use unknown? The rules: \\\"gender: use unknown if not supported by evidence.\\\" We have no pronouns. So unknown.\\n\\nParagraph 2: \\\"Знайка\\\". That's a character name. CanonicalName \\\"Знайка\\\". Gender unknown, no pronouns. Aliases maybe none.\\n\\nParagraph 3: \\\"профессор\\\". Generic role, not a unique designation, not a stable unique designation tied to a person, so ignore.\\n\\nThus two characters.\\n\\nProvide description 1-3 sentences strictly grounded in evidence.\\n\\nFor Zvezdochkin: description: He smiles and says something about fluid, mentioning \\\"садовая вы голова?\\\" (some phrase). Should reference that he is speaking, \\\"усмехнулся Звёздочкин\\\". So description: \\\"Звёздочкин, улыбаясь, обсуждает жидкость на Луне.\\\" That's okay.\\n\\nFor Znaika: description: \\\"Знайка отвечает невозмутимо, объясняя процесс охлаждения жидкой субстанции на Луне.\\\" Provide.\\n\\nReturn JSON array.\\n\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":596,\"completion_tokens\":499,\"total_tokens\":1095}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:36:03 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

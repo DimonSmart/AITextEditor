@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-146\",\"object\":\"chat.completion\",\"created\":1767598480,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"update\\\":true,\\\"description\\\":\\\"Знайка совершил межпланетное путешествие на Луну, участвовал в строительстве космической ракеты и выдвинул гипотезу о лунной поверхности как блине с дырками, а также предположил, что метеориты, падающие под наклоном, образуют вытянутые кратеры, что раздражало вулканистов, называвших его блинистом. Позже он получил приглашение от Академии астрономических наук, приехал на обсуждение книги и участвовал в докладе, предложенном профессором Звёздочкиным.\\\"}\",\"reasoning\":\"We need to decide if candidate adds new factual information beyond current description. Current description: mentions interplanetary travel to Moon, building rocket, hypothesis about lunar surface pancake with holes, hypothesis about elongated craters, irritates volcanists, etc. Candidate adds: received invitation from Academy of Astronomical Sciences and came to discuss a book. He participated in a report proposed by Professor Zvezdochkin. These are new facts not present in current. So update true. Need to create new description 1-3 sentences integrating existing facts and new ones, coherent, same language (Russian). Should include both old and new facts, using only supported facts.\\n\\nLet's craft: \\\"Знайка совершил межпланетное путешествие на Луну, участвовал в строительстве космической ракеты и выдвинул гипотезу о лунной поверхности как блине с дырками, а также предположил, что метеориты, падающие под наклоном, образуют вытянутые кратеры, что раздражало вулканистов, называвших его блинистом. Позже он получил приглашение от Академии астрономических наук, приехал на обсуждение книги и участвовал в докладе, предложенном профессором Звёздочкиным.\\\" That's two sentences. Good.\\n\\nReturn JSON with update true and description.\\n\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":494,\"completion_tokens\":427,\"total_tokens\":921}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:34:40 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-39\",\"object\":\"chat.completion\",\"created\":1767596510,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"update\\\": false}\",\"reasoning\":\"We need to compare current description and candidate description. Determine if candidate adds new factual information beyond current description.\\n\\nCurrent description is long; includes many facts: Znaika is a short scientist, participated building a rocket, flight to Moon, discovered giant brick wall, published book, defended hypothesis about ancient fiery-liquids surface; observed bubble formation, water adhesion, weightlessness, compared fluid flow; explained that hot liquid surrounded by solid shell of Moon cools and shrinks, confirming with \\\"Верно!\\\".\\n\\nCandidate description: \\\"Znaika — персонаж, который радостно объясняет, как при уменьшении объёма жидкого вещества внутри Луны образуется пустое пространство, заполняющее центральную часть и образующее внутреннюю полость.\\\"\\n\\nThis repeats part of the current description: it mentions explaining that when the volume of liquid inside the Moon decreases, empty space forms in central part forming inner cavity. This is already present in current description (the explanation about hot liquid cooling, shrinking, forming cavity). So candidate does not add new facts, just restates. No new factual info. Thus output should be {\\\"update\\\": false}.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":567,\"completion_tokens\":246,\"total_tokens\":813}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:01:50 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

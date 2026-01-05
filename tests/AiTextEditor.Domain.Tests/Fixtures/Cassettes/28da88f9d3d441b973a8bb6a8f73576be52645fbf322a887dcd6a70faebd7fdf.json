@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-21\",\"object\":\"chat.completion\",\"created\":1767598522,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"update\\\":true,\\\"description\\\":\\\"Звёздочкин, действительный член Академии астрономических наук и известный профессор‑коротышка, известен своей добротой, требовательностью, точностью и неприятием фантазий; в спорах с книгами он часто кипит от негодования, громко откашливается, вытирает нос платочком, раскритиковал ошибку Знайки, принявшей кирпичи за горную породу, и рассудил о невозможности существования коротышек‑лунатиков на внутренней поверхности Луны. Недавно он сердито проворчал, сравнивая бутылку с планетой, и спросил, является ли это научным.\\\"}\",\"reasoning\":\"We need to decide if candidate adds new factual information beyond current description. Current description: includes traits (kind, demanding, precise, no fantasy, gets angry in debates), events (cough, wipe nose, criticize Znaika's mistake about bricks, argues about impossibility of shorties lunar inside Moon). Candidate adds: \\\"Zвёздочкин сердито проворчал, сравнивая бутылку с планетой, и спросил, является ли это научным.\\\" That's a new fact: He grumbled angrily, comparing a bottle with a planet, and asked if it's scientific. This is not in current description. So new facts present, we need to update description integrating new facts, 1-3 sentences, coherent, same language (Russian). Must include existing facts plus new ones. Need to combine without dropping relevant details. Perhaps a single sentence or two. Ensure 1-3 sentences. Let's craft: \\\"Звёздочкин, действительный член Академии астрономических наук и известный профессор‑коротышка, известен своей добротой, требовательностью, точностью и неприятием фантазий; в спорах с книгами он часто кипит от негодования, громко откашливается, вытирает нос платочком и раскритиковал ошибку Знайки, принявшей кирпичи за горную породу, а также рассудил о невозможности существования коротышек‑лунатиков на внутренней поверхности Луны. Недавно он сердито проворчал, сравнивая бутылку с планетой, и спросил, является ли это научным. \\\"\\n\\nThat's 2 sentences. Ensure it's concise. Provide JSON: {\\\"update\\\": true, \\\"description\\\":\\\"...\\\"}\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":502,\"completion_tokens\":541,\"total_tokens\":1043}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:35:22 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,3 +1,4 @@
+using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,37 +9,58 @@ namespace AiTextEditor.SemanticKernel;
 public class LlmRequestLoggingHandler : DelegatingHandler
 {
     private readonly ILogger _logger;
+    private readonly bool _logBody;
+    private readonly int _maxBodyChars;
 
     public LlmRequestLoggingHandler(ILogger logger, HttpMessageHandler innerHandler) 
         : base(innerHandler)
     {
         _logger = logger;
+        _logBody = string.Equals(Environment.GetEnvironmentVariable("LLM_LOG_BODY"), "true", StringComparison.OrdinalIgnoreCase);
+        _maxBodyChars = ResolveMaxBodyChars();
     }
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         // _logger.LogInformation("!!! LLM Request Handler Invoked !!!");
-        if (request.Content != null)
+        string? requestBody = null;
+        var requestLength = request.Content?.Headers.ContentLength;
+        if (_logBody && _logger.IsEnabled(LogLevel.Trace) && request.Content != null)
         {
-            var content = await request.Content.ReadAsStringAsync(cancellationToken);
-            _logger.LogTrace("LLM Request: {Method} {Uri}\n{Content}", request.Method, request.RequestUri, content);
+            requestBody = await request.Content.ReadAsStringAsync(cancellationToken);
+            requestLength ??= requestBody.Length;
         }
-        else
+
+        _logger.LogDebug(
+            "LLM Request: {Method} {Uri} contentLength={ContentLength}",
+            request.Method,
+            request.RequestUri,
+            requestLength?.ToString() ?? "unknown");
+
+        if (requestBody != null)
         {
-            _logger.LogTrace("LLM Request: {Method} {Uri}", request.Method, request.RequestUri);
+            _logger.LogTrace("LLM Request Body: {Content}", Truncate(requestBody, _maxBodyChars));
         }
 
         var response = await base.SendAsync(request, cancellationToken);
 
-        if (response.Content != null)
+        string? responseBody = null;
+        var responseLength = response.Content?.Headers.ContentLength;
+        if (_logBody && _logger.IsEnabled(LogLevel.Trace) && response.Content != null)
         {
             ForceUtf8(response.Content);
-            var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            _logger.LogTrace("LLM Response: {StatusCode}\n{Content}", response.StatusCode, content);
+            responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
+            responseLength ??= responseBody.Length;
         }
-        else
+
+        _logger.LogDebug(
+            "LLM Response: {StatusCode} contentLength={ContentLength}",
+            response.StatusCode,
+            responseLength?.ToString() ?? "unknown");
+
+        if (responseBody != null)
         {
-            _logger.LogTrace("LLM Response: {StatusCode}", response.StatusCode);
+            _logger.LogTrace("LLM Response Body: {Content}", Truncate(responseBody, _maxBodyChars));
         }
 
         return response;
@@ -63,5 +85,26 @@ public class LlmRequestLoggingHandler : DelegatingHandler
         {
             contentType.CharSet = "utf-8";
         }
+    }
+
+    private static int ResolveMaxBodyChars()
+    {
+        var raw = Environment.GetEnvironmentVariable("LLM_LOG_BODY_MAX_CHARS");
+        if (int.TryParse(raw, out var value) && value > 0)
+        {
+            return value;
+        }
+
+        return 2000;
+    }
+
+    private static string Truncate(string text, int maxLength)
+    {
+        if (string.IsNullOrEmpty(text) || text.Length <= maxLength)
+        {
+            return text;
+        }
+
+        return text[..maxLength] + $"... (+{text.Length - maxLength} chars)";
     }
 }

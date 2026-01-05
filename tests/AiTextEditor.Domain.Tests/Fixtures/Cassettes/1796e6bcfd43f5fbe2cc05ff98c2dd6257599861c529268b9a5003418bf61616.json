@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-942\",\"object\":\"chat.completion\",\"created\":1767596440,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"update\\\":true,\\\"description\\\":\\\"Профессор Звёздочкин, действительный член Академии астрономических наук, добрый, но требовательный коротышка, который не выносил фантазийных выдумок, вышел на сцену, чтобы обсудить книгу Знайкина, сильно возмущённый её содержанием, откашлялся, вытер платок и в докладе раскрыл её содержание, указав на обнаруженную ошибку. В то же время он, раздражённый, сравнил бутылку с планетой и задал вопрос о научности такой аналогии.\\\"}\",\"reasoning\":\"We need to decide if candidate adds new factual info beyond current description. Current description includes: professor, member of Academy, good, demanding short person, requires accuracy, hates fantasy, discussed Znaikin's book, upset, coughed, wiped handkerchief, gave report, pointed out error.\\n\\nCandidate adds: \\\"раздражённый, сравнивает бутылку с планетой и задаёт вопрос о научности такой аналогии.\\\" This adds new facts: He is irritated, compares a bottle with a planet, asks about scientific nature of that analogy.\\n\\nThese are new factual info not in current. So update true. Need to produce integrated description 1-3 sentences, coherent, same language (Russian). Should include existing facts and new ones, but not drop relevant details. Must be 1-3 sentences. Could be two sentences: mention professor Zвёздочкин, member, short demanding, hates fantasy, upset about Znaikin's book, coughed, presented, pointed error, also irritated comparing bottle to planet and questioning scientific analogy.\\n\\nMake sure not to exceed 3 sentences. Let's craft: \\\"Профессор Звёздочкин, действительный член Академии астрономических наук, добрый, но требовательный коротышка, который не выносил фантазийных выдумок, вышел на сцену, чтобы обсудить книгу Знайкина, сильно возмущённый её содержанием, откашлялся, вытер платок и в докладе раскрыл её содержание, указав на обнаруженную ошибку. В то же время он, раздражённый, сравнил бутылку с планетой и задал вопрос о научности такой аналогии.\\\" That's two sentences. Ensure no new invented facts beyond both. Okay.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":477,\"completion_tokens\":519,\"total_tokens\":996}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:00:40 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

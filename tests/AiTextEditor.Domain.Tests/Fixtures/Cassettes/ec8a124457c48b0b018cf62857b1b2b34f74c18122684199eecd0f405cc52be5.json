@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-382\",\"object\":\"chat.completion\",\"created\":1767598649,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"update\\\":true,\\\"description\\\":\\\"Знайка совершил межпланетное путешествие на Луну, участвовал в строительстве ракеты, выдвинул гипотезу о лунной поверхности как блин с дырками, сравнил движущуюся в космосе бутылку с планетой и Луной, описал образование пузыря в воде и влияние перегрузок; в кабине его тело почти не весит, он может свободно висеть в любой позе, а предметы и вытряхнутая из бутылки вода образуют плавающие шарики, пока не притянутся к стенам. После остановки его окружили коротышки, которые хором закричали: «Рассказывайте! Рассказывайте ещё!»\\\"}\",\"reasoning\":\"We need to decide if candidate adds new factual information beyond current description. Current description includes many facts about Znaika's interplanetary travel, building rocket, hypothesis about lunar surface, comparisons, description of bubble formation, influence of overloads, and being surrounded by shorties shouting \\\"Tell!\\\" No mention of his experience inside the cabin: that his body is almost weightless, he can hang in any pose, objects float, water from bottle forms balls that float until attracted to cabin walls. Those are new facts.\\n\\nThus update = true, and we must produce a new description 1-3 sentences, coherent, same language (Russian). Should integrate existing facts with new ones. Must include both sets of facts.\\n\\nCurrent description is long single sentence with many details; we need 1-3 sentences summarizing; combine: Знайка совершил межпланетное путешествие на Луну, участвовал в строительстве ракеты, выдвинул гипотезу о лунной поверхности как блин с дырками, сравнил движущуюся в космосе бутылку с планетой и Луной, описал образование пузыря в воде и влияние перегрузок; в кабине его тело почти не весит, он может свободно висеть в любой позе, а предметы и вытряхнутая вода из бутылки плавают, образуя шарики, пока не притянутся к стенам; после остановки его окружили коротышки, которые хором закричали: «Рассказывайте! Рассказывайте ещё!»\\n\\nThat's 2 sentences maybe: first covers travel and hypotheses; second covers weightless cabin and shorties. Ensure 1-3 sentences, okay.\\n\\nReturn JSON with update true and description.\\n\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":533,\"completion_tokens\":539,\"total_tokens\":1072}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:37:29 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

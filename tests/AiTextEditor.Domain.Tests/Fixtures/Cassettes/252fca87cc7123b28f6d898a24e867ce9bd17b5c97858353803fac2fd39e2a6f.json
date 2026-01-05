@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-308\",\"object\":\"chat.completion\",\"created\":1767596262,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"action\\\":\\\"continue\\\",\\\"batchFound\\\":false,\\\"newEvidence\\\":[],\\\"progress\\\":\\\"\\\",\\\"needMoreContext\\\":false}\",\"reasoning\":\"We need to scan current batch items for character mentions. Items are headings with no paragraphs; we should not add evidence for headings unless required. Task says \\\"Collect ALL character mentions across the book. Return every paragraph where a person appears.\\\" So we ignore headings. So no new evidence. batchFound false. action continue (since need more). needMoreContext false. progress empty.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":830,\"completion_tokens\":108,\"total_tokens\":938}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 06:57:42 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

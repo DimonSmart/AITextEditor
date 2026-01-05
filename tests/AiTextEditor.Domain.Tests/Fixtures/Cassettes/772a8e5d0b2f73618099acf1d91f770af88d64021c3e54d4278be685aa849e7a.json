@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-941\",\"object\":\"chat.completion\",\"created\":1767598664,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"action\\\": \\\"continue\\\",\\n  \\\"batchFound\\\": true,\\n  \\\"newEvidence\\\": [\\n    {\\n      \\\"pointer\\\": \\\"1.1.1.p65\\\",\\n      \\\"excerpt\\\": \\\"Знайка достал из кармана небольшой камешек голубовато-серого цвета и сказал:\\\",\\n      \\\"reason\\\": \\\"The paragraph mentions the character Знайка.\\\"\\n    }\\n  ],\\n  \\\"progress\\\": \\\"Found mention of Знайка.\\\",\\n  \\\"needMoreContext\\\": false\\n}\",\"reasoning\":\"We need to scan current batch items for character mentions. Task: collect all character mentions across the book; return every paragraph where a person appears. Include aliases and nicknames. Count only named individuals or stable titles tied to a person; ignore generic groups/roles. We must not add evidence for pointers already in recentEvidencePointers list: [\\\"1.1.1.p50\\\",\\\"1.1.1.p53\\\",\\\"1.1.1.p56\\\",\\\"1.1.1.p58\\\",\\\"1.1.1.p60\\\"].\\n\\nCurrent batch items pointers: 1.1.1.p63, p64, p65.\\n\\nWe need to see if any of these contain named individuals or stable titles. Let's examine:\\n\\np63 markdown: \\\"– А вы привезли что-нибудь с Луны?\\\" This is dialogue. No named person. Could be a generic \\\"you\\\". Not a named individual. So no evidence.\\n\\np64: \\\"– Я привёз кусочек самой Луны.\\\" Still a dialogue, speaker not named. No evidence.\\n\\np65: \\\"Знайка достал из кармана небольшой камешек голубовато-серого цвета и сказал:\\\" This mentions \\\"Знайка\\\". That's a character name (nickname). So we should include this as evidence. pointer \\\"1.1.1.p65\\\", excerpt the markdown as is. Reason: mentions character \\\"Знайка\\\". Provide reason.\\n\\nThus newEvidence has one entry.\\n\\nprogress: maybe \\\"Found mention of Знайка\\\". needMoreContext false.\\n\\nAction: continue because maxEvidenceCount is 86, snapshot evidenceCount 39, we have new 1 making 40 less than 86. So continue.\\n\\nbatchFound true.\\n\\nReturn JSON accordingly.\\n\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":987,\"completion_tokens\":467,\"total_tokens\":1454}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:37:44 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

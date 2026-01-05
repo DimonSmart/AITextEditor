@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-800\",\"object\":\"chat.completion\",\"created\":1767597269,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"pass\\\": true, \\\"reason\\\": \\\"found\\\"}\",\"reasoning\":\"We need to evaluate if the TEXT contains a character named \\\"Знайка\\\" with description exactly \\\"Главный из коротышек\\\". Let's inspect TEXT: In characters array, there is an object:\\n\\n{\\n  \\\"id\\\": \\\"cc208a650bef4355863009f710e1e5c0\\\",\\n  \\\"name\\\": \\\"Знайка\\\",\\n  \\\"description\\\": \\\"Главный из коротышек\\\",\\n  \\\"gender\\\": \\\"male\\\",\\n  \\\"aliases\\\": [...]\\n}\\n\\nYes, description matches exactly \\\"Главный из коротышек\\\". So condition passes. Return JSON {\\\"pass\\\": true, \\\"reason\\\": \\\"found\\\"} (short reason). Must be short. Use \\\"description matches\\\".\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1780,\"completion_tokens\":162,\"total_tokens\":1942}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:14:29 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

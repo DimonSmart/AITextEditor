@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-614\",\"object\":\"chat.completion\",\"created\":1767598530,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"[\\n  {\\n    \\\"canonicalName\\\": \\\"Знайка\\\",\\n    \\\"aliases\\\": [],\\n    \\\"gender\\\": \\\"male\\\",\\n    \\\"description\\\": \\\"Знайка отвечает авторитетно, сравнивая состояние свободно перемещающейся в межпланетном пространстве бутылки с планетой и Луной.\\\"\\n  },\\n  {\\n    \\\"canonicalName\\\": \\\"Звёздочкин\\\",\\n    \\\"aliases\\\": [],\\n    \\\"gender\\\": \\\"male\\\",\\n    \\\"description\\\": \\\"Звёздочкин подхватывает разговор, прося объяснить, почему считают, что внутри Луны пусто.\\\"\\n  }\\n]\",\"reasoning\":\"We need to extract characters mentioned.\\n\\nParagraph 1 includes \\\"Знайка\\\". Also mentions \\\"Луна\\\" (the Moon) but that's not a person. So character: Знайка. Gender? Znaika is a character from Russian children's literature, likely male (a boy). But we need evidence. Text: \\\"авторитетно ответил Знайка\\\". No gender markers. Could infer male? Znaika in original is male (a boy). But is that allowed? The rule: Use evidence. Could we infer gender from name? Might be ambiguous. In Russian, \\\"Знайка\\\" ends with a consonant, could be masculine nickname. Likely male. But we need to be careful. Since it's not explicitly indicated, but we could set gender \\\"male\\\" based on typical usage. Might be acceptable.\\n\\nAliases: maybe \\\"Знайка\\\" appears only. No other forms.\\n\\nParagraph 2 includes \\\"Звёздочкин\\\". Also refers to \\\"Звёздочкин\\\". That's a character. Gender? Zvezdochkin likely male (surname). No explicit but typical male. Could set male.\\n\\nAliases: \\\"Звёздочкин\\\". No other.\\n\\nParagraph 3 mentions \\\"Слушатели\\\" which is generic group, ignore. Also \\\"Знайка\\\" again, but already captured.\\n\\nThus output array with two objects.\\n\\nDescription: provide 1-3 sentences based on evidence.\\n\\nFor Знайка: \\\"Знайка отвечает авторитетно, объясняя, почему движение бутылки в межпланетном пространстве сравнимо с планетой.\\\" etc.\\n\\nFor Звёздочкин: \\\"Звёздочкин подхватывает, прося объяснить, почему считается, что Луна пустая внутри.\\\"\\n\\nMake sure JSON array only.\\n\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":604,\"completion_tokens\":514,\"total_tokens\":1118}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:35:30 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

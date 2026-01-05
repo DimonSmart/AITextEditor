@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-139\",\"object\":\"chat.completion\",\"created\":1767598655,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"[\\n  {\\n    \\\"canonicalName\\\": \\\"Знайка\\\",\\n    \\\"aliases\\\": [],\\n    \\\"gender\\\": \\\"male\\\",\\n    \\\"description\\\": \\\"Знайка коротко ответил, что в бутылке была простая вода, и спросил, как мог быть другой напиток.\\\"\\n  }\\n]\",\"reasoning\":\"We need to extract characters. Text: Russian. It says: \\\"– В бутылке была простая вода, – коротко ответил Знайка. – Какой же мог быть другой напиток?\\\" Character: \\\"Знайка\\\". That's presumably a nickname, a person. Provide canonical name: likely \\\"Знайка\\\". Aliases: maybe just \\\"Знайка\\\". No other forms. Gender: In Russian, \\\"Знайка\\\" is a nickname for a boy in \\\"Незнайка\\\" series? Actually \\\"Знайка\\\" is a character from \\\"Незнайка\\\" (the clever one). Gender likely male. We'll set gender \\\"male\\\". Description: Based on evidence: He replied briefly that the bottle contained plain water, asking how could there be another drink. Use 1-3 sentences, grounded in evidence.\\n\\nReturn JSON array with one object.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":440,\"completion_tokens\":250,\"total_tokens\":690}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:37:35 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

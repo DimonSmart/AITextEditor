@@ -169,6 +169,9 @@ Evidence rules:
   - You MAY use snapshot.evidenceCount ONLY for counting/progress decisions, not for describing the excerpt.
 - progress: optional, <=1 sentence, short summary of what you found in this batch (or leave empty/null if nothing new).
 - needMoreContext: set true only if the batch is too short/ambiguous and you must read further before making progress.
+- Character mention scope (for character-collection tasks):
+  - Count ONLY specific named individuals or stable unique titles tied to a person (e.g., "Professor Zvezdochkin").
+  - Ignore generic groups/roles or unnamed speakers (e.g., "shorties", "listeners", "astronomers", "someone").
 
 Scanning Strategy:
 - READ THE FULL TEXT of each item. Mentions may be buried in the middle of long paragraphs.

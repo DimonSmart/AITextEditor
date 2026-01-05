@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-303\",\"object\":\"chat.completion\",\"created\":1767596351,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"[\\n  {\\n    \\\"canonicalName\\\": \\\"Знайка\\\",\\n    \\\"aliases\\\": [\\\"блинист\\\"],\\n    \\\"gender\\\": \\\"male\\\",\\n    \\\"description\\\": \\\"Знайка отвечал, что метеориты могли падать на Луну не только отвесно, но и под наклоном, и в таком случае оставляли бы следы вытянутой, продолговатой формы, а не круглые.\\\"\\n  }\\n]\",\"reasoning\":\"We need extract characters (people). Paragraphs: first talks about \\\"Знайка\\\". That's a character, presumably from \\\"Приключения Незнайки\\\". So canonical name: \\\"Знайка\\\". Aliases? Maybe \\\"Знайка\\\" only. Gender? In Russian, \\\"Знайка\\\" is male? In the original, Незнайка male, Знайка male. So gender male. Description from text: He answered that meteors could fall on the Moon not only vertically but at an angle, etc. So description: He argued meteoroids could create elongated craters, etc. Provide 1-3 sentences grounded.\\n\\nSecond paragraph mentions \\\"вулканисты и метеоритчики\\\" generic groups not individuals. It also mentions they called him \\\"блинистом\\\". That's still referring to Znaika. So no new characters.\\n\\nThus output: array with one object.\\n\\nInclude aliases: maybe \\\"Знайка\\\" also referred as \\\"его\\\"? Not. Could add \\\"блинист\\\"? That is a nickname they called him, but it's more an insult. Aliases should include other name forms found in text. The text calls him \\\"Знайка\\\" and they call him \\\"блинист\\\". That's a nickname but maybe qualifies as alias? It is used to refer to him. So include \\\"блинист\\\". Also \\\"его\\\"? Not a name.\\n\\nThus output.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":529,\"completion_tokens\":388,\"total_tokens\":917}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 06:59:11 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

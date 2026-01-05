@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-287\",\"object\":\"chat.completion\",\"created\":1767598645,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"[\\n  {\\n    \\\"canonicalName\\\": \\\"Знайка\\\",\\n    \\\"aliases\\\": [],\\n    \\\"gender\\\": \\\"male\\\",\\n    \\\"description\\\": \\\"Знайка рассказывает, что в кабине его тело почти не весит, поэтому он может свободно висеть в любой позе, не опускаясь вниз и не поднимаясь вверх. Предметы вокруг него также плавно漂вают, а вода из бутылки, вытряхнутая, собирается в шарики, которые плавают до тех пор, пока не притянутся к стенам кабины.\\\"\\n  }\\n]\",\"reasoning\":\"We need to extract characters from text. The paragraph contains \\\"Знайка\\\" speaking. Also perhaps \\\"я\\\". The narrator \\\"я\\\" refers to the speaker, likely Знайка. So we have character: Знайка (likely male? In Russian, Znaika is a male character from \\\"Ну, погоди!\\\"? Actually Znaika is a character from \\\"Приключения Незнайки и его друзей\\\" (Neznaika). Znaika is male. The text says \\\"я\\\". It seems confident. So we can include canonicalName \\\"Знайка\\\". Aliases maybe other forms: maybe \\\"Знайка\\\". Could also be \\\"я\\\". But \\\"я\\\" is pronoun not a name. Not include. Gender male. Description: Based on text, he is speaking, describing floating in zero-weight cabin, his body lost weight, etc.\\n\\nReturn JSON array with one object.\\n\\nNeed description 1-3 sentences grounded in evidence. Provide \\\"Он (Знайка) рассказывает, что в кабине его тело почти не весит, он может свободно висеть, предметы плавают, вода из бутылки образует шарики\\\". Must be in same language as evidence text (Russian). So description in Russian.\\n\\nLet's craft.\\n\\nCanonical name normalized: \\\"Знайка\\\". Aliases: none? Could include maybe \\\"Знайка\\\" only, but need unique list distinct from canonicalName; if none, empty array. Probably include empty.\\n\\nReturn.\\n\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":659,\"completion_tokens\":435,\"total_tokens\":1094}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:37:25 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

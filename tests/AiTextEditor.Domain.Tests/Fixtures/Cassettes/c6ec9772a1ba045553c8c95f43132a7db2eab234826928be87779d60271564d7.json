@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-324\",\"object\":\"chat.completion\",\"created\":1767598713,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"action\\\": \\\"continue\\\",\\n  \\\"batchFound\\\": true,\\n  \\\"newEvidence\\\": [\\n    {\\n      \\\"pointer\\\": \\\"1.1.1.p73\\\",\\n      \\\"excerpt\\\": \\\"Двое коротышек снова бросились на трибуну, один схватил Звёздочкина за шиворот, другой за ноги, и поволокли его прямо на улицу. Там его посадили в скверике на траву и сказали:\\\",\\n      \\\"reason\\\": \\\"The paragraph mentions the named individual Звёздочкина.\\\"\\n    }\\n  ],\\n  \\\"progress\\\": \\\"Found 1 new character mention.\\\",\\n  \\\"needMoreContext\\\": false\\n}\",\"reasoning\":\"We need to scan current batch for character mentions. Task: collect all character mentions across the book. Need paragraphs where a person appears. Include aliases and nicknames. Count only named individuals or stable titles tied to a person; ignore generic groups/roles. So we must look at each paragraph's markdown and see if there is a named individual.\\n\\nBatch items:\\n\\n1.1.1.p72: \\\"– Долой!\\\" That's just a phrase, no name.\\n\\n1.1.1.p73: \\\"Двое коротышек снова бросились на трибуну, один схватил Звёздочкина за шиворот, другой за ноги, и поволокли его прямо на улицу. Там его посадили в скверике на траву и сказали:\\\" Contains \\\"Звёздочкина\\\" (Zvezdochkin? Actually Zvezdochkin is a name; \\\"Звёздочкина\\\" is likely a surname). That's a named individual. So we need to include this paragraph as evidence.\\n\\n1.1.1.p74: \\\"– Вот когда полетишь на Луну, будешь выступать на трибуне, а сейчас пока посиди здесь на травке.\\\" No name.\\n\\nThus we have one new evidence pointer: \\\"1.1.1.p73\\\". Excerpt exactly the markdown. Reason: It mentions Zvezdochkin (named individual). Provide reason.\\n\\nNow determine action/stop. snapshot.evidenceCount =44, maxEvidenceCount=86. New evidence length=1, total would be 45, still \\u003c86, so continue.\\n\\nbatchFound true.\\n\\nneedMoreContext false (we have evidence). progress: maybe \\\"Found 1 new character mention.\\\" Provide short.\\n\\nOutput JSON.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1035,\"completion_tokens\":514,\"total_tokens\":1549}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:38:33 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

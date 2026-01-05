@@ -1,4 +1,4 @@
-using AiTextEditor.Domain.Tests.Infrastructure;
+﻿using AiTextEditor.Domain.Tests.Infrastructure;
 using AiTextEditor.SemanticKernel;
 using AiTextEditor.Lib.Common;
 using AiTextEditor.Lib.Services;
@@ -175,7 +175,7 @@ public class McpFunctionalTests
         Assert.Equal(expectedCount, directRoster.Characters.Count);
 
         var evidence = names
-            .Select((name, index) => new EvidenceItem($"1.1.p{index + 1}", $"{name} отправился исследовать далёкий город.", "characters"))
+            .Select((name, index) => new EvidenceItem($"1.p{index + 1}", $"{name} отправился исследовать далёкий город.", "characters"))
             .ToList();
 
         var orchestrator = new CharacterRosterCursorOrchestrator(
@@ -378,12 +378,18 @@ public class McpFunctionalTests
     {
         public Task<CursorAgentResult> RunAsync(string cursorName, CursorAgentRequest request, CancellationToken cancellationToken = default)
         {
-            throw new NotSupportedException();
+            return Task.FromResult(new CursorAgentResult(false, "noop", Evidence: Array.Empty<EvidenceItem>(), CursorComplete: true));
         }
 
         public Task<CursorAgentStepResult> RunStepAsync(CursorAgentRequest request, CursorPortionView portion, CursorAgentState state, int step, CancellationToken cancellationToken = default)
         {
-            throw new NotSupportedException();
+            return Task.FromResult(new CursorAgentStepResult(
+                "continue",
+                false,
+                Array.Empty<EvidenceItem>(),
+                null,
+                false,
+                portion.HasMore));
         }
     }
 
@@ -396,7 +402,21 @@ public class McpFunctionalTests
 
         public Task<CursorAgentStepResult> RunStepAsync(CursorAgentRequest request, CursorPortionView portion, CursorAgentState state, int step, CancellationToken cancellationToken = default)
         {
-            throw new NotSupportedException();
+            var pointers = portion.Items
+                .Select(item => item.SemanticPointer)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            var batchEvidence = evidence
+                .Where(item => pointers.Contains(item.Pointer))
+                .ToList();
+
+            return Task.FromResult(new CursorAgentStepResult(
+                "continue",
+                batchEvidence.Count > 0,
+                batchEvidence,
+                null,
+                false,
+                portion.HasMore));
         }
     }
 
@@ -481,3 +501,5 @@ public class McpFunctionalTests
         }
     }
 }
+
+

@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-274\",\"object\":\"chat.completion\",\"created\":1767596611,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"[\\n  {\\n    \\\"canonicalName\\\": \\\"Знайка\\\",\\n    \\\"aliases\\\": [],\\n    \\\"gender\\\": \\\"male\\\",\\n    \\\"description\\\": \\\"Знайка — персонаж, который достал из кармана небольшой камешек голубовато‑серого цвета и произнёс реплику.\\\"\\n  }\\n]\",\"reasoning\":\"We need to extract characters from the paragraph. Text is Russian: \\\"Знайка достал из кармана небольшой камешек голубовато-серого цвета и сказал:\\\" So Znaika is a character. Provide canonical name, aliases. Mentioned only \\\"Знайка\\\". Possibly also could be a nickname? The text just has \\\"Знайка\\\". So canonicalName: \\\"Знайка\\\". aliases: none (empty array). Gender? Znaika (from Russian children's literature \\\"Тимур и его команда\\\"? Actually Znaika is a character from \\\"Приключения Незнайки и его друзей\\\" (Neznaika, but \\\"Знайка\\\" is a character from \\\"Кот в сапогах\\\"? Wait \\\"Знайка\\\" is a boy in \\\"Тимур и его команда\\\"? Actually \\\"Знайка\\\" is a character in the Russian children's book “Приключения Незнайки”. There is a character named \\\"Знайка\\\" (wise). He is male. So gender male. Description: \\\"Знайка — мальчик, который достал из кармана небольшой камешек голубовато‑серого цвета и сказал...\\\" Must be based on evidence. Use 1-3 sentences based on text. So description: \\\"Знайка — персонаж, который достал из кармана небольшой камешек голубовато‑серого цвета и произнёс реплику.\\\" That is grounded.\\n\\nReturn JSON array with one object.\\n\\nAliases empty: [].\\n\\nOk.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":377,\"completion_tokens\":390,\"total_tokens\":767}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:03:31 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

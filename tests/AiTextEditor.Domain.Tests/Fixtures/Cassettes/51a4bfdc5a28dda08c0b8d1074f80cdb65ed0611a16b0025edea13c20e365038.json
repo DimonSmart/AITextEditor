@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-708\",\"object\":\"chat.completion\",\"created\":1767596517,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"action\\\":\\\"continue\\\",\\\"batchFound\\\":true,\\\"newEvidence\\\":[{\\\"pointer\\\":\\\"1.1.1.p45\\\",\\\"excerpt\\\":\\\"– Верно! Правильно! Молодец, Знайка! Ура!\\\",\\\"reason\\\":\\\"The paragraph mentions the character Знайка.\\\"},{\\\"pointer\\\":\\\"1.1.1.p47\\\",\\\"excerpt\\\":\\\"– Долой Звёздочкина!\\\",\\\"reason\\\":\\\"The paragraph mentions the character Звёздочкина.\\\"}],\\\"progress\\\":\\\"Found mentions of Знайка and Звёздочкина.\\\",\\\"needMoreContext\\\":false}\",\"reasoning\":\"We need to extract evidence of character mentions. Task: collect all character mentions across the book, every paragraph where a person appears. The batch items contain paragraphs. We must check each paragraph for a person mention. Items:\\n\\n1. pointer \\\"1.1.1.p45\\\": \\\"– Верно! Правильно! Молодец, Знайка! Ура!\\\" Contains \\\"Знайка\\\" (a character nickname). So evidence.\\n\\n2. pointer \\\"1.1.1.p46\\\": \\\"Все захлопали в ладоши. Кто-то крикнул:\\\" Contains no explicit character name, just \\\"Кто-то\\\". Not a mention of a person. Probably not evidence.\\n\\n3. pointer \\\"1.1.1.p47\\\": \\\"– Долой Звёздочкина!\\\" Contains \\\"Звёздочкина\\\" (likely a character name). So evidence.\\n\\nWe need to check if any of these pointers already in recentEvidencePointers: they are p38-42. None are 45-47, so okay.\\n\\nWe need to produce JSON with action continue (since maxEvidenceCount 86, we have 34 already, adding 2 =\\u003e 36 \\u003c 86). batchFound true. newEvidence array with two objects.\\n\\nExcerpt must be exactly markdown. Provide reason: e.g., mentions character \\\"Знайка\\\". Must be one sentence, factual, local.\\n\\nProgress optional: maybe \\\"Found mentions of Знайка and Звёздочкина\\\".\\n\\nneedMoreContext false.\\n\\nLet's craft.\\n\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":902,\"completion_tokens\":442,\"total_tokens\":1344}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:01:57 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

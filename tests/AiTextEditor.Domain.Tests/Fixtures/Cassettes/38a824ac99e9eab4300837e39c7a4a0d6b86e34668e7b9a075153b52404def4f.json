@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-3\",\"object\":\"chat.completion\",\"created\":1767598500,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"action\\\": \\\"continue\\\",\\n  \\\"batchFound\\\": true,\\n  \\\"newEvidence\\\": [\\n    {\\n      \\\"pointer\\\": \\\"1.1.1.p29\\\",\\n      \\\"excerpt\\\": \\\"– Я не болтался, – возразил Знайка, – но зато я летал в ракете и наблюдал за предметами в состоянии невесомости.\\\",\\n      \\\"reason\\\": \\\"The paragraph mentions the named character Знайка.\\\"\\n    }\\n  ],\\n  \\\"progress\\\": \\\"Found one new character mention in this batch.\\\",\\n  \\\"needMoreContext\\\": false\\n}\",\"reasoning\":\"We need to output JSON with new evidence for character mentions. Task: collect all character mentions across the book, includes aliases and nicknames. Count only named individuals or stable titles tied to a person; ignore generic groups/roles. The batch items:\\n\\np27: \\\"– Вы рассуждаете так, будто вам уже когда-нибудь приходилось болтаться в центре Луны!\\\" No named person, just \\\"you\\\". No valid.\\n\\np28: \\\"– А вы будто болтались? – огрызнулся профессор.\\\" \\\"профессор\\\" is a generic title, not a specific person name unless stable title tied to a person. Here it's generic, no name. Should ignore.\\n\\np29: \\\"– Я не болтался, – возразил Знайка, – но зато я летал в ракете и наблюдал за предметами в состоянии невесомости.\\\" Contains \\\"Знайка\\\" which is a named individual. So this is evidence.\\n\\nCheck snapshot.recentEvidencePointers: only those listed. The new pointer \\\"1.1.1.p29\\\" not present, so we can add.\\n\\nWe need output fields: action: continue (since maxEvidenceCount 86, we have 19+1=20 \\u003c86). batchFound true (since we found new evidence). newEvidence array with one object: pointer, excerpt, reason. Excerpt must be exactly the markdown content. Reason: include mention of Знайка as a character. Must be 1 sentence max.\\n\\nProgress: maybe \\\"Found one character mention\\\". needMoreContext false.\\n\\nConstruct JSON.\\n\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1016,\"completion_tokens\":457,\"total_tokens\":1473}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:35:00 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

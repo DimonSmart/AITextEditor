@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-723\",\"object\":\"chat.completion\",\"created\":1767596753,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"update\\\":true,\\\"description\\\":\\\"Знайка — коротышка‑учёный, принимавший участие в построении космической ракеты и полёте к Луне, где обнаружил гигантскую кирпичную стену, опубликовал книгу о лунных коротышках‑лунатиках и отстаивал гипотезу о древней огненно‑жидкой поверхности Луны; во время полёта он наблюдал образование пузыря в бутылке и заметил, что вода в нулевой гравитации образует маленькие шарики. Кроме того, он достал из кармана небольшой камешек голубовато‑серого цвета и произнёс несколько слов.\\\"}\",\"reasoning\":\"We need to decide if candidate adds new factual info beyond current description. Current description covers many facts about him. Candidate adds: \\\"Знайка достал из кармана небольшой камешек голубовато‑серого цвета и сказал.\\\" This is a new action and detail (small bluish-gray stone). This is new factual information not present in current. So we must update description with integrative description including this fact. Need 1-3 sentences, coherent, same language (Russian). Must incorporate existing facts and new fact.\\n\\nWe need to craft a description summarizing key facts: He is a short scientist who participated..., discovered brick wall, published book, hypothesized lunar surface, observed water bubble, etc., and also he took out a small bluish-gray stone from his pocket and said something (maybe omitted content). Keep within 1-3 sentences. Could be two sentences.\\n\\nSentence 1: Summarize his scientific activities. Sentence 2: Mention the stone action.\\n\\nWrite: \\\"Знайка — коротышка‑учёный, принимавший участие в построении космической ракеты и полёте к Луне, где обнаружил гигантскую кирпичную стену, опубликовал книгу о лунных коротышках‑лунатиках и отстаивал гипотезу о древней огненно‑жидкой поверхности Луны; во время полёта он наблюдал образование пузыря в бутылке и заметил, что вода в нулевой гравитации образует маленькие шарики. Кроме того, он достал из кармана небольшой камешек голубовато‑серого цвета и произнёс несколько слов.\\\"\\n\\nThat's two sentences. Ensure 1-3 sentences. Output JSON with {\\\"update\\\": true, \\\"description\\\": \\\"...\\\"}.\\n\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":515,\"completion_tokens\":540,\"total_tokens\":1055}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:05:53 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

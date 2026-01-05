@@ -1,4 +1,4 @@
-using AiTextEditor.Lib.Model;
+﻿using AiTextEditor.Lib.Model;
 using AiTextEditor.Lib.Services;
 using AiTextEditor.Lib.Services.SemanticKernel;
 using AiTextEditor.SemanticKernel;
@@ -18,9 +18,9 @@ public class CharacterRosterCursorOrchestratorTests
         const string markdown = """
         # Title
 
-        Пончик встретил Знайку и сказал, что слышал про Сиропчика.
+        РџРѕРЅС‡РёРє РІСЃС‚СЂРµС‚РёР» Р—РЅР°Р№РєСѓ Рё СЃРєР°Р·Р°Р», С‡С‚Рѕ СЃР»С‹С€Р°Р» РїСЂРѕ РЎРёСЂРѕРїС‡РёРєР°.
 
-        Сиропчик пошёл дальше один.
+        РЎРёСЂРѕРїС‡РёРє РїРѕС€С‘Р» РґР°Р»СЊС€Рµ РѕРґРёРЅ.
         """;
 
         var repository = new MarkdownDocumentRepository();
@@ -39,8 +39,8 @@ public class CharacterRosterCursorOrchestratorTests
 
         var evidence = new List<EvidenceItem>
         {
-            new("1.1.p1", "Пончик встретил Знайку и сказал, что слышал про Сиропчика.", "characters"),
-            new("1.1.p2", "Сиропчик пошёл дальше один.", "characters")
+            new("1.p1", "РџРѕРЅС‡РёРє РІСЃС‚СЂРµС‚РёР» Р—РЅР°Р№РєСѓ Рё СЃРєР°Р·Р°Р», С‡С‚Рѕ СЃР»С‹С€Р°Р» РїСЂРѕ РЎРёСЂРѕРїС‡РёРєР°.", "characters"),
+            new("1.p2", "РЎРёСЂРѕРїС‡РёРє РїРѕС€С‘Р» РґР°Р»СЊС€Рµ РѕРґРёРЅ.", "characters")
         };
 
         var runtime = new FakeCursorAgentRuntime(evidence);
@@ -54,21 +54,41 @@ public class CharacterRosterCursorOrchestratorTests
 
         var roster = await orchestrator.BuildRosterAsync(includeDossiers: false);
 
-        Assert.Contains(roster.Characters, c => c.Name.Contains("Пончик", StringComparison.OrdinalIgnoreCase));
-        Assert.Contains(roster.Characters, c => c.Name.Contains("Знайка", StringComparison.OrdinalIgnoreCase));
-        Assert.Contains(roster.Characters, c => c.Name.Contains("Сиропчик", StringComparison.OrdinalIgnoreCase));
+        Assert.Contains(roster.Characters, c => c.Name.Contains("РџРѕРЅС‡РёРє", StringComparison.OrdinalIgnoreCase));
+        Assert.Contains(roster.Characters, c => c.Name.Contains("Р—РЅР°Р№РєР°", StringComparison.OrdinalIgnoreCase));
+        Assert.Contains(roster.Characters, c => c.Name.Contains("РЎРёСЂРѕРїС‡РёРє", StringComparison.OrdinalIgnoreCase));
     }
 
     private sealed class FakeCursorAgentRuntime(IReadOnlyList<EvidenceItem> evidence) : ICursorAgentRuntime
     {
+        private bool sentEvidence;
+
         public Task<CursorAgentResult> RunAsync(string cursorName, CursorAgentRequest request, CancellationToken cancellationToken = default)
         {
             return Task.FromResult(new CursorAgentResult(true, "ok", Evidence: evidence, CursorComplete: true));
         }
 
-        public Task<CursorAgentStepResult> RunStepAsync(CursorAgentRequest request, CursorPortionView portion, CursorAgentState state, int step, CancellationToken cancellationToken = default)
+        public Task<CursorAgentStepResult> RunStepAsync(
+            CursorAgentRequest request,
+            CursorPortionView portion,
+            CursorAgentState state,
+            int step,
+            CancellationToken cancellationToken = default)
         {
-            throw new NotSupportedException();
+            IReadOnlyList<EvidenceItem> batchEvidence = Array.Empty<EvidenceItem>();
+            if (!sentEvidence)
+            {
+                batchEvidence = evidence;
+                sentEvidence = true;
+            }
+
+            return Task.FromResult(new CursorAgentStepResult(
+                "continue",
+                batchEvidence.Count > 0,
+                batchEvidence,
+                null,
+                false,
+                portion.HasMore));
         }
     }
 
@@ -153,3 +173,4 @@ public class CharacterRosterCursorOrchestratorTests
         }
     }
 }
+

@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-575\",\"object\":\"chat.completion\",\"created\":1767596560,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"[\\n  {\\n    \\\"canonicalName\\\": \\\"Знайка\\\",\\n    \\\"aliases\\\": [],\\n    \\\"gender\\\": \\\"male\\\",\\n    \\\"description\\\": \\\"Знайка растерянно повторял просьбу рассказать о полёте на Луну и о состоянии невесомости, после чего пояснил, как при наборе скорости ракета создаёт сильные перегрузки и как они исчезают в свободном полёте, позволяя «терять вес».\\\"\\n  }\\n]\",\"reasoning\":\"We need extract characters. Paragraphs:\\n\\n1.1.1.p51: \\\"– Расскажите про полёт на Луну! – кричали коротышки.\\\" No person name, \\\"коротышки\\\" is a noun meaning \\\"shorties\\\", maybe characters but not specific individuals. Not a person name. Skip.\\n\\n1.1.1.p52: \\\"– Про состояние невесомости! – кричал кто-то.\\\" No name.\\n\\n1.1.1.p53: \\\"– Про Луну?.. Про состояние невесомости? – растерянно повторял Знайка.\\\" So character: Знайка (a name, from Russian kids literature). Provide canonicalName normalized nominative \\\"Знайка\\\". Aliases? Possibly other forms appearing: \\\"Знайка\\\" appears only. Might also \\\"Знайка\\\" as subject, no other inflections. Gender? In story, Знайка is male (male child). Use evidence? Not explicit gender in text, but known from literature; but we must rely on evidence. The text says \\\"растерянно повторял Знайка.\\\" Verb \\\"повторял\\\" is masculine past, suggests male. So gender male.\\n\\nDescription: Summarize 1-3 sentences based on evidence: He repeats asking about Moon, shows confusion, mentions physics of rocket etc. Provide description: Знайка is a character who repeats the question about the Moon and weightlessness, speaks in a confused manner, and explains the physics of rocket acceleration and microgravity.\\n\\nReturn JSON array with one object.\\n\\nMake sure language is same as evidence text (Russian). Description must be Russian.\\n\\nConstruct.\\n\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":652,\"completion_tokens\":451,\"total_tokens\":1103}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:02:40 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

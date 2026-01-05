@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-859\",\"object\":\"chat.completion\",\"created\":1767598550,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"[{\\n  \\\"canonicalName\\\": \\\"Знайка\\\",\\n  \\\"aliases\\\": [],\\n  \\\"gender\\\": \\\"unknown\\\",\\n  \\\"description\\\": \\\"Знайка – персонаж, который подхватил реплику, сказав «Верно!», участвуя в диалоге.\\\"\\n}]\",\"reasoning\":\"We need to extract characters from the paragraph. Text: \\\"– Верно! – подхватил Знайка. – Ещё не остывшее расплавленное вещество, то есть, попросту говоря, жидкость.\\\"\\n\\nWe have a name \\\"Знайка\\\". That's a character. Need canonicalName normalized nominative; \\\"Знайка\\\" is already nominative. Aliases: maybe other forms in text? Only appears as \\\"Знайка\\\". No other forms. Gender? Znaika? In Russian literature, Znaika is a male friend of Doctor... In \\\"Трое из Простоквашино\\\"? Actually \\\"Знайка\\\" is a male child character in some Russian children's books, but need to be based on evidence. The text doesn't provide gender. We cannot assume. So gender unknown.\\n\\nDescription: need 1-3 sentences strictly grounded in evidence: He is the speaker who said \\\"Верно!\\\" and is described as \\\"подхватил Знайка\\\" (Znaika interjected). So we can say: Знайка is the person who interjects with \\\"Верно!\\\" in the dialogue. That's the description.\\n\\nReturn JSON array with one object.\\n\\nMake sure no extra markdown.\\n\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":451,\"completion_tokens\":327,\"total_tokens\":778}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:35:50 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

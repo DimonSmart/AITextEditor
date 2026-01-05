@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-644\",\"object\":\"chat.completion\",\"created\":1767598671,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"update\\\":true,\\\"description\\\":\\\"Знайка совершил межпланетное путешествие к Луне, участвовал в строительстве ракеты и описал ряд физических явлений, а также, доставая из кармана небольшой голубовато‑серый камешек, произнёс несколько слов.\\\"}\",\"reasoning\":\"We need to decide if candidate adds new factual info beyond current description. Current description is extensive about Znaika's actions. Candidate adds: \\\"Знайка достал из кармана небольшой камешек голубовато‑серого цвета и сказал.\\\" This is a new fact not present in current: that he took out a small bluish-gray stone from his pocket and said something. That is new factual detail. Also gender unknown contradicts current male, but we shouldn't change gender unless new fact conflicts. Candidate says gender unknown; but we have male from current. We must integrate facts, but cannot drop relevant details. Should we incorporate the new fact about the stone, and keep gender as male (since current says male). Candidate's gender unknown is not a fact, it's a claim; we have conflicting info; but rule: use only facts supported by current + candidate. Both provide gender; we have male from current, unknown from candidate. We need to decide which to keep. Since they conflict, we could keep male as it's explicitly stated, and candidate's unknown is not a factual statement but category. The candidate doesn't explicitly state gender, just \\\"unknown\\\". That might be considered no new factual info about gender. So keep male. Aliases: candidate none, keep existing.\\n\\nThus there are new facts, so update true, description should be 1-3 sentences, coherent, in Russian (same language). Should incorporate existing facts summarized and new stone fact. Must be concise 1-3 sentences. Could be something like: \\\"Знайка совершил межпланетное путешествие к Луне, участвовал в строительстве ракеты и описал ряд физических явлений, а также, доставая из кармана небольшой голубовато‑серый камешек, произнёс несколько слов.\\\"\\n\\nThat's two sentences. Good. Return JSON.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":540,\"completion_tokens\":454,\"total_tokens\":994}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:37:51 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

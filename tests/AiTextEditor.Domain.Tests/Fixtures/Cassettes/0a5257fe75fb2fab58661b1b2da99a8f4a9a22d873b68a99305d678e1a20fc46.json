@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-943\",\"object\":\"chat.completion\",\"created\":1767596724,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"update\\\":true,\\\"description\\\":\\\"Профессор Звёздочкин — добрый, требовательный коротышка, действительный член Академии астрономических наук, который не выносит фантазийных выдумок и в своём докладе о книге Знаикина указал, что герой ошибочно принял предметы за кирпичи, сравнил бутылку с планетой и сердито проворчал: «Попал пальцем в небо!», а также поднял вопрос о жидкости внутри Луны. Однажды его захватили два коротышки, схватили за шиворот и за ноги и унесли с трибуны.\\\"}\",\"reasoning\":\"We must decide if candidate adds new factual info not present in current. Current description: professor is a short person, member of Academy, dislikes fantasy, gave a report about Znaikin's book, etc. Candidate adds: \\\"Звёздочкин был захвачен двумя коротышками, схвачен за шиворот и за ноги, и унесён с трибуны.\\\" This is a new event: captured by two shorties, grabbed by collar and legs, taken from the podium. This is not in current. So new facts.\\n\\nWe need to produce updated description merging facts, 1-3 sentences, in same language (Russian). Should include both existing facts and new. Must be coherent.\\n\\nWe need to keep essential details but concise. Probably combine: Professor Zvezdochkin, a short, demanding but kind member of Academy, who dislikes fantasy, gave report etc., and was once captured by two shorties, seized by the collar and legs, and carried off the podium.\\n\\nMake 2 sentences maybe. Ensure not too long.\\n\\nReturn JSON: {\\\"update\\\": true, \\\"description\\\": \\\"...\\\"}.\\n\\nLet's craft description.\\n\\nSentence 1: Профессор Звёздочкин — добрый, требовательный коротышка, действительный член Академии астрономических наук, который не выносит фантазийных выдумок и в своём докладе о книге Знаикина указал, что герой ошибочно принял предметы за кирпичи, сравнил бутылку с планетой и сердито проворчал: «Попал пальцем в небо!», а также поднял вопрос о жидкости внутри Луны. Sentence 2: Однажды его захватили два коротышки, схватили за шиворот и за ноги и унесли с трибуны. That's two sentences, okay.\\n\\nReturn JSON.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":554,\"completion_tokens\":552,\"total_tokens\":1106}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:05:24 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

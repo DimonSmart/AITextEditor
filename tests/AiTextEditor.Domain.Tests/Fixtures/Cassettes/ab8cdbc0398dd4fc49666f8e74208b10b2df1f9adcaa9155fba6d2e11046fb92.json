@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-183\",\"object\":\"chat.completion\",\"created\":1767598614,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"update\\\":true,\\\"description\\\":\\\"Знайка совершил межпланетное путешествие на Луну, участвовал в строительстве ракеты и выдвинул гипотезу о лунной поверхности как блине с дырками, за что получил прозвище «блинист»; во время полёта он описал образование пузыря в воде в невесомости и сравнил движущуюся в космосе бутылку с планетой и Луной. Кроме того, он однажды оказался на трибуне, где признался, что не может сделать доклад, потому что не подготовился.\\\"}\",\"reasoning\":\"We need to decide if candidate adds new factual info beyond current description. Candidate: \\\"Знайка — персонаж, который оказался на трибуне и произнёс, что не может делать доклад, потому что не подготовился.\\\" This is new fact about being on a podium and not prepared. The current description doesn't mention this. So yes, new facts.\\n\\nWe must produce updated description 1-3 sentences, coherent, same language (Russian). Integrate existing facts with new ones, without dropping relevant details. So combine: Znaika did interplanetary travel, built rocket, hypothesis, etc., and also was on a podium and said he couldn't give a report because unprepared.\\n\\nNeed to keep it concise (1-3 sentences). Might be two sentences: first sentence summarizing major achievements, second sentence about podium incident. Ensure includes gender? Not needed.\\n\\nReturn {\\\"update\\\": true, \\\"description\\\": \\\"...\\\"}.\\n\\nConstruct description: \\\"Знайка совершил межпланетное путешествие на Луну, участвовал в строительстве ракеты и выдвинул гипотезу о лунной поверхности как блине с дырками, за что получил прозвище «блинист»; во время полёта он описал образование пузыря в воде в невесомости и сравнил движущуюся в космосе бутылку с планетой и Луной. Кроме того, он однажды оказался на трибуне, где признался, что не может сделать доклад, потому что не подготовился.\\\"\\n\\nThat's two sentences. Ensure within 1-3. Return JSON.\\n\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":544,\"completion_tokens\":473,\"total_tokens\":1017}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:36:54 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

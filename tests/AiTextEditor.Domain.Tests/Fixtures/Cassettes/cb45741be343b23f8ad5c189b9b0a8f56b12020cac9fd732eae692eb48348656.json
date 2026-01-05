@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-221\",\"object\":\"chat.completion\",\"created\":1767598704,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"[\\n  {\\n    \\\"canonicalName\\\": \\\"профессор Звёздочкин\\\",\\n    \\\"aliases\\\": [\\\"Звёздочкин\\\"],\\n    \\\"gender\\\": \\\"unknown\\\",\\n    \\\"description\\\": \\\"Профессор Звёздочкин поднимает голос, повторяя, что собрались не для обсуждения Луны, а для обсуждения книги Знайкиной, и указывает на необходимость рассмотреть её содержимое.\\\"\\n  }\\n]\",\"reasoning\":\"We need extract characters mentioned. Paragraph 1: professor Zvezdochkin (professor Звёздочкин). That's a character. Also mentions \\\"Знайкина книжку\\\" (Znaikina's book) but that's a book, not a person. Not a character. Paragraph 2: mentions Zvezdochkin again (Звёздочкин). No other names. So only one character.\\n\\nWe need canonicalName normalized nominative: \\\"профессор Звёздочкин\\\". Aliases: maybe \\\"Звёздочкин\\\". Could also include \\\"профессор\\\". But \\\"professor\\\" is a title, not alias. Use \\\"Звёздочкин\\\". Gender? Professor likely male? Not explicit, but name ending -ин (Zvezdochkin) typical male surname. Could infer male. However rule: \\\"Use 'unknown' if not supported by evidence.\\\" There's no gender evidence. But typical Russian male surname suggests male but not explicit. Probably we should use \\\"male\\\"? Might be safe to infer gender from name? The rule: if not supported by evidence, unknown. There's no pronoun. So we must set unknown.\\n\\nDescription: 1-3 sentences grounded: He is a professor who repeats, raises voice, speaking about discussing Znaikina's book, etc. Provide description.\\n\\nConstruct JSON array with one object.\\n\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":590,\"completion_tokens\":392,\"total_tokens\":982}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:38:25 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

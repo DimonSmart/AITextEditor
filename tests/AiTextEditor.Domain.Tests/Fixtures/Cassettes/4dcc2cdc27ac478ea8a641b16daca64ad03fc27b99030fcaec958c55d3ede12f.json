@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-708\",\"object\":\"chat.completion\",\"created\":1767596708,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"The user wants to update Zнайка description to \\\"Главный из коротышек\\\" using upsert_character, using characterId from roster. Then return JSON catalog. So we need to call upsert_character with characterId of Zнайка: from roster, id is \\\"be9c40013a3f4e43aeaede715a2a7caf\\\". We must preserve other fields? Upsert requires name, description, gender, aliases. Provide all fields perhaps unchanged except description. So call upsert_character.\\n\\n\",\"tool_calls\":[{\"id\":\"call_8xi2o63r\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"character_roster-upsert_character\",\"arguments\":\"{\\\"aliases\\\":[\\\"блинист\\\",\\\"Знайк\\\",\\\"Знайке\\\",\\\"Знайки\\\",\\\"Знайкин\\\",\\\"Знайкино\\\",\\\"Знайкиной\\\",\\\"Знайку\\\"],\\\"characterId\\\":\\\"be9c40013a3f4e43aeaede715a2a7caf\\\",\\\"description\\\":\\\"Главный из коротышек\\\",\\\"gender\\\":\\\"male\\\",\\\"name\\\":\\\"Знайка\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":2887,\"completion_tokens\":225,\"total_tokens\":3112}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:05:08 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

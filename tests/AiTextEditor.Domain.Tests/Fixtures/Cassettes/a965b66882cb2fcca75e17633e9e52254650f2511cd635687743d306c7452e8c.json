@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-139\",\"object\":\"chat.completion\",\"created\":1767596700,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"update\\\":true,\\\"description\\\":\\\"Знайка\u202F— коротышка‑учёный, участвовавший в строительстве космической ракеты и межпланетном путешествии на Луну, где вместе с Фуксией и Селёдочкой обнаружил остатки гигантской кирпичной стены, выдвинул гипотезу о древней огненно‑жидкой поверхности и опубликовал книгу о лунных коротышках‑лунатиках. В карикатуре его изображают беспомощным, растерянным в центре Луны, вызывающим смех у наблюдателей.\\\"}\",\"reasoning\":\"We need to decide if candidate adds new factual information beyond current description. Current description describes Znaika as a short scientist, built rocket, lunar expedition, etc. Candidate description says \\\"Знайка — персонаж, изображённый на карикатуре, беспомощно болтавшийся в центре Луны, с растерянным выражением лица, вызывающим смех у наблюдателей.\\\" This is new: describes a cartoon depiction, being helplessly rolling in center of Moon, confused expression, causing laughter. These facts are not present in current description. Are they factual? They are about depiction, not about story, but they are new facts about the character's portrayal. The instruction: use only facts supported by current + candidate. So can incorporate that he is depicted in a cartoon on the Moon, with a confused expression causing laughter. That is new. So update = true. Need to create description 1-3 sentences, coherent, same language (Russian). Should include both existing facts and new ones. Must be concise. Combine: Знайка — коротышка‑учёный ... etc, и в карикатуре изображён беспомощным, растерянным в центре Луны, вызывающим смех. Write 2 sentences. Ensure not too long. Provide JSON with update true and description.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":570,\"completion_tokens\":422,\"total_tokens\":992}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 05 Jan 2026 07:05:00 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}
