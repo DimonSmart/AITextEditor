@@ -39,7 +39,7 @@ public static class TestLlmConfiguration
         var apiKey = Environment.GetEnvironmentVariable("LLM_API_KEY");
 
         var ignoreSsl = Environment.GetEnvironmentVariable("LLM_IGNORE_SSL_ERRORS") == "true";
-        
+
         var innerHandler = new SocketsHttpHandler();
         if (ignoreSsl)
         {
@@ -60,7 +60,7 @@ public static class TestLlmConfiguration
             }
 
             var entry = await Dns.GetHostEntryAsync(host, cancellationToken);
-            var ip = entry.AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork) 
+            var ip = entry.AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork)
                      ?? entry.AddressList.FirstOrDefault();
 
             if (ip == null)
@@ -107,7 +107,7 @@ public static class TestLlmConfiguration
                 Environment.GetEnvironmentVariable("LLM_LOG_BODY"),
                 "true",
                 StringComparison.OrdinalIgnoreCase);
-            using var factory = LoggerFactory.Create(builder => 
+            using var factory = LoggerFactory.Create(builder =>
             {
                 var logPath = SimpleFileLoggerProvider.CreateTimestampedPath(Path.Combine(AppContext.BaseDirectory, "llm_debug.log"));
                 builder.AddProvider(new SimpleFileLoggerProvider(logPath));

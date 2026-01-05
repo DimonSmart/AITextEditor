@@ -40,11 +40,11 @@ public sealed class CassetteHttpMessageHandler : DelegatingHandler
         }
 
         _output?.WriteLine("[VCR] Cache Miss - Recording...");
-        
+
         RebuildContent(request, requestBody);
 
         HttpResponseMessage response;
-        try 
+        try
         {
             response = await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
         }
@@ -55,7 +55,7 @@ public sealed class CassetteHttpMessageHandler : DelegatingHandler
         }
 
         var responseBody = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-        
+
         var recording = new CassetteRecording
         {
             StatusCode = response.StatusCode,
@@ -103,8 +103,8 @@ public sealed class CassetteHttpMessageHandler : DelegatingHandler
 
     private static Task SaveCassetteAsync(string cassettePath, CassetteRecording recording, CancellationToken cancellationToken)
     {
-        var options = new JsonSerializerOptions 
-        { 
+        var options = new JsonSerializerOptions
+        {
             WriteIndented = true,
             Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
         };

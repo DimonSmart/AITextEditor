@@ -1,6 +1,6 @@
 {
   "StatusCode": 200,
-  "Body": "{\"id\":\"chatcmpl-755\",\"object\":\"chat.completion\",\"created\":1767569351,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to generate the character roster. We called generate_character_roster with useCursorAgent true. It returned rosterId etc. Need to get the roster.\",\"tool_calls\":[{\"id\":\"call_2khut45t\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"character_roster-get_character_roster\",\"arguments\":\"{}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1302,\"completion_tokens\":57,\"total_tokens\":1359}}\n",
+  "Body": "{\"id\":\"chatcmpl-755\",\"object\":\"chat.completion\",\"created\":1767569351,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to generate the character roster. We called generate_character_roster with cursor agent true. It returned rosterId etc. Need to get the roster.\",\"tool_calls\":[{\"id\":\"call_2khut45t\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"character_roster-get_character_roster\",\"arguments\":\"{}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1302,\"completion_tokens\":57,\"total_tokens\":1359}}\n",
   "ContentType": "application/json",
   "Headers": {
     "Date": [

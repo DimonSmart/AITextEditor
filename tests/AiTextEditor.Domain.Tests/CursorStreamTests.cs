@@ -19,7 +19,7 @@ public class CursorStreamTests
 
         var repository = new MarkdownDocumentRepository();
         var document = repository.LoadFromMarkdownFile(filePath);
-        
+
         var cursorStream = new CursorStream(document, maxElements: 10, maxBytes: 10000);
 
         var readItems = new List<LinearItem>();

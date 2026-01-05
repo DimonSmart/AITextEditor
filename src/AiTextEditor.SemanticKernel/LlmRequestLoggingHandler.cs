@@ -12,7 +12,7 @@ public class LlmRequestLoggingHandler : DelegatingHandler
     private readonly bool _logBody;
     private readonly int _maxBodyChars;
 
-    public LlmRequestLoggingHandler(ILogger logger, HttpMessageHandler innerHandler) 
+    public LlmRequestLoggingHandler(ILogger logger, HttpMessageHandler innerHandler)
         : base(innerHandler)
     {
         _logger = logger;

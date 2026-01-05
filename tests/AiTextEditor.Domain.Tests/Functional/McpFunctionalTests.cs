@@ -72,7 +72,7 @@ public class McpFunctionalTests
         "Создай каталог персонажей книги. Используй инструменты character_roster.generate_character_dossiers и character_roster.get_character_roster. Верни только JSON каталога.",
         null,
         true)]
-   [InlineData(
+    [InlineData(
         "Создай каталог персонажей книги. Найди персонажа \"Знайка\" в каталоге и обнови его описание на \"Главный из коротышек\" через character_roster.upsert_character (используй characterId из каталога). Затем верни JSON каталога.",
         "В каталоге есть персонаж Знайка с описанием \"Главный из коротышек\".",
         true)]
@@ -354,11 +354,15 @@ public class McpFunctionalTests
             limits,
             loggerFactory.CreateLogger<CharacterRosterGenerator>(),
             chatService);
+        var evidence = document.Items
+            .Where(item => item.Type != LinearItemType.Heading && !string.IsNullOrWhiteSpace(item.Markdown))
+            .Select(item => new EvidenceItem(item.Pointer.ToCompactString(), item.Markdown, "characters"))
+            .ToList();
         var cursorStore = new CursorRegistry();
         var orchestrator = new CharacterRosterCursorOrchestrator(
             documentContext,
             cursorStore,
-            new NoOpCursorAgentRuntime(),
+            new FixedEvidenceCursorAgentRuntime(evidence),
             generator,
             limits,
             loggerFactory.CreateLogger<CharacterRosterCursorOrchestrator>());
@@ -369,28 +373,9 @@ public class McpFunctionalTests
             limits,
             loggerFactory.CreateLogger<CharacterRosterPlugin>());
 
-        await plugin.GenerateCharacterDossiersAsync(useCursorAgent: false);
+        await plugin.GenerateCharacterDossiersAsync();
         var roster = plugin.GetCharacterRoster();
         return JsonSerializer.Serialize(roster, SerializationOptions.RelaxedCompact);
-    }
-
-    private sealed class NoOpCursorAgentRuntime : ICursorAgentRuntime
-    {
-        public Task<CursorAgentResult> RunAsync(string cursorName, CursorAgentRequest request, CancellationToken cancellationToken = default)
-        {
-            return Task.FromResult(new CursorAgentResult(false, "noop", Evidence: Array.Empty<EvidenceItem>(), CursorComplete: true));
-        }
-
-        public Task<CursorAgentStepResult> RunStepAsync(CursorAgentRequest request, CursorPortionView portion, CursorAgentState state, int step, CancellationToken cancellationToken = default)
-        {
-            return Task.FromResult(new CursorAgentStepResult(
-                "continue",
-                false,
-                Array.Empty<EvidenceItem>(),
-                null,
-                false,
-                portion.HasMore));
-        }
     }
 
     private sealed class FixedEvidenceCursorAgentRuntime(IReadOnlyList<EvidenceItem> evidence) : ICursorAgentRuntime

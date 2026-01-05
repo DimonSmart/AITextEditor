@@ -30,20 +30,24 @@ public sealed class CharacterRosterPlugin
 
     [KernelFunction("generate_character_roster")]
     [Description("Fast scan of the document and build a compact character roster from detected name mentions.")]
-    public Task<CharacterRosterCommandResult> GenerateCharacterRosterAsync(
-        bool useCursorAgent = true,
+    public async Task<CharacterRosterCommandResult> GenerateCharacterRosterAsync(
         CancellationToken cancellationToken = default)
     {
-        return GenerateAsync(RosterDetailLevel.Roster, useCursorAgent, cancellationToken);
+        var roster = await _orchestrator.BuildRosterAsync(cancellationToken);
+
+        _logger.LogInformation("Character roster generated: {RosterId} v{Version}", roster.RosterId, roster.Version);
+        return new CharacterRosterCommandResult(roster.RosterId, roster.Version);
     }
 
     [KernelFunction("generate_character_dossiers")]
     [Description("Scan the document and build a detailed character dossier catalog (slower, uses LLM).")]
-    public Task<CharacterRosterCommandResult> GenerateCharacterDossiersAsync(
-        bool useCursorAgent = true,
+    public async Task<CharacterRosterCommandResult> GenerateCharacterDossiersAsync(
         CancellationToken cancellationToken = default)
     {
-        return GenerateAsync(RosterDetailLevel.Dossiers, useCursorAgent, cancellationToken);
+        var roster = await _orchestrator.BuildRosterAsync(cancellationToken);
+
+        _logger.LogInformation("Character roster generated: {RosterId} v{Version}", roster.RosterId, roster.Version);
+        return new CharacterRosterCommandResult(roster.RosterId, roster.Version);
     }
 
     [KernelFunction("get_character_roster")]
@@ -96,66 +100,54 @@ public sealed class CharacterRosterPlugin
 
     [KernelFunction("refresh_character_roster")]
     [Description("Refresh the character roster. Provide changed semantic pointers to re-index partially, or omit to rebuild fully.")]
-    public Task<CharacterRosterCommandResult> RefreshCharacterRosterAsync(
+    public async Task<CharacterRosterCommandResult> RefreshCharacterRosterAsync(
         string[]? changedPointers = null,
         CancellationToken cancellationToken = default)
-    {
-        return RefreshAsync(RosterDetailLevel.Roster, changedPointers, cancellationToken);
-    }
-
-    [KernelFunction("refresh_character_dossiers")]
-    [Description("Refresh the character dossiers. Provide changed semantic pointers to re-index partially, or omit to rebuild fully.")]
-    public Task<CharacterRosterCommandResult> RefreshCharacterDossiersAsync(
-        string[]? changedPointers = null,
-        CancellationToken cancellationToken = default)
-    {
-        return RefreshAsync(RosterDetailLevel.Dossiers, changedPointers, cancellationToken);
-    }
-
-    private async Task<CharacterRosterCommandResult> GenerateAsync(
-        RosterDetailLevel detailLevel,
-        bool useCursorAgent,
-        CancellationToken cancellationToken)
-    {
-        var roster = await GenerateWithModeAsync(detailLevel, useCursorAgent, cancellationToken);
-
-        _logger.LogInformation("Character roster generated: {RosterId} v{Version}", roster.RosterId, roster.Version);
-        return new CharacterRosterCommandResult(roster.RosterId, roster.Version);
-    }
-
-    private async Task<CharacterRosterCommandResult> RefreshAsync(
-        RosterDetailLevel detailLevel,
-        string[]? changedPointers,
-        CancellationToken cancellationToken)
     {
         var normalized = NormalizePointers(changedPointers);
         if (normalized.Count == 0)
         {
-            return await GenerateAsync(detailLevel, useCursorAgent: true, cancellationToken);
+            var roster = await _orchestrator.BuildRosterAsync(cancellationToken);
+            _logger.LogInformation("Character roster generated: {RosterId} v{Version}", roster.RosterId, roster.Version);
+            return new CharacterRosterCommandResult(roster.RosterId, roster.Version);
         }
 
         if (normalized.Count > _limits.MaxElements)
         {
             _logger.LogInformation("RefreshCharacterRoster: too many pointers ({Count}), running full generation.", normalized.Count);
-            return await GenerateAsync(detailLevel, useCursorAgent: true, cancellationToken);
+            var roster = await _orchestrator.BuildRosterAsync(cancellationToken);
+            _logger.LogInformation("Character roster generated: {RosterId} v{Version}", roster.RosterId, roster.Version);
+            return new CharacterRosterCommandResult(roster.RosterId, roster.Version);
         }
 
-        CharacterRoster roster = await _generator.RefreshAsync(normalized, cancellationToken);
-
-        return new CharacterRosterCommandResult(roster.RosterId, roster.Version);
+        CharacterRoster refreshed = await _generator.RefreshAsync(normalized, cancellationToken);
+        return new CharacterRosterCommandResult(refreshed.RosterId, refreshed.Version);
     }
 
-    private async Task<CharacterRoster> GenerateWithModeAsync(
-        RosterDetailLevel detailLevel,
-        bool useCursorAgent,
-        CancellationToken cancellationToken)
+    [KernelFunction("refresh_character_dossiers")]
+    [Description("Refresh the character dossiers. Provide changed semantic pointers to re-index partially, or omit to rebuild fully.")]
+    public async Task<CharacterRosterCommandResult> RefreshCharacterDossiersAsync(
+        string[]? changedPointers = null,
+        CancellationToken cancellationToken = default)
     {
-        if (useCursorAgent)
+        var normalized = NormalizePointers(changedPointers);
+        if (normalized.Count == 0)
         {
-            return await _orchestrator.BuildRosterAsync(cancellationToken);
+            var roster = await _orchestrator.BuildRosterAsync(cancellationToken);
+            _logger.LogInformation("Character roster generated: {RosterId} v{Version}", roster.RosterId, roster.Version);
+            return new CharacterRosterCommandResult(roster.RosterId, roster.Version);
         }
 
-        return await _generator.GenerateAsync(cancellationToken);
+        if (normalized.Count > _limits.MaxElements)
+        {
+            _logger.LogInformation("RefreshCharacterRoster: too many pointers ({Count}), running full generation.", normalized.Count);
+            var roster = await _orchestrator.BuildRosterAsync(cancellationToken);
+            _logger.LogInformation("Character roster generated: {RosterId} v{Version}", roster.RosterId, roster.Version);
+            return new CharacterRosterCommandResult(roster.RosterId, roster.Version);
+        }
+
+        CharacterRoster refreshed = await _generator.RefreshAsync(normalized, cancellationToken);
+        return new CharacterRosterCommandResult(refreshed.RosterId, refreshed.Version);
     }
 
     private static List<string> NormalizePointers(string[]? changedPointers)
@@ -167,9 +159,4 @@ public sealed class CharacterRosterPlugin
             .ToList() ?? new List<string>();
     }
 
-    private enum RosterDetailLevel
-    {
-        Roster,
-        Dossiers
-    }
 }
