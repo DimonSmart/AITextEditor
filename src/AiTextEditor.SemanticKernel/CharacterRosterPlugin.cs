@@ -152,7 +152,7 @@ public sealed class CharacterRosterPlugin
     {
         if (useCursorAgent)
         {
-            return await _orchestrator.BuildRosterAsync(detailLevel == RosterDetailLevel.Dossiers, cancellationToken);
+            return await _orchestrator.BuildRosterAsync(cancellationToken);
         }
 
         return await _generator.GenerateAsync(cancellationToken);

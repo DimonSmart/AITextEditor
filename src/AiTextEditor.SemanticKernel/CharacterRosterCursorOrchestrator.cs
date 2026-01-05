@@ -31,7 +31,7 @@ public sealed class CharacterRosterCursorOrchestrator
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<CharacterRoster> BuildRosterAsync(bool includeDossiers = false, CancellationToken cancellationToken = default)
+    public async Task<CharacterRoster> BuildRosterAsync(CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
