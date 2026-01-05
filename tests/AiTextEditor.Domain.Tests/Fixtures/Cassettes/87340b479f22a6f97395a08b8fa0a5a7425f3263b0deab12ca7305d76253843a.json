@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-300\",\"object\":\"chat.completion\",\"created\":1767569354,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We have a character roster. Need to find character \\\"Знайка\\\" in the catalog and update its description to \\\"Главный из коротышек\\\". The roster shows a character \\\"Незнайка\\\" with alias \\\"Знайка\\\". So the character ID for \\\"Незнайка\\\" is \\\"ee915bb2f20e42c2994abf839bb250f3\\\". That is the character we need to update. Use character_roster.upsert_character with characterId and new description. Provide name? The upsert expects name, description, gender, aliases, firstPointer. We might not have those. Possibly we can just provide characterId and description; other fields maybe optional? The definition: upsert_character takes aliases, characterId, description, firstPointer, gender, name. All required? Probably need to provide. We can get existing fields from roster for that ID. Name: \\\"Незнайка\\\". Description current: long; will update description. Gender: \\\"male\\\". Aliases: [\\\"Знайка\\\"]. firstPointer unknown; not provided. We can maybe fetch pointer via cursor for that character? Could search. Use keyword cursor to find \\\"Незнайка\\\".\",\"tool_calls\":[{\"id\":\"call_33ohxq60\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_keyword_cursor\",\"arguments\":\"{\\\"includeHeadings\\\":false,\\\"keywords\\\":[\\\"Незнайка\\\"]}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":2230,\"completion_tokens\":281,\"total_tokens\":2511}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 04 Jan 2026 23:29:14 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

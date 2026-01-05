@@ -72,10 +72,10 @@ public class McpFunctionalTests
         "Создай каталог персонажей книги. Используй инструменты character_roster.generate_character_dossiers и character_roster.get_character_roster. Верни только JSON каталога.",
         null,
         true)]
-   // [InlineData(
-   //     "Создай каталог персонажей книги. Найди персонажа \"Знайка\" в каталоге и обнови его описание на \"Главный из коротышек\" через character_roster.upsert_character (используй characterId из каталога). Затем верни JSON каталога.",
-   //     "В каталоге есть персонаж Знайка с описанием \"Главный из коротышек\".",
-   //     true)]
+   [InlineData(
+        "Создай каталог персонажей книги. Найди персонажа \"Знайка\" в каталоге и обнови его описание на \"Главный из коротышек\" через character_roster.upsert_character (используй characterId из каталога). Затем верни JSON каталога.",
+        "В каталоге есть персонаж Знайка с описанием \"Главный из коротышек\".",
+        true)]
     public async Task CharacterRosterCommandScenarios_ReturnExpectedCatalog(string command, string? llmCheck, bool enforce)
     {
         var markdown = LoadNeznaykaSample();

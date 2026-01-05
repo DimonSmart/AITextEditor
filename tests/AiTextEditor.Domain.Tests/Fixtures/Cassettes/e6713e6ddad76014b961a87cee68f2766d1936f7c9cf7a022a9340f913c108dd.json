@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-513\",\"object\":\"chat.completion\",\"created\":1767569328,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"action\\\": \\\"continue\\\",\\n  \\\"batchFound\\\": false,\\n  \\\"newEvidence\\\": [],\\n  \\\"progress\\\": \\\"\\\",\\n  \\\"needMoreContext\\\": false\\n}\",\"reasoning\":\"We need to output JSON with fields. The task: collect all character mentions across the book. We have to report every paragraph where a person appears. In current batch, we need to scan items.\\n\\nItems:\\n- pointer 1.1.1.p78: markdown \\\"– На этом заседание объявляю закрытым.\\\" This contains no person mention (just \\\"заседание\\\").\\n- pointer 1.1.1.p79: \\\"После чего встал и тоже пошёл домой.\\\" No person name.\\n- pointer 1.2 is Heading, ignore because headings not paragraph.\\n\\nThus no new evidence. Also need to respect recentEvidencePointers; none match.\\n\\nThus batchFound false, newEvidence empty array. Action continue because need more batches (maxEvidenceCount 500 not reached). needMoreContext false.\\n\\nProgress optional: can be empty.\\n\\nReturn JSON accordingly.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":881,\"completion_tokens\":225,\"total_tokens\":1106}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 04 Jan 2026 23:28:48 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

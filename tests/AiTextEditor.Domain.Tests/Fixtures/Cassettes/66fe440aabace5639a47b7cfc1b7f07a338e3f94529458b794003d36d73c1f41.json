@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-245\",\"object\":\"chat.completion\",\"created\":1767569348,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We generated roster but got null characterId? The roster likely empty? Need full roster generation but should retrieve characters. Perhaps need to generate dossiers? Or use generate_character_dossiers? Let's try that.\",\"tool_calls\":[{\"id\":\"call_okotm8jh\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"character_roster-generate_character_dossiers\",\"arguments\":\"{\\\"useCursorAgent\\\":true}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1300,\"completion_tokens\":71,\"total_tokens\":1371}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 04 Jan 2026 23:29:08 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

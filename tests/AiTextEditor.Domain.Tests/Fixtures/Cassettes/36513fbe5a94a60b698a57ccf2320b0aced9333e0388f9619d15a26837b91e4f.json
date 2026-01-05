@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-539\",\"object\":\"chat.completion\",\"created\":1767569362,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We have generated roster and dossiers but need to see roster entries. Use character_roster_get_character_roster.\",\"tool_calls\":[{\"id\":\"call_3aocepab\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"character_roster-get_character_roster\",\"arguments\":\"{}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1374,\"completion_tokens\":47,\"total_tokens\":1421}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 04 Jan 2026 23:29:22 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

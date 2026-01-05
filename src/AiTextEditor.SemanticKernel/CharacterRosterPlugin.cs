@@ -47,7 +47,7 @@ public sealed class CharacterRosterPlugin
     }
 
     [KernelFunction("get_character_roster")]
-    [Description("Return the current character roster (name, description, gender, aliases, firstPointer).")]
+    [Description("Return the current character roster (name, description, gender, aliases).")]
     public CharacterRosterPayload GetCharacterRoster()
     {
         var roster = _rosterService.GetRoster();
@@ -57,8 +57,7 @@ public sealed class CharacterRosterPlugin
                 c.Name,
                 c.Description,
                 c.Gender,
-                c.Aliases,
-                c.FirstPointer))
+                c.Aliases))
             .ToList();
 
         return new CharacterRosterPayload(roster.RosterId, roster.Version, characters);
@@ -71,7 +70,6 @@ public sealed class CharacterRosterPlugin
         string description = "",
         string gender = "unknown",
         string[]? aliases = null,
-        string? firstPointer = null,
         string? characterId = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
@@ -87,7 +85,6 @@ public sealed class CharacterRosterPlugin
             name.Trim(),
             description?.Trim() ?? string.Empty,
             normalizedAliases,
-            string.IsNullOrWhiteSpace(firstPointer) ? null : firstPointer.Trim(),
             string.IsNullOrWhiteSpace(gender) ? "unknown" : gender.Trim());
 
         var saved = _rosterService.UpsertCharacter(profile);

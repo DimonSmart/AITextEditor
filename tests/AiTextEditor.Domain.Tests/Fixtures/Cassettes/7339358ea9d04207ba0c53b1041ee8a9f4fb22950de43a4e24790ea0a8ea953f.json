@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-710\",\"object\":\"chat.completion\",\"created\":1767569360,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to update description of character \\\"Знайка\\\" to \\\"Главный из коротышек\\\". In roster, there is entry with name \\\"Знайка\\\"? Let's check. The roster shows \\\"Знайка\\\" as an alias for \\\"Незнайка\\\". The character with name \\\"Незнайка\\\" has alias [\\\"Знайка\\\"]. There's no separate entry for \\\"Знайка\\\". The user says find character \\\"Знайка\\\" in catalog and update its description via upsert using characterId from catalog. So we need to locate the character that has alias \\\"Знайка\\\". That is id \\\"ee915bb2f20e42c2994abf839bb250f3\\\". It's name \\\"Незнайка\\\". So we will upsert that character with new description \\\"Главный из коротышек\\\". We need to include name, description, gender maybe same, aliases same. Upsert requires: characterId, name, description, firstPointer, gender, aliases. Need firstPointer: we should provide a pointer to a paragraph where the character appears? Could retrieve pointer from cursor. We have pointer where Знайка appears: pointer \\\"1.1.1.p5\\\". Use that as firstPointer. Let's perform upsert.\\n\\n\",\"tool_calls\":[{\"id\":\"call_3rhqo7es\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"character_roster-upsert_character\",\"arguments\":\"{\\\"aliases\\\":[\\\"Знайка\\\"],\\\"characterId\\\":\\\"ee915bb2f20e42c2994abf839bb250f3\\\",\\\"description\\\":\\\"Главный из коротышек\\\",\\\"firstPointer\\\":\\\"1.1.1.p5\\\",\\\"gender\\\":\\\"male\\\",\\\"name\\\":\\\"Незнайка\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":2979,\"completion_tokens\":359,\"total_tokens\":3338}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 04 Jan 2026 23:29:20 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

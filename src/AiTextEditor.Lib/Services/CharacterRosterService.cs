@@ -155,7 +155,6 @@ public sealed class CharacterRosterService
             Name = profile.Name.Trim(),
             Description = profile.Description?.Trim() ?? string.Empty,
             Aliases = aliases,
-            FirstPointer = string.IsNullOrWhiteSpace(profile.FirstPointer) ? null : profile.FirstPointer.Trim(),
             Gender = NormalizeGender(profile.Gender)
         };
     }

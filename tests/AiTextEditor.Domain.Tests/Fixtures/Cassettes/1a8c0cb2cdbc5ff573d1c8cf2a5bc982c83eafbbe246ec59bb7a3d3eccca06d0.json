@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-378\",\"object\":\"chat.completion\",\"created\":1767569358,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to update description of character \\\"Знайка\\\". In roster, there is entry for \\\"Незнайка\\\" with alias \\\"Знайка\\\". The name field is \\\"Незнайка\\\". We need characterId, so find the id for entry where either name or alias matches \\\"Знайка\\\". In roster we saw entry id \\\"ee915bb2f20e42c2994abf839bb250f3\\\" name \\\"Незнайка\\\", alias \\\"Знайка\\\". So characterId is that.\\n\\nNow need to upsert character with new description \\\"Главный из коротышек\\\". Use character_roster_upsert_character with fields: characterId, name? Should include name and description, perhaps firstPointer can be left unknown? The schema requires: aliases, characterId, description, firstPointer, gender, name. We don't have firstPointer; maybe we need to retrieve from roster? Not provided. In upsert, we may need to supply a placeholder or keep same firstPointer? Might be optional? But spec says firstPointer required. We could get pointer from previous cursor? But we didn't fetch pointers. However we might not need to actually update; just call upsert with known fields, maybe firstPointer can be empty string.\\n\\nBetter to get pointer by searching \\\"Знайка\\\". Use keyword cursor to find pointer. Let's read batch from kwd_cursor_1.\",\"tool_calls\":[{\"id\":\"call_u4atqn7u\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-read_cursor_batch\",\"arguments\":\"{\\\"cursorName\\\":\\\"kwd_cursor_1\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":2325,\"completion_tokens\":316,\"total_tokens\":2641}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 04 Jan 2026 23:29:18 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

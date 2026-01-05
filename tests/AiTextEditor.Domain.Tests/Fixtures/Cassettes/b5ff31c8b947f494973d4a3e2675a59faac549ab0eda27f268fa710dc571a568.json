@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-700\",\"object\":\"chat.completion\",\"created\":1767569370,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"pass\\\": false,\\n  \\\"reason\\\": \\\"No character with name \\\\\\\"Знайка\\\\\\\"; only an alias for \\\\\\\"Незнайка\\\\\\\".\\\"\\n}\",\"reasoning\":\"We need to check if TEXT contains a character named \\\"Знайка\\\" with description \\\"Главный из коротышек\\\". The TEXT includes a character with name \\\"Незнайка\\\" and alias \\\"Знайка\\\". Its description: \\\"Главный из коротышек\\\". So there is not a character with name exactly \\\"Знайка\\\". The check says \\\"в каталоге есть персонаж Знайка с описанием 'Главный из коротышек'\\\". The catalog does not have a character whose name field is \\\"Знайка\\\". However, there is an alias \\\"Знайка\\\" for \\\"Незнайка\\\". Does that count as a character \\\"Знайка\\\"? The check likely expects a character with that name. But ambiguous: Since alias is present, perhaps considered okay? The wording: \\\"персонаж Знайка\\\" could refer to alias; but typical interpretation: name field. I'd err on strict: need exact name match. So fails. Return false with reason.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1198,\"completion_tokens\":247,\"total_tokens\":1445}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 04 Jan 2026 23:29:30 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

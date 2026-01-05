@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-992\",\"object\":\"chat.completion\",\"created\":1767569337,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"decision\\\":\\\"not_found\\\",\\\"semanticPointerFrom\\\":\\\"\\\",\\\"excerpt\\\":\\\"\\\",\\\"whyThis\\\":\\\"\\\",\\\"markdown\\\":\\\"\\\",\\\"summary\\\":\\\"\\\"}\",\"reasoning\":\"We need to decide if the task is resolved. Task: \\\"Collect ALL character mentions across the book. Return every paragraph where a person appears. Use evidence.pointer and evidence.excerpt exactly from batch items.\\\"\\n\\nWe have evidence list many paragraphs; need to return every paragraph where a person appears. That's a lot. The instruction: Respond with JSON with fields: decision, semanticPointerFrom, excerpt, whyThis, markdown, summary.\\n\\nBut decision schema: \\\"success|not_found\\\". If success, need to provide one piece? The schema seems to expect single excerpt. However task wants all paragraphs. But per finalizer design, we can only output one JSON object, not list. Usually in such context, we choose one evidence that satisfies? However the task is to collect all mentions; we cannot output all in one JSON. The spec for finalizer expects just a single decision and excerpt. Probably we need to say not_found because cannot compile all? But maybe we can choose to output success with one excerpt as representative? The spec: \\\"semanticPointerFrom MUST be one of the evidence pointers when decision=\\\"success\\\". excerpt MUST be copied verbatim from the chosen evidence excerpt. So finalizer must output only one excerpt, not list. Since task demands many, but we cannot satisfy, maybe we should output not_found.\\n\\nThus decision \\\"not_found\\\". Provide empty other fields? Must still include fields? Schema requires all fields. If decision not_found, we probably leave other fields empty strings. Provide empty strings for pointers etc.\\n\\nLet's output:\\n\\n{\\n \\\"decision\\\":\\\"not_found\\\",\\n \\\"semanticPointerFrom\\\":\\\"\\\",\\n \\\"excerpt\\\":\\\"\\\",\\n \\\"whyThis\\\":\\\"\\\",\\n \\\"markdown\\\":\\\"\\\",\\n \\\"summary\\\":\\\"\\\"\\n}\\n\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":8392,\"completion_tokens\":366,\"total_tokens\":8758}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 04 Jan 2026 23:28:57 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

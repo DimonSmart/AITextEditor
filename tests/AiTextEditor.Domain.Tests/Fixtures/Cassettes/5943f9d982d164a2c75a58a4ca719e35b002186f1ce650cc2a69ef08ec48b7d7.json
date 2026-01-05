@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-181\",\"object\":\"chat.completion\",\"created\":1767569321,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"action\\\": \\\"continue\\\",\\n  \\\"batchFound\\\": true,\\n  \\\"newEvidence\\\": [\\n    {\\n      \\\"pointer\\\": \\\"1.1.1.p73\\\",\\n      \\\"excerpt\\\": \\\"Двое коротышек снова бросились на трибуну, один схватил Звёздочкина за шиворот, другой за ноги, и поволокли его прямо на улицу. Там его посадили в скверике на траву и сказали:\\\",\\n      \\\"reason\\\": \\\"Paragraph mentions the character Звёздочкина.\\\"\\n    }\\n  ],\\n  \\\"progress\\\": \\\"Found one character mention in this batch.\\\",\\n  \\\"needMoreContext\\\": false\\n}\",\"reasoning\":\"We have a task: \\\"Collect ALL character mentions across the book. Return every paragraph where a person appears.\\\" Include aliases and nicknames. Do not stop early; scan whole book. maxEvidenceCount is 500. Snapshot evidenceCount is 53. So we need to find mentions of people in the current batch items. Need to output any new evidence, not pointers already in recentEvidencePointers. The recent pointers are p65, p67, p68, p70, p71. The current batch has p72, p73, p74. Should examine each markdown for any person mentions.\\n\\np72 markdown: \\\"– Долой!\\\" That's just an exclamation, no person mention. Possibly \\\"Долой!\\\" as a command, not a person.\\n\\np73 markdown: Russian: \\\"Двое коротышек снова бросились на трибуну, один схватил Звёздочкина за шиворот, другой за ноги, и поволокли его прямо на улицу. Там его посадили в скверике на траву и сказали:\\\" This mentions \\\"Звёздочкина\\\" (likely a character). So that's a person mention.\\n\\np74 markdown: \\\"– Вот когда полетишь на Луну, будешь выступать на трибуне, а сейчас пока посиди здесь на травке.\\\" No name.\\n\\nThus we have one new evidence: pointer \\\"1.1.1.p73\\\", excerpt the markdown. Reason: mentions character Звёздочкина.\\n\\nNow produce JSON. action: we have found 1 new. snapshot evidenceCount 53 + new 1 = 54, far less than max 500, so continue. batchFound true. needMoreContext false (we have enough to give evidence). progress: maybe \\\"Found one character mention\\\". Provide newEvidence array with one object.\\n\\nLet's craft JSON exactly.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":952,\"completion_tokens\":537,\"total_tokens\":1489}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 04 Jan 2026 23:28:41 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

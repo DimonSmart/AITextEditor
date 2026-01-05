@@ -286,7 +286,6 @@ public sealed class CharacterRosterGenerator
         private string name;
         private string description;
         private string gender;
-        private string? firstPointer;
 
         private ProfileAccumulator(CharacterProfile profile)
         {
@@ -294,7 +293,6 @@ public sealed class CharacterRosterGenerator
             name = profile.Name;
             description = profile.Description;
             gender = string.IsNullOrWhiteSpace(profile.Gender) ? "unknown" : profile.Gender;
-            firstPointer = profile.FirstPointer;
 
             foreach (var a in profile.Aliases)
             {
@@ -311,7 +309,6 @@ public sealed class CharacterRosterGenerator
             name = canonicalName.Trim();
             description = name;
             gender = "unknown";
-            firstPointer = null;
         }
 
         public static Dictionary<string, ProfileAccumulator> CreateIndex(CharacterRoster roster)
@@ -411,7 +408,6 @@ public sealed class CharacterRosterGenerator
                 name,
                 desc,
                 aliasList,
-                firstPointer,
                 string.IsNullOrWhiteSpace(gender) ? "unknown" : gender);
         }
 

@@ -18,5 +18,4 @@ public sealed record CharacterRosterEntry(
     [property: JsonPropertyName("name")] string Name,
     [property: JsonPropertyName("description")] string Description,
     [property: JsonPropertyName("gender")] string Gender,
-    [property: JsonPropertyName("aliases")] IReadOnlyList<string> Aliases,
-    [property: JsonPropertyName("firstPointer")] string? FirstPointer);
+    [property: JsonPropertyName("aliases")] IReadOnlyList<string> Aliases);

@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-402\",\"object\":\"chat.completion\",\"created\":1767569369,\"model\":\"gpt-oss:120b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We have the roster, contains Znaika with id \\\"3d6f7d5862d341eca1d06f740142ebaf\\\". Need to upsert with new description \\\"Главный из коротышек\\\". Use character_roster_upsert_character with characterId, name, description, gender, firstPointer (could be any pointer maybe from roster, but we can use known pointer from Znaika entry? We need firstPointer; might be the semantic pointer from roster? Not present. We could use pointer from the text where Znaика appears; we have pointer \\\"1.1.1.p5\\\" contains Znaika. Use that as firstPointer.\\n\\nLet's call upsert.\",\"tool_calls\":[{\"id\":\"call_tgj1gwpp\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"character_roster-upsert_character\",\"arguments\":\"{\\\"aliases\\\":[\\\"Знайке\\\",\\\"Знайки\\\"],\\\"characterId\\\":\\\"3d6f7d5862d341eca1d06f740142ebaf\\\",\\\"description\\\":\\\"Главный из коротышек\\\",\\\"firstPointer\\\":\\\"1.1.1.p5\\\",\\\"gender\\\":\\\"male\\\",\\\"name\\\":\\\"Знайка\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":3224,\"completion_tokens\":251,\"total_tokens\":3475}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Sun, 04 Jan 2026 23:29:29 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}
