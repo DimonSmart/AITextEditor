@@ -1,7 +1,14 @@
+using System.Text.Json;
+using System.Linq;
+using AiTextEditor.Lib.Common;
 using AiTextEditor.Lib.Model;
 using AiTextEditor.Lib.Services;
 using AiTextEditor.Lib.Services.SemanticKernel;
+using DimonSmart.AiUtils;
 using Microsoft.Extensions.Logging;
+using Microsoft.SemanticKernel;
+using Microsoft.SemanticKernel.ChatCompletion;
+using Microsoft.SemanticKernel.Connectors.OpenAI;
 
 namespace AiTextEditor.SemanticKernel;
 
@@ -9,24 +16,24 @@ public sealed class CharacterRosterCursorOrchestrator
 {
     private readonly IDocumentContext documentContext;
     private readonly ICursorStore cursorStore;
-    private readonly ICursorAgentRuntime cursorAgentRuntime;
-    private readonly CharacterRosterGenerator generator;
+    private readonly CharacterRosterService rosterService;
     private readonly CursorAgentLimits limits;
+    private readonly IChatCompletionService chatService;
     private readonly ILogger<CharacterRosterCursorOrchestrator> logger;
     private int cursorCounter;
 
     public CharacterRosterCursorOrchestrator(
         IDocumentContext documentContext,
         ICursorStore cursorStore,
-        ICursorAgentRuntime cursorAgentRuntime,
-        CharacterRosterGenerator generator,
+        CharacterRosterService rosterService,
+        IChatCompletionService chatService,
         CursorAgentLimits limits,
         ILogger<CharacterRosterCursorOrchestrator> logger)
     {
         this.documentContext = documentContext ?? throw new ArgumentNullException(nameof(documentContext));
         this.cursorStore = cursorStore ?? throw new ArgumentNullException(nameof(cursorStore));
-        this.cursorAgentRuntime = cursorAgentRuntime ?? throw new ArgumentNullException(nameof(cursorAgentRuntime));
-        this.generator = generator ?? throw new ArgumentNullException(nameof(generator));
+        this.rosterService = rosterService ?? throw new ArgumentNullException(nameof(rosterService));
+        this.chatService = chatService ?? throw new ArgumentNullException(nameof(chatService));
         this.limits = limits ?? throw new ArgumentNullException(nameof(limits));
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
@@ -51,48 +58,55 @@ public sealed class CharacterRosterCursorOrchestrator
 
         logger.LogInformation("CharacterRosterCursorOrchestrator: cursor created {Cursor}", cursorName);
 
-        var maxEvidenceCount = Math.Max(limits.DefaultMaxFound, documentContext.Document.Items.Count);
-        var request = new CursorAgentRequest(
-            "Collect ALL character mentions across the book. Return every paragraph where a person appears. Use evidence.pointer and evidence.excerpt exactly from batch items.",
-            StartAfterPointer: null,
-            Context: "Include aliases and nicknames. Count only named individuals or stable titles tied to a person; ignore generic groups/roles. Do not stop early; scan the whole book.",
-            MaxEvidenceCount: maxEvidenceCount);
+        // Legacy agent-driven roster builder is temporarily disabled in favor of direct cursor scanning with tool calls.
+        return await UpdateRosterFromCursorAsync(cursorName, cancellationToken);
+    }
 
-        var cursorAgentState = new CursorAgentState(Array.Empty<EvidenceItem>());
-        var seenPointers = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        var maxSteps = Math.Clamp(limits.DefaultMaxSteps, 1, limits.MaxStepsLimit);
+    public async Task<CharacterRoster> UpdateRosterFromCursorAsync(string cursorName, CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        if (!cursorStore.TryGetCursor(cursorName, out var cursor) || cursor is null)
+        {
+            throw new InvalidOperationException($"cursor_not_found: {cursorName}");
+        }
+
+        var kernel = CreateKernel();
+        var executionSettings = new OpenAIPromptExecutionSettings
+        {
+            ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions,
+            Temperature = 0,
+            MaxTokens = 1600
+        };
+
         var stepsUsed = 0;
+        var maxSteps = Math.Clamp(limits.DefaultMaxSteps, 1, limits.MaxStepsLimit);
 
         for (var step = 0; step < maxSteps; step++)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
             var portion = cursor.NextPortion();
-            if (!portion.Items.Any())
+            if (portion.Items.Count == 0 && !portion.HasMore)
             {
                 break;
             }
 
-            var cursorPortionView = CursorPortionView.FromPortion(portion);
-            var command = await cursorAgentRuntime.RunStepAsync(request, cursorPortionView, cursorAgentState, step, cancellationToken);
+            var paragraphs = portion.Items
+                .Where(item => item.Type != LinearItemType.Heading && !string.IsNullOrWhiteSpace(item.Markdown))
+                .Select(item => (Pointer: item.Pointer.ToCompactString(), Text: item.Markdown))
+                .ToList();
+
+            if (paragraphs.Count > 0)
+            {
+                await ProcessPortionAsync(cursorName, paragraphs, executionSettings, kernel, cancellationToken);
+            }
+
             stepsUsed = step + 1;
 
-            var normalizedEvidence = NormalizeEvidenceBatch(command.NewEvidence, cursorPortionView, seenPointers);
-            if (normalizedEvidence.Count > 0)
-            {
-                var maxEvidenceForState = request.MaxEvidenceCount ?? limits.DefaultMaxFound;
-                cursorAgentState = cursorAgentState.WithEvidence(normalizedEvidence, maxEvidenceForState);
-                await generator.UpdateFromEvidenceBatchAsync(normalizedEvidence, cancellationToken);
-            }
-
-            if (!cursorPortionView.HasMore)
+            if (!portion.HasMore)
             {
                 break;
-            }
-
-            if (string.Equals(command.Action, "stop", StringComparison.OrdinalIgnoreCase))
-            {
-                logger.LogDebug("CharacterRosterCursorOrchestrator: agent requested stop early; continuing scan.");
             }
         }
 
@@ -101,53 +115,221 @@ public sealed class CharacterRosterCursorOrchestrator
             logger.LogWarning("CharacterRosterCursorOrchestrator: max steps reached {Steps}", stepsUsed);
         }
 
-        return documentContext.CharacterRosterService.GetRoster();
+        return rosterService.GetRoster();
+    }
+
+    private Kernel CreateKernel()
+    {
+        var builder = Kernel.CreateBuilder();
+        builder.Services.AddSingleton(chatService);
+        builder.Services.AddSingleton(rosterService);
+
+        var kernel = builder.Build();
+        var tools = new CharacterRosterFunctionCollection(rosterService);
+        kernel.Plugins.AddFromObject(tools, "character_roster_tools");
+        return kernel;
+    }
+
+    private async Task ProcessPortionAsync(
+        string cursorName,
+        IReadOnlyList<(string Pointer, string Text)> paragraphs,
+        OpenAIPromptExecutionSettings settings,
+        Kernel kernel,
+        CancellationToken cancellationToken)
+    {
+        var history = new ChatHistory();
+        history.AddSystemMessage(CharacterExtractionSystemPrompt);
+
+        var payload = new
+        {
+            task = "extract_characters_from_cursor",
+            cursor = cursorName,
+            paragraphs = paragraphs.Select(p => new { pointer = p.Pointer, text = p.Text })
+        };
+
+        history.AddUserMessage(JsonSerializer.Serialize(payload, SerializationOptions.RelaxedCompact));
+
+        var response = await chatService.GetChatMessageContentsAsync(history, settings, kernel, cancellationToken);
+        var content = response.FirstOrDefault()?.Content ?? string.Empty;
+
+        var parsed = ParseCharacters(content);
+        if (parsed.Count == 0)
+        {
+            return;
+        }
+
+        foreach (var candidate in parsed)
+        {
+            UpsertCandidate(candidate);
+        }
+    }
+
+    private List<LlmCharacter> ParseCharacters(string content)
+    {
+        var json = JsonExtractor.ExtractJson(content);
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            logger.LogDebug("Character roster cursor: no JSON payload detected.");
+            return [];
+        }
+
+        try
+        {
+            var items = JsonSerializer.Deserialize<List<LlmCharacter>>(json, SerializationOptions.RelaxedCompact) ?? [];
+            return items
+                .Select(NormalizeHit)
+                .Where(x => !string.IsNullOrWhiteSpace(x.CanonicalName))
+                .ToList();
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Character roster cursor: failed to parse model response.");
+            return [];
+        }
+    }
+
+    private void UpsertCandidate(LlmCharacter candidate)
+    {
+        var matches = FindMatches(candidate);
+        var preferred = matches.Count == 1 ? matches[0] : matches.FirstOrDefault(m => string.Equals(m.Name, candidate.CanonicalName, StringComparison.OrdinalIgnoreCase));
+
+        var characterId = preferred?.CharacterId ?? Guid.NewGuid().ToString("N");
+        var name = string.IsNullOrWhiteSpace(preferred?.Name) ? candidate.CanonicalName!.Trim() : preferred!.Name;
+        var description = SelectDescription(preferred?.Description, candidate.Description, name);
+        var gender = ChooseGender(preferred?.Gender, candidate.Gender);
+        var aliases = CollectAliases(preferred?.Aliases, name, candidate.Aliases);
+
+        rosterService.UpdateCharacter(characterId, name, description, gender, aliases);
+    }
+
+    private List<CharacterProfile> FindMatches(LlmCharacter candidate)
+    {
+        var matches = new List<CharacterProfile>();
+        if (!string.IsNullOrWhiteSpace(candidate.CanonicalName))
+        {
+            matches.AddRange(rosterService.FindByNameOrAlias(candidate.CanonicalName!));
+        }
+
+        if (candidate.Aliases is { Count: > 0 })
+        {
+            foreach (var alias in candidate.Aliases)
+            {
+                matches.AddRange(rosterService.FindByNameOrAlias(alias));
+            }
+        }
+
+        return matches
+            .DistinctBy(m => m.CharacterId, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+    }
+
+    private static string SelectDescription(string? current, string? candidate, string fallbackName)
+    {
+        if (!string.IsNullOrWhiteSpace(candidate))
+        {
+            return candidate.Trim();
+        }
+
+        if (!string.IsNullOrWhiteSpace(current))
+        {
+            return current.Trim();
+        }
+
+        return fallbackName;
+    }
+
+    private static string ChooseGender(string? current, string? candidate)
+    {
+        var normalizedCandidate = NormalizeGender(candidate);
+        if (!string.Equals(normalizedCandidate, "unknown", StringComparison.OrdinalIgnoreCase))
+        {
+            return normalizedCandidate;
+        }
+
+        return NormalizeGender(current);
+    }
+
+    private static IReadOnlyCollection<string> CollectAliases(
+        IReadOnlyList<string>? existing,
+        string canonicalName,
+        IReadOnlyCollection<string>? candidateAliases)
+    {
+        var aliases = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        if (existing is not null)
+        {
+            foreach (var alias in existing)
+            {
+                aliases.Add(alias);
+            }
+        }
+
+        if (candidateAliases is not null)
+        {
+            foreach (var alias in candidateAliases)
+            {
+                aliases.Add(alias);
+            }
+        }
+
+        aliases.RemoveWhere(a => string.Equals(a, canonicalName, StringComparison.OrdinalIgnoreCase));
+        return aliases.ToList();
     }
 
     private string CreateCursorName() => $"roster_cursor_{cursorCounter++}";
 
-    private static IReadOnlyList<EvidenceItem> NormalizeEvidenceBatch(
-        IReadOnlyList<EvidenceItem>? evidence,
-        CursorPortionView portion,
-        HashSet<string> seenPointers)
+    private static LlmCharacter NormalizeHit(LlmCharacter hit)
     {
-        if (evidence == null || evidence.Count == 0)
+        var canonical = (hit.CanonicalName ?? string.Empty).Trim();
+
+        var aliases = (hit.Aliases ?? [])
+            .Where(a => !string.IsNullOrWhiteSpace(a))
+            .Select(a => a.Trim())
+            .Where(a => !string.Equals(a, canonical, StringComparison.OrdinalIgnoreCase))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(a => a, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        var description = string.IsNullOrWhiteSpace(hit.Description) ? null : hit.Description.Trim();
+
+        return hit with
         {
-            return Array.Empty<EvidenceItem>();
-        }
-
-        var byPointer = portion.Items
-            .Select(item => new { NormalizedPointer = NormalizePointer(item.SemanticPointer), item.Markdown })
-            .Where(item => item.NormalizedPointer != null)
-            .ToDictionary(item => item.NormalizedPointer!, item => item.Markdown, StringComparer.OrdinalIgnoreCase);
-
-        var normalized = new List<EvidenceItem>(evidence.Count);
-        foreach (var item in evidence)
-        {
-            var normalizedPointer = NormalizePointer(item.Pointer);
-            if (normalizedPointer == null || !byPointer.TryGetValue(normalizedPointer, out var markdown))
-            {
-                continue;
-            }
-
-            if (!seenPointers.Add(normalizedPointer))
-            {
-                continue;
-            }
-
-            normalized.Add(new EvidenceItem(normalizedPointer, markdown, item.Reason));
-        }
-
-        return normalized;
+            CanonicalName = canonical,
+            Aliases = aliases,
+            Description = description,
+            Gender = NormalizeGender(hit.Gender)
+        };
     }
 
-    private static string? NormalizePointer(string? pointer)
+    private static string NormalizeGender(string? gender)
     {
-        if (string.IsNullOrWhiteSpace(pointer))
+        if (string.IsNullOrWhiteSpace(gender))
         {
-            return null;
+            return "unknown";
         }
 
-        return SemanticPointer.TryParse(pointer, out var parsed) ? parsed!.ToCompactString() : null;
+        var g = gender.Trim().ToLowerInvariant();
+        return g switch
+        {
+            "male" => "male",
+            "female" => "female",
+            _ => "unknown"
+        };
     }
+
+    private sealed record LlmCharacter(string? CanonicalName, List<string>? Aliases, string? Gender, string? Description);
+
+    private const string CharacterExtractionSystemPrompt = """
+You are an expert at extracting and maintaining detailed character dossiers from Russian fiction.
+For each provided paragraph batch, identify every distinct character mention and immediately invoke the provided tools to:
+- locate existing characters by name or alias,
+- read character details by id,
+- update or create characters with consolidated canonical name, aliases, gender, and description.
+
+Priorities:
+- Always preserve the canonical name if it is already known.
+- Use aliases to merge duplicate mentions.
+- Keep descriptions concise but informative (one sentence).
+- If uncertain about gender, keep it as "unknown".
+""";
 }

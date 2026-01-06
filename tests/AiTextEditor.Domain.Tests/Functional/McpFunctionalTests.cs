@@ -181,8 +181,8 @@ public class McpFunctionalTests
         var orchestrator = new CharacterRosterCursorOrchestrator(
             documentContext,
             new CursorRegistry(),
-            new FixedEvidenceCursorAgentRuntime(evidence),
-            generator,
+            rosterService,
+            chatService,
             limits,
             loggerFactory.CreateLogger<CharacterRosterCursorOrchestrator>());
 
@@ -362,8 +362,8 @@ public class McpFunctionalTests
         var orchestrator = new CharacterRosterCursorOrchestrator(
             documentContext,
             cursorStore,
-            new FixedEvidenceCursorAgentRuntime(evidence),
-            generator,
+            rosterService,
+            chatService,
             limits,
             loggerFactory.CreateLogger<CharacterRosterCursorOrchestrator>());
         var plugin = new CharacterRosterPlugin(
@@ -376,33 +376,6 @@ public class McpFunctionalTests
         await plugin.GenerateCharacterDossiersAsync();
         var roster = plugin.GetCharacterRoster();
         return JsonSerializer.Serialize(roster, SerializationOptions.RelaxedCompact);
-    }
-
-    private sealed class FixedEvidenceCursorAgentRuntime(IReadOnlyList<EvidenceItem> evidence) : ICursorAgentRuntime
-    {
-        public Task<CursorAgentResult> RunAsync(string cursorName, CursorAgentRequest request, CancellationToken cancellationToken = default)
-        {
-            return Task.FromResult(new CursorAgentResult(true, "ok", Evidence: evidence, CursorComplete: true));
-        }
-
-        public Task<CursorAgentStepResult> RunStepAsync(CursorAgentRequest request, CursorPortionView portion, CursorAgentState state, int step, CancellationToken cancellationToken = default)
-        {
-            var pointers = portion.Items
-                .Select(item => item.SemanticPointer)
-                .ToHashSet(StringComparer.OrdinalIgnoreCase);
-
-            var batchEvidence = evidence
-                .Where(item => pointers.Contains(item.Pointer))
-                .ToList();
-
-            return Task.FromResult(new CursorAgentStepResult(
-                "continue",
-                batchEvidence.Count > 0,
-                batchEvidence,
-                null,
-                false,
-                portion.HasMore));
-        }
     }
 
     private sealed class TokenizingChatCompletionService : IChatCompletionService
@@ -486,5 +459,3 @@ public class McpFunctionalTests
         }
     }
 }
-
-

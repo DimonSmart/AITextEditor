@@ -51,6 +51,48 @@ public sealed class CharacterRosterService
         }
     }
 
+    public CharacterProfile? TryGetCharacter(string characterId)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(characterId);
+
+        lock (syncRoot)
+        {
+            return roster.Characters.FirstOrDefault(c => string.Equals(c.CharacterId, characterId, StringComparison.Ordinal));
+        }
+    }
+
+    public IReadOnlyCollection<CharacterProfile> FindByNameOrAlias(string nameOrAlias)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(nameOrAlias);
+
+        lock (syncRoot)
+        {
+            var normalized = nameOrAlias.Trim();
+            var matches = roster.Characters
+                .Where(c =>
+                    string.Equals(c.Name, normalized, StringComparison.OrdinalIgnoreCase) ||
+                    c.Aliases.Any(a => string.Equals(a, normalized, StringComparison.OrdinalIgnoreCase)))
+                .ToList();
+
+            return matches;
+        }
+    }
+
+    public CharacterProfile UpdateCharacter(
+        string characterId,
+        string name,
+        string description,
+        string gender,
+        IEnumerable<string>? aliases = null)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(characterId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+
+        var aliasList = aliases?.ToList() ?? [];
+        var profile = new CharacterProfile(characterId, name, description, aliasList, gender);
+        return UpsertCharacter(profile);
+    }
+
     public bool RemoveCharacter(string characterId)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(characterId);
