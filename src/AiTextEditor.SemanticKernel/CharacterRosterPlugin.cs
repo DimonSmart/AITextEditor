@@ -50,6 +50,20 @@ public sealed class CharacterRosterPlugin
         return new CharacterRosterCommandResult(roster.RosterId, roster.Version);
     }
 
+    [KernelFunction("update_character_roster_from_cursor")]
+    [Description("Scan a named cursor and let the model update the shared character roster.")]
+    public async Task<CharacterRosterCommandResult> UpdateCharacterRosterFromCursorAsync(
+        string cursorName,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(cursorName);
+
+        var roster = await _orchestrator.UpdateRosterFromCursorAsync(cursorName, cancellationToken);
+
+        _logger.LogInformation("Character roster updated from cursor: {Cursor} -> {RosterId} v{Version}", cursorName, roster.RosterId, roster.Version);
+        return new CharacterRosterCommandResult(roster.RosterId, roster.Version);
+    }
+
     [KernelFunction("get_character_roster")]
     [Description("Return the current character roster (name, description, gender, aliases).")]
     public CharacterRosterPayload GetCharacterRoster()

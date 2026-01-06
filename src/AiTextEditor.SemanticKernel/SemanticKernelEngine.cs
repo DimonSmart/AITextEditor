@@ -71,8 +71,8 @@ public sealed class SemanticKernelEngine
             new CharacterRosterCursorOrchestrator(
                 sp.GetRequiredService<IDocumentContext>(),
                 sp.GetRequiredService<ICursorStore>(),
-                sp.GetRequiredService<ICursorAgentRuntime>(),
-                sp.GetRequiredService<CharacterRosterGenerator>(),
+                sp.GetRequiredService<CharacterRosterService>(),
+                sp.GetRequiredService<IChatCompletionService>(),
                 sp.GetRequiredService<CursorAgentLimits>(),
                 sp.GetRequiredService<ILogger<CharacterRosterCursorOrchestrator>>()));
         builder.Services.AddSingleton<ILoggerFactory>(loggerFactory);
@@ -249,4 +249,3 @@ public sealed class SemanticKernelEngine
         return text[..maxLength] + $"... (+{text.Length - maxLength} chars)";
     }
 }
-
