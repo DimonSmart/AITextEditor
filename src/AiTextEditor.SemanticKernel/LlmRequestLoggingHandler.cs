@@ -16,7 +16,7 @@ public class LlmRequestLoggingHandler : DelegatingHandler
         : base(innerHandler)
     {
         _logger = logger;
-        _logBody = string.Equals(Environment.GetEnvironmentVariable("LLM_LOG_BODY"), "true", StringComparison.OrdinalIgnoreCase);
+        _logBody = true;
         _maxBodyChars = ResolveMaxBodyChars();
     }
 
@@ -25,7 +25,7 @@ public class LlmRequestLoggingHandler : DelegatingHandler
         // _logger.LogInformation("!!! LLM Request Handler Invoked !!!");
         string? requestBody = null;
         var requestLength = request.Content?.Headers.ContentLength;
-        if (_logBody && _logger.IsEnabled(LogLevel.Trace) && request.Content != null)
+        if (_logBody && _logger.IsEnabled(LogLevel.Debug) && request.Content != null)
         {
             requestBody = await request.Content.ReadAsStringAsync(cancellationToken);
             requestLength ??= requestBody.Length;
@@ -39,14 +39,14 @@ public class LlmRequestLoggingHandler : DelegatingHandler
 
         if (requestBody != null)
         {
-            _logger.LogTrace("LLM Request Body: {Content}", Truncate(requestBody, _maxBodyChars));
+            _logger.LogDebug("LLM Request Body: {Content}", Truncate(requestBody, _maxBodyChars));
         }
 
         var response = await base.SendAsync(request, cancellationToken);
 
         string? responseBody = null;
         var responseLength = response.Content?.Headers.ContentLength;
-        if (_logBody && _logger.IsEnabled(LogLevel.Trace) && response.Content != null)
+        if (_logBody && _logger.IsEnabled(LogLevel.Debug) && response.Content != null)
         {
             ForceUtf8(response.Content);
             responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
@@ -60,7 +60,7 @@ public class LlmRequestLoggingHandler : DelegatingHandler
 
         if (responseBody != null)
         {
-            _logger.LogTrace("LLM Response Body: {Content}", Truncate(responseBody, _maxBodyChars));
+            _logger.LogDebug("LLM Response Body: {Content}", Truncate(responseBody, _maxBodyChars));
         }
 
         return response;
@@ -95,7 +95,7 @@ public class LlmRequestLoggingHandler : DelegatingHandler
             return value;
         }
 
-        return 2000;
+        return 12000;
     }
 
     private static string Truncate(string text, int maxLength)

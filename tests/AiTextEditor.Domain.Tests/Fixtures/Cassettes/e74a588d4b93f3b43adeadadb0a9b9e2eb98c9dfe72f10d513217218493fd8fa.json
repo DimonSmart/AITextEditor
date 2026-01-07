@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-569\",\"object\":\"chat.completion\",\"created\":1767824832,\"model\":\"qwen3:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Профессор Звёздочкин впервые упоминается в параграфе **1.1.1.p21** (исключая заголовки). \\n\\n**Цитата:**  \\n\\\"А действительный член академии астрономических наук профессор Звёздочкин, которому тоже случилось прочитать Знайкину книжку, просто кипел от негодования...\\\"\\n\\nSemantic pointer: `1.1.1.p21`\",\"reasoning\":\"Okay, the user is asking where in the book the professor Zvёzdotkin is first mentioned, excluding headers. Let me start by recalling the previous steps. The assistant first created a keyword cursor with the keyword \\\"профессор Звёздочкин\\\" and included headings as false. Then, they read the cursor batch, which returned three paragraphs.\\n\\nLooking at the items from the cursor response, the first mention is in paragraph 1.1.1.p21. The text there says, \\\"А действительный член академии астрономических наук профессор Звёздочкин...\\\" which translates to \\\"And the actual member of the astronomical academy professor Zvёzdotkin...\\\" So this is the first occurrence. The subsequent paragraphs (p22 and p23) refer to him again, but the first mention is in p21. I need to check if there's any earlier mention, but since the cursor started from the beginning (as no startAfterPointer was used), p21 is the first. The user wants the semantic pointer, so the answer should be 1.1.1.p21.\\n\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2158,\"completion_tokens\":360,\"total_tokens\":2518}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Wed, 07 Jan 2026 22:27:12 GMT"
+    ]
+  }
+}

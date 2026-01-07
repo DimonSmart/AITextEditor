@@ -8,7 +8,7 @@ public interface IDocumentContext
 {
     LinearDocument Document { get; }
     IList<string> SpeechQueue { get; }
-    CharacterRosterService CharacterRosterService { get; }
+    CharacterDossierService CharacterDossierService { get; }
 }
 
 public interface ICursorAgentRuntime

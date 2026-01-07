@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-39\",\"object\":\"chat.completion\",\"created\":1767824894,\"model\":\"gpt-oss:20b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to find the end of the second chapter. The book is in Russian, children's book. We need to locate chapter 2, find its ending. Use keyword or fullscan? Likely need to scan chapter 2. We can use cursor_create_keyword_cursor with keyword \\\"глава\\\" maybe? But we need to find the end of chapter 2. We can use cursor_create_filtered_cursor with filterDescription that matches \\\"Глава 2\\\" and then read until end? Or use fullscan and find the last paragraph of chapter 2. Let's try to create a cursor that includes headings. Use cursor_create_keyword_cursor with keyword \\\"Глава 2\\\". But we need to find the end of that chapter. We can read the cursor batch and find the last paragraph before next heading. Let's try.\\n\\nWe'll create a keyword cursor for \\\"Глава 2\\\". Then read batches until we find the next heading \\\"Глава 3\\\" or end of document. Then the last paragraph before that is the end. Let's do that.\",\"tool_calls\":[{\"id\":\"call_770yqe8w\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_keyword_cursor\",\"arguments\":\"{\\\"includeHeadings\\\":true,\\\"keywords\\\":[\\\"Глава 2\\\"]}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1115,\"completion_tokens\":246,\"total_tokens\":1361}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Wed, 07 Jan 2026 22:28:13 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

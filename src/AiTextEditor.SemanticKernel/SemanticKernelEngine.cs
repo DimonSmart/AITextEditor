@@ -38,21 +38,21 @@ public sealed class SemanticKernelEngine
         var repository = new MarkdownDocumentRepository();
         var document = repository.LoadFromMarkdown(markdown);
 
-        var rosterService = new CharacterRosterService();
-        var documentContext = new DocumentContext(document, rosterService);
+        var dossierService = new CharacterDossierService();
+        var documentContext = new DocumentContext(document, dossierService);
 
         var mcpServer = new EditorSession(
             repository,
             new LinearDocumentEditor(),
             new InMemoryTargetSetService(),
-            rosterService);
+            dossierService);
         mcpServer.LoadDefaultDocument(markdown);
 
         var builder = Kernel.CreateBuilder();
 
         var cursorRegistry = new CursorRegistry();
 
-        builder.Services.AddSingleton(rosterService);
+        builder.Services.AddSingleton(dossierService);
         builder.Services.AddSingleton<IDocumentContext>(documentContext);
         builder.Services.AddSingleton<ICursorStore>(cursorRegistry);
         builder.Services.AddSingleton<CursorAgentLimits>();
@@ -60,21 +60,13 @@ public sealed class SemanticKernelEngine
         builder.Services.AddSingleton<ICursorAgentResponseParser, CursorAgentResponseParser>();
         builder.Services.AddSingleton<ICursorEvidenceCollector, CursorEvidenceCollector>();
         builder.Services.AddSingleton<ICursorAgentRuntime, CursorAgentRuntime>();
-        builder.Services.AddSingleton<CharacterRosterGenerator>(sp =>
-            new CharacterRosterGenerator(
+        builder.Services.AddSingleton<CharacterDossiersGenerator>(sp =>
+            new CharacterDossiersGenerator(
                 sp.GetRequiredService<IDocumentContext>(),
-                sp.GetRequiredService<CharacterRosterService>(),
+                sp.GetRequiredService<CharacterDossierService>(),
                 sp.GetRequiredService<CursorAgentLimits>(),
-                sp.GetRequiredService<ILogger<CharacterRosterGenerator>>(),
+                sp.GetRequiredService<ILogger<CharacterDossiersGenerator>>(),
                 sp.GetRequiredService<IChatCompletionService>()));
-        builder.Services.AddSingleton<CharacterRosterCursorOrchestrator>(sp =>
-            new CharacterRosterCursorOrchestrator(
-                sp.GetRequiredService<IDocumentContext>(),
-                sp.GetRequiredService<ICursorStore>(),
-                sp.GetRequiredService<CharacterRosterService>(),
-                sp.GetRequiredService<IChatCompletionService>(),
-                sp.GetRequiredService<CursorAgentLimits>(),
-                sp.GetRequiredService<ILogger<CharacterRosterCursorOrchestrator>>()));
         builder.Services.AddSingleton<ILoggerFactory>(loggerFactory);
         builder.Services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
         builder.Services.AddSingleton<FunctionInvocationLoggingFilter>();
@@ -121,15 +113,14 @@ public sealed class SemanticKernelEngine
             loggerFactory.CreateLogger<CursorAgentPlugin>());
         kernel.Plugins.AddFromObject(cursorAgentPlugin, "cursor_agent");
 
-        var rosterGenerator = kernel.Services.GetRequiredService<CharacterRosterGenerator>();
-        var rosterOrchestrator = kernel.Services.GetRequiredService<CharacterRosterCursorOrchestrator>();
-        var characterRosterPlugin = new CharacterRosterPlugin(
-            rosterGenerator,
-            rosterOrchestrator,
-            rosterService,
+        var dossiersGenerator = kernel.Services.GetRequiredService<CharacterDossiersGenerator>();
+        var characterDossiersPlugin = new CharacterDossiersPlugin(
+            dossiersGenerator,
+            cursorRegistry,
+            dossierService,
             limits,
-            loggerFactory.CreateLogger<CharacterRosterPlugin>());
-        kernel.Plugins.AddFromObject(characterRosterPlugin, "character_roster");
+            loggerFactory.CreateLogger<CharacterDossiersPlugin>());
+        kernel.Plugins.AddFromObject(characterDossiersPlugin, "character_dossiers");
 
         var logger = loggerFactory.CreateLogger<SemanticKernelEngine>();
         logger.LogInformation("Kernel built with model {ModelId} at {Endpoint}", modelId, endpoint);

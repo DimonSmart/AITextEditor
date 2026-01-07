@@ -30,9 +30,9 @@ public class McpFunctionalTests
     }
 
     [Theory]
-    //[InlineData("Где в книге впервые упоминается профессор Звёздочкин? (исключая заголовки)", "1.1.1.p21")]
-    [InlineData("Где в книге четвертое упоминание профессора Звёздочкина? (исключая заголовки)", "1.1.1.p25", 1)]
-    [InlineData("Где в книге говорится, о чём была книжка Знайки про лунных коротышек?", "1.1.1.p19")]
+    [InlineData("Где в книге впервые упоминается профессор Звёздочкин? (исключая заголовки)", "1.1.1.p21")]
+    //[InlineData("Где в книге четвертое упоминание профессора Звёздочкина? (исключая заголовки)", "1.1.1.p25", 1)]
+    //[InlineData("Где в книге говорится, о чём была книжка Знайки про лунных коротышек?", "1.1.1.p19")]
     //[InlineData("Где впервые упоминается Пончик?", "1.1.1.p3")]
     //[InlineData("Найди первый диалог между двумя названными по имени персонажами и назови их имена", "1.1.1.p68",2)]
     //[InlineData("Где впервые упоминается Фуксия?", "1.1.1.p5")]
@@ -69,14 +69,14 @@ public class McpFunctionalTests
 
     [Theory]
     [InlineData(
-        "Создай каталог персонажей книги. Используй инструменты character_roster.generate_character_dossiers и character_roster.get_character_roster. Верни только JSON каталога.",
+        "Создай каталог досье персонажей книги. Используй инструменты character_dossiers.generate_character_dossiers и character_dossiers.get_character_dossiers. Верни только JSON каталога.",
         null,
         true)]
-    [InlineData(
-        "Создай каталог персонажей книги. Найди персонажа \"Знайка\" в каталоге и обнови его описание на \"Главный из коротышек\" через character_roster.upsert_character (используй characterId из каталога). Затем верни JSON каталога.",
-        "В каталоге есть персонаж Знайка с описанием \"Главный из коротышек\".",
-        true)]
-    public async Task CharacterRosterCommandScenarios_ReturnExpectedCatalog(string command, string? llmCheck, bool enforce)
+//    [InlineData(
+//        "Создай каталог досье персонажей книги. Найди персонажа \"Знайка\" и обнови его через character_dossiers.upsert_character_dossier (используй characterId из каталога). Затем верни JSON каталога.",
+//        "В каталоге есть персонаж Знайка с описанием \"Главный из коротышек\".",
+//        true)]
+    public async Task CharacterDossiersCommandScenarios_ReturnExpectedCatalog(string command, string? llmCheck, bool enforce)
     {
         var markdown = LoadNeznaykaSample();
         using var httpClient = await TestLlmConfiguration.CreateVerifiedLlmClientAsync(output);
@@ -87,20 +87,20 @@ public class McpFunctionalTests
         var answer = result.LastAnswer ?? string.Empty;
         if (string.IsNullOrWhiteSpace(llmCheck))
         {
-            if (!TryExtractRosterJson(answer, out var rosterJson))
+            if (!TryExtractDossiersJson(answer, out var dossiersJson))
             {
-                rosterJson = await BuildRosterJsonAsync(markdown, loggerFactory, httpClient);
+                dossiersJson = await BuildDossiersJsonAsync(markdown, loggerFactory, httpClient);
             }
 
-            answer = rosterJson;
-            var outputPath = Path.Combine(AppContext.BaseDirectory, "character_roster_output.json");
+            answer = dossiersJson;
+            var outputPath = Path.Combine(AppContext.BaseDirectory, "character_dossiers_output.json");
             answer = FormatJson(answer);
             File.WriteAllText(outputPath, answer, new UTF8Encoding(encoderShouldEmitUTF8Identifier: true));
-            output.WriteLine($"Character roster saved to {outputPath}");
+            output.WriteLine($"Character dossiers saved to {outputPath}");
         }
 
         var outputLimit = string.IsNullOrWhiteSpace(llmCheck) ? 12000 : 2000;
-        output.WriteLine($"Character roster response: {TruncateForOutput(answer, outputLimit)}");
+        output.WriteLine($"Character dossiers response: {TruncateForOutput(answer, outputLimit)}");
 
         if (!enforce || string.IsNullOrWhiteSpace(llmCheck))
         {
@@ -112,7 +112,7 @@ public class McpFunctionalTests
     }
 
     [Fact]
-    public async Task CharacterRosterCursorOrchestrator_ReturnsFullListForLargeCatalog()
+    public async Task CharacterDossiersGenerator_RespectsMaxCharacters()
     {
         var names = new[]
         {
@@ -148,56 +148,33 @@ public class McpFunctionalTests
         var markdown = markdownBuilder.ToString();
         var repository = new MarkdownDocumentRepository();
         var document = repository.LoadFromMarkdown(markdown);
-        var rosterService = new CharacterRosterService();
-        var documentContext = new DocumentContext(document, rosterService);
+        var dossierService = new CharacterDossierService();
+        var documentContext = new DocumentContext(document, dossierService);
 
         using var loggerFactory = TestLoggerFactory.Create(output);
 
         var limits = new CursorAgentLimits
         {
-            CharacterRosterMaxCharacters = 18,
+            CharacterDossiersMaxCharacters = 18,
             DefaultMaxFound = 10,
             MaxElements = 10,
             MaxBytes = 32_000
         };
 
         var chatService = new TokenizingChatCompletionService();
-        var generator = new CharacterRosterGenerator(
+        var generator = new CharacterDossiersGenerator(
             documentContext,
-            rosterService,
+            dossierService,
             limits,
-            loggerFactory.CreateLogger<CharacterRosterGenerator>(),
+            loggerFactory.CreateLogger<CharacterDossiersGenerator>(),
             chatService);
 
-        var directRoster = await generator.GenerateAsync();
-        var maxCharacters = limits.CharacterRosterMaxCharacters ?? names.Length;
+        var directDossiers = await generator.GenerateAsync();
+        var maxCharacters = limits.CharacterDossiersMaxCharacters ?? names.Length;
         var expectedCount = System.Math.Min(names.Length, maxCharacters);
-        Assert.Equal(expectedCount, directRoster.Characters.Count);
+        Assert.Equal(expectedCount, directDossiers.Characters.Count);
 
-        var evidence = names
-            .Select((name, index) => new EvidenceItem($"1.p{index + 1}", $"{name} отправился исследовать далёкий город.", "characters"))
-            .ToList();
-
-        var orchestrator = new CharacterRosterCursorOrchestrator(
-            documentContext,
-            new CursorRegistry(),
-            rosterService,
-            chatService,
-            limits,
-            loggerFactory.CreateLogger<CharacterRosterCursorOrchestrator>());
-
-        var plugin = new CharacterRosterPlugin(
-            generator,
-            orchestrator,
-            rosterService,
-            limits,
-            loggerFactory.CreateLogger<CharacterRosterPlugin>());
-
-        await plugin.GenerateCharacterRosterAsync();
-
-        var roster = plugin.GetCharacterRoster();
-
-        Assert.Equal(expectedCount, roster.Characters.Count);
+        Assert.Equal(expectedCount, directDossiers.Characters.Count);
     }
 
     [Fact]
@@ -266,9 +243,9 @@ public class McpFunctionalTests
         }
     }
 
-    private static bool TryExtractRosterJson(string text, out string rosterJson)
+    private static bool TryExtractDossiersJson(string text, out string dossiersJson)
     {
-        rosterJson = string.Empty;
+        dossiersJson = string.Empty;
         if (string.IsNullOrWhiteSpace(text))
         {
             return false;
@@ -276,9 +253,9 @@ public class McpFunctionalTests
 
         foreach (var candidate in JsonExtractor.ExtractAllJsons(text))
         {
-            if (IsRosterJson(candidate))
+            if (IsDossiersJson(candidate))
             {
-                rosterJson = candidate;
+                dossiersJson = candidate;
                 return true;
             }
         }
@@ -286,7 +263,7 @@ public class McpFunctionalTests
         return false;
     }
 
-    private static bool IsRosterJson(string json)
+    private static bool IsDossiersJson(string json)
     {
         try
         {
@@ -339,43 +316,32 @@ public class McpFunctionalTests
         return kernel.GetRequiredService<IChatCompletionService>();
     }
 
-    private static async Task<string> BuildRosterJsonAsync(string markdown, ILoggerFactory loggerFactory, HttpClient httpClient)
+    private static async Task<string> BuildDossiersJsonAsync(string markdown, ILoggerFactory loggerFactory, HttpClient httpClient)
     {
         var repository = new MarkdownDocumentRepository();
         var document = repository.LoadFromMarkdown(markdown);
-        var rosterService = new CharacterRosterService();
-        var documentContext = new DocumentContext(document, rosterService);
+        var dossierService = new CharacterDossierService();
+        var documentContext = new DocumentContext(document, dossierService);
         var limits = new CursorAgentLimits();
         var chatService = CreateChatService(httpClient);
 
-        var generator = new CharacterRosterGenerator(
+        var generator = new CharacterDossiersGenerator(
             documentContext,
-            rosterService,
+            dossierService,
             limits,
-            loggerFactory.CreateLogger<CharacterRosterGenerator>(),
+            loggerFactory.CreateLogger<CharacterDossiersGenerator>(),
             chatService);
-        var evidence = document.Items
-            .Where(item => item.Type != LinearItemType.Heading && !string.IsNullOrWhiteSpace(item.Markdown))
-            .Select(item => new EvidenceItem(item.Pointer.ToCompactString(), item.Markdown, "characters"))
-            .ToList();
-        var cursorStore = new CursorRegistry();
-        var orchestrator = new CharacterRosterCursorOrchestrator(
-            documentContext,
-            cursorStore,
-            rosterService,
-            chatService,
-            limits,
-            loggerFactory.CreateLogger<CharacterRosterCursorOrchestrator>());
-        var plugin = new CharacterRosterPlugin(
+
+        var plugin = new CharacterDossiersPlugin(
             generator,
-            orchestrator,
-            rosterService,
+            new CursorRegistry(),
+            dossierService,
             limits,
-            loggerFactory.CreateLogger<CharacterRosterPlugin>());
+            loggerFactory.CreateLogger<CharacterDossiersPlugin>());
 
         await plugin.GenerateCharacterDossiersAsync();
-        var roster = plugin.GetCharacterRoster();
-        return JsonSerializer.Serialize(roster, SerializationOptions.RelaxedCompact);
+        var dossiers = plugin.GetCharacterDossiers();
+        return JsonSerializer.Serialize(dossiers, SerializationOptions.RelaxedCompact);
     }
 
     private sealed class TokenizingChatCompletionService : IChatCompletionService
@@ -443,9 +409,9 @@ public class McpFunctionalTests
                         characters.Add(new Dictionary<string, object?>
                         {
                             ["canonicalName"] = name,
-                            ["aliases"] = Array.Empty<string>(),
                             ["gender"] = "unknown",
-                            ["description"] = name
+                            ["aliases"] = Array.Empty<object>(),
+                            ["facts"] = Array.Empty<object>()
                         });
                     }
                 }

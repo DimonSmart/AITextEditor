@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-870\",\"object\":\"chat.completion\",\"created\":1767824997,\"model\":\"gpt-oss:20b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to find first mention of professor Zvezdichkin (Профессор Звёздочкина). Use keyword cursor with keyword \\\"Звёздочкина\\\" or \\\"Звёздочкина\\\". The book is Russian. Use cursor_create_keyword_cursor. Then read batch. Then find paragraph. Then rewrite paragraph adding that at that moment apple trees were starting to fall (распускаться яблони). We need to output the paragraph with added sentence. Also include semantic pointer. Let's do it.\",\"tool_calls\":[{\"id\":\"call_nzqtyizc\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_keyword_cursor\",\"arguments\":\"{\\\"includeHeadings\\\":true,\\\"keywords\\\":[\\\"Звёздочкина\\\"]}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1140,\"completion_tokens\":146,\"total_tokens\":1286}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Wed, 07 Jan 2026 22:29:57 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}
