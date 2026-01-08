@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-116\",\"object\":\"chat.completion\",\"created\":1767860837,\"model\":\"gpt-oss:20b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to find the second chapter ending. We need to search for \\\"Глава 2\\\" or \\\"Глава 2.\\\" The first keyword cursor returned no items. Maybe the book uses \\\"Глава 2\\\" with a number. Let's try a full scan cursor to get all items and then find the second chapter. But we can also use a filtered cursor with filterDescription maybe \\\"Глава 2\\\" but we need to be careful. Let's try a keyword cursor with keyword \\\"Глава 2\\\". But earlier it returned no items. Maybe the book uses \\\"Глава 2.\\\" with a period. Let's try \\\"Глава 2.\\\" as keyword.\",\"tool_calls\":[{\"id\":\"call_b4fvixnu\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_keyword_cursor\",\"arguments\":\"{\\\"includeHeadings\\\":true,\\\"keywords\\\":[\\\"Глава 2.\\\"]}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1374,\"completion_tokens\":173,\"total_tokens\":1547}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 08 Jan 2026 08:27:17 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

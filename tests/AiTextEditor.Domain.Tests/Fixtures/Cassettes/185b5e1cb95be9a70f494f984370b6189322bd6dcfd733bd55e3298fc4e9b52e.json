@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-654\",\"object\":\"chat.completion\",\"created\":1767829967,\"model\":\"gpt-oss:20b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"[{\\\"canonicalName\\\":\\\"Знайка\\\",\\\"gender\\\":\\\"unknown\\\",\\\"aliases\\\":[{\\\"form\\\":\\\"Знайка\\\",\\\"example\\\":\\\"Знайка отвечал\\\"}],\\\"description\\\":\\\"character answering questions about lunar craters\\\"}]\",\"reasoning\":\"We need to extract characters from the provided paragraphs. Let's read them:\\n\\nParagraph 1.1.1.p12: \\\"– Для чего понадобилась ещё эта блинистая теория, если и без того ясно, что лунные кратеры – это просто вулканы?\\\" No names.\\n\\nParagraph 1.1.1.p13: \\\"Знайка отвечал, что вулкан – это очень большая гора, на верхушке которой имеется сравнительно небольшой кратер, то есть отверстие. Если бы хоть один лунный кратер был кратером вулкана, то сам вулкан был бы величиной чуть ли не во всю Луну, а этого вовсе не наблюдается.\\\" Here \\\"Знайка\\\" is a character. It's a name. Gender? \\\"Знайка\\\" is a male nickname? In Russian, \\\"знайка\\\" is a term for a know-it-all, often male? But gender unknown. We can set gender unknown. Provide alias forms: \\\"Знайка\\\" itself. Example: \\\"Знайка отвечал\\\". So alias form \\\"Знайка\\\" with example \\\"Знайка отвечал\\\". No other forms.\\n\\nParagraph 1.1.1.p14: \\\"Метеоритчики говорили:\\\" This is a group, not a specific person. So ignore.\\n\\nThus only one character: Знайка.\\n\\nWe need to output JSON array with one object.\\n\\nCanonicalName: \\\"Знайка\\\". Gender: unknown. Aliases: one alias: form \\\"Знайка\\\", example \\\"Знайка отвечал\\\". Description optional: maybe \\\"character speaking\\\". But optional. We can include description: \\\"character answering questions\\\". But not required. Let's include description: \\\"character answering questions about lunar craters\\\". That is fine.\\n\\nReturn JSON array only.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":708,\"completion_tokens\":421,\"total_tokens\":1129}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Wed, 07 Jan 2026 23:52:47 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

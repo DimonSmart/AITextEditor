@@ -21,14 +21,8 @@ public sealed record CharacterDossierEntry(
     [property: JsonPropertyName("gender")] string Gender,
     [property: JsonPropertyName("description")] string Description,
     [property: JsonPropertyName("aliases")] IReadOnlyList<string> Aliases,
-    [property: JsonPropertyName("aliasExamples")] IReadOnlyDictionary<string, string> AliasExamples,
-    [property: JsonPropertyName("facts")] IReadOnlyList<CharacterFactEntry> Facts);
+    [property: JsonPropertyName("aliasExamples")] IReadOnlyDictionary<string, string> AliasExamples);
 
 public sealed record CharacterAliasExampleEntry(
     [property: JsonPropertyName("form")] string Form,
-    [property: JsonPropertyName("example")] string Example);
-
-public sealed record CharacterFactEntry(
-    [property: JsonPropertyName("key")] string Key,
-    [property: JsonPropertyName("value")] string Value,
     [property: JsonPropertyName("example")] string Example);

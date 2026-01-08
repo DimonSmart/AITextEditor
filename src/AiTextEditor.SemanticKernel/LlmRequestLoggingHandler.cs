@@ -1,5 +1,8 @@
 using System;
 using System.Net.Http;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -25,7 +28,23 @@ public class LlmRequestLoggingHandler : DelegatingHandler
         // _logger.LogInformation("!!! LLM Request Handler Invoked !!!");
         string? requestBody = null;
         var requestLength = request.Content?.Headers.ContentLength;
-        if (_logBody && _logger.IsEnabled(LogLevel.Debug) && request.Content != null)
+
+        if (request.Content != null && ShouldRewriteChatCompletionsTokens(request))
+        {
+            var raw = await request.Content.ReadAsStringAsync(cancellationToken);
+            if (TryRewriteMaxCompletionTokensToMaxTokens(raw, out var rewritten))
+            {
+                request.Content = CloneJsonContent(request.Content, rewritten);
+                requestBody = rewritten;
+                requestLength = rewritten.Length;
+            }
+            else if (_logBody && _logger.IsEnabled(LogLevel.Debug))
+            {
+                requestBody = raw;
+                requestLength ??= raw.Length;
+            }
+        }
+        else if (_logBody && _logger.IsEnabled(LogLevel.Debug) && request.Content != null)
         {
             requestBody = await request.Content.ReadAsStringAsync(cancellationToken);
             requestLength ??= requestBody.Length;
@@ -64,6 +83,105 @@ public class LlmRequestLoggingHandler : DelegatingHandler
         }
 
         return response;
+    }
+
+    private static bool ShouldRewriteChatCompletionsTokens(HttpRequestMessage request)
+    {
+        var mode = Environment.GetEnvironmentVariable("LLM_OPENAI_COMPAT_FIX_MAX_TOKENS")?.Trim();
+        if (string.Equals(mode, "false", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(mode, "0", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(mode, "off", StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        var uri = request.RequestUri;
+        if (uri == null)
+        {
+            return false;
+        }
+
+        var path = uri.AbsolutePath ?? string.Empty;
+        if (!path.EndsWith("/chat/completions", StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        if (string.Equals(mode, "true", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(mode, "1", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(mode, "on", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        // Auto mode: assume localhost OpenAI-compat servers (Ollama/LM Studio/etc).
+        return uri.IsLoopback || uri.Port == 11434;
+    }
+
+    private static bool TryRewriteMaxCompletionTokensToMaxTokens(string json, out string rewritten)
+    {
+        rewritten = string.Empty;
+
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            return false;
+        }
+
+        try
+        {
+            var node = JsonNode.Parse(json);
+            if (node is not JsonObject obj)
+            {
+                return false;
+            }
+
+            if (!obj.TryGetPropertyValue("max_completion_tokens", out var maxCompletionNode) || maxCompletionNode == null)
+            {
+                return false;
+            }
+
+            if (obj.ContainsKey("max_tokens"))
+            {
+                return false;
+            }
+
+            obj["max_tokens"] = maxCompletionNode.DeepClone();
+            obj.Remove("max_completion_tokens");
+
+            rewritten = obj.ToJsonString(new JsonSerializerOptions
+            {
+                WriteIndented = false
+            });
+            return true;
+        }
+        catch (JsonException)
+        {
+            return false;
+        }
+    }
+
+    private static HttpContent CloneJsonContent(HttpContent original, string body)
+    {
+        var mediaType = original.Headers.ContentType?.MediaType;
+        if (string.IsNullOrWhiteSpace(mediaType))
+        {
+            mediaType = "application/json";
+        }
+
+        var content = new StringContent(body, Encoding.UTF8, mediaType);
+
+        foreach (var header in original.Headers)
+        {
+            if (string.Equals(header.Key, "Content-Type", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(header.Key, "Content-Length", StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            content.Headers.TryAddWithoutValidation(header.Key, header.Value);
+        }
+
+        return content;
     }
 
     private static void ForceUtf8(HttpContent content)

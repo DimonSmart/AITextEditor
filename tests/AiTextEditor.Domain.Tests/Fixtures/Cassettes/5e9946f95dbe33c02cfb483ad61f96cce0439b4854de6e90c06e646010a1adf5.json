@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-229\",\"object\":\"chat.completion\",\"created\":1767857035,\"model\":\"gpt-oss:20b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"The cursor returned no items. Maybe the book is empty? We need to create dossiers. But we have no content. The user asked to create catalog of character dossiers. We used generate_character_dossiers and get_character_dossiers, but they returned empty. We need to scan the document. But the cursor returned no items, meaning the document might be empty or not loaded. Maybe we need to specify a document ID? The cursor functions likely need a document ID. The default might be the current document. But maybe we need to get default document id first. Let's try to get default document id.\",\"tool_calls\":[{\"id\":\"call_u4bjabrb\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"editor-get_default_document_id\",\"arguments\":\"{}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1608,\"completion_tokens\":143,\"total_tokens\":1751}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 08 Jan 2026 07:23:55 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

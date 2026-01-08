@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-138\",\"object\":\"chat.completion\",\"created\":1767857104,\"model\":\"gpt-oss:20b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to create catalog of character dossiers. We called generate_character_dossiers, but it returned empty characters. Maybe need to run update from cursor? The book is not loaded? We need to scan the document to build dossiers. The instructions: \\\"Use tools to inspect the document.\\\" We need to create a cursor to scan the document and update dossiers. We need to use cursor_create_full_scan_cursor to get all items, then run cursor_agent to extract character info? But the system has a function to update dossiers from cursor. So we need to create a cursor that scans the document, then update dossiers from cursor. Let's do that.\\n\\nWe need to create a cursor: cursor_create_full_scan_cursor with includeHeadings true. Then run cursor_agent? Actually we can directly update dossiers from cursor. But we need to read the cursor? The function character_dossiers_update_character_dossiers_from_cursor expects cursorName. So we need to create a cursor name. Let's create a cursor: cursor_create_full_scan_cursor. Then run update. Then get dossiers. Let's do that.\",\"tool_calls\":[{\"id\":\"call_v053n7om\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_full_scan_cursor\",\"arguments\":\"{\\\"includeHeadings\\\":true}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1272,\"completion_tokens\":244,\"total_tokens\":1516}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 08 Jan 2026 07:25:04 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-590\",\"object\":\"chat.completion\",\"created\":1767860229,\"model\":\"gpt-oss:20b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to find the second chapter ending. The book is in Russian. We need to locate chapter 2. We attempted keyword cursor with \\\"Глава 2\\\" but got no items. Maybe the chapter headings are like \\\"Глава 2. ...\\\" or \\\"2. ...\\\" Let's search for \\\"Глава 2\\\" again but maybe the text uses \\\"Глава 2.\\\" with a period. Let's try keyword \\\"Глава 2.\\\" or \\\"Глава 2\\\". The cursor returned empty. Maybe the book uses \\\"Глава 2\\\" but not as a keyword? Let's try full scan cursor to get all items and then search manually. But that might be large. Instead, we can use filtered cursor with filterDescription that matches \\\"Глава 2\\\". But we need a stateless filter. We can use regex? The filterDescription likely expects a simple condition. Not sure.\\n\\nAlternatively, we can use cursor_create_full_scan_cursor to get all items, then read batches until we find the second chapter. But that might be large. Let's try to create a full scan cursor and read first few batches.\",\"tool_calls\":[{\"id\":\"call_o2a5qd2o\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_full_scan_cursor\",\"arguments\":\"{\\\"includeHeadings\\\":true}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1374,\"completion_tokens\":256,\"total_tokens\":1630}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 08 Jan 2026 08:17:08 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

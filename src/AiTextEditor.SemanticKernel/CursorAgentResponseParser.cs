@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 using AiTextEditor.Lib.Model;
 using DimonSmart.AiUtils;
 
@@ -10,17 +9,15 @@ namespace AiTextEditor.SemanticKernel;
 
 public interface ICursorAgentResponseParser
 {
-    AgentCommand? ParseCommand(string content, out string? parsedFragment, out bool multipleActions, out bool finishDetected);
+    AgentCommand? ParseCommand(string content);
 
     FinalizerResponse? ParseFinalizer(string content);
 }
 
 public sealed class CursorAgentResponseParser : ICursorAgentResponseParser
 {
-    public AgentCommand? ParseCommand(string content, out string? parsedFragment, out bool multipleActions, out bool finishDetected)
+    public AgentCommand? ParseCommand(string content)
     {
-        parsedFragment = null;
-
         var commands = JsonExtractor
             .ExtractAllJsons(content)
             .Select(ParseSingle)
@@ -30,18 +27,14 @@ public sealed class CursorAgentResponseParser : ICursorAgentResponseParser
 
         if (commands.Count == 0)
         {
-            multipleActions = false;
-            finishDetected = false;
             return null;
         }
 
-        multipleActions = commands.Count > 1;
+        var multipleActions = commands.Count > 1;
         var finish = commands.FirstOrDefault(command => command.Action == "stop");
-        finishDetected = finish != null;
 
         var selected = finish ?? commands[0];
-        parsedFragment = selected.RawContent;
-        return selected;
+        return selected.WithMultipleCandidates(multipleActions);
     }
 
     public FinalizerResponse? ParseFinalizer(string content)
@@ -90,19 +83,7 @@ public sealed class CursorAgentResponseParser : ICursorAgentResponseParser
 
     private static AgentCommand? ParseSingle(string content)
     {
-        var command = TryParseJson(content);
-        if (command != null)
-        {
-            return command;
-        }
-
-        var sanitized = SanitizeJson(content);
-        if (sanitized != content)
-        {
-            return TryParseJson(sanitized);
-        }
-
-        return null;
+        return TryParseJson(content);
     }
 
     private static AgentCommand? TryParseJson(string content)
@@ -216,30 +197,15 @@ public sealed class CursorAgentResponseParser : ICursorAgentResponseParser
 
         return new EvidenceItem(pointer!, excerpt, reason);
     }
-
-    private static string SanitizeJson(string json)
-    {
-        return Regex.Replace(json, "\"(?:[^\"\\\\]|\\\\.)*\"", match =>
-        {
-            var value = match.Value;
-            if (value.Contains('\n') || value.Contains('\r') || value.Contains('\t'))
-            {
-                return value
-                    .Replace("\n", "\\n")
-                    .Replace("\r", "\\r")
-                    .Replace("\t", "\\t");
-            }
-
-            return value;
-        });
-    }
 }
 
 public sealed record AgentCommand(string Action, bool BatchFound, IReadOnlyList<EvidenceItem>? NewEvidence, string? Progress, bool NeedMoreContext)
 {
     public string? RawContent { get; init; }
+    public bool MultipleJsonCandidates { get; init; }
 
     public AgentCommand WithRawContent(string raw) => this with { RawContent = raw };
+    public AgentCommand WithMultipleCandidates(bool multiple) => this with { MultipleJsonCandidates = multiple };
 }
 
 public sealed record FinalizerResponse(string Decision, string? SemanticPointerFrom, string? Excerpt, string? WhyThis, string? Markdown, string? Summary)

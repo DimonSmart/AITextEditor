@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-732\",\"object\":\"chat.completion\",\"created\":1767857260,\"model\":\"gpt-oss:20b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to return only JSON catalog. After update, get dossiers. Let's fetch again.\",\"tool_calls\":[{\"id\":\"call_xp23399x\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"character_dossiers-get_character_dossiers\",\"arguments\":\"{}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1409,\"completion_tokens\":43,\"total_tokens\":1452}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 08 Jan 2026 07:27:40 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

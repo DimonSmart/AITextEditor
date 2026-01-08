@@ -104,8 +104,7 @@ public sealed class CharacterDossiersPlugin
                 c.Gender,
                 c.Description,
                 c.Aliases,
-                c.AliasExamples,
-                c.Facts.Select(f => new CharacterFactEntry(f.Key, f.Value, f.Example)).ToList()))
+                c.AliasExamples))
             .ToList();
 
         return new CharacterDossiersPayload(dossiers.DossiersId, dossiers.Version, characters);
@@ -143,15 +142,9 @@ public sealed class CharacterDossiersPlugin
         string name,
         string gender = "unknown",
         Dictionary<string, string>? aliasExamples = null,
-        List<CharacterFactEntry>? facts = null,
         string? characterId = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
-
-        var normalizedFacts = facts?
-            .Where(f => f is not null)
-            .Select(f => new CharacterFact(f.Key, f.Value, f.Example))
-            .ToList();
 
         if (!string.IsNullOrWhiteSpace(characterId))
         {
@@ -160,7 +153,7 @@ public sealed class CharacterDossiersPlugin
                 name: name.Trim(),
                 gender: gender,
                 aliasExamples: aliasExamples,
-                facts: normalizedFacts,
+                facts: null,
                 description: null);
 
             var dossiers = dossierService.GetDossiers();
@@ -172,7 +165,7 @@ public sealed class CharacterDossiersPlugin
             name.Trim(),
             gender,
             aliasExamples,
-            normalizedFacts,
+            facts: null,
             description: null);
 
         return new CharacterDossiersCommandResult(

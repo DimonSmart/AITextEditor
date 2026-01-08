@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-379\",\"object\":\"chat.completion\",\"created\":1767857039,\"model\":\"gpt-oss:20b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"```json\\n{\\n  \\\"characters\\\": []\\n}\\n```\\n\",\"reasoning\":\"We attempted to run cursor_agent but got no evidence. Likely the book is empty or not loaded. We need to inspect the document. Let's read the default document. Use cursor_create_full_scan_cursor again? But we saw no items. Maybe the document is empty. Let's check the default document id. We got id. Let's try to read the document content? There's no tool for that. Maybe the document is empty. The user asked to create catalog of character dossiers. Since no characters found, we return empty JSON array. But we should still call generate and get. We did. It returned empty characters. So final answer: JSON with empty array.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1709,\"completion_tokens\":154,\"total_tokens\":1863}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 08 Jan 2026 07:23:59 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

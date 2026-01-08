@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-30\",\"object\":\"chat.completion\",\"created\":1767857262,\"model\":\"gpt-oss:20b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We attempted to generate dossiers but got empty characters. Maybe the book is empty? We need to inspect the document. Let's create a cursor to read portions. Use cursor_read_cursor_batch.\",\"tool_calls\":[{\"id\":\"call_8ovipb0d\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-read_cursor_batch\",\"arguments\":\"{\\\"cursorName\\\":\\\"fsc_cursor_0\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1575,\"completion_tokens\":68,\"total_tokens\":1643}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 08 Jan 2026 07:27:42 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

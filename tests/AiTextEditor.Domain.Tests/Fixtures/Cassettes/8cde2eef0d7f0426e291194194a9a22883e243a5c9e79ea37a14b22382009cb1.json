@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-617\",\"object\":\"chat.completion\",\"created\":1767860869,\"model\":\"gpt-oss:20b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to find the end of second chapter. The book is in Russian. We need to search for \\\"Глава 2\\\" or \\\"2. Глава\\\" etc. The keyword cursor didn't return items. Maybe the book uses numbering like \\\"2. Глава\\\" or \\\"Глава 2\\\". Let's try a full scan cursor to get all items and then search manually. But that might be large. Instead, we can use a filtered cursor with filterDescription that matches \\\"Глава 2\\\". But we need to know the structure. Let's try a filtered cursor with filterDescription \\\"Глава 2\\\".\",\"tool_calls\":[{\"id\":\"call_ngad5oxy\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_filtered_cursor\",\"arguments\":\"{\\\"filterDescription\\\":\\\"Глава 2\\\",\\\"includeHeadings\\\":true}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1584,\"completion_tokens\":160,\"total_tokens\":1744}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 08 Jan 2026 08:27:49 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

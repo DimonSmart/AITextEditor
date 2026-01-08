@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-801\",\"object\":\"chat.completion\",\"created\":1767829963,\"model\":\"gpt-oss:20b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"[\\n  {\\n    \\\"canonicalName\\\": \\\"Знайка\\\",\\n    \\\"gender\\\": \\\"unknown\\\",\\n    \\\"aliases\\\": [\\n      {\\n        \\\"form\\\": \\\"Знайка\\\",\\n        \\\"example\\\": \\\"Знайка даже сочинил книжку\\\"\\n      },\\n      {\\n        \\\"form\\\": \\\"Знайкиной\\\",\\n        \\\"example\\\": \\\"с этой Знайкиной теорией\\\"\\n      }\\n    ],\\n    \\\"description\\\": \\\"Автор теории о Луне\\\"\\n  }\\n]\",\"reasoning\":\"We need to extract characters. Paragraph 1.1.1.p9: no person names. It's about Luna. No characters. Paragraph 1.1.1.p10: \\\"Знайка\\\" is a character. Also \\\"Все астрономы – и вулканисты, и метеоритчики – смеялись над этой Знайкиной теорией.\\\" So \\\"Знайка\\\" is a person. Also \\\"Все астрономы\\\" is a group, not a person. So only \\\"Знайка\\\". Paragraph 1.1.1.p11: \\\"Вулканисты говорили:\\\" no person. So only one character: Знайка. Gender? The name \\\"Знайка\\\" is a nickname meaning \\\"smartie\\\". Gender unknown. We can set gender unknown. Aliases: The text uses \\\"Знайка\\\" and \\\"Знайкиной\\\" (possessive). Also \\\"Знайкина\\\" maybe? The text: \\\"Знайкиной теорией\\\" uses possessive. So alias \\\"Знайкиной\\\" with example. Also \\\"Знайка\\\" itself. Also maybe \\\"Знайкина\\\" not present. So we include alias \\\"Знайкиной\\\" with example sentence: \\\"с этой Знайкиной теорией\\\". Also maybe \\\"Знайка\\\" itself. Also \\\"Знайкина\\\" not present. So we have two aliases: \\\"Знайка\\\" and \\\"Знайкиной\\\". Provide example sentences. For \\\"Знайка\\\": \\\"Знайка даже сочинил книжку\\\". For \\\"Знайкиной\\\": \\\"с этой Знайкиной теорией\\\". Description optional: maybe \\\"Автор теории о Луне\\\". Provide description: \\\"Автор теории о Луне\\\". So output JSON array with one object. Ensure canonicalName \\\"Знайка\\\". Gender unknown. Aliases array with two objects. Provide example sentences. Ensure no extra text.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":949,\"completion_tokens\":513,\"total_tokens\":1462}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Wed, 07 Jan 2026 23:52:43 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

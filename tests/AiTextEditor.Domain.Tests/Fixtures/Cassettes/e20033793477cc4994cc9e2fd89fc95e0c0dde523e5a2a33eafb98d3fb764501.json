@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-996\",\"object\":\"chat.completion\",\"created\":1767860216,\"model\":\"gpt-oss:20b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"No results. Maybe chapter headings are like \\\"2. Глава\\\" or \\\"Глава 2\\\". Let's search for \\\"Глава 2\\\" with quotes? But keyword search uses base forms. Maybe \\\"Глава\\\" alone? Let's try keyword cursor for \\\"Глава\\\".\",\"tool_calls\":[{\"id\":\"call_bmvojjxc\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_keyword_cursor\",\"arguments\":\"{\\\"includeHeadings\\\":true,\\\"keywords\\\":[\\\"Глава\\\"]}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1222,\"completion_tokens\":90,\"total_tokens\":1312}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 08 Jan 2026 08:16:56 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-888\",\"object\":\"chat.completion\",\"created\":1767829979,\"model\":\"gpt-oss:20b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"[\\n  {\\n    \\\"canonicalName\\\": \\\"Знайка\\\",\\n    \\\"gender\\\": \\\"male\\\",\\n    \\\"aliases\\\": [\\n      {\\n        \\\"form\\\": \\\"Знайка\\\",\\n        \\\"example\\\": \\\"Знайка и сам отказался\\\"\\n      }\\n    ],\\n    \\\"description\\\": \\\"character who visited the Moon and wrote a book about lunar beings\\\"\\n  }\\n]\",\"reasoning\":\"We need to extract characters. The text mentions \\\"Знайка\\\" and \\\"лунатики\\\" (lunatics). Are they characters? \\\"Знайка\\\" is a person. \\\"лунатики\\\" are a group of beings, but they are a group, not a single person. The rule: ignore generic groups/roles or unnamed speakers. \\\"лунатики\\\" is a group, not a single person. So only \\\"Знайка\\\". Also \\\"лунные коротышки\\\" maybe a group. So only \\\"Знайка\\\". Also \\\"профессор\\\" not present. So output array with one object.\\n\\nWe need canonicalName: \\\"Знайка\\\". Gender: unknown? The text says \\\"сам отказался\\\" - masculine? \\\"сам\\\" could be masculine. \\\"Знайка\\\" is a nickname, likely male. But we cannot infer gender? The rule: \\\"If it is unclear that an entity is a person, skip it.\\\" Gender: male|female|unknown. We can guess male? But maybe safer unknown? The text uses \\\"сам отказался\\\" which is masculine. So gender male. Aliases: forms of the name. The text uses \\\"Знайка\\\" only. No other forms. So alias list with one alias: form \\\"Знайка\\\" example: \\\"Знайка и сам отказался\\\". Description optional: maybe \\\"character who visited the Moon\\\". Provide short description: \\\"character who visited the Moon and wrote a book about lunar beings\\\". Use example sentence: \\\"Знайка и сам отказался\\\". So alias: {form:\\\"Знайка\\\", example:\\\"Знайка и сам отказался\\\"}.\\n\\nReturn JSON array.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1103,\"completion_tokens\":428,\"total_tokens\":1531}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Wed, 07 Jan 2026 23:52:59 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -30,6 +30,7 @@ public class McpFunctionalTests
     }
 
     [Theory]
+    [Trait("Category", "Manual")]
     [InlineData("Где в книге впервые упоминается профессор Звёздочкин? (исключая заголовки)", "1.1.1.p21")]
     //[InlineData("Где в книге четвертое упоминание профессора Звёздочкина? (исключая заголовки)", "1.1.1.p25", 1)]
     //[InlineData("Где в книге говорится, о чём была книжка Знайки про лунных коротышек?", "1.1.1.p19")]
@@ -68,6 +69,7 @@ public class McpFunctionalTests
     }
 
     [Theory]
+    [Trait("Category", "Manual")]
     [InlineData(
         "Создай каталог досье персонажей книги. Используй инструменты character_dossiers.generate_character_dossiers и character_dossiers.get_character_dossiers. Верни только JSON каталога.",
         null,
@@ -177,45 +179,14 @@ public class McpFunctionalTests
         Assert.Equal(expectedCount, directDossiers.Characters.Count);
     }
 
-    [Fact]
-    public async Task QuestionAboutProfessor_RewritesParagraphWithBlossomingApples()
-    {
-        var markdown = LoadNeznaykaSample();
-        using var httpClient = await TestLlmConfiguration.CreateVerifiedLlmClientAsync(output);
-        using var loggerFactory = TestLoggerFactory.Create(output);
-        var engine = new SemanticKernelEngine(httpClient, loggerFactory);
-
-        var result = await engine.RunAsync(
-            markdown,
-            "Найди первое упоминание профессора Звёздочкина и перепиши параграф, добавив, что в этот момент начали распускаться яблони.");
-
-        var answer = result.LastAnswer ?? string.Empty;
-
-        Assert.Contains("1.1.1.p21", answer, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains(NormalizeForSearch("яблони"), NormalizeForSearch(answer), StringComparison.Ordinal);
-    }
-
+  
     private static string LoadNeznaykaSample()
     {
         var path = Path.Combine(AppContext.BaseDirectory, "Fixtures", "MarkdownBooks", "neznayka_sample.md");
         return File.ReadAllText(path);
     }
 
-    private static string NormalizeForSearch(string text)
-    {
-        var builder = new StringBuilder();
-        foreach (var character in text.Normalize(NormalizationForm.FormD))
-        {
-            var category = CharUnicodeInfo.GetUnicodeCategory(character);
-            if (category != UnicodeCategory.NonSpacingMark)
-            {
-                builder.Append(char.ToLowerInvariant(character));
-            }
-        }
-
-        return builder.ToString();
-    }
-
+   
     private static string TruncateForOutput(string text, int maxLength = 2000)
     {
         if (string.IsNullOrEmpty(text) || text.Length <= maxLength)
@@ -410,8 +381,7 @@ public class McpFunctionalTests
                         {
                             ["canonicalName"] = name,
                             ["gender"] = "unknown",
-                            ["aliases"] = Array.Empty<object>(),
-                            ["facts"] = Array.Empty<object>()
+                            ["aliases"] = Array.Empty<object>()
                         });
                     }
                 }

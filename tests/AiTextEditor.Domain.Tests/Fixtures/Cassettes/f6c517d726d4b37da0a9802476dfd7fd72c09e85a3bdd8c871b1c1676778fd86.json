@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-83\",\"object\":\"chat.completion\",\"created\":1767857280,\"model\":\"gpt-oss:20b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We attempted to generate dossiers but got empty. Likely need to run cursor_agent after creating cursor. But we did. Maybe need to use cursor_create_filtered_cursor? But we used keyword cursor. The agent didn't produce evidence. Maybe need to set maxEvidenceCount? But still no evidence. Maybe the tool expects to run cursor_agent after reading batches? We didn't read batches. We need to read cursor batches to feed agent. Let's read first batch.\",\"tool_calls\":[{\"id\":\"call_7njetrgs\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-read_cursor_batch\",\"arguments\":\"{\\\"cursorName\\\":\\\"kwd_cursor_2\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":10266,\"completion_tokens\":121,\"total_tokens\":10387}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 08 Jan 2026 07:28:00 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

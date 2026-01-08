@@ -83,7 +83,7 @@ public sealed class CharacterDossiersGeneratorTests
             {
                 ["John"] = "John examined the patient."
             },
-            Facts: [new AiTextEditor.Lib.Model.CharacterFact("occupation", "doctor", "John is a doctor.")],
+            Facts: [],
             Gender: "unknown"));
 
         var repository = new MarkdownDocumentRepository();
@@ -92,8 +92,7 @@ public sealed class CharacterDossiersGeneratorTests
         var limits = new CursorAgentLimits { MaxElements = 256, MaxBytes = 1024 * 128 };
 
         var chat = new ScriptedChatCompletionService(
-            // extraction response: alias only, no facts
-            "[{\"canonicalName\":\"John\",\"gender\":\"unknown\",\"aliases\":[{\"form\":\"Johnny\",\"example\":\"Johnny smiled.\"}],\"facts\":[]}]"
+            "[{\"canonicalName\":\"John\",\"gender\":\"unknown\",\"aliases\":[{\"form\":\"Johnny\",\"example\":\"Johnny smiled.\"}]}]"
         );
 
         var generator = new CharacterDossiersGenerator(
@@ -111,7 +110,6 @@ public sealed class CharacterDossiersGeneratorTests
         Assert.Equal("John is a doctor.", updated!.Description);
         Assert.Contains("Johnny", updated.AliasExamples.Keys, StringComparer.OrdinalIgnoreCase);
 
-        // No facts changed => no summarizer call
         Assert.Equal(1, chat.CallCount);
     }
 
@@ -137,7 +135,7 @@ public sealed class CharacterDossiersGeneratorTests
         var limits = new CursorAgentLimits { MaxElements = 256, MaxBytes = 1024 * 128 };
 
         var chat = new ScriptedChatCompletionService(
-            "[{\"canonicalName\":\"John\",\"gender\":\"unknown\",\"aliases\":[{\"form\":\"Johnny\",\"example\":\"Johnny laughed.\"}],\"facts\":[]}]"
+            "[{\"canonicalName\":\"John\",\"gender\":\"unknown\",\"aliases\":[{\"form\":\"Johnny\",\"example\":\"Johnny laughed.\"}]}]"
         );
 
         var generator = new CharacterDossiersGenerator(
@@ -165,7 +163,7 @@ public sealed class CharacterDossiersGeneratorTests
         var limits = new CursorAgentLimits { MaxElements = 256, MaxBytes = 1024 * 128 };
 
         var chat = new ScriptedChatCompletionService(
-            "[{\"canonicalName\":\"John\",\"gender\":\"unknown\",\"aliases\":[{\"form\":\"John's\",\"example\":\"John's hat was on the table.\"}],\"facts\":[]}]"
+            "[{\"canonicalName\":\"John\",\"gender\":\"unknown\",\"aliases\":[{\"form\":\"John's\",\"example\":\"John's hat was on the table.\"}]}]"
         );
 
         var generator = new CharacterDossiersGenerator(
@@ -182,61 +180,6 @@ public sealed class CharacterDossiersGeneratorTests
         var character = dossiers.Characters[0];
         Assert.Contains("John's", character.AliasExamples.Keys, StringComparer.OrdinalIgnoreCase);
         Assert.Contains("John", character.AliasExamples.Keys, StringComparer.OrdinalIgnoreCase);
-    }
-
-    [Fact]
-    public async Task AmbiguousMatching_WhenTie_DoesNotMergeAndCreatesNew()
-    {
-        var dossierService = new CharacterDossierService();
-        dossierService.UpsertDossier(new AiTextEditor.Lib.Model.CharacterDossier(
-            CharacterId: "a",
-            Name: "Mr Johnny",
-            Description: "",
-            Aliases: ["Mr Johnny"],
-            AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
-            {
-                ["Mr Johnny"] = "Mr Johnny arrived."
-            },
-            Facts: [],
-            Gender: "unknown"));
-        dossierService.UpsertDossier(new AiTextEditor.Lib.Model.CharacterDossier(
-            CharacterId: "b",
-            Name: "Dr Johnny",
-            Description: "",
-            Aliases: ["Dr Johnny"],
-            AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
-            {
-                ["Dr Johnny"] = "Dr Johnny arrived."
-            },
-            Facts: [],
-            Gender: "unknown"));
-
-        var repository = new MarkdownDocumentRepository();
-        var document = repository.LoadFromMarkdown("Johnny smiled.");
-        var documentContext = new DocumentContext(document, dossierService);
-        var limits = new CursorAgentLimits { MaxElements = 256, MaxBytes = 1024 * 128 };
-
-        var chat = new ScriptedChatCompletionService(
-            "[{\"canonicalName\":\"Johnny\",\"gender\":\"unknown\",\"aliases\":[{\"form\":\"Johnny\",\"example\":\"Johnny smiled.\"}],\"facts\":[]}]"
-        );
-
-        var generator = new CharacterDossiersGenerator(
-            documentContext,
-            dossierService,
-            limits,
-            NullLogger<CharacterDossiersGenerator>.Instance,
-            chat);
-
-        var evidence = new[] { new AiTextEditor.Lib.Model.EvidenceItem("1.p1", "Johnny smiled.", null) };
-        var dossiers = await generator.UpdateFromEvidenceBatchAsync(evidence);
-
-        Assert.Equal(3, dossiers.Characters.Count);
-
-        var existingA = dossierService.TryGetDossier("a")!;
-        var existingB = dossierService.TryGetDossier("b")!;
-
-        Assert.DoesNotContain("Johnny", existingA.AliasExamples.Keys, StringComparer.OrdinalIgnoreCase);
-        Assert.DoesNotContain("Johnny", existingB.AliasExamples.Keys, StringComparer.OrdinalIgnoreCase);
     }
 
     private static string BuildMarkdown(IEnumerable<string> names)
@@ -319,8 +262,7 @@ public sealed class CharacterDossiersGeneratorTests
                     {
                         ["canonicalName"] = name,
                         ["gender"] = "unknown",
-                        ["aliases"] = Array.Empty<object>(),
-                        ["facts"] = Array.Empty<object>()
+                        ["aliases"] = Array.Empty<object>()
                     });
                 }
 

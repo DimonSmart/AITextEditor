@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-500\",\"object\":\"chat.completion\",\"created\":1767860213,\"model\":\"gpt-oss:20b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to find the end of the second chapter. The book is in Russian, children's book. We need to locate chapter 2, find its ending. Use keyword cursor? We need to find \\\"Глава 2\\\" or \\\"2 глава\\\". Let's search for \\\"Глава 2\\\". Use keyword cursor with keyword \\\"Глава 2\\\". But we need to find the end of that chapter. We might need to read the last paragraph of chapter 2. We can use cursor_create_keyword_cursor with keyword \\\"Глава 2\\\". But that will return items containing that keyword. We need to find the paragraph after that. Maybe we need to read the entire chapter. Use cursor_create_full_scan_cursor to get all items, then find the last paragraph of chapter 2. But maybe easier: use cursor_create_keyword_cursor for \\\"Глава 2\\\" to get the start of chapter 2. Then read subsequent paragraphs until next \\\"Глава\\\" or end of chapter. We can use cursor_read_cursor_batch to read portions. But we need to know the pointer of the last paragraph. Let's try to create a keyword cursor for \\\"Глава 2\\\".\",\"tool_calls\":[{\"id\":\"call_o9dakqzd\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_keyword_cursor\",\"arguments\":\"{\\\"includeHeadings\\\":true,\\\"keywords\\\":[\\\"Глава 2\\\"]}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1110,\"completion_tokens\":271,\"total_tokens\":1381}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 08 Jan 2026 08:16:53 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

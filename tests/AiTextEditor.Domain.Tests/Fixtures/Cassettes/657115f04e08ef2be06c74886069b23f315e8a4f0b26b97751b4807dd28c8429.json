@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-510\",\"object\":\"chat.completion\",\"created\":1767857270,\"model\":\"gpt-oss:20b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to create catalog of character dossiers. We already attempted to generate dossiers but got empty. We need to run cursor to extract characters. We used full scan cursor but didn't run agent. The cursor_agent didn't find evidence. Maybe need to run cursor_agent with task description \\\"Extract character information from the book\\\". It returned no evidence. Maybe need to run cursor_agent again with more context? Or maybe the book is large; we need to read more portions. The cursor_read_cursor_batch returned items only for first portion? It returned items for 1.1.1.p1 to p25. That is a lot. But the agent didn't find evidence. Maybe the agent didn't parse because we didn't provide context. We can run cursor_agent again with context \\\"Книга детская\\\" etc. But maybe the agent didn't find because we didn't provide enough context. Let's try again with context \\\"Книга детская\\\" and maybe \\\"Незнайка\\\" etc. Also we might need to run cursor_agent with maxEvidenceCount maybe 10. Let's try.\",\"tool_calls\":[{\"id\":\"call_apk6gl6i\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor_agent-run_cursor_agent\",\"arguments\":\"{\\\"context\\\":\\\"Книга детская\\\",\\\"cursorName\\\":\\\"fsc_cursor_0\\\",\\\"maxEvidenceCount\\\":null,\\\"startAfterPointer\\\":\\\"\\\",\\\"taskDescription\\\":\\\"Extract character information from the book\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":6057,\"completion_tokens\":271,\"total_tokens\":6328}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 08 Jan 2026 07:27:50 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

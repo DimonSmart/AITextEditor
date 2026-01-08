@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-940\",\"object\":\"chat.completion\",\"created\":1767860223,\"model\":\"gpt-oss:20b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to read the document. We don't know the document ID. We can get default document id.\",\"tool_calls\":[{\"id\":\"call_0ugs2edr\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"editor-get_default_document_id\",\"arguments\":\"{}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1322,\"completion_tokens\":44,\"total_tokens\":1366}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 08 Jan 2026 08:17:03 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

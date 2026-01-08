@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-340\",\"object\":\"chat.completion\",\"created\":1767857107,\"model\":\"gpt-oss:20b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to create catalog of character dossiers. We already ran generate_character_dossiers and got empty list. We need to scan the document to identify characters. We have a full scan cursor with items. We need to parse characters. We can use character_dossiers_update_character_dossiers_from_cursor to update dossiers from cursor. Then get dossiers. Let's do that.\",\"tool_calls\":[{\"id\":\"call_4torfab8\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"character_dossiers-update_character_dossiers_from_cursor\",\"arguments\":\"{\\\"cursorName\\\":\\\"fsc_cursor_0\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":5299,\"completion_tokens\":108,\"total_tokens\":5407}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 08 Jan 2026 07:25:07 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

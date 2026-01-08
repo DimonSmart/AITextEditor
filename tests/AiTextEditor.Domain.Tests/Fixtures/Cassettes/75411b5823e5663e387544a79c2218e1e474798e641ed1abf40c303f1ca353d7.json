@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-57\",\"object\":\"chat.completion\",\"created\":1767860871,\"model\":\"gpt-oss:20b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"The second chapter ends with a cliffhanger about the hidden door. (Semantic Pointer: **2.p2**)\",\"reasoning\":\"We have the second chapter ends with a cliffhanger about the hidden door. Need answer in English. Provide pointer. The pointer is 2.p2.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1803,\"completion_tokens\":63,\"total_tokens\":1866}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 08 Jan 2026 08:27:51 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

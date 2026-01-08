@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-208\",\"object\":\"chat.completion\",\"created\":1767860223,\"model\":\"gpt-oss:20b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Профессор Звёздочкин впервые упоминается в параграфе **1.1.1.p21** (см. указанный семантический указатель).\",\"reasoning\":\"We need to answer: \\\"Где в книге впервые упоминается профессор Звёздочкин? (исключая заголовки)\\\". We have found first mention at SemanticPointer \\\"1.1.1.p21\\\". We should confirm that earlier paragraphs don't mention him. The cursor returned first paragraph with mention. We should provide answer: \\\"В параграфе 1.1.1.p21\\\". Provide pointer. Also mention that it's first mention. Provide answer in Russian.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2745,\"completion_tokens\":151,\"total_tokens\":2896}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 08 Jan 2026 08:17:03 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

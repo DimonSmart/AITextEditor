@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-642\",\"object\":\"chat.completion\",\"created\":1767860865,\"model\":\"gpt-oss:20b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"The user asks: \\\"Tell me how the second chapter ends. Answer in English.\\\" We need to find the ending of chapter 2. The book is in Russian. We need to locate the end of chapter 2. We attempted keyword search for \\\"Глава 2\\\" but got no items. Maybe the chapter headings are like \\\"2. Глава\\\" or \\\"Глава 2\\\". Let's search for \\\"Глава 2\\\" with different punctuation. Also maybe the book uses \\\"2. Глава\\\" or \\\"Глава 2\\\". Let's try a full scan cursor to read the entire document and find the second chapter. But that might be large. We can use a keyword cursor with \\\"Глава 2\\\" and \\\"Глава 2.\\\" but no results. Maybe the heading is \\\"2. Глава\\\" or \\\"Глава 2\\\". Let's search for \\\"2. Глава\\\".\",\"tool_calls\":[{\"id\":\"call_yj77kksq\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_keyword_cursor\",\"arguments\":\"{\\\"includeHeadings\\\":true,\\\"keywords\\\":[\\\"2. Глава\\\"]}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1485,\"completion_tokens\":220,\"total_tokens\":1705}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 08 Jan 2026 08:27:45 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

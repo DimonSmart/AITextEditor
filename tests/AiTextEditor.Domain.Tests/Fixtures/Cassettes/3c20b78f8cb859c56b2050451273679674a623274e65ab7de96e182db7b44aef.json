@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-809\",\"object\":\"chat.completion\",\"created\":1767857267,\"model\":\"gpt-oss:20b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We attempted to generate dossiers but got empty characters. Likely need to run cursor_agent after creating cursor. But we did run cursor_agent but it returned no evidence. Maybe need to set includeHeadings false? Or need to use keyword cursor for characters? But we don't know names. Maybe the book is small. We need to scan entire book. The cursor_create_full_scan_cursor should read all items. But we didn't read any items. The cursor_read_cursor_batch returned empty items. That means the cursor didn't produce items. Maybe we need to specify maxElements? But default is -1. Maybe the cursor requires a filterDescription? Wait cursor_create_full_scan_cursor returns a cursor that yields all document items. But we didn't read any. Maybe we need to call cursor_read_cursor_batch multiple times? It returned HasMore false. So no items. Maybe the cursor didn't create properly. Let's check the cursor name: fsc_cursor_0. Maybe we need to use cursor_read_cursor_batch with maxElements? But default is 50. It returned empty. Maybe the document is empty? Unlikely. Maybe the cursor requires includeHeadings false? But we set true. Let's try creating a keyword cursor for \\\"персонаж\\\" or \\\"герой\\\". But we don't know names. Maybe we need to use a full scan cursor but with includeHeadings false? Let's try again.\",\"tool_calls\":[{\"id\":\"call_ybb4hiws\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_full_scan_cursor\",\"arguments\":\"{\\\"includeHeadings\\\":false}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1693,\"completion_tokens\":307,\"total_tokens\":2000}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 08 Jan 2026 07:27:47 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

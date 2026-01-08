@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-420\",\"object\":\"chat.completion\",\"created\":1767857273,\"model\":\"gpt-oss:20b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"tool_calls\":[{\"id\":\"call_yq9bkk4i\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-read_cursor_batch\",\"arguments\":\"{\\\"cursorName\\\":\\\"kwd_cursor_2\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":6260,\"completion_tokens\":25,\"total_tokens\":6285}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 08 Jan 2026 07:27:53 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

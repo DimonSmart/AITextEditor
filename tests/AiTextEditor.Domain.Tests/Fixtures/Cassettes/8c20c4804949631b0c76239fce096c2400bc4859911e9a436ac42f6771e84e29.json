@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-789\",\"object\":\"chat.completion\",\"created\":1767860231,\"model\":\"gpt-oss:20b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"The second chapter ends with a cliffhanger about the hidden door.  \\n*(Semantic pointer: 2.p2)*\",\"reasoning\":\"We have the full scan cursor items. The second chapter ends with a cliffhanger about the hidden door. The user asked: \\\"Tell me how the second chapter ends. Answer in English.\\\" So we should answer in English, summarizing that the second chapter ends with a cliffhanger about the hidden door. Provide the semantic pointer. The pointer for the ending paragraph is \\\"2.p2\\\". So answer: \\\"The second chapter ends with a cliffhanger about the hidden door.\\\" Provide pointer.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1587,\"completion_tokens\":131,\"total_tokens\":1718}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 08 Jan 2026 08:17:11 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

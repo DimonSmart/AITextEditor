@@ -11,18 +11,17 @@ public class CursorAgentResponseParserTests
     [Fact]
     public void ParseCommand_HandlesSanitizedPayload()
     {
-        var content = "Lead text {\"decision\":\"continue\",\"newEvidence\":[{\"pointer\":\"p1\",\"excerpt\":\"line1\nline2\",\"reason\":\"match\"}],\"progress\":\"keep going\"} trailing";
+        var content = "Lead text {\"decision\":\"continue\",\"newEvidence\":[{\"pointer\":\"p1\",\"excerpt\":\"line1\\nline2\",\"reason\":\"match\"}],\"progress\":\"keep going\"} trailing";
 
-        var result = parser.ParseCommand(content, out var parsedFragment, out var multipleActions, out var finishDetected);
+        var result = parser.ParseCommand(content);
 
         Assert.NotNull(result);
         Assert.Equal("continue", result!.Action);
-        Assert.False(multipleActions);
-        Assert.False(finishDetected);
+        Assert.False(result.MultipleJsonCandidates);
         Assert.Equal("p1", result.NewEvidence![0].Pointer);
         Assert.Equal("line1\nline2", result.NewEvidence![0].Excerpt);
         Assert.Equal("keep going", result.Progress);
-        Assert.Contains("\\n", parsedFragment, StringComparison.Ordinal);
+        Assert.Contains("\\n", result.RawContent, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -30,12 +29,11 @@ public class CursorAgentResponseParserTests
     {
         var content = "{\"action\":\"stop\",\"batchFound\":true,\"newEvidence\":[]}";
 
-        var result = parser.ParseCommand(content, out var parsedFragment, out var multipleActions, out var finishDetected);
+        var result = parser.ParseCommand(content);
 
         Assert.NotNull(result);
         Assert.Equal("stop", result!.Action);
         Assert.True(result.BatchFound);
-        Assert.True(finishDetected);
     }
 
     [Fact]

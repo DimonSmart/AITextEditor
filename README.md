@@ -44,5 +44,10 @@ Example:
 export LLM_BASE_URL="https://ollama.com/api"
 export LLM_API_KEY="<your_token>"
 export LLM_MODEL="gpt-oss:8b"
-dotnet test
+dotnet test --filter "Category!=Manual"
+```
+
+To run long-running LLM tests (marked as `Manual`), use:
+```bash
+dotnet test --filter "Category=Manual"
 ```

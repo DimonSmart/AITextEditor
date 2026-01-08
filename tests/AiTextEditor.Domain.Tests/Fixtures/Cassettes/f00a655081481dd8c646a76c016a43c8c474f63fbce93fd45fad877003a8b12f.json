@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-899\",\"object\":\"chat.completion\",\"created\":1767857232,\"model\":\"gpt-oss:20b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to generate character dossiers. The tool character_dossiers_generate_character_dossiers was called, but it returned status updated but no characters. Maybe we need to run a cursor to scan the document and update dossiers. The instruction: \\\"Создай каталог досье персонажей книги. Используй инструменты character_dossiers.generate_character_dossiers и character_dossiers.get_character_dossiers. Верни только JSON каталога.\\\" So we should call generate_character_dossiers, then get_character_dossiers. But we did that. It returned empty characters. Maybe we need to run a cursor to scan the document and update dossiers from cursor. The function character_dossiers_update_character_dossiers_from_cursor expects a cursorName. We created a full scan cursor fsc_cursor_0. We need to run cursor_agent? Actually we can just update dossiers from cursor. Let's call character_dossiers_update_character_dossiers_from_cursor with cursorName fsc_cursor_0. Then get dossiers again.\",\"tool_calls\":[{\"id\":\"call_eq4t1qi6\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"character_dossiers-update_character_dossiers_from_cursor\",\"arguments\":\"{\\\"cursorName\\\":\\\"fsc_cursor_0\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1320,\"completion_tokens\":231,\"total_tokens\":1551}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 08 Jan 2026 07:27:11 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-759\",\"object\":\"chat.completion\",\"created\":1767857272,\"model\":\"gpt-oss:20b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We attempted to generate dossiers but got empty characters. The cursor didn't produce evidence. Maybe need to run cursor_agent on fsc_cursor_0 after creating it. But we did. It returned no evidence. Maybe need to use keyword cursor for characters. Let's search for character names. Use keyword cursor with keywords like \\\"Незнайка\\\", \\\"Кнопочки\\\", \\\"Пачкули\\\", \\\"Вертибутылкина\\\", \\\"Клёпки\\\", \\\"Пончик\\\", \\\"Фуксия\\\", \\\"Селёдочка\\\", \\\"Стекляшкин\\\", \\\"Звёздочкин\\\". Use keyword cursor.\",\"tool_calls\":[{\"id\":\"call_rnx4046w\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_keyword_cursor\",\"arguments\":\"{\\\"includeHeadings\\\":true,\\\"keywords\\\":[\\\"Незнайка\\\",\\\"Кнопочки\\\",\\\"Пачкули\\\",\\\"Вертибутылкина\\\",\\\"Клёпки\\\",\\\"Пончик\\\",\\\"Фуксия\\\",\\\"Селёдочка\\\",\\\"Стекляшкин\\\",\\\"Звёздочкин\\\"]}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":6163,\"completion_tokens\":215,\"total_tokens\":6378}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 08 Jan 2026 07:27:52 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

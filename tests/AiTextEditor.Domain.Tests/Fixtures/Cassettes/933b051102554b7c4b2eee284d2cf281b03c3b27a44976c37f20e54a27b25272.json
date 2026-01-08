@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-243\",\"object\":\"chat.completion\",\"created\":1767857033,\"model\":\"gpt-oss:20b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to run cursor_agent-run_cursor_agent. The error indicates malformed response. Maybe we need to provide maxEvidenceCount? But not necessary. The function signature: context, cursorName, maxEvidenceCount, startAfterPointer, taskDescription. We omitted maxEvidenceCount and startAfterPointer. They are optional. But maybe the agent expects them? The error says \\\"Agent response malformed.\\\" That might mean the agent returned something not JSON? But we didn't provide the agent's response. The tool returned error. Maybe we need to provide maxEvidenceCount? Let's try again with maxEvidenceCount: 100.\",\"tool_calls\":[{\"id\":\"call_oore66rr\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor_agent-run_cursor_agent\",\"arguments\":\"{\\\"context\\\":\\\"Книга детская, на русском языке. Нужно собрать досье персонажей: имя, возраст, описание, отношения, ключевые события.\\\",\\\"cursorName\\\":\\\"fsc_cursor_0\\\",\\\"maxEvidenceCount\\\":100,\\\"taskDescription\\\":\\\"Extract character dossiers from the book\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1418,\"completion_tokens\":201,\"total_tokens\":1619}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 08 Jan 2026 07:23:53 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

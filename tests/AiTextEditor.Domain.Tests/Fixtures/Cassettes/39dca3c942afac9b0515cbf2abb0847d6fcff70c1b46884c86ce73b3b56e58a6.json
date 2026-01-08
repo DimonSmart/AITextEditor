@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-681\",\"object\":\"chat.completion\",\"created\":1767857228,\"model\":\"gpt-oss:20b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to create catalog of character dossiers. We called generate_character_dossiers, but it returned empty characters. Maybe need to run update from cursor? The book is not loaded? We need to scan the document to build dossiers. The function generate_character_dossiers likely scans the whole document. But maybe we need to run cursor to get characters. Let's try to create a full scan cursor and run cursor_agent to extract character mentions. Then update dossiers from cursor. Then get dossiers. Let's do that.\\n\\nWe need to create a full scan cursor: cursor_create_full_scan_cursor. Then run cursor_agent_run_cursor_agent with task description \\\"Extract character names and details\\\". Then update dossiers from cursor. Then get dossiers. Let's do that.\",\"tool_calls\":[{\"id\":\"call_eris5kve\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_full_scan_cursor\",\"arguments\":\"{\\\"includeHeadings\\\":true}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1278,\"completion_tokens\":175,\"total_tokens\":1453}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 08 Jan 2026 07:27:08 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

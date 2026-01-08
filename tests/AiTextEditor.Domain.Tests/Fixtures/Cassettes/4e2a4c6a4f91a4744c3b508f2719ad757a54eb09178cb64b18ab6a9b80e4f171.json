@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-820\",\"object\":\"chat.completion\",\"created\":1767857275,\"model\":\"gpt-oss:20b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to create catalog of character dossiers. We used generate and get, but got empty. We need to run cursor to extract characters. We used keyword cursor but didn't update dossiers. We need to update dossiers from cursor. We did not call update after reading. We need to call character_dossiers_update_character_dossiers_from_cursor with kwd_cursor_2. Also maybe need to run agent to extract. Let's do that.\",\"tool_calls\":[{\"id\":\"call_ry3btptz\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"character_dossiers-update_character_dossiers_from_cursor\",\"arguments\":\"{\\\"cursorName\\\":\\\"kwd_cursor_2\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":10006,\"completion_tokens\":122,\"total_tokens\":10128}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 08 Jan 2026 07:27:55 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

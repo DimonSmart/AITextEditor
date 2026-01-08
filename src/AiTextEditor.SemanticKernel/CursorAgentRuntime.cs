@@ -231,8 +231,8 @@ public sealed class CursorAgentRuntime : ICursorAgentRuntime
         LogCompletionSkeleton(step, message);
         LogRawCompletion(step, content);
 
-        var parsed = responseParser.ParseCommand(content, out var parsedFragment, out var multipleActions, out var finishDetected);
-        if (multipleActions)
+        var parsed = responseParser.ParseCommand(content);
+        if (parsed != null && parsed.MultipleJsonCandidates)
         {
             logger.LogWarning("multiple actions returned");
         }
@@ -244,11 +244,11 @@ public sealed class CursorAgentRuntime : ICursorAgentRuntime
                 step,
                 parsed.Action,
                 parsed.BatchFound,
-                finishDetected,
-                Truncate(parsedFragment ?? string.Empty, 500));
+                parsed.Action == "stop",
+                Truncate(parsed.RawContent ?? string.Empty, 500));
         }
 
-        return parsed?.WithRawContent(parsedFragment ?? content);
+        return parsed?.WithRawContent(parsed.RawContent ?? content);
     }
 
     private static bool ShouldStop(string actionRaw, bool cursorHasMore, int step, int maxSteps, out string reason)

@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-284\",\"object\":\"chat.completion\",\"created\":1767857037,\"model\":\"gpt-oss:20b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We attempted to generate dossiers but got empty characters. Maybe the book is empty? We need to inspect the document. Let's create a keyword cursor for \\\"персонаж\\\" or names? But we don't know names. Maybe the book is empty. Let's read the default document. Use cursor_create_full_scan_cursor again? We did but got no items. Maybe the document is empty. Let's check the document size? We can read a portion. Use cursor_create_filtered_cursor? But we need to read the document. Let's try cursor_create_filtered_cursor with filterDescription \\\".*\\\" to get all.\",\"tool_calls\":[{\"id\":\"call_aabgw3o3\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_filtered_cursor\",\"arguments\":\"{\\\"filterDescription\\\":\\\"^.*$\\\",\\\"includeHeadings\\\":true}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1662,\"completion_tokens\":153,\"total_tokens\":1815}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 08 Jan 2026 07:23:57 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

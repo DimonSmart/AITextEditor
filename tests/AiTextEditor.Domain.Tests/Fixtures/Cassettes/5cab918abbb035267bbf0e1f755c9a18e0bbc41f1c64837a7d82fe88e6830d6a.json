@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-478\",\"object\":\"chat.completion\",\"created\":1767857105,\"model\":\"gpt-oss:20b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to generate character dossiers. The tool generate_character_dossiers likely scans the document and creates dossiers. It returned updated status but no characters. Maybe need to run cursor to read content and update dossiers. We created full scan cursor. Need to read batches and update dossiers. Use cursor_read_cursor_batch repeatedly until done, then update dossiers from cursor. Then get dossiers. Let's do that.\",\"tool_calls\":[{\"id\":\"call_59k3ciu8\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-read_cursor_batch\",\"arguments\":\"{\\\"cursorName\\\":\\\"fsc_cursor_0\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1314,\"completion_tokens\":109,\"total_tokens\":1423}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 08 Jan 2026 07:25:05 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

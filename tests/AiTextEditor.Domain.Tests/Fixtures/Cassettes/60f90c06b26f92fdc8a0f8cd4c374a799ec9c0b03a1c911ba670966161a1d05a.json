@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-186\",\"object\":\"chat.completion\",\"created\":1767830261,\"model\":\"gpt-oss:20b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"```json\\n{\\n  \\\"dossiersId\\\": \\\"3b6dc7bad99e4a8cb171e875ded65f0f\\\",\\n  \\\"version\\\": 2,\\n  \\\"characters\\\": [\\n    {\\n      \\\"id\\\": \\\"5f9ba350a5224b44a600480972f714c2\\\",\\n      \\\"name\\\": \\\"Звёздочкин\\\",\\n      \\\"gender\\\": \\\"unknown\\\",\\n      \\\"description\\\": \\\"\\\",\\n      \\\"aliases\\\": [\\n        \\\"профессор Звёздочкин\\\"\\n      ],\\n      \\\"aliasExamples\\\": {\\n        \\\"профессор Звёздочкин\\\": \\\"профессор Звёздочкин громко откашлялся\\\"\\n      }\\n    },\\n    {\\n      \\\"id\\\": \\\"992c5f4caac645899df1b4d2eccb600f\\\",\\n      \\\"name\\\": \\\"Знайка\\\",\\n      \\\"gender\\\": \\\"male\\\",\\n      \\\"description\\\": \\\"создал собственную теорию происхождения лунных кратеров\\\",\\n      \\\"aliases\\\": [\\n        \\\"Знайка\\\",\\n        \\\"Знайкиной\\\",\\n        \\\"Знайку\\\"\\n      ],\\n      \\\"aliasExamples\\\": {\\n        \\\"Знайка\\\": \\\"Знайка, однако ж, не был согласен\\\",\\n        \\\"Знайкиной\\\": \\\"с этой Знайкиной теорией\\\",\\n        \\\"Знайку\\\": \\\"слушать не хотели Знайку\\\"\\n      }\\n    },\\n    {\\n      \\\"id\\\": \\\"dab42a096eb94790ac0276bcb00726a1\\\",\\n      \\\"name\\\": \\\"Стекляшкин\\\",\\n      \\\"gender\\\": \\\"unknown\\\",\\n      \\\"description\\\": \\\"\\\",\\n      \\\"aliases\\\": [\\n        \\\"Стекляшкиным\\\"\\n      ],\\n      \\\"aliasExamples\\\": {\\n        \\\"Стекляшкиным\\\": \\\"Он вместе со Стекляшкиным наблюдал\\\"\\n      }\\n    }\\n  ]\\n}\\n```\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1545,\"completion_tokens\":410,\"total_tokens\":1955}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Wed, 07 Jan 2026 23:57:40 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

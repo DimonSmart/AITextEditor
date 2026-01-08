@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-803\",\"object\":\"chat.completion\",\"created\":1767831069,\"model\":\"gpt-oss:20b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to find first mention of professor Zvezdochkin, excluding headings. The cursor returned paragraphs 1.1.1.p21, p22, p23. The first mention appears in p21. We should confirm that earlier paragraphs don't mention him. We might need to scan earlier parts. Let's read earlier portion. Use cursor_read_cursor_batch again with startAfterPointer? Actually we need to read earlier portion before p21. The cursor likely started at beginning. But we need to confirm that no earlier paragraph mentions him. Let's read previous batch. Use cursor_read_cursor_batch with startAfterPointer maybe \\\"1.1.1.p20\\\"? But we don't know pointer. Let's read from start. Use cursor_read_cursor_batch again with same cursor? It will continue from nextAfterPointer. We need earlier. We can create a new cursor starting at beginning. Use cursor_create_keyword_cursor again but includeHeadings false. Then read first batch. Let's do that.\",\"tool_calls\":[{\"id\":\"call_wpg5ku8d\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor-create_keyword_cursor\",\"arguments\":\"{\\\"includeHeadings\\\":false,\\\"keywords\\\":[\\\"Звёздочкин\\\"]}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1725,\"completion_tokens\":233,\"total_tokens\":1958}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 08 Jan 2026 00:11:08 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

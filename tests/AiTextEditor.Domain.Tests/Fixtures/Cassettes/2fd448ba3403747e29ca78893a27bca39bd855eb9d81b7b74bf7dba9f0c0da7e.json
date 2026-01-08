@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-650\",\"object\":\"chat.completion\",\"created\":1767857278,\"model\":\"gpt-oss:20b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We attempted to generate dossiers but still empty. Maybe need to run cursor_agent to extract. But earlier run failed. Maybe need to run cursor_agent after updating dossiers? The cursor_agent may need to be run on the cursor that contains character info. We used kwd_cursor_2. But the agent didn't produce evidence. Maybe need to run cursor_agent with task description \\\"Extract character information from the book\\\". We did earlier but got no evidence. Maybe need to run cursor_agent again after updating dossiers? Let's try again.\",\"tool_calls\":[{\"id\":\"call_covlr53f\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"cursor_agent-run_cursor_agent\",\"arguments\":\"{\\\"context\\\":\\\"Книга детская\\\",\\\"cursorName\\\":\\\"kwd_cursor_2\\\",\\\"maxEvidenceCount\\\":null,\\\"startAfterPointer\\\":\\\"\\\",\\\"taskDescription\\\":\\\"Extract character information from the book\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":10160,\"completion_tokens\":163,\"total_tokens\":10323}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Thu, 08 Jan 2026 07:27:58 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

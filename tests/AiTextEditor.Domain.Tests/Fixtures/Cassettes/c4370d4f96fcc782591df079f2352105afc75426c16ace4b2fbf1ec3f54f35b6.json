@@ -1,0 +1,13 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-947\",\"object\":\"chat.completion\",\"created\":1767829914,\"model\":\"gpt-oss:20b-cloud\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning\":\"We need to generate character dossiers. Use function character_dossiers_generate_character_dossiers. Then get dossiers. Then return JSON.\",\"tool_calls\":[{\"id\":\"call_co4dq2hl\",\"index\":0,\"type\":\"function\",\"function\":{\"name\":\"character_dossiers-generate_character_dossiers\",\"arguments\":\"{}\"}}]},\"finish_reason\":\"tool_calls\"}],\"usage\":{\"prompt_tokens\":1135,\"completion_tokens\":50,\"total_tokens\":1185}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Wed, 07 Jan 2026 23:51:54 GMT"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

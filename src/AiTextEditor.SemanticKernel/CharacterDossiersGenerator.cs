@@ -259,7 +259,6 @@ public sealed class CharacterDossiersGenerator
         CancellationToken cancellationToken)
     {
         var changed = false;
-        var profilesWithNewFacts = new HashSet<ProfileAccumulator>();
 
         foreach (var hit in hits)
         {
@@ -271,61 +270,16 @@ public sealed class CharacterDossiersGenerator
 
             changed |= profile.SetGenderIfUnknown(hit.Gender);
 
-            var factsChanged = profile.MergeFacts(hit.Facts);
-            if (factsChanged)
-            {
-                profilesWithNewFacts.Add(profile);
-                changed = true;
-            }
+            var descriptionChanged = profile.SetDescriptionIfEmpty(hit.Description);
+            changed |= descriptionChanged;
 
-            if (created || anyAliasChanged || factsChanged)
+            if (created || anyAliasChanged || descriptionChanged)
             {
                 index.UpdateKeys(profile);
             }
         }
 
-        foreach (var profile in profilesWithNewFacts)
-        {
-            var description = await SummarizeDescriptionAsync(profile, cancellationToken);
-            if (profile.SetDescriptionIfChanged(description))
-            {
-                changed = true;
-            }
-        }
-
         return changed;
-    }
-
-    private async Task<string> SummarizeDescriptionAsync(ProfileAccumulator profile, CancellationToken cancellationToken)
-    {
-        if (profile.Facts.Count == 0)
-        {
-            return string.Empty;
-        }
-
-        var payload = new
-        {
-            task = "summarize_description_from_facts",
-            name = profile.Name,
-            gender = profile.Gender,
-            facts = profile.Facts.Select(f => new { key = f.Key, value = f.Value }).ToArray()
-        };
-
-        var prompt = JsonSerializer.Serialize(payload, JsonOptions);
-
-        var history = new ChatHistory();
-        history.AddSystemMessage(CharacterDescriptionSummarizerSystemPrompt);
-        history.AddUserMessage(prompt);
-
-        var settings = new OpenAIPromptExecutionSettings
-        {
-            Temperature = 0,
-            MaxTokens = 300
-        };
-
-        var response = await chatService.GetChatMessageContentsAsync(history, settings, cancellationToken: cancellationToken);
-        var content = (response.FirstOrDefault()?.Content ?? string.Empty).Trim();
-        return content;
     }
 
     private async Task<List<LlmCharacter>> ExtractCharactersWithLlmAsync(
@@ -352,37 +306,72 @@ public sealed class CharacterDossiersGenerator
         var settings = new OpenAIPromptExecutionSettings
         {
             Temperature = 0,
-            MaxTokens = 1600
+            MaxTokens = limits.DefaultResponseTokenLimit
         };
 
         var response = await chatService.GetChatMessageContentsAsync(history, settings, cancellationToken: cancellationToken);
         var content = response.FirstOrDefault()?.Content ?? string.Empty;
 
-        var json = JsonExtractor.ExtractJson(content);
-        if (string.IsNullOrWhiteSpace(json))
+        var candidates = JsonExtractor.ExtractAllJsons(content);
+        if (candidates.Count == 0)
         {
             logger.LogWarning("Character extraction returned no JSON.");
             return [];
         }
 
-        try
+        foreach (var json in candidates)
         {
-            var items = JsonSerializer.Deserialize<List<LlmCharacter>>(json, JsonOptions) ?? [];
-            return items
-                .Select(NormalizeHit)
-                .Where(x => !string.IsNullOrWhiteSpace(x.CanonicalName))
-                .ToList();
+            try
+            {
+                var items = JsonSerializer.Deserialize<List<LlmCharacter>>(json, JsonOptions);
+                if (items != null)
+                {
+                    return items
+                        .Select(NormalizeHit)
+                        .Where(x => !string.IsNullOrWhiteSpace(x.CanonicalName))
+                        .ToList();
+                }
+            }
+            catch
+            {
+                // Fallback: check if wrapped in an object like { "characters": [...] }
+                try
+                {
+                    using var doc = JsonDocument.Parse(json);
+                    if (doc.RootElement.ValueKind == JsonValueKind.Object)
+                    {
+                        foreach (var property in doc.RootElement.EnumerateObject())
+                        {
+                            if (property.Value.ValueKind == JsonValueKind.Array)
+                            {
+                                try
+                                {
+                                    var items = JsonSerializer.Deserialize<List<LlmCharacter>>(property.Value.GetRawText(), JsonOptions);
+                                    if (items != null && items.Count > 0)
+                                    {
+                                        return items
+                                            .Select(NormalizeHit)
+                                            .Where(x => !string.IsNullOrWhiteSpace(x.CanonicalName))
+                                            .ToList();
+                                    }
+                                }
+                                catch { }
+                            }
+                        }
+                    }
+                }
+                catch { }
+            }
         }
-        catch (Exception ex)
-        {
-            logger.LogWarning(ex, "Character extraction JSON parse failed.");
-            return [];
-        }
+
+        logger.LogWarning("Character extraction JSON parse failed.");
+        return [];
     }
 
     private static LlmCharacter NormalizeHit(LlmCharacter hit)
     {
         var canonical = (hit.CanonicalName ?? string.Empty).Trim();
+        var description = (hit.Description ?? string.Empty).Trim();
 
         var normalizedAliases = (hit.Aliases ?? [])
             .Where(a => a is not null && !string.IsNullOrWhiteSpace(a.Form) && !string.IsNullOrWhiteSpace(a.Example))
@@ -391,22 +380,14 @@ public sealed class CharacterDossiersGenerator
             .OrderBy(a => a.Form, StringComparer.OrdinalIgnoreCase)
             .ToList();
 
-        var normalizedFacts = (hit.Facts ?? [])
-            .Where(f => f is not null && !string.IsNullOrWhiteSpace(f.Key) && !string.IsNullOrWhiteSpace(f.Value) && !string.IsNullOrWhiteSpace(f.Example))
-            .Select(f => new FactHit(f.Key.Trim(), f.Value.Trim(), f.Example.Trim()))
-            .DistinctBy(f => (NormalizeForComparison(f.Key), NormalizeForComparison(f.Value)))
-            .OrderBy(f => f.Key, StringComparer.OrdinalIgnoreCase)
-            .ThenBy(f => f.Value, StringComparer.OrdinalIgnoreCase)
-            .ToList();
-
         normalizedAliases = AddPossessiveBaseAliases(normalizedAliases);
 
         return hit with
         {
             CanonicalName = canonical,
             Aliases = normalizedAliases,
-            Facts = normalizedFacts,
-            Gender = NormalizeGender(hit.Gender)
+            Gender = NormalizeGender(hit.Gender),
+            Description = description
         };
     }
 
@@ -476,16 +457,11 @@ public sealed class CharacterDossiersGenerator
         [property: JsonPropertyName("form")] string Form,
         [property: JsonPropertyName("example")] string Example);
 
-    private sealed record FactHit(
-        [property: JsonPropertyName("key")] string Key,
-        [property: JsonPropertyName("value")] string Value,
-        [property: JsonPropertyName("example")] string Example);
-
     private sealed record LlmCharacter(
         [property: JsonPropertyName("canonicalName")] string? CanonicalName,
         [property: JsonPropertyName("gender")] string? Gender,
         [property: JsonPropertyName("aliases")] List<AliasHit>? Aliases,
-        [property: JsonPropertyName("facts")] List<FactHit>? Facts);
+        [property: JsonPropertyName("description")] string? Description);
 
     private sealed record KeyVariant(string Key, int Weight);
 
@@ -607,14 +583,12 @@ public sealed class CharacterDossiersGenerator
     private sealed class ProfileAccumulator
     {
         private readonly Dictionary<string, string> aliasExamples = new(StringComparer.OrdinalIgnoreCase);
-        private readonly List<CharacterFact> facts = [];
 
         public string Id { get; }
         public string Name { get; private set; }
         public string Description { get; private set; }
         public string Gender { get; private set; }
         public IReadOnlyDictionary<string, string> AliasExamples => aliasExamples;
-        public IReadOnlyList<CharacterFact> Facts => facts;
 
         public ProfileAccumulator(CharacterDossier dossier)
         {
@@ -624,15 +598,14 @@ public sealed class CharacterDossiersGenerator
             Gender = string.IsNullOrWhiteSpace(dossier.Gender) ? "unknown" : dossier.Gender;
 
             MergeAliasExamples(dossier.AliasExamples);
-            facts.AddRange(dossier.Facts ?? []);
         }
 
-        private ProfileAccumulator(string name, string gender, IEnumerable<AliasHit>? aliases, IEnumerable<FactHit>? facts)
+        private ProfileAccumulator(string name, string gender, IEnumerable<AliasHit>? aliases, string? description)
         {
             Id = Guid.NewGuid().ToString("N");
             Name = name.Trim();
             Gender = string.IsNullOrWhiteSpace(gender) ? "unknown" : gender.Trim();
-            Description = string.Empty;
+            Description = description?.Trim() ?? string.Empty;
 
             if (aliases is not null)
             {
@@ -641,20 +614,12 @@ public sealed class CharacterDossiersGenerator
                     AddAliasExample(alias.Form, alias.Example);
                 }
             }
-
-            if (facts is not null)
-            {
-                foreach (var fact in facts)
-                {
-                    AddFact(fact.Key, fact.Value, fact.Example);
-                }
-            }
         }
 
         public static ProfileAccumulator FromCandidate(LlmCharacter candidate)
         {
             var name = candidate.CanonicalName?.Trim() ?? string.Empty;
-            return new ProfileAccumulator(name, candidate.Gender ?? "unknown", candidate.Aliases, candidate.Facts);
+            return new ProfileAccumulator(name, candidate.Gender ?? "unknown", candidate.Aliases, candidate.Description);
         }
 
         public bool MatchesName(string name)
@@ -704,26 +669,15 @@ public sealed class CharacterDossiersGenerator
             return changed;
         }
 
-        public bool MergeFacts(IEnumerable<FactHit>? incoming)
+        public bool SetDescriptionIfEmpty(string? description)
         {
-            if (incoming is null)
+            var normalized = description?.Trim() ?? string.Empty;
+            if (normalized.Length == 0)
             {
                 return false;
             }
 
-            var changed = false;
-            foreach (var fact in incoming)
-            {
-                changed |= AddFact(fact.Key, fact.Value, fact.Example);
-            }
-
-            return changed;
-        }
-
-        public bool SetDescriptionIfChanged(string description)
-        {
-            var normalized = description?.Trim() ?? string.Empty;
-            if (string.Equals(Description?.Trim() ?? string.Empty, normalized, StringComparison.Ordinal))
+            if (!string.IsNullOrWhiteSpace(Description))
             {
                 return false;
             }
@@ -743,21 +697,13 @@ public sealed class CharacterDossiersGenerator
                 .OrderBy(a => a, StringComparer.OrdinalIgnoreCase)
                 .ToList();
 
-            var normalizedFacts = facts
-                .Where(f => f is not null)
-                .GroupBy(f => (NormalizeForComparison(f.Key), NormalizeForComparison(f.Value)))
-                .Select(g => g.First())
-                .OrderBy(f => f.Key, StringComparer.OrdinalIgnoreCase)
-                .ThenBy(f => f.Value, StringComparer.OrdinalIgnoreCase)
-                .ToList();
-
             return new CharacterDossier(
                 Id,
                 Name,
                 Description?.Trim() ?? string.Empty,
                 aliases,
                 normalizedAliasExamples,
-                normalizedFacts,
+                [],
                 string.IsNullOrWhiteSpace(Gender) ? "unknown" : Gender);
         }
 
@@ -794,30 +740,6 @@ public sealed class CharacterDossiersGenerator
             {
                 AddAliasExample(alias, example);
             }
-        }
-
-        private bool AddFact(string key, string value, string example)
-        {
-            if (string.IsNullOrWhiteSpace(key) || string.IsNullOrWhiteSpace(value) || string.IsNullOrWhiteSpace(example))
-            {
-                return false;
-            }
-
-            var normalizedKey = key.Trim();
-            var normalizedValue = value.Trim();
-            var normalizedExample = example.Trim();
-
-            var exists = facts.Any(f =>
-                string.Equals(f.Key, normalizedKey, StringComparison.OrdinalIgnoreCase) &&
-                string.Equals(f.Value, normalizedValue, StringComparison.OrdinalIgnoreCase));
-
-            if (exists)
-            {
-                return false;
-            }
-
-            facts.Add(new CharacterFact(normalizedKey, normalizedValue, normalizedExample));
-            return true;
         }
 
         private static bool TryFindExampleFor(string name, IReadOnlyList<AliasHit>? aliases, out string example)
@@ -868,25 +790,17 @@ public sealed class CharacterDossiersGenerator
                 return;
             }
 
-            var baseKey = NormalizeKey(value, stripTitles: false);
+            var baseKey = NormalizeKey(value);
             if (!string.IsNullOrWhiteSpace(baseKey) && seen.Add(baseKey))
             {
                 variants.Add(new KeyVariant(baseKey, baseWeight));
-            }
-
-            var strippedKey = NormalizeKey(value, stripTitles: true);
-            if (!string.IsNullOrWhiteSpace(strippedKey)
-                && !string.Equals(strippedKey, baseKey, StringComparison.Ordinal)
-                && seen.Add(strippedKey))
-            {
-                variants.Add(new KeyVariant(strippedKey, strippedWeight));
             }
         }
     }
 
     private static int ResolveMinMatchScore(LlmCharacter candidate)
     {
-        var canonicalKey = NormalizeKey(candidate.CanonicalName ?? string.Empty, stripTitles: true);
+        var canonicalKey = NormalizeKey(candidate.CanonicalName ?? string.Empty);
         if (canonicalKey.Length <= 4)
         {
             return 6;
@@ -914,56 +828,27 @@ public sealed class CharacterDossiersGenerator
                 return;
             }
 
-            var baseKey = NormalizeKey(value, stripTitles: false);
+            var baseKey = NormalizeKey(value);
             if (!string.IsNullOrWhiteSpace(baseKey))
             {
                 keys.Add(baseKey);
             }
 
-            var strippedKey = NormalizeKey(value, stripTitles: true);
-            if (!string.IsNullOrWhiteSpace(strippedKey))
-            {
-                keys.Add(strippedKey);
-            }
-
             if (TryGetPossessiveBase(value, out var possessiveBase))
             {
-                var basePossessiveKey = NormalizeKey(possessiveBase, stripTitles: false);
+                var basePossessiveKey = NormalizeKey(possessiveBase);
                 if (!string.IsNullOrWhiteSpace(basePossessiveKey))
                 {
                     keys.Add(basePossessiveKey);
-                }
-
-                var strippedPossessiveKey = NormalizeKey(possessiveBase, stripTitles: true);
-                if (!string.IsNullOrWhiteSpace(strippedPossessiveKey))
-                {
-                    keys.Add(strippedPossessiveKey);
                 }
             }
         }
     }
 
-    private static string NormalizeKey(string value, bool stripTitles)
+    private static string NormalizeKey(string value)
     {
         var normalized = NormalizeForComparison(value);
-        if (!stripTitles || string.IsNullOrWhiteSpace(normalized))
-        {
-            return normalized;
-        }
-
-        var tokens = normalized.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-        if (tokens.Length == 0)
-        {
-            return normalized;
-        }
-
-        var index = 0;
-        while (index < tokens.Length && TitleTokens.Contains(tokens[index]))
-        {
-            index++;
-        }
-
-        return index == 0 ? normalized : string.Join(' ', tokens.Skip(index));
+        return normalized;
     }
 
     private static string NormalizeForComparison(string value)
@@ -999,32 +884,6 @@ public sealed class CharacterDossiersGenerator
         return builder.ToString().Trim();
     }
 
-    private static readonly HashSet<string> TitleTokens = new(StringComparer.Ordinal)
-    {
-        "профессор",
-        "проф",
-        "доктор",
-        "д-р",
-        "господин",
-        "госпожа",
-        "товарищ",
-        "мистер",
-        "мисс",
-        "миссис",
-        "сэр",
-        "мсье",
-        "мадам",
-        "мадемуазель",
-        "professor",
-        "prof",
-        "doctor",
-        "dr",
-        "mr",
-        "mrs",
-        "ms",
-        "sir"
-    };
-
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNameCaseInsensitive = true,
@@ -1033,66 +892,45 @@ public sealed class CharacterDossiersGenerator
         WriteIndented = false
     };
 
-    private const string CharacterDescriptionSummarizerSystemPrompt = """
-You are CharacterDossierDescriptionSummarizer.
+       private const string CharacterExtractionSystemPrompt = """
+You are an expert Character Extractor.
 
-Input: JSON:
-{
-  "task": "summarize_description_from_facts",
-  "name": "...",
-  "gender": "male|female|unknown",
-  "facts": [ { "key": "...", "value": "..." } ]
-}
+Task: Analyze the provided text fragments and extract structured data about CHARACTERS/PEOPLE mentioned.
 
-Rules:
-- Use ONLY the provided facts. Do not invent.
-- Output must be one line: 1-3 sentences in the same language as the facts.
-- If facts is empty, output an empty string.
-- Do not mention pointers, dates, languages, or metadata.
+Input: JSON { "task": "extract_characters", "paragraphs": [ { "pointer": "...", "text": "..." } ] }
 
-Output:
-Return PLAIN TEXT ONLY. No JSON. No markdown.
-""";
-
-    private const string CharacterExtractionSystemPrompt = """
-You are CharacterExtractor.
-
-Input: JSON:
-{ "task": "extract_characters", "paragraphs": [ { "pointer": "...", "text": "..." } ] }
-
-Rules:
-- Identify only PEOPLE/CHARACTERS mentioned in the text.
-- If a paragraph contains no character mentions, ignore it.
-- Do not guess. If it is unclear that an entity is a person, skip it.
-- Ignore generic groups/roles or unnamed speakers.
-- Treat a role as a character only when it is part of a stable unique designation tied to a person.
+General Rules:
+- Identify only PEOPLE. Ignore generic groups, unnamed speakers, or unstable roles.
+- Skip paragraphs with no character mentions.
 - Use ONLY the provided text. Do not invent facts.
-- Extract structured data only: canonical name, name forms (with a short sentence example), and explicit facts (with a short sentence example).
+- Output generic/cliché entries is forbidden.
 
-Candidate schema (JSON array only):
+Output Schema (JSON Array):
 [
   {
-    "canonicalName": "string (required)",
+    "canonicalName": "string (Full name without title, e.g. 'Ivanov' instead of 'Mr. Ivanov')",
     "gender": "male|female|unknown",
     "aliases": [
-      { "form": "string", "example": "short sentence from the text" }
+      { "form": "string (name variant found in text)", "example": "short sentence containing this form" }
     ],
-    "facts": [
-      { "key": "string", "value": "string", "example": "short sentence from the text" }
-    ]
+    "description": "string (2-5 sentences, see below)"
   }
 ]
 
-Important:
-- aliases must contain ONLY forms/nicknames of THIS SAME character. Never include other characters.
-- If a sentence lists multiple names separated by commas or 'and'/'и', those are DIFFERENT characters, not aliases.
-- facts must be stable properties/status/relations explicitly stated in the text, not one-off actions.
-- Forbidden to 'fill in' or infer.
+Name Rules:
+- Canonical Name: Prefer name without titles. If title is needed for disambiguation, include it, but add alias without title.
+- Aliases: Must belong to the SAME character. Do not merge different characters listed together.
 
-English possessive rule:
-- If you see a form like John's or John’s, include alias with that form and ALSO include base form John (you may reuse the same example).
+Description Rules (Critical):
+- Language: RUSSIAN.
+- Create a cohesive psychological portrait (temperament, habits, values) based on observed behavior (2-5 sentences).
+- Abstract generalizations; DO NOT retell scenes or quote text.
+- Plain prose only (no lists).
+- Usage of meta-phrases ("in the book", "author says", "в тексте") is FORBIDDEN.
+- Use uncertain language ("вероятно", "похоже") for weak evidence.
+- Avoid clichés ("good", "bad", "interesting"); describe specific behavioral patterns instead.
 
 Output:
-Return JSON ARRAY ONLY. No markdown. No extra text.
+Return strictly a JSON ARRAY. No markdown.
 """;
 }
