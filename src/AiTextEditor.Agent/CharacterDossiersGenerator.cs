@@ -895,7 +895,7 @@ public sealed class CharacterDossiersGenerator
         WriteIndented = false
     };
 
-       private const string CharacterExtractionSystemPrompt = """
+private const string CharacterExtractionSystemPrompt = """
 You are an expert Character Extractor.
 
 Task: Analyze the provided text fragments and extract structured data about CHARACTERS/PEOPLE mentioned.
@@ -903,15 +903,16 @@ Task: Analyze the provided text fragments and extract structured data about CHAR
 Input: JSON { "task": "extract_characters", "paragraphs": [ { "pointer": "...", "text": "..." } ] }
 
 General Rules:
-- Identify only PEOPLE. Ignore generic groups, unnamed speakers, or unstable roles.
-- Skip paragraphs with no character mentions.
+- Identify only PEOPLE/CHARACTERS. Ignore generic groups and unnamed speakers.
+- If a person is referenced only by a role/title (e.g., "the professor"), include it ONLY if it clearly refers to the same single person within the provided input; otherwise ignore.
 - Use ONLY the provided text. Do not invent facts.
 - Output generic/cliché entries is forbidden.
+- If no characters found, return [].
 
 Output Schema (JSON Array):
 [
   {
-    "canonicalName": "string (Full name without title, e.g. 'Ivanov' instead of 'Mr. Ivanov')",
+    "canonicalName": "string (best stable name as in text, without title; do NOT invent patronymics/missing parts)",
     "gender": "male|female|unknown",
     "aliases": [
       { "form": "string (name variant found in text)", "example": "short sentence containing this form" }
@@ -921,17 +922,23 @@ Output Schema (JSON Array):
 ]
 
 Name Rules:
-- Canonical Name: Prefer name without titles. If title is needed for disambiguation, include it, but add alias without title.
+- Canonical Name: Prefer the best stable name as in text WITHOUT title. Do NOT invent patronymics or missing parts of the name.
+- If title is needed for disambiguation, include it in canonicalName, but add an alias without title.
 - Aliases: Must belong to the SAME character. Do not merge different characters listed together.
+- One object per character. Merge mentions across paragraphs. If unsure two mentions are the same person, keep separate objects.
+- Aliases: Keep up to 5. Prefer the most informative forms.
 
 Description Rules (Critical):
 - Language: RUSSIAN.
-- Create a cohesive psychological portrait (temperament, habits, values) based on observed behavior (2-5 sentences).
+- Create a cohesive psychological portrait (temperament, habits, values) ONLY based on EXPLICIT evidence in the text (actions, dialogue, internal monologue).
+- If the character is merely present (e.g., "was there", "flew with X") but their personality is not revealed, write exactly: "В данном фрагменте характер не раскрыт."
+- STRICTLY FORBIDDEN: Inventing positive/professional traits (e.g., "initiative", "attentive", "supportive") without direct evidence.
+- STRICTLY FORBIDDEN: Generalizing single ambiguous actions into permanent personality traits.
+- You may infer weak traits ONLY with uncertainty words ("вероятно", "похоже") and only if supported by at least TWO separate cues.
 - Abstract generalizations; DO NOT retell scenes or quote text.
 - Plain prose only (no lists).
-- Usage of meta-phrases ("in the book", "author says", "в тексте") is FORBIDDEN.
-- Use uncertain language ("вероятно", "похоже") for weak evidence.
-- Avoid clichés ("good", "bad", "interesting"); describe specific behavioral patterns instead.
+- Usage of meta-phrases ("in the book", "author says", "в тексте") is FORBIDDEN (except for the "характер не раскрыт" phrase).
+- Do NOT use double quotes (") inside any string fields.
 
 Output:
 Return strictly a JSON ARRAY. No markdown.
