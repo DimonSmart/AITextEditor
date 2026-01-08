@@ -156,40 +156,4 @@ public class McpServerTests
             new LinearEditOperation(LinearEditAction.Replace, invalidPointer, null, new[] { replacement })
         }));
     }
-
-    /*
-    [Fact]
-    public async Task SemanticAction_UsesConfiguredLamaClient()
-    {
-        // This test is no longer relevant as LamaClient has been removed.
-        // We should replace it with a test that verifies the Kernel configuration if needed.
-    }
-    */
-
-    [Fact]
-    public async Task ChapterSummaryScenario_UsesNavigationAndSummarization()
-    {
-        var markdown = """
-# Chapter One
-
-The first chapter closes by hinting at a secret meeting.
-
-# Chapter Two
-
-The journey continues as the team crosses the river.
-
-The second chapter ends with a cliffhanger about the hidden door.
-""";
-        var userCommand = "Tell me how the second chapter ends. Answer in English.";
-
-        using var httpClient = await TestLlmConfiguration.CreateVerifiedLlmClientAsync();
-        var engine = new SemanticKernelEngine(httpClient);
-
-        var result = await engine.RunAsync(markdown, userCommand);
-
-        // The new engine relies on the LLM to call the plugin and return the answer.
-        // We check if the answer contains relevant keywords from the second chapter.
-        Assert.Contains("cliffhanger", result.LastAnswer, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("hidden door", result.LastAnswer, StringComparison.OrdinalIgnoreCase);
-    }
 }

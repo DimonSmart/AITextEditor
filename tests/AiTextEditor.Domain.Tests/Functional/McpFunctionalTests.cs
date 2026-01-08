@@ -54,7 +54,7 @@ public class McpFunctionalTests
         var markdown = LoadNeznaykaSample();
         using var httpClient = await TestLlmConfiguration.CreateVerifiedLlmClientAsync(output);
         using var loggerFactory = TestLoggerFactory.Create(output);
-        var engine = new SemanticKernelEngine(httpClient, loggerFactory);
+        var engine = new SemanticKernelEngine(httpClient, loggerFactory, "35dac0c0480c47738f24e3a8ac12250a");
 
         var result = await engine.RunAsync(markdown, question);
         var answer = result.LastAnswer ?? string.Empty;
@@ -83,7 +83,7 @@ public class McpFunctionalTests
         var markdown = LoadNeznaykaSample();
         using var httpClient = await TestLlmConfiguration.CreateVerifiedLlmClientAsync(output);
         using var loggerFactory = TestLoggerFactory.Create(output);
-        var engine = new SemanticKernelEngine(httpClient, loggerFactory);
+        var engine = new SemanticKernelEngine(httpClient, loggerFactory, "35dac0c0480c47738f24e3a8ac12250a");
 
         var result = await engine.RunAsync(markdown, command);
         var answer = result.LastAnswer ?? string.Empty;

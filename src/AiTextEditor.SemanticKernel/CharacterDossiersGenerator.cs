@@ -602,8 +602,11 @@ public sealed class CharacterDossiersGenerator
 
         private ProfileAccumulator(string name, string gender, IEnumerable<AliasHit>? aliases, string? description)
         {
-            Id = Guid.NewGuid().ToString("N");
             Name = name.Trim();
+            using var md5 = System.Security.Cryptography.MD5.Create();
+            var hash = md5.ComputeHash(System.Text.Encoding.UTF8.GetBytes(Name));
+            Id = new Guid(hash).ToString("N");
+
             Gender = string.IsNullOrWhiteSpace(gender) ? "unknown" : gender.Trim();
             Description = description?.Trim() ?? string.Empty;
 

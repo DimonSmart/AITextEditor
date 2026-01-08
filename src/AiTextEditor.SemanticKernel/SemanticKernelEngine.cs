@@ -16,13 +16,15 @@ namespace AiTextEditor.SemanticKernel;
 public sealed class SemanticKernelEngine
 {
     private readonly HttpClient httpClient;
+    private readonly string? fixedDossiersId;
 
     private readonly ILoggerFactory loggerFactory;
 
-    public SemanticKernelEngine(HttpClient? httpClient = null, ILoggerFactory? loggerFactory = null)
+    public SemanticKernelEngine(HttpClient? httpClient = null, ILoggerFactory? loggerFactory = null, string? fixedDossiersId = null)
     {
         this.loggerFactory = loggerFactory ?? CreateDefaultLoggerFactory();
         this.httpClient = httpClient ?? CreateHttpClient(this.loggerFactory);
+        this.fixedDossiersId = fixedDossiersId;
     }
 
     public async Task<SemanticKernelContext> RunAsync(string markdown, string userCommand)
@@ -38,7 +40,7 @@ public sealed class SemanticKernelEngine
         var repository = new MarkdownDocumentRepository();
         var document = repository.LoadFromMarkdown(markdown);
 
-        var dossierService = new CharacterDossierService();
+        var dossierService = new CharacterDossierService(fixedDossiersId);
         var documentContext = new DocumentContext(document, dossierService);
 
         var mcpServer = new EditorSession(

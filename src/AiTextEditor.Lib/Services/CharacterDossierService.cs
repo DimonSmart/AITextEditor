@@ -14,7 +14,7 @@ public sealed class CharacterDossierService
     private readonly IDeserializer yamlDeserializer;
     private readonly ISerializer yamlSerializer;
 
-    public CharacterDossierService()
+    public CharacterDossierService(string? initialDossiersId = null)
     {
         yamlSerializer = new SerializerBuilder()
             .WithNamingConvention(CamelCaseNamingConvention.Instance)
@@ -24,7 +24,7 @@ public sealed class CharacterDossierService
             .WithNamingConvention(CamelCaseNamingConvention.Instance)
             .Build();
 
-        dossiers = CreateEmpty();
+        dossiers = CreateEmpty(initialDossiersId);
     }
 
     public CharacterDossiers GetDossiers()
@@ -267,8 +267,12 @@ public sealed class CharacterDossierService
         var normalizedAliasExamples = NormalizeAliasExamples(aliasExamples);
         var normalizedFacts = NormalizeFacts(facts);
 
+        using var md5 = System.Security.Cryptography.MD5.Create();
+        var hash = md5.ComputeHash(System.Text.Encoding.UTF8.GetBytes(normalizedName));
+        var id = new Guid(hash).ToString("N");
+
         return new CharacterDossier(
-            Guid.NewGuid().ToString("N"),
+            id,
             normalizedName,
             (description ?? string.Empty).Trim(),
             normalizedAliasExamples.Keys.OrderBy(a => a, StringComparer.OrdinalIgnoreCase).ToList(),
@@ -466,10 +470,10 @@ public sealed class CharacterDossierService
         };
     }
 
-    private static CharacterDossiers CreateEmpty()
+    private static CharacterDossiers CreateEmpty(string? id)
     {
         return new CharacterDossiers(
-            Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture),
+            id ?? Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture),
             1,
             Array.Empty<CharacterDossier>());
     }
