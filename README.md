@@ -33,7 +33,11 @@ dotnet run --project src/AiTextEditor.Console -- <input-path> <output-path>
 - `input-path` — markdown file to load (defaults to `sample.md`).
 - `output-path` — file that will receive the edited document (defaults to `sample_edited.md`).
 
-When running without arguments the demo reads `src/AiTextEditor.Console/sample.md` and writes the edited copy to `sample_edited.md` in the same folder.
+When running without arguments the demo expects `sample.md` in the current directory. To use the included sample, provide the paths explicitly:
+
+```bash
+dotnet run --project src/AiTextEditor.Console -- src/AiTextEditor.Console/sample.md sample_edited.md
+```
 
 ## Running LLM-backed tests
 Functional and MCP integration tests call a live LLM endpoint. Configure the client through environment variables before running tests:
