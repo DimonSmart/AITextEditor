@@ -17,7 +17,11 @@ MCP-oriented toolkit around a linear Markdown domain model. The server keeps a s
 Versioning, diffing, and long-running orchestration remain outside of the server; it only maintains the latest in-memory state.
 
 ## Streaming navigation agent
-Long scans run through a streaming navigation agent that consumes an existing named cursor instead of sending the full book to the LLM. The agent walks cursor batches and returns a `CursorAgentResult` based on collected evidence; keyword cursors provide a fast, LLM-free filter for literal matches. See `docs/streaming-agent.md` for details on cursor types, prompt shape, and plugin functions.
+Long scans run through a streaming navigation agent that consumes an existing named cursor instead of sending the full book to the LLM. The agent walks cursor batches and returns a `CursorAgentResult` based on collected evidence; keyword cursors provide a fast, LLM-free filter for literal matches. See [Architecture/Streaming Agent](docs/architecture/streaming-agent.md) for details on cursor types, prompt shape, and plugin functions.
+
+## Documentation
+- [Domain Model](docs/architecture/domain-model.md) - core concepts and data structures.
+- [Streaming Agent](docs/architecture/streaming-agent.md) - architecture of the navigation agent.
 
 ## Console demo
 Run the console sample with optional parameters for custom inputs:

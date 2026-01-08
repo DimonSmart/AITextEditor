@@ -1,5 +1,5 @@
-using AiTextEditor.Lib.Model;
-using AiTextEditor.Lib.Services;
+using AiTextEditor.Core.Model;
+using AiTextEditor.Core.Services;
 
 Console.WriteLine("--- MCP Linear Document Demo ---");
 
