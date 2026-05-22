@@ -94,6 +94,7 @@ public sealed class AgenticWorkflowEngine
         {
             await dossiersPlugin.GenerateCharacterDossiersAsync(cancellationToken);
             var payload = dossiersPlugin.GetCharacterDossiers();
+            context.CharacterDossiers = dossierService.GetDossiers();
             return Complete(context, JsonSerializer.Serialize(payload, ResponseJsonOptions));
         }
 

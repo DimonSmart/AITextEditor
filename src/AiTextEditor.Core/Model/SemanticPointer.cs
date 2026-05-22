@@ -29,7 +29,7 @@ public sealed class SemanticPointer
         var b = this.Parsed;
 
         if (a.Numbers is null || a.Numbers.Length == 0) return false;
-        if (a.Paragraph is not null) return a.Equals(b); // ïàğàãğàô íå êîíòåéíåğ
+        if (a.Paragraph is not null) return a.Equals(b); // Ğ¿Ğ°Ñ€Ğ°Ğ³Ñ€Ğ°Ñ„ Ğ½Ğµ ĞºĞ¾Ğ½Ñ‚ĞµĞ¹Ğ½ĞµÑ€
 
         if (b.Numbers is null) return false;
         if (a.Numbers.Length > b.Numbers.Length) return false;
@@ -189,7 +189,7 @@ public sealed class SemanticPointer
 
     public override string ToString() => Serialize();
 
-    // Ìîæíî ñäåëàòü private, åñëè íå íóæíî ñíàğóæè.
+    // ĞœĞ¾Ğ¶Ğ½Ğ¾ ÑĞ´ĞµĞ»Ğ°Ñ‚ÑŒ private, ĞµÑĞ»Ğ¸ Ğ½Ğµ Ğ½ÑƒĞ¶Ğ½Ğ¾ ÑĞ½Ğ°Ñ€ÑƒĞ¶Ğ¸.
     public readonly record struct Path(int[]? Numbers, int? Paragraph)
     {
         public static bool TryParse(string? label, out Path path)
@@ -199,10 +199,10 @@ public sealed class SemanticPointer
 
             label = label.Trim();
 
-            // Ïîääåğæêà "1.2.3.p34" è "1.2.3p34"
+            // ĞŸĞ¾Ğ´Ğ´ĞµÑ€Ğ¶ĞºĞ° "1.2.3.p34" Ğ¸ "1.2.3p34"
             label = label.Replace(".p", "p").Replace(".P", "p");
 
-            // "p10" (áåç ñåêöèé) òîæå ïîääåğæèì
+            // "p10" (Ğ±ĞµĞ· ÑĞµĞºÑ†Ğ¸Ğ¹) Ñ‚Ğ¾Ğ¶Ğµ Ğ¿Ğ¾Ğ´Ğ´ĞµÑ€Ğ¶Ğ¸Ğ¼
             if (label.Length >= 2 && (label[0] == 'p' || label[0] == 'P'))
             {
                 if (!int.TryParse(label.AsSpan(1), out var pOnly)) return false;
@@ -210,7 +210,7 @@ public sealed class SemanticPointer
                 return true;
             }
 
-            var parts = label.Split('p', 'P'); // ìàêñèìóì 2 ÷àñòè îæèäàåòñÿ
+            var parts = label.Split('p', 'P'); // Ğ¼Ğ°ĞºÑĞ¸Ğ¼ÑƒĞ¼ 2 Ñ‡Ğ°ÑÑ‚Ğ¸ Ğ¾Ğ¶Ğ¸Ğ´Ğ°ĞµÑ‚ÑÑ
             if (parts.Length > 2) return false;
 
             var left = parts[0];

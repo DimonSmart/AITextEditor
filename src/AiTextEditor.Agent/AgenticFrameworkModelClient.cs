@@ -49,7 +49,8 @@ public sealed class AgenticFrameworkModelClient : IAgenticModelClient
         var clientOptions = new OpenAIClientOptions
         {
             Endpoint = endpoint,
-            Transport = new HttpClientPipelineTransport(httpClient)
+            Transport = new HttpClientPipelineTransport(httpClient),
+            NetworkTimeout = TimeSpan.FromMinutes(30)
         };
 
         var openAiClient = new OpenAIClient(new ApiKeyCredential(apiKey), clientOptions);

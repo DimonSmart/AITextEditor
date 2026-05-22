@@ -13,4 +13,6 @@ public sealed class AgenticWorkflowContext
     public string? LastAnswer { get; set; }
 
     public string? LastCommand { get; set; }
+
+    public CharacterDossiers? CharacterDossiers { get; set; }
 }
