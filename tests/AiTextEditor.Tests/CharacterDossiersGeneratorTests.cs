@@ -3,9 +3,6 @@ using System.Text.Json;
 using AiTextEditor.Core.Services;
 using AiTextEditor.Agent;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.SemanticKernel;
-using Microsoft.SemanticKernel.ChatCompletion;
-using Microsoft.SemanticKernel.Services;
 using Xunit;
 
 namespace AiTextEditor.Tests;
@@ -50,21 +47,21 @@ public sealed class CharacterDossiersGeneratorTests
             MaxBytes = 1024 * 128,
             CharacterDossiersMaxCharacters = null
         };
-        var chatService = new CapturingChatCompletionService();
+        var extractionModelClient = new CapturingCharacterExtractionModelClient();
 
         var generator = new CharacterDossiersGenerator(
             documentContext,
             dossierService,
             limits,
             NullLogger<CharacterDossiersGenerator>.Instance,
-            chatService);
+            extractionModelClient);
 
         var dossiers = await generator.GenerateAsync();
 
         Assert.Equal(names.Length, dossiers.Characters.Count);
-        Assert.NotNull(chatService.LastUserMessage);
+        Assert.NotNull(extractionModelClient.LastRequest);
 
-        using var json = JsonDocument.Parse(chatService.LastUserMessage!);
+        using var json = JsonDocument.Parse(extractionModelClient.LastRequest.UserPrompt);
         var paragraphs = json.RootElement.GetProperty("paragraphs");
         Assert.Equal(names.Length, paragraphs.GetArrayLength());
     }
@@ -91,16 +88,19 @@ public sealed class CharacterDossiersGeneratorTests
         var documentContext = new DocumentContext(document, dossierService);
         var limits = new CursorAgentLimits { MaxElements = 256, MaxBytes = 1024 * 128 };
 
-        var chat = new ScriptedChatCompletionService(
-            "[{\"canonicalName\":\"John\",\"gender\":\"unknown\",\"aliases\":[{\"form\":\"Johnny\",\"example\":\"Johnny smiled.\"}]}]"
-        );
+        var extractionModelClient = new ScriptedCharacterExtractionModelClient(
+            Response(new CharacterExtractionCharacter(
+                "John",
+                "unknown",
+                [new CharacterExtractionAlias("Johnny", "Johnny smiled.")],
+                null)));
 
         var generator = new CharacterDossiersGenerator(
             documentContext,
             dossierService,
             limits,
             NullLogger<CharacterDossiersGenerator>.Instance,
-            chat);
+            extractionModelClient);
 
         var evidence = new[] { new AiTextEditor.Core.Model.EvidenceItem("1.p1", "Johnny smiled.", null) };
         await generator.UpdateFromEvidenceBatchAsync(evidence);
@@ -110,7 +110,7 @@ public sealed class CharacterDossiersGeneratorTests
         Assert.Equal("John is a doctor.", updated!.Description);
         Assert.Contains("Johnny", updated.AliasExamples.Keys, StringComparer.OrdinalIgnoreCase);
 
-        Assert.Equal(1, chat.CallCount);
+        Assert.Equal(1, extractionModelClient.CallCount);
     }
 
     [Fact]
@@ -134,16 +134,19 @@ public sealed class CharacterDossiersGeneratorTests
         var documentContext = new DocumentContext(document, dossierService);
         var limits = new CursorAgentLimits { MaxElements = 256, MaxBytes = 1024 * 128 };
 
-        var chat = new ScriptedChatCompletionService(
-            "[{\"canonicalName\":\"John\",\"gender\":\"unknown\",\"aliases\":[{\"form\":\"Johnny\",\"example\":\"Johnny laughed.\"}]}]"
-        );
+        var extractionModelClient = new ScriptedCharacterExtractionModelClient(
+            Response(new CharacterExtractionCharacter(
+                "John",
+                "unknown",
+                [new CharacterExtractionAlias("Johnny", "Johnny laughed.")],
+                null)));
 
         var generator = new CharacterDossiersGenerator(
             documentContext,
             dossierService,
             limits,
             NullLogger<CharacterDossiersGenerator>.Instance,
-            chat);
+            extractionModelClient);
 
         var evidence = new[] { new AiTextEditor.Core.Model.EvidenceItem("1.p1", "Johnny laughed.", null) };
         await generator.UpdateFromEvidenceBatchAsync(evidence);
@@ -162,16 +165,19 @@ public sealed class CharacterDossiersGeneratorTests
         var documentContext = new DocumentContext(document, dossierService);
         var limits = new CursorAgentLimits { MaxElements = 256, MaxBytes = 1024 * 128 };
 
-        var chat = new ScriptedChatCompletionService(
-            "[{\"canonicalName\":\"John\",\"gender\":\"unknown\",\"aliases\":[{\"form\":\"John's\",\"example\":\"John's hat was on the table.\"}]}]"
-        );
+        var extractionModelClient = new ScriptedCharacterExtractionModelClient(
+            Response(new CharacterExtractionCharacter(
+                "John",
+                "unknown",
+                [new CharacterExtractionAlias("John's", "John's hat was on the table.")],
+                null)));
 
         var generator = new CharacterDossiersGenerator(
             documentContext,
             dossierService,
             limits,
             NullLogger<CharacterDossiersGenerator>.Instance,
-            chat);
+            extractionModelClient);
 
         var evidence = new[] { new AiTextEditor.Core.Model.EvidenceItem("1.p1", "John's hat was on the table.", null) };
         var dossiers = await generator.UpdateFromEvidenceBatchAsync(evidence);
@@ -180,6 +186,27 @@ public sealed class CharacterDossiersGeneratorTests
         var character = dossiers.Characters[0];
         Assert.Contains("John's", character.AliasExamples.Keys, StringComparer.OrdinalIgnoreCase);
         Assert.Contains("John", character.AliasExamples.Keys, StringComparer.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task GenerateDossiers_WhenExtractionModelFails_PropagatesContractError()
+    {
+        var repository = new MarkdownDocumentRepository();
+        var document = repository.LoadFromMarkdown("John arrived.");
+        var dossierService = new CharacterDossierService();
+        var documentContext = new DocumentContext(document, dossierService);
+        var limits = new CursorAgentLimits { MaxElements = 256, MaxBytes = 1024 * 128 };
+        var extractionModelClient = new FailingCharacterExtractionModelClient("character_extraction_empty_response_content");
+
+        var generator = new CharacterDossiersGenerator(
+            documentContext,
+            dossierService,
+            limits,
+            NullLogger<CharacterDossiersGenerator>.Instance,
+            extractionModelClient);
+
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => generator.GenerateAsync());
+        Assert.Equal("character_extraction_empty_response_content", exception.Message);
     }
 
     private static string BuildMarkdown(IEnumerable<string> names)
@@ -194,44 +221,28 @@ public sealed class CharacterDossiersGeneratorTests
         return builder.ToString();
     }
 
-    private sealed class CapturingChatCompletionService : IChatCompletionService
+    private static CharacterExtractionResponse Response(params CharacterExtractionCharacter[] characters)
+        => new() { Characters = characters.ToList() };
+
+    private sealed class CapturingCharacterExtractionModelClient : ICharacterExtractionModelClient
     {
-        public string? LastUserMessage { get; private set; }
+        public CharacterExtractionModelRequest? LastRequest { get; private set; }
+        public int CallCount { get; private set; }
 
-        public IReadOnlyDictionary<string, object?> Attributes { get; } = new Dictionary<string, object?>();
-
-        public Task<IReadOnlyList<ChatMessageContent>> GetChatMessageContentsAsync(
-            ChatHistory chatHistory,
-            PromptExecutionSettings? executionSettings = null,
-            Kernel? kernel = null,
+        public Task<CharacterExtractionResponse> ExtractCharactersAsync(
+            CharacterExtractionModelRequest request,
             CancellationToken cancellationToken = default)
         {
-            LastUserMessage = chatHistory.LastOrDefault(m => m.Role == AuthorRole.User)?.Content;
-            var payload = BuildCharacterPayload(LastUserMessage);
-            var result = new List<ChatMessageContent>
-            {
-                new(AuthorRole.Assistant, payload)
-            };
-
-            return Task.FromResult<IReadOnlyList<ChatMessageContent>>(result);
+            LastRequest = request;
+            CallCount++;
+            return Task.FromResult(BuildCharacterResponse(request.UserPrompt));
         }
 
-        public IAsyncEnumerable<StreamingChatMessageContent> GetStreamingChatMessageContentsAsync(
-            ChatHistory chatHistory,
-            PromptExecutionSettings? executionSettings = null,
-            Kernel? kernel = null,
-            CancellationToken cancellationToken = default)
-        {
-            LastUserMessage = chatHistory.LastOrDefault(m => m.Role == AuthorRole.User)?.Content;
-            _ = BuildCharacterPayload(LastUserMessage);
-            return AsyncEnumerable.Empty<StreamingChatMessageContent>();
-        }
-
-        private static string BuildCharacterPayload(string? prompt)
+        private static CharacterExtractionResponse BuildCharacterResponse(string? prompt)
         {
             if (string.IsNullOrWhiteSpace(prompt))
             {
-                return "[]";
+                return Response();
             }
 
             try
@@ -239,10 +250,10 @@ public sealed class CharacterDossiersGeneratorTests
                 using var json = JsonDocument.Parse(prompt);
                 if (!json.RootElement.TryGetProperty("paragraphs", out var paragraphs) || paragraphs.ValueKind != JsonValueKind.Array)
                 {
-                    return "[]";
+                    return Response();
                 }
 
-                var characters = new List<Dictionary<string, object?>>();
+                var characters = new List<CharacterExtractionCharacter>();
                 foreach (var paragraph in paragraphs.EnumerateArray())
                 {
                     if (!paragraph.TryGetProperty("text", out var textElement) || textElement.ValueKind != JsonValueKind.String)
@@ -258,56 +269,48 @@ public sealed class CharacterDossiersGeneratorTests
                         continue;
                     }
 
-                    characters.Add(new Dictionary<string, object?>
-                    {
-                        ["canonicalName"] = name,
-                        ["gender"] = "unknown",
-                        ["aliases"] = Array.Empty<object>()
-                    });
+                    characters.Add(new CharacterExtractionCharacter(
+                        name,
+                        "unknown",
+                        [],
+                        "В данном фрагменте характер не раскрыт."));
                 }
 
-                return JsonSerializer.Serialize(characters);
+                return Response(characters.ToArray());
             }
-            catch
+            catch (JsonException)
             {
-                return "[]";
+                return Response();
             }
         }
     }
 
-    private sealed class ScriptedChatCompletionService : IChatCompletionService
+    private sealed class ScriptedCharacterExtractionModelClient : ICharacterExtractionModelClient
     {
-        private readonly Queue<string> responses;
+        private readonly Queue<CharacterExtractionResponse> responses;
 
         public int CallCount { get; private set; }
 
-        public IReadOnlyDictionary<string, object?> Attributes { get; } = new Dictionary<string, object?>();
-
-        public ScriptedChatCompletionService(params string[] responses)
+        public ScriptedCharacterExtractionModelClient(params CharacterExtractionResponse[] responses)
         {
-            this.responses = new Queue<string>(responses);
+            this.responses = new Queue<CharacterExtractionResponse>(responses);
         }
 
-        public Task<IReadOnlyList<ChatMessageContent>> GetChatMessageContentsAsync(
-            ChatHistory chatHistory,
-            PromptExecutionSettings? executionSettings = null,
-            Kernel? kernel = null,
+        public Task<CharacterExtractionResponse> ExtractCharactersAsync(
+            CharacterExtractionModelRequest request,
             CancellationToken cancellationToken = default)
         {
             CallCount++;
-            var payload = responses.Count > 0 ? responses.Dequeue() : "[]";
-            return Task.FromResult<IReadOnlyList<ChatMessageContent>>([new ChatMessageContent(AuthorRole.Assistant, payload)]);
+            var response = responses.Count > 0 ? responses.Dequeue() : Response();
+            return Task.FromResult(response);
         }
+    }
 
-        public IAsyncEnumerable<StreamingChatMessageContent> GetStreamingChatMessageContentsAsync(
-            ChatHistory chatHistory,
-            PromptExecutionSettings? executionSettings = null,
-            Kernel? kernel = null,
+    private sealed class FailingCharacterExtractionModelClient(string message) : ICharacterExtractionModelClient
+    {
+        public Task<CharacterExtractionResponse> ExtractCharactersAsync(
+            CharacterExtractionModelRequest request,
             CancellationToken cancellationToken = default)
-        {
-            CallCount++;
-            _ = responses.Count > 0 ? responses.Dequeue() : "[]";
-            return AsyncEnumerable.Empty<StreamingChatMessageContent>();
-        }
+            => throw new InvalidOperationException(message);
     }
 }

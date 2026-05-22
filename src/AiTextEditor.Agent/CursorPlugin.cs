@@ -2,7 +2,6 @@ using AiTextEditor.Core.Common;
 using AiTextEditor.Core.Services;
 using AiTextEditor.Core.Interfaces;
 using Microsoft.Extensions.Logging;
-using Microsoft.SemanticKernel;
 using System.ComponentModel;
 using System.Text.Json;
 
@@ -20,7 +19,6 @@ public sealed class CursorPlugin(
     private readonly ILogger<CursorPlugin> logger = logger ?? throw new ArgumentNullException(nameof(logger));
     private int _cursorCounter;
 
-    [KernelFunction("create_filtered_cursor")]
     [Description("Creates a named streaming cursor that reads the document in portions. This cursor behaves like IEnumerable.Where over a book paragraphs stream: the filter must be stateless and evaluable on a single portion.")]
     public string CreateFilteredCursor(
         [Description("Stateless per-element filter description (like IEnumerable.Where). Must NOT depend on previous portions (no counters, no 'nth occurrence').")]
@@ -54,7 +52,6 @@ public sealed class CursorPlugin(
         return cursorName;
     }
 
-    [KernelFunction("create_keyword_cursor")]
     [Description("Create a keyword cursor that yields matching document items in order.")]
     public string CreateKeywordCursor(
         [Description("Keywords to locate in the document. Items match when they contain any of the keywords (logical OR). Provide base forms; inflections are normalized by the system.")] string[] keywords,
@@ -75,7 +72,6 @@ public sealed class CursorPlugin(
         return cursorName;
     }
 
-    [KernelFunction("create_full_scan_cursor")]
     [Description("Create a keyword cursor that yields all document items in order.")]
     public string CreateFullScanCursor(
         [Description("Whether headings should be included in cursor output. Defaults to true (include everything).")] bool includeHeadings = true)
@@ -95,7 +91,6 @@ public sealed class CursorPlugin(
 
 
 
-    [KernelFunction("read_cursor_batch")]
     [Description("Reads the next portion from an existing cursor and returns items with pointers.")]
     public string ReadCursorBatch(
         [Description("Cursor name created earlier.")] string cursorName)

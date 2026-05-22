@@ -12,7 +12,7 @@ public class EditorPluginTests
     {
         var session = new EditorSession();
         session.LoadDefaultDocument("# Title\n\nParagraph one\n\nParagraph two");
-        var context = new SemanticKernelContext();
+        var context = new AgenticWorkflowContext();
         var plugin = new EditorPlugin(session, context, NullLogger<EditorPlugin>.Instance);
 
         var result = plugin.CreateTargets("label", new[] { "1.p1", "1.p2" });
@@ -40,7 +40,7 @@ public class EditorPluginTests
     {
         var session = new EditorSession();
         session.LoadDefaultDocument("# Title\n\nParagraph one\n\nParagraph two");
-        var context = new SemanticKernelContext();
+        var context = new AgenticWorkflowContext();
         var plugin = new EditorPlugin(session, context, NullLogger<EditorPlugin>.Instance);
 
         var result = plugin.CreateTargets("label", new[] { "1.p1", "1.p1", "missing", "  " });

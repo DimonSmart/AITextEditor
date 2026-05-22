@@ -6,9 +6,6 @@ using AiTextEditor.Core.Interfaces;
 using Microsoft.Extensions.Logging;
 using AiTextEditor.Core.Model;
 using DimonSmart.AiUtils;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.SemanticKernel;
-using Microsoft.SemanticKernel.ChatCompletion;
 using System.Globalization;
 using System.Linq;
 using System.Text.Encodings.Web;
@@ -54,7 +51,7 @@ public class McpFunctionalTests
         var markdown = LoadNeznaykaSample();
         using var httpClient = await TestLlmConfiguration.CreateVerifiedLlmClientAsync(output);
         using var loggerFactory = TestLoggerFactory.Create(output);
-        var engine = new SemanticKernelEngine(httpClient, loggerFactory, "35dac0c0480c47738f24e3a8ac12250a");
+        var engine = new AgenticWorkflowEngine(httpClient, loggerFactory, "35dac0c0480c47738f24e3a8ac12250a");
 
         var result = await engine.RunAsync(markdown, question);
         var answer = result.LastAnswer ?? string.Empty;
@@ -83,20 +80,18 @@ public class McpFunctionalTests
         var markdown = LoadNeznaykaSample();
         using var httpClient = await TestLlmConfiguration.CreateVerifiedLlmClientAsync(output);
         using var loggerFactory = TestLoggerFactory.Create(output);
-        var engine = new SemanticKernelEngine(httpClient, loggerFactory, "35dac0c0480c47738f24e3a8ac12250a");
+        var engine = new AgenticWorkflowEngine(httpClient, loggerFactory, "35dac0c0480c47738f24e3a8ac12250a");
 
         var result = await engine.RunAsync(markdown, command);
         var answer = result.LastAnswer ?? string.Empty;
         if (string.IsNullOrWhiteSpace(llmCheck))
         {
-            if (!TryExtractDossiersJson(answer, out var dossiersJson))
-            {
-                dossiersJson = await BuildDossiersJsonAsync(markdown, loggerFactory, httpClient);
-            }
+            Assert.True(
+                TryExtractDossiersJson(answer, out var dossiersJson),
+                $"Expected command response to contain character dossiers JSON. Response: {TruncateForOutput(answer, 4000)}");
 
-            answer = dossiersJson;
             var outputPath = Path.Combine(AppContext.BaseDirectory, "character_dossiers_output.json");
-            answer = FormatJson(answer);
+            answer = FormatJson(dossiersJson);
             File.WriteAllText(outputPath, answer, new UTF8Encoding(encoderShouldEmitUTF8Identifier: true));
             output.WriteLine($"Character dossiers saved to {outputPath}");
         }
@@ -163,13 +158,13 @@ public class McpFunctionalTests
             MaxBytes = 32_000
         };
 
-        var chatService = new TokenizingChatCompletionService();
+        var extractionModelClient = new TokenizingCharacterExtractionModelClient();
         var generator = new CharacterDossiersGenerator(
             documentContext,
             dossierService,
             limits,
             loggerFactory.CreateLogger<CharacterDossiersGenerator>(),
-            chatService);
+            extractionModelClient);
 
         var directDossiers = await generator.GenerateAsync();
         var maxCharacters = limits.CharacterDossiersMaxCharacters ?? names.Length;
@@ -250,105 +245,20 @@ public class McpFunctionalTests
         }
     }
 
-    private static IChatCompletionService CreateChatService(HttpClient httpClient)
+    private sealed class TokenizingCharacterExtractionModelClient : ICharacterExtractionModelClient
     {
-        var builder = Kernel.CreateBuilder();
-
-        var modelId = TestLlmConfiguration.ResolveModel();
-        var baseUrl = Environment.GetEnvironmentVariable("LLM_BASE_URL");
-        if (string.IsNullOrWhiteSpace(baseUrl))
-        {
-            baseUrl = httpClient.BaseAddress?.ToString();
-        }
-
-        if (string.IsNullOrWhiteSpace(baseUrl))
-        {
-            baseUrl = "http://localhost:11434";
-        }
-
-        var endpoint = baseUrl.TrimEnd('/');
-        if (!endpoint.EndsWith("/v1", StringComparison.OrdinalIgnoreCase))
-        {
-            endpoint += "/v1";
-        }
-
-        var apiKey = Environment.GetEnvironmentVariable("LLM_API_KEY");
-        if (string.IsNullOrWhiteSpace(apiKey))
-        {
-            apiKey = "ollama";
-        }
-
-        builder.AddOpenAIChatCompletion(
-            modelId: modelId,
-            apiKey: apiKey,
-            endpoint: new Uri(endpoint),
-            httpClient: httpClient);
-        var kernel = builder.Build();
-        return kernel.GetRequiredService<IChatCompletionService>();
-    }
-
-    private static async Task<string> BuildDossiersJsonAsync(string markdown, ILoggerFactory loggerFactory, HttpClient httpClient)
-    {
-        var repository = new MarkdownDocumentRepository();
-        var document = repository.LoadFromMarkdown(markdown);
-        var dossierService = new CharacterDossierService();
-        var documentContext = new DocumentContext(document, dossierService);
-        var limits = new CursorAgentLimits();
-        var chatService = CreateChatService(httpClient);
-
-        var generator = new CharacterDossiersGenerator(
-            documentContext,
-            dossierService,
-            limits,
-            loggerFactory.CreateLogger<CharacterDossiersGenerator>(),
-            chatService);
-
-        var plugin = new CharacterDossiersPlugin(
-            generator,
-            new CursorRegistry(),
-            dossierService,
-            limits,
-            loggerFactory.CreateLogger<CharacterDossiersPlugin>());
-
-        await plugin.GenerateCharacterDossiersAsync();
-        var dossiers = plugin.GetCharacterDossiers();
-        return JsonSerializer.Serialize(dossiers, SerializationOptions.RelaxedCompact);
-    }
-
-    private sealed class TokenizingChatCompletionService : IChatCompletionService
-    {
-        public IReadOnlyDictionary<string, object?> Attributes { get; } = new Dictionary<string, object?>();
-
-        public Task<IReadOnlyList<ChatMessageContent>> GetChatMessageContentsAsync(
-            ChatHistory chatHistory,
-            PromptExecutionSettings? executionSettings = null,
-            Kernel? kernel = null,
+        public Task<CharacterExtractionResponse> ExtractCharactersAsync(
+            CharacterExtractionModelRequest request,
             CancellationToken cancellationToken = default)
         {
-            var prompt = chatHistory.LastOrDefault(m => m.Role == AuthorRole.User)?.Content;
-            var payload = BuildCharacterPayload(prompt);
-            var result = new List<ChatMessageContent>
-            {
-                new(AuthorRole.Assistant, payload)
-            };
-
-            return Task.FromResult<IReadOnlyList<ChatMessageContent>>(result);
+            return Task.FromResult(BuildCharacterResponse(request.UserPrompt));
         }
 
-        public IAsyncEnumerable<StreamingChatMessageContent> GetStreamingChatMessageContentsAsync(
-            ChatHistory chatHistory,
-            PromptExecutionSettings? executionSettings = null,
-            Kernel? kernel = null,
-            CancellationToken cancellationToken = default)
-        {
-            return AsyncEnumerable.Empty<StreamingChatMessageContent>();
-        }
-
-        private static string BuildCharacterPayload(string? prompt)
+        private static CharacterExtractionResponse BuildCharacterResponse(string? prompt)
         {
             if (string.IsNullOrWhiteSpace(prompt))
             {
-                return "[]";
+                return new CharacterExtractionResponse();
             }
 
             try
@@ -356,10 +266,10 @@ public class McpFunctionalTests
                 using var json = JsonDocument.Parse(prompt);
                 if (!json.RootElement.TryGetProperty("paragraphs", out var paragraphs) || paragraphs.ValueKind != JsonValueKind.Array)
                 {
-                    return "[]";
+                    return new CharacterExtractionResponse();
                 }
 
-                var characters = new List<Dictionary<string, object?>>();
+                var characters = new List<CharacterExtractionCharacter>();
                 foreach (var paragraph in paragraphs.EnumerateArray())
                 {
                     if (!paragraph.TryGetProperty("text", out var textElement) || textElement.ValueKind != JsonValueKind.String)
@@ -377,20 +287,15 @@ public class McpFunctionalTests
                             continue;
                         }
 
-                        characters.Add(new Dictionary<string, object?>
-                        {
-                            ["canonicalName"] = name,
-                            ["gender"] = "unknown",
-                            ["aliases"] = Array.Empty<object>()
-                        });
+                        characters.Add(new CharacterExtractionCharacter(name, "unknown", [], string.Empty));
                     }
                 }
 
-                return JsonSerializer.Serialize(characters);
+                return new CharacterExtractionResponse { Characters = characters };
             }
-            catch
+            catch (JsonException)
             {
-                return "[]";
+                return new CharacterExtractionResponse();
             }
         }
     }

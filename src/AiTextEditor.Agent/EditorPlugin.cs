@@ -3,32 +3,21 @@ using System.ComponentModel;
 using System.Linq;
 using AiTextEditor.Core.Model;
 using AiTextEditor.Core.Services;
-using Microsoft.SemanticKernel;
 using Microsoft.Extensions.Logging;
 
 namespace AiTextEditor.Agent;
 
 public sealed class EditorPlugin(
     EditorSession server,
-    SemanticKernelContext context,
+    AgenticWorkflowContext context,
     ILogger<EditorPlugin> logger)
 {
-    //   [KernelFunction("list_pointers")]
-    //   public string ListPointers()
-    //   {
-    //       logger.LogInformation("ListPointers invoked");
-    //       var items = server.GetItems();
-    //       return string.Join("\n", items.Select(item => $"{item.Pointer.ToCompactString()}: {item.Text}"));
-    //   }
-
-    [KernelFunction("get_default_document_id")]
     public string GetDefaultDocumentId()
     {
         logger.LogInformation("GetDefaultDocumentId invoked");
         return server.GetDefaultDocument().Id;
     }
 
-    [KernelFunction("create_targets")]
     public CreateTargetsResult CreateTargets(
         string label,
         [Description("Semantic pointers to include as targets. Accepts an array of pointer strings.")]
@@ -106,7 +95,6 @@ public sealed class EditorPlugin(
             warnings);
     }
 
-    [KernelFunction("show_user_message")]
     public void ShowUserMessage(string message)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(message);

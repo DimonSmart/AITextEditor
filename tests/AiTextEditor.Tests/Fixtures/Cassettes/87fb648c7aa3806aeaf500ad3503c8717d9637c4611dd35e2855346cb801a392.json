@@ -1,0 +1,45 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-691\",\"object\":\"chat.completion\",\"created\":1779447092,\"model\":\"gpt-oss:20b\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"characters\\\":[{\\\"canonicalName\\\":\\\"Знайка\\\",\\\"gender\\\":\\\"male\\\",\\\"aliases\\\":[{\\\"form\\\":\\\"блинист(ый)\\\",\\\"example\\\":\\\"его называли блинистым\\\"},{\\\"form\\\":\\\"Знайка\\\",\\\"example\\\":\\\"он написал книгу\\\"}],\\\"description\\\":\\\"Вопросительно проявляется его любознательность: он написал книгу, пытаясь объяснить поверхность Луны собственными наблюдениями. Сомнения по поводу утверждений коллеги, он самостоятельно пошёл на Луну, чтобы проверить свои догадки. Его готовность пересмотреть теорию после прямых переживаний говорит о гибкости мышления. Похоже, он ценит наличие доказательств, а не просто догадок, но при этом сохраняет энтузиазм к новым открытиям.\\\"}]}\",\"reasoning\":\"We are to extract characters from the paragraphs. Let's list them:\\n\\nNames or references: \\\"Знайка\\\" (the main person). Also \\\"вулканисты\\\" (but roles). \\\"метеоритчики\\\". But those are group of people, not a single person. \\\"Лунники\\\" (lунаты). Those are creatures not humans. The instruction: Identify only PEOPLE/CHARACTERS. Ignore generic groups and unnamed speakers. If a person is referenced only by a role/title (e.g., \\\"the professor\\\") include it ONLY if it clearly refers to the same single person within the provided input; otherwise ignore. \\\"вулканисты\\\" refers to multiple people, so ignore. \\\"метеоритчики\\\" similarly. \\\"лунатики\\\" are named species. Should we include them? They are characters but could be considered beings? They are plural. Typically we ignore groups. The instruction says ignore generic groups. So only person names: \\\"Знайка\\\". Maybe \\\"лунные коротышки\\\" but that is species. Not a name.\\n\\nAlso earlier in paragraph 1: \\\"Луна\\\" maybe considered character? It's celestial body, not a person. So no.\\n\\nThus only \\\"Знайка\\\".\\n\\nWe must provide aliases (up to 5). From text, we see \\\"Знайка\\\" used. He also called \\\"блинистый\\\". But that's a label. Should we include alias \\\"блинистый\\\"? Might be considered. But alias should be of same character: yes the role \\\"блинистый\\\" refers only to him. Based on direction: include alias only if refer to same single person. \\\"блинистый\\\" used as a slanting noun. Hm the phrase: \\\"презрительно называли его блинистом\\\". That's a play on \\\"блины\\\". It's descriptive. But alias could be \\\"блинист(ый)\\\". Could be included as alias variant.\\n\\nAlso \\\"Знайка\\\" with \\\"знайка\\\" means genius. But maybe alias \\\"знайка\\\" is just same.\\n\\nHe also in paragraph mention \\\"Знайка отвечал\\\" no nickname.\\n\\nThus maybe just alias \\\"Знайка\\\" and \\\"блинист(ый)\\\"? Provide form \\\"блинист(ый)\\\" and example: \\\"он был назван блинистом\\\". However do we include? Might be questionable due to generic. The instruction: \\\"Include only members that refer to same single person\\\". Since we are certain \\\"блинист\\\" refers to him. So we can include alias.\\n\\nAlso mention he \\\"окончил\\\", but no.\\n\\nCanonical name: \\\"Знайка\\\" (the main name). Without title.\\n\\nGender: unknown? \\\"Знайка\\\" could be male or female. The text uses pronoun \\\"он\\\" (for ZnaiK). So male.\\n\\nDescription: Compose 2-5 sentences in Russian. Base on explicit evidence. Let's gather facts:\\n\\nHe was once student (?) but not stated. He wrote book, wrote theory about Moon being buttery. Others laughed. He responded arguing against volcanists and meteorites. He said volcano is mountain etc. He argued about crater shapes. He saw lunar crater and realized walls were brick walls. He concluded that walls were by intelligent beings. He wrote about lunar shorties. He said they had air etc. He gave book. He turned to bed? Not relevant.\\n\\nSo we can describe: он научный интерес, любознательность и страсть к теории, склонность к гипотезам. Предоставлять. He shows curiosity, scepticism. We can say: заметил необычное строение колец, привел экспертное наблюдение. He eventually уступил собственному.\\n\\nWe must obey no positive generic traits unless explicit. For \\\"необходимый\\\" (necessary). He shows curiosity (explicit: \\\"для того чтобы кто видел это\\\"). He shows perseverance to travel. He shows ability to observe: \\\"поймал\\\", \\\"увидел\\\". He shows willingness to revise theory after evidence. That seems explicit.\\n\\nWe can say: Его характер нельзя определить ярко, но из последствий можно предположить, что он любознателен и чётко экспериментирует. But must base explicitly: He left his theory after traveling. That implies openness to change.\\n\\nWe must not invent. Can't say \\\"интеллигентный\\\". But we can say: он критически осмыслял мнения других. He responded against volcanists.\\n\\nThus:\\n\\nDescription: \\\"В данном фрагменте его характер не раскрыт.\\\"? Actually must characterize. But we can create a concise portrait. But must not over generalize. Use \\\"похоже\\\" if uncertain. Provide 2-5 sentences.\\n\\nLet's produce:\\n\\n\\\"Вопросительно проявляется его любознательность: он написал книгу, пытаясь объяснить поверхность Луны собственными наблюдениями. Сомнения по поводу утверждений коллеги, он самостоятельно пошёл на Луну, чтобы проверить свои догадки. Его готовность пересмотреть теорию после прямых переживаний говорит о гибкости мышления. Похоже, он ценит наличие доказательств, а не просто догадок, но при этом сохраняет энтузиазм к новым открытиям.\\\" That may be okay.\\n\\nHowever risk: Not concluding general traits? It's allowed to infer weak traits if there's at least two cues. We have: he wrote book – curiosity. He traveled – initiative. He revised theory – flexibility. Two cues? Might be fine.\\n\\nLet's produce.\\n\\nNow output JSON with characters array with one object.\\n\\nWe must add alias array with up to 5 objects. We can include \\\"блинист(ый)\\\". Provide form and example.\\n\\nForm \\\"блинист(ый)\\\". Example: \\\"его называли блинистым\\\". Provide example sentence: \\\"он назвали блинистым\\\". Could say: \\\"его называли блинистым\\\" from text: \\\"презрительно называли его блинистом\\\".\\n\\nAlso \\\"Знай\\\" as short alias? He is called \\\"Знай\\\" maybe? In text used \\\"Знайка\\\". But alias \\\"Знай\\\" may not appear. Not enough.\\n\\nMaybe include \\\"Знайка\\\" as alias? Canonical \\\"Знайка\\\". But alias should be other forms. But not needed.\\n\\nMaybe include \\\"Знайка\\\" as canonical; alias could be \\\"блинист\\\" only. Since number of aliases up to 5, we can have single alias. Provide array with object.\\n\\nOk.\\n\\nNow produce output JSON.\\n\\nNote: Must not use double quotes inside strings, but we can use single quotes? Actually JSON must use double quotes. But field strings must not contain double quotes. We can include single quotes inside? But better not.\\n\\nWe must not use double quotes inside description string. That includes any quotation marks. The example uses no quotes so fine.\\n\\nAlso cannot use meta-phrases.\\n\\nLet's craft description 4 sentences. No quotes. Ok.\\n\\nNow produce JSON output.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2037,\"completion_tokens\":1613,\"total_tokens\":3650}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Alt-Svc": [
+      "h3=\":443\"; ma=2592000",
+      "h3-29=\":443\"; ma=2592000"
+    ],
+    "Date": [
+      "Fri, 22 May 2026 10:51:32 GMT"
+    ],
+    "Server": [
+      "Google",
+      "Frontend"
+    ],
+    "Set-Cookie": [
+      "aid=21fb364d-8529-4a10-897e-648fa0d226ed; Path=/; Max-Age=31536000; HttpOnly; Secure; SameSite=Lax"
+    ],
+    "Traceparent": [
+      "00-f685a7f22ab07d3a0fa1994ee13a089b-dd6a0ee4c37d9452-00"
+    ],
+    "Via": [
+      "1.1 google"
+    ],
+    "X-Build-Commit": [
+      "04586d41db50dbb6e25980c6e6a2561e95750cbf"
+    ],
+    "X-Build-Time": [
+      "2026-05-22T01:57:35-07:00"
+    ],
+    "X-Cloud-Trace-Context": [
+      "f685a7f22ab07d3a0fa1994ee13a089b/15954581005608522834"
+    ],
+    "X-Frame-Options": [
+      "DENY"
+    ],
+    "X-Request-ID": [
+      "75930fc5-1f4b-45e2-bafe-14343fa82e4f"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

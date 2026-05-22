@@ -6,7 +6,6 @@ using System.Text.Json;
 using AiTextEditor.Core.Common;
 using AiTextEditor.Core.Model;
 using AiTextEditor.Core.Services;
-using Microsoft.SemanticKernel.Connectors.OpenAI;
 
 namespace AiTextEditor.Agent;
 
@@ -23,8 +22,6 @@ public interface ICursorAgentPromptBuilder
     string BuildFinalizerSystemPrompt();
 
     string BuildFinalizerUserMessage(string taskDescription, string evidenceJson, bool cursorComplete, int stepsUsed, string? afterPointer);
-
-    OpenAIPromptExecutionSettings CreateSettings();
 }
 
 public sealed class CursorAgentPromptBuilder(CursorAgentLimits limits) : ICursorAgentPromptBuilder
@@ -110,24 +107,6 @@ public sealed class CursorAgentPromptBuilder(CursorAgentLimits limits) : ICursor
         builder.AppendLine();
         builder.AppendLine("Return exactly one JSON object that follows the schema from the system message. Do not add code fences or explanations.");
         return builder.ToString();
-    }
-
-    public OpenAIPromptExecutionSettings CreateSettings()
-    {
-        return new OpenAIPromptExecutionSettings
-        {
-            Temperature = 0.0,
-            TopP = 1,
-            MaxTokens = limits.DefaultResponseTokenLimit,
-            ExtensionData = new Dictionary<string, object>
-            {
-                ["options"] = new Dictionary<string, object>
-                {
-                    ["think"] = false,
-                    ["num_predict"] = limits.DefaultResponseTokenLimit,
-                }
-            }
-        };
     }
 
     // Clarifies output fields (including progress and needMoreContext) and enforces verbatim excerpts so small models match the parser.

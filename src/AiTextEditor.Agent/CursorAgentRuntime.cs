@@ -7,33 +7,29 @@ using AiTextEditor.Core.Model;
 using AiTextEditor.Core.Services;
 using AiTextEditor.Core.Interfaces;
 using Microsoft.Extensions.Logging;
-using Microsoft.SemanticKernel.ChatCompletion;
 
 namespace AiTextEditor.Agent;
 
 public sealed class CursorAgentRuntime : ICursorAgentRuntime
 {
     private readonly ICursorStore cursorStore;
-    private readonly IChatCompletionService chatService;
+    private readonly ICursorAgentModelClient modelClient;
     private readonly ICursorAgentPromptBuilder promptBuilder;
-    private readonly ICursorAgentResponseParser responseParser;
     private readonly ICursorEvidenceCollector evidenceCollector;
     private readonly CursorAgentLimits limits;
     private readonly ILogger<CursorAgentRuntime> logger;
 
     public CursorAgentRuntime(
         ICursorStore cursorStore,
-        IChatCompletionService chatService,
+        ICursorAgentModelClient modelClient,
         ICursorAgentPromptBuilder promptBuilder,
-        ICursorAgentResponseParser responseParser,
         ICursorEvidenceCollector evidenceCollector,
         CursorAgentLimits limits,
         ILogger<CursorAgentRuntime> logger)
     {
         this.cursorStore = cursorStore ?? throw new ArgumentNullException(nameof(cursorStore));
-        this.chatService = chatService ?? throw new ArgumentNullException(nameof(chatService));
+        this.modelClient = modelClient ?? throw new ArgumentNullException(nameof(modelClient));
         this.promptBuilder = promptBuilder ?? throw new ArgumentNullException(nameof(promptBuilder));
-        this.responseParser = responseParser ?? throw new ArgumentNullException(nameof(responseParser));
         this.evidenceCollector = evidenceCollector ?? throw new ArgumentNullException(nameof(evidenceCollector));
         this.limits = limits ?? throw new ArgumentNullException(nameof(limits));
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -157,19 +153,15 @@ public sealed class CursorAgentRuntime : ICursorAgentRuntime
                 cursorComplete);
         }
 
-        var history = new ChatHistory();
-        history.AddSystemMessage(promptBuilder.BuildFinalizerSystemPrompt());
-
         var evidenceJson = evidenceCollector.SerializeEvidence(state.Evidence);
-        history.AddUserMessage(promptBuilder.BuildFinalizerUserMessage(taskDescription, evidenceJson, cursorComplete, stepsUsed, nextAfterPointer));
+        var parsed = await modelClient.FinalizeAsync(
+            new CursorAgentFinalizerModelRequest(
+                promptBuilder.BuildFinalizerSystemPrompt(),
+                promptBuilder.BuildFinalizerUserMessage(taskDescription, evidenceJson, cursorComplete, stepsUsed, nextAfterPointer)
+                ),
+            cancellationToken);
 
-        var response = await chatService.GetChatMessageContentsAsync(history, promptBuilder.CreateSettings(), cancellationToken: cancellationToken);
-        var message = response.FirstOrDefault();
-        var content = message?.Content ?? string.Empty;
-        LogCompletionSkeleton(stepsUsed, message);
-        LogRawCompletion(stepsUsed, content);
-
-        var parsed = responseParser.ParseFinalizer(content);
+        LogTypedCompletion(stepsUsed, "finalizer");
         if (parsed == null || parsed.Decision == "not_found")
         {
             return new CursorAgentResult(
@@ -219,23 +211,14 @@ public sealed class CursorAgentRuntime : ICursorAgentRuntime
         CancellationToken cancellationToken,
         int step)
     {
-        var history = new ChatHistory();
-        history.AddSystemMessage(agentSystemPrompt);
-        history.AddUserMessage(taskDefinitionPrompt);
-        history.AddUserMessage(evidenceSnapshot);
-        history.AddUserMessage(batchMessage);
-
-        var response = await chatService.GetChatMessageContentsAsync(history, promptBuilder.CreateSettings(), cancellationToken: cancellationToken);
-        var message = response.FirstOrDefault();
-        var content = message?.Content ?? string.Empty;
-        LogCompletionSkeleton(step, message);
-        LogRawCompletion(step, content);
-
-        var parsed = responseParser.ParseCommand(content);
-        if (parsed != null && parsed.MultipleJsonCandidates)
-        {
-            logger.LogWarning("multiple actions returned");
-        }
+        var parsed = await modelClient.GetNextCommandAsync(
+            new CursorAgentModelRequest(
+                agentSystemPrompt,
+                taskDefinitionPrompt,
+                evidenceSnapshot,
+                batchMessage),
+            cancellationToken);
+        LogTypedCompletion(step, "command");
 
         if (parsed != null)
         {
@@ -245,10 +228,10 @@ public sealed class CursorAgentRuntime : ICursorAgentRuntime
                 parsed.Action,
                 parsed.BatchFound,
                 parsed.Action == "stop",
-                Truncate(parsed.RawContent ?? string.Empty, 500));
+                Truncate(parsed.Progress ?? string.Empty, 500));
         }
 
-        return parsed?.WithRawContent(parsed.RawContent ?? content);
+        return parsed;
     }
 
     private static bool ShouldStop(string actionRaw, bool cursorHasMore, int step, int maxSteps, out string reason)
@@ -294,30 +277,8 @@ public sealed class CursorAgentRuntime : ICursorAgentRuntime
         return SemanticPointer.TryParse(pointer, out var parsed) ? parsed!.ToCompactString() : null;
     }
 
-    private void LogCompletionSkeleton(int step, object? message)
-    {
-        if (message == null)
-        {
-            logger.LogInformation("cursor_agent_call: step={Step}, model=<unknown>, tokens=<unknown>, result=<empty>", step);
-            return;
-        }
-
-        var metadata = message.GetType().GetProperty("Metadata")?.GetValue(message) as IReadOnlyDictionary<string, object?>;
-        var modelId = message.GetType().GetProperty("ModelId")?.GetValue(message) ?? "<unknown>";
-
-        var tokens = metadata?.TryGetValue("usage", out var usage) == true ? usage : "<unknown>";
-
-        logger.LogInformation("cursor_agent_call: step={Step}, model={Model}, tokens={Tokens}, result=<received>", step, modelId, tokens);
-    }
-
-    private void LogRawCompletion(int step, string content)
-    {
-        var snippet = Truncate(content, 1000);
-        logger.LogDebug("cursor_agent_raw: step={Step}, snippet={Snippet}", step, snippet);
-        logger.LogDebug("cursor_agent_raw_len: step={Step}, len={Len}", step, content.Length);
-        logger.LogDebug("cursor_agent_raw_head: step={Step}, head={Head}", step, content[..Math.Min(300, content.Length)]);
-        logger.LogDebug("cursor_agent_raw_tail: step={Step}, tail={Tail}", step, content[^Math.Min(300, content.Length)..]);
-    }
+    private void LogTypedCompletion(int step, string phase)
+        => logger.LogInformation("cursor_agent_call: step={Step}, phase={Phase}, result=<typed>", step, phase);
 
     private string? Truncate(string? text, int maxLength)
     {

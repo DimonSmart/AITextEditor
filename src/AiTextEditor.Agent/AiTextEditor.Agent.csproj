@@ -8,9 +8,10 @@
 
   <ItemGroup>
     <PackageReference Include="DimonSmart.AiUtils" Version="1.25624.1027" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.1" />
-    <PackageReference Include="Microsoft.SemanticKernel" Version="1.68.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.6" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.6" />
+    <PackageReference Include="Microsoft.Extensions.AI.OpenAI" Version="10.5.0" />
+    <PackageReference Include="Microsoft.Agents.AI.Workflows" Version="1.4.0" />
   </ItemGroup>
 
   <ItemGroup>

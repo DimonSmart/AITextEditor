@@ -8,7 +8,7 @@ namespace AiTextEditor.Tests;
 
 public class CursorAgentPromptBuilderTests
 {
-    private readonly CursorAgentLimits limits = new() { SnapshotEvidenceLimit = 2, DefaultResponseTokenLimit = 256 };
+    private readonly CursorAgentLimits limits = new() { SnapshotEvidenceLimit = 2 };
 
     [Fact]
     public void BuildEvidenceSnapshot_TrimsToLimit()
@@ -61,14 +61,4 @@ public class CursorAgentPromptBuilderTests
         Assert.Equal(JsonValueKind.Null, contextElement.ValueKind);
     }
 
-    [Fact]
-    public void CreateSettings_UsesLimits()
-    {
-        var builder = new CursorAgentPromptBuilder(limits);
-
-        var settings = builder.CreateSettings();
-
-        Assert.Equal(limits.DefaultResponseTokenLimit, settings.MaxTokens);
-        Assert.True(settings.ExtensionData!.ContainsKey("options"));
-    }
 }

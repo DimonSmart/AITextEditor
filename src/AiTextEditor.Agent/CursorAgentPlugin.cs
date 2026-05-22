@@ -2,7 +2,6 @@ using System.ComponentModel;
 using AiTextEditor.Core.Model;
 using AiTextEditor.Core.Interfaces;
 using Microsoft.Extensions.Logging;
-using Microsoft.SemanticKernel;
 
 namespace AiTextEditor.Agent;
 
@@ -13,7 +12,6 @@ public sealed class CursorAgentPlugin(
     private readonly ICursorAgentRuntime runtime = runtime ?? throw new ArgumentNullException(nameof(runtime));
     private readonly ILogger<CursorAgentPlugin> logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-    [KernelFunction("run_cursor_agent")]
     [Description("Runs the cursor agent over an existing cursor and returns a result summary.")]
     public async Task<CursorAgentResult> RunCursorAgent(
         [Description("Cursor name created earlier.")] string cursorName,

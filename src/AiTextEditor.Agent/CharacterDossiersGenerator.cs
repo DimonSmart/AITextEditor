@@ -4,10 +4,7 @@ using System.Text.Json.Serialization;
 using AiTextEditor.Core.Model;
 using AiTextEditor.Core.Services;
 using AiTextEditor.Core.Interfaces;
-using DimonSmart.AiUtils;
 using Microsoft.Extensions.Logging;
-using Microsoft.SemanticKernel.ChatCompletion;
-using Microsoft.SemanticKernel.Connectors.OpenAI;
 
 namespace AiTextEditor.Agent;
 
@@ -17,20 +14,234 @@ public sealed class CharacterDossiersGenerator
     private readonly CharacterDossierService dossierService;
     private readonly CursorAgentLimits limits;
     private readonly ILogger<CharacterDossiersGenerator> logger;
-    private readonly IChatCompletionService chatService;
+    private readonly ICharacterExtractionModelClient characterExtractionModelClient;
 
     public CharacterDossiersGenerator(
         IDocumentContext documentContext,
         CharacterDossierService dossierService,
         CursorAgentLimits limits,
         ILogger<CharacterDossiersGenerator> logger,
-        IChatCompletionService chatService)
+        ICharacterExtractionModelClient characterExtractionModelClient)
     {
         this.documentContext = documentContext ?? throw new ArgumentNullException(nameof(documentContext));
         this.dossierService = dossierService ?? throw new ArgumentNullException(nameof(dossierService));
         this.limits = limits ?? throw new ArgumentNullException(nameof(limits));
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        this.chatService = chatService ?? throw new ArgumentNullException(nameof(chatService));
+        this.characterExtractionModelClient = characterExtractionModelClient ?? throw new ArgumentNullException(nameof(characterExtractionModelClient));
+    }
+
+    internal IReadOnlyList<CharacterBibleParagraph> CollectParagraphs(IReadOnlyCollection<string>? changedPointers)
+    {
+        var pointerSet = changedPointers?
+            .Where(pointer => !string.IsNullOrWhiteSpace(pointer))
+            .Select(pointer => pointer.Trim())
+            .ToHashSet(StringComparer.Ordinal);
+
+        if (pointerSet is { Count: > 0 })
+        {
+            return CollectChangedParagraphs(pointerSet);
+        }
+
+        if (changedPointers is not null)
+        {
+            return [];
+        }
+
+        return CollectAllParagraphs();
+    }
+
+    internal async Task<IReadOnlyList<CharacterBibleCharacterCandidate>> ExtractCandidatesAsync(
+        IReadOnlyList<CharacterBibleParagraph> paragraphs,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(paragraphs);
+        cancellationToken.ThrowIfCancellationRequested();
+
+        if (paragraphs.Count == 0)
+        {
+            return [];
+        }
+
+        var candidates = new List<CharacterBibleCharacterCandidate>();
+        foreach (var batch in SplitParagraphs(paragraphs.Select(p => (p.Pointer, p.Text)).ToList()))
+        {
+            var hits = await ExtractCharactersWithModelAsync(batch, cancellationToken);
+            candidates.AddRange(hits.Select(ToCandidate));
+        }
+
+        return candidates;
+    }
+
+    internal CharacterBibleCommitPlan CreateCommitPlan(
+        CharacterBibleWorkflowRequest request,
+        int paragraphCount,
+        IReadOnlyList<CharacterBibleCharacterCandidate> candidates)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        ArgumentNullException.ThrowIfNull(candidates);
+
+        var baseDossiers = dossierService.GetDossiers();
+        if (candidates.Count == 0)
+        {
+            return new CharacterBibleCommitPlan(request, baseDossiers, false, paragraphCount, 0, []);
+        }
+
+        var index = new DossierIndex(baseDossiers);
+        var decisions = new List<CharacterBibleResolverDecision>(candidates.Count);
+        var changed = false;
+
+        foreach (var candidate in candidates)
+        {
+            var hit = ToCharacterExtractionCharacter(candidate);
+            changed |= ApplyHitToIndex(index, hit, out var decision);
+            decisions.Add(decision);
+        }
+
+        var projectedDossiers = changed
+            ? index.ToDossiers(baseDossiers, limits.CharacterDossiersMaxCharacters)
+            : baseDossiers;
+
+        return new CharacterBibleCommitPlan(
+            request,
+            projectedDossiers,
+            changed,
+            paragraphCount,
+            candidates.Count,
+            decisions);
+    }
+
+    internal CharacterDossiers CommitPlan(CharacterBibleCommitPlan plan)
+    {
+        ArgumentNullException.ThrowIfNull(plan);
+
+        if (plan.Changed)
+        {
+            dossierService.ReplaceDossiers(plan.ProjectedDossiers.Characters);
+        }
+
+        return dossierService.GetDossiers();
+    }
+
+    internal CharacterDossiers GetCurrentDossiers() => dossierService.GetDossiers();
+
+    private static bool ApplyHitToIndex(
+        DossierIndex index,
+        CharacterExtractionCharacter hit,
+        out CharacterBibleResolverDecision decision)
+    {
+        var resolution = index.ResolveCandidate(hit);
+        var canonicalName = hit.CanonicalName?.Trim() ?? string.Empty;
+
+        if (resolution.Kind == CharacterBibleDecisionKind.Ambiguous)
+        {
+            decision = new CharacterBibleResolverDecision(
+                canonicalName,
+                CharacterBibleDecisionKind.Ambiguous,
+                null,
+                resolution.AmbiguousMatches.Select(profile => profile.Id).ToArray(),
+                "Multiple existing dossiers matched the same name or alias key.");
+            return false;
+        }
+
+        var profile = resolution.Profile
+            ?? throw new InvalidOperationException("Resolved character profile is missing.");
+
+        var changed = resolution.Created;
+
+        var anyAliasChanged = profile.MergeAliases(hit, resolution.ExactNameMatch);
+        changed |= anyAliasChanged;
+
+        changed |= profile.SetGenderIfUnknown(hit.Gender);
+
+        var descriptionChanged = profile.SetDescriptionIfEmpty(hit.Description);
+        changed |= descriptionChanged;
+
+        if (resolution.Created || anyAliasChanged || descriptionChanged)
+        {
+            index.UpdateKeys(profile);
+        }
+
+        decision = new CharacterBibleResolverDecision(
+            canonicalName,
+            resolution.Created ? CharacterBibleDecisionKind.New : CharacterBibleDecisionKind.Existing,
+            profile.Id,
+            [],
+            resolution.Created ? "No existing name or alias match was found." : "Matched by existing name or alias key.");
+
+        return changed;
+    }
+
+    private IReadOnlyList<CharacterBibleParagraph> CollectAllParagraphs()
+    {
+        var cursor = new FullScanCursorStream(
+            documentContext.Document,
+            limits.MaxElements,
+            limits.MaxBytes,
+            null,
+            includeHeadings: false,
+            logger);
+
+        var paragraphs = new List<CharacterBibleParagraph>();
+        while (true)
+        {
+            var portion = cursor.NextPortion();
+            if (portion.Items.Count == 0 && !portion.HasMore)
+            {
+                break;
+            }
+
+            foreach (var item in portion.Items)
+            {
+                if (item.Type == LinearItemType.Heading)
+                {
+                    continue;
+                }
+
+                if (string.IsNullOrWhiteSpace(item.Markdown))
+                {
+                    continue;
+                }
+
+                paragraphs.Add(new CharacterBibleParagraph(item.Pointer.ToCompactString(), item.Markdown));
+            }
+
+            if (!portion.HasMore)
+            {
+                break;
+            }
+        }
+
+        return paragraphs;
+    }
+
+    private IReadOnlyList<CharacterBibleParagraph> CollectChangedParagraphs(IReadOnlySet<string> pointerSet)
+    {
+        var lookup = documentContext.Document.Items
+            .ToDictionary(item => item.Pointer.ToCompactString(), item => item, StringComparer.Ordinal);
+
+        var paragraphs = new List<CharacterBibleParagraph>(pointerSet.Count);
+        foreach (var pointer in pointerSet)
+        {
+            if (!lookup.TryGetValue(pointer, out var item))
+            {
+                logger.LogWarning("RefreshCharacterDossiers: pointer not found: {Pointer}", pointer);
+                continue;
+            }
+
+            if (item.Type == LinearItemType.Heading)
+            {
+                continue;
+            }
+
+            if (string.IsNullOrWhiteSpace(item.Markdown))
+            {
+                continue;
+            }
+
+            paragraphs.Add(new CharacterBibleParagraph(pointer, item.Markdown));
+        }
+
+        return paragraphs;
     }
 
     public async Task<CharacterDossiers> GenerateAsync(CancellationToken cancellationToken = default)
@@ -244,7 +455,7 @@ public sealed class CharacterDossiersGenerator
             return false;
         }
 
-        var hits = await ExtractCharactersWithLlmAsync(paragraphs, cancellationToken);
+        var hits = await ExtractCharactersWithModelAsync(paragraphs, cancellationToken);
         if (hits.Count == 0)
         {
             return false;
@@ -255,34 +466,20 @@ public sealed class CharacterDossiersGenerator
 
     private async Task<bool> ApplyHitsAsync(
         DossierIndex index,
-        IReadOnlyList<LlmCharacter> hits,
+        IReadOnlyList<CharacterExtractionCharacter> hits,
         CancellationToken cancellationToken)
     {
         var changed = false;
 
         foreach (var hit in hits)
         {
-            var (profile, created, exactNameMatch) = index.MatchOrCreate(hit);
-            changed |= created;
-
-            var anyAliasChanged = profile.MergeAliases(hit, exactNameMatch);
-            changed |= anyAliasChanged;
-
-            changed |= profile.SetGenderIfUnknown(hit.Gender);
-
-            var descriptionChanged = profile.SetDescriptionIfEmpty(hit.Description);
-            changed |= descriptionChanged;
-
-            if (created || anyAliasChanged || descriptionChanged)
-            {
-                index.UpdateKeys(profile);
-            }
+            changed |= ApplyHitToIndex(index, hit, out _);
         }
 
         return changed;
     }
 
-    private async Task<List<LlmCharacter>> ExtractCharactersWithLlmAsync(
+    private async Task<List<CharacterExtractionCharacter>> ExtractCharactersWithModelAsync(
         IReadOnlyList<(string Pointer, string Text)> paragraphs,
         CancellationToken cancellationToken)
     {
@@ -299,83 +496,24 @@ public sealed class CharacterDossiersGenerator
 
         var prompt = JsonSerializer.Serialize(payload, JsonOptions);
 
-        var history = new ChatHistory();
-        history.AddSystemMessage(CharacterExtractionSystemPrompt);
-        history.AddUserMessage(prompt);
+        var extractionResponse = await characterExtractionModelClient.ExtractCharactersAsync(
+            new CharacterExtractionModelRequest(CharacterExtractionSystemPrompt,prompt),
+            cancellationToken);
 
-        var settings = new OpenAIPromptExecutionSettings
-        {
-            Temperature = 0,
-            MaxTokens = limits.DefaultResponseTokenLimit
-        };
-
-        var response = await chatService.GetChatMessageContentsAsync(history, settings, cancellationToken: cancellationToken);
-        var content = response.FirstOrDefault()?.Content ?? string.Empty;
-
-        var candidates = JsonExtractor.ExtractAllJsons(content);
-        if (candidates.Count == 0)
-        {
-            logger.LogWarning("Character extraction returned no JSON.");
-            return [];
-        }
-
-        foreach (var json in candidates)
-        {
-            try
-            {
-                var items = JsonSerializer.Deserialize<List<LlmCharacter>>(json, JsonOptions);
-                if (items != null)
-                {
-                    return items
-                        .Select(NormalizeHit)
-                        .Where(x => !string.IsNullOrWhiteSpace(x.CanonicalName))
-                        .ToList();
-                }
-            }
-            catch
-            {
-                // Fallback: check if wrapped in an object like { "characters": [...] }
-                try
-                {
-                    using var doc = JsonDocument.Parse(json);
-                    if (doc.RootElement.ValueKind == JsonValueKind.Object)
-                    {
-                        foreach (var property in doc.RootElement.EnumerateObject())
-                        {
-                            if (property.Value.ValueKind == JsonValueKind.Array)
-                            {
-                                try
-                                {
-                                    var items = JsonSerializer.Deserialize<List<LlmCharacter>>(property.Value.GetRawText(), JsonOptions);
-                                    if (items != null && items.Count > 0)
-                                    {
-                                        return items
-                                            .Select(NormalizeHit)
-                                            .Where(x => !string.IsNullOrWhiteSpace(x.CanonicalName))
-                                            .ToList();
-                                    }
-                                }
-                                catch { }
-                            }
-                        }
-                    }
-                }
-                catch { }
-            }
-        }
-
-        logger.LogWarning("Character extraction JSON parse failed.");
-        return [];
+        return extractionResponse.Characters
+            .Select(NormalizeHit)
+            .Where(x => !string.IsNullOrWhiteSpace(x.CanonicalName))
+            .ToList();
     }
 
-    private static LlmCharacter NormalizeHit(LlmCharacter hit)
+    private static CharacterExtractionCharacter NormalizeHit(CharacterExtractionCharacter hit)
     {
         var canonical = (hit.CanonicalName ?? string.Empty).Trim();
         var description = (hit.Description ?? string.Empty).Trim();
 
         var normalizedAliases = (hit.Aliases ?? [])
             .Where(a => a is not null && !string.IsNullOrWhiteSpace(a.Form) && !string.IsNullOrWhiteSpace(a.Example))
-            .Select(a => new AliasHit(a.Form.Trim(), a.Example.Trim()))
+            .Select(a => new CharacterExtractionAlias(a.Form.Trim(), a.Example.Trim()))
             .DistinctBy(a => a.Form, StringComparer.OrdinalIgnoreCase)
             .OrderBy(a => a.Form, StringComparer.OrdinalIgnoreCase)
             .ToList();
@@ -391,7 +529,38 @@ public sealed class CharacterDossiersGenerator
         };
     }
 
-    private static List<AliasHit> AddPossessiveBaseAliases(List<AliasHit> aliases)
+    private static CharacterBibleCharacterCandidate ToCandidate(CharacterExtractionCharacter hit)
+    {
+        var aliasExamples = (hit.Aliases ?? [])
+            .Where(alias => !string.IsNullOrWhiteSpace(alias.Form) && !string.IsNullOrWhiteSpace(alias.Example))
+            .ToDictionary(
+                alias => alias.Form.Trim(),
+                alias => alias.Example.Trim(),
+                StringComparer.OrdinalIgnoreCase);
+
+        return new CharacterBibleCharacterCandidate(
+            hit.CanonicalName?.Trim() ?? string.Empty,
+            NormalizeGender(hit.Gender),
+            aliasExamples,
+            hit.Description?.Trim() ?? string.Empty);
+    }
+
+    private static CharacterExtractionCharacter ToCharacterExtractionCharacter(CharacterBibleCharacterCandidate candidate)
+    {
+        ArgumentNullException.ThrowIfNull(candidate);
+
+        var aliases = candidate.AliasExamples
+            .Select(alias => new CharacterExtractionAlias(alias.Key, alias.Value))
+            .ToList();
+
+        return NormalizeHit(new CharacterExtractionCharacter(
+            candidate.CanonicalName,
+            candidate.Gender,
+            aliases,
+            candidate.Description));
+    }
+
+    private static List<CharacterExtractionAlias> AddPossessiveBaseAliases(List<CharacterExtractionAlias> aliases)
     {
         if (aliases.Count == 0)
         {
@@ -399,7 +568,7 @@ public sealed class CharacterDossiersGenerator
         }
 
         var seen = new HashSet<string>(aliases.Select(a => a.Form), StringComparer.OrdinalIgnoreCase);
-        var expanded = new List<AliasHit>(aliases);
+        var expanded = new List<CharacterExtractionAlias>(aliases);
 
         foreach (var alias in aliases)
         {
@@ -410,7 +579,7 @@ public sealed class CharacterDossiersGenerator
 
             if (seen.Add(baseForm))
             {
-                expanded.Add(new AliasHit(baseForm, alias.Example));
+                expanded.Add(new CharacterExtractionAlias(baseForm, alias.Example));
             }
         }
 
@@ -453,17 +622,24 @@ public sealed class CharacterDossiersGenerator
         };
     }
 
-    private sealed record AliasHit(
-        [property: JsonPropertyName("form")] string Form,
-        [property: JsonPropertyName("example")] string Example);
-
-    private sealed record LlmCharacter(
-        [property: JsonPropertyName("canonicalName")] string? CanonicalName,
-        [property: JsonPropertyName("gender")] string? Gender,
-        [property: JsonPropertyName("aliases")] List<AliasHit>? Aliases,
-        [property: JsonPropertyName("description")] string? Description);
-
     private sealed record KeyVariant(string Key, int Weight);
+
+    private sealed record DossierMatchResult(
+        ProfileAccumulator? Profile,
+        bool Created,
+        bool ExactNameMatch,
+        CharacterBibleDecisionKind Kind,
+        IReadOnlyList<ProfileAccumulator> AmbiguousMatches)
+    {
+        public static DossierMatchResult Existing(ProfileAccumulator profile, bool exactNameMatch)
+            => new(profile, false, exactNameMatch, CharacterBibleDecisionKind.Existing, []);
+
+        public static DossierMatchResult New(ProfileAccumulator profile)
+            => new(profile, true, true, CharacterBibleDecisionKind.New, []);
+
+        public static DossierMatchResult Ambiguous(IReadOnlyList<ProfileAccumulator> matches)
+            => new(null, false, false, CharacterBibleDecisionKind.Ambiguous, matches);
+    }
 
     private sealed class DossierIndex
     {
@@ -480,18 +656,23 @@ public sealed class CharacterDossiersGenerator
             }
         }
 
-        public (ProfileAccumulator Profile, bool Created, bool ExactNameMatch) MatchOrCreate(LlmCharacter candidate)
+        public DossierMatchResult ResolveCandidate(CharacterExtractionCharacter candidate)
         {
-            var (match, exactNameMatch) = FindMatch(candidate);
+            var (match, exactNameMatch, ambiguousMatches) = FindMatch(candidate);
+            if (ambiguousMatches.Count > 0)
+            {
+                return DossierMatchResult.Ambiguous(ambiguousMatches);
+            }
+
             if (match != null)
             {
-                return (match, false, exactNameMatch);
+                return DossierMatchResult.Existing(match, exactNameMatch);
             }
 
             var accumulator = ProfileAccumulator.FromCandidate(candidate);
             profiles[accumulator.Id] = accumulator;
             IndexProfile(accumulator);
-            return (accumulator, true, true);
+            return DossierMatchResult.New(accumulator);
         }
 
         public void UpdateKeys(ProfileAccumulator profile)
@@ -528,7 +709,7 @@ public sealed class CharacterDossiersGenerator
             }
         }
 
-        private (ProfileAccumulator? Match, bool ExactNameMatch) FindMatch(LlmCharacter candidate)
+        private (ProfileAccumulator? Match, bool ExactNameMatch, IReadOnlyList<ProfileAccumulator> AmbiguousMatches) FindMatch(CharacterExtractionCharacter candidate)
         {
             var canonical = candidate.CanonicalName?.Trim();
             if (!string.IsNullOrWhiteSpace(canonical))
@@ -539,7 +720,12 @@ public sealed class CharacterDossiersGenerator
 
                 if (exact.Count == 1)
                 {
-                    return (exact[0], true);
+                    return (exact[0], true, []);
+                }
+
+                if (exact.Count > 1)
+                {
+                    return (null, false, exact);
                 }
             }
 
@@ -561,14 +747,14 @@ public sealed class CharacterDossiersGenerator
 
             if (scores.Count == 0)
             {
-                return (null, false);
+                return (null, false, []);
             }
 
             var bestScore = scores.Values.Max();
             var threshold = ResolveMinMatchScore(candidate);
             if (bestScore < threshold)
             {
-                return (null, false);
+                return (null, false, []);
             }
 
             var best = scores
@@ -576,7 +762,7 @@ public sealed class CharacterDossiersGenerator
                 .Select(kvp => kvp.Key)
                 .ToList();
 
-            return best.Count == 1 ? (best[0], false) : (null, false);
+            return best.Count == 1 ? (best[0], false, []) : (null, false, best);
         }
     }
 
@@ -600,7 +786,7 @@ public sealed class CharacterDossiersGenerator
             MergeAliasExamples(dossier.AliasExamples);
         }
 
-        private ProfileAccumulator(string name, string gender, IEnumerable<AliasHit>? aliases, string? description)
+        private ProfileAccumulator(string name, string gender, IEnumerable<CharacterExtractionAlias>? aliases, string? description)
         {
             Name = name.Trim();
             using var md5 = System.Security.Cryptography.MD5.Create();
@@ -619,7 +805,7 @@ public sealed class CharacterDossiersGenerator
             }
         }
 
-        public static ProfileAccumulator FromCandidate(LlmCharacter candidate)
+        public static ProfileAccumulator FromCandidate(CharacterExtractionCharacter candidate)
         {
             var name = candidate.CanonicalName?.Trim() ?? string.Empty;
             return new ProfileAccumulator(name, candidate.Gender ?? "unknown", candidate.Aliases, candidate.Description);
@@ -649,7 +835,7 @@ public sealed class CharacterDossiersGenerator
             return true;
         }
 
-        public bool MergeAliases(LlmCharacter candidate, bool exactNameMatch)
+        public bool MergeAliases(CharacterExtractionCharacter candidate, bool exactNameMatch)
         {
             var changed = false;
 
@@ -745,7 +931,7 @@ public sealed class CharacterDossiersGenerator
             }
         }
 
-        private static bool TryFindExampleFor(string name, IReadOnlyList<AliasHit>? aliases, out string example)
+        private static bool TryFindExampleFor(string name, IReadOnlyList<CharacterExtractionAlias>? aliases, out string example)
         {
             example = string.Empty;
             if (aliases is null)
@@ -764,7 +950,7 @@ public sealed class CharacterDossiersGenerator
         }
     }
 
-    private static List<KeyVariant> BuildCandidateKeyVariants(LlmCharacter candidate)
+    private static List<KeyVariant> BuildCandidateKeyVariants(CharacterExtractionCharacter candidate)
     {
         var variants = new List<KeyVariant>();
         var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -801,7 +987,7 @@ public sealed class CharacterDossiersGenerator
         }
     }
 
-    private static int ResolveMinMatchScore(LlmCharacter candidate)
+    private static int ResolveMinMatchScore(CharacterExtractionCharacter candidate)
     {
         var canonicalKey = NormalizeKey(candidate.CanonicalName ?? string.Empty);
         if (canonicalKey.Length <= 4)
@@ -909,17 +1095,12 @@ General Rules:
 - Output generic/cliché entries is forbidden.
 - If no characters found, return [].
 
-Output Schema (JSON Array):
-[
-  {
-    "canonicalName": "string (best stable name as in text, without title; do NOT invent patronymics/missing parts)",
-    "gender": "male|female|unknown",
-    "aliases": [
-      { "form": "string (name variant found in text)", "example": "short sentence containing this form" }
-    ],
-    "description": "string (2-5 sentences, see below)"
-  }
-]
+Structured response contract:
+- characters: array of character objects.
+- character.canonicalName: best stable name as in text, without title; do NOT invent patronymics/missing parts.
+- character.gender: male, female, or unknown.
+- character.aliases: array of name variants found in text. Each alias object MUST contain exactly "form" and "example"; "example" is a short sentence containing this form.
+- character.description: 2-5 sentences, see below.
 
 Name Rules:
 - Canonical Name: Prefer the best stable name as in text WITHOUT title. Do NOT invent patronymics or missing parts of the name.
@@ -941,6 +1122,6 @@ Description Rules (Critical):
 - Do NOT use double quotes (") inside any string fields.
 
 Output:
-Return strictly a JSON ARRAY. No markdown.
+Populate only the structured response contract. If no characters are found, return an empty characters collection.
 """;
 }

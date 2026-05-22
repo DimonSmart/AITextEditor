@@ -113,8 +113,6 @@ public static class TestLlmConfiguration
                 builder.AddProvider(new SimpleFileLoggerProvider(logPath));
                 builder.AddFilter("AiTextEditor.Agent.CursorAgentRuntime", LogLevel.Information);
                 builder.AddFilter("AiTextEditor.Agent.LlmRequestLoggingHandler", logBodyEnabled ? LogLevel.Trace : LogLevel.Debug);
-                builder.AddFilter("Microsoft.SemanticKernel.Connectors.OpenAI.OpenAIChatCompletionService", LogLevel.Debug);
-                builder.AddFilter("Microsoft.SemanticKernel.KernelFunction", LogLevel.Debug);
                 builder.SetMinimumLevel(LogLevel.Trace);
             });
             logger = factory.CreateLogger<LlmRequestLoggingHandler>();

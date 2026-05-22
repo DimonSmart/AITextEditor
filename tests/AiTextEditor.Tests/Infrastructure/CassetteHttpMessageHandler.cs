@@ -150,7 +150,11 @@ public sealed class CassetteHttpMessageHandler : DelegatingHandler
                         messages = obj["messages"],
                         tools = obj["tools"],
                         tool_choice = obj["tool_choice"],
-                        options = obj["options"]
+                        options = obj["options"],
+                        max_tokens = obj["max_tokens"]?.ToString(),
+                        max_completion_tokens = obj["max_completion_tokens"]?.ToString(),
+                        temperature = obj["temperature"]?.ToString(),
+                        response_format = obj["response_format"]
                     };
                     key = JsonSerializer.Serialize(canonical);
                 }
