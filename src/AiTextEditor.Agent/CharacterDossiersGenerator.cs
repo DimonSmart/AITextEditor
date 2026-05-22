@@ -30,7 +30,7 @@ public sealed class CharacterDossiersGenerator
         this.characterExtractionModelClient = characterExtractionModelClient ?? throw new ArgumentNullException(nameof(characterExtractionModelClient));
     }
 
-    internal IReadOnlyList<CharacterBibleParagraph> CollectParagraphs(IReadOnlyCollection<string>? changedPointers)
+    internal IReadOnlyList<TextFragment> CollectParagraphs(IReadOnlyCollection<string>? changedPointers)
     {
         var pointerSet = changedPointers?
             .Where(pointer => !string.IsNullOrWhiteSpace(pointer))
@@ -51,7 +51,7 @@ public sealed class CharacterDossiersGenerator
     }
 
     internal async Task<IReadOnlyList<CharacterBibleCharacterCandidate>> ExtractCandidatesAsync(
-        IReadOnlyList<CharacterBibleParagraph> paragraphs,
+        IReadOnlyList<TextFragment> paragraphs,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(paragraphs);
@@ -73,7 +73,7 @@ public sealed class CharacterDossiersGenerator
     }
 
     internal CharacterBibleCommitPlan CreateCommitPlan(
-        CharacterBibleWorkflowRequest request,
+        CharacterBibleWorkflowInput request,
         int paragraphCount,
         IReadOnlyList<CharacterBibleCharacterCandidate> candidates)
     {
@@ -171,7 +171,7 @@ public sealed class CharacterDossiersGenerator
         return changed;
     }
 
-    private IReadOnlyList<CharacterBibleParagraph> CollectAllParagraphs()
+    private IReadOnlyList<TextFragment> CollectAllParagraphs()
     {
         var cursor = new FullScanCursorStream(
             documentContext.Document,
@@ -181,7 +181,7 @@ public sealed class CharacterDossiersGenerator
             includeHeadings: false,
             logger);
 
-        var paragraphs = new List<CharacterBibleParagraph>();
+        var paragraphs = new List<TextFragment>();
         while (true)
         {
             var portion = cursor.NextPortion();
@@ -202,7 +202,7 @@ public sealed class CharacterDossiersGenerator
                     continue;
                 }
 
-                paragraphs.Add(new CharacterBibleParagraph(item.Pointer.ToCompactString(), item.Markdown));
+                paragraphs.Add(new TextFragment(item.Pointer.ToCompactString(), item.Markdown));
             }
 
             if (!portion.HasMore)
@@ -214,12 +214,12 @@ public sealed class CharacterDossiersGenerator
         return paragraphs;
     }
 
-    private IReadOnlyList<CharacterBibleParagraph> CollectChangedParagraphs(IReadOnlySet<string> pointerSet)
+    private IReadOnlyList<TextFragment> CollectChangedParagraphs(IReadOnlySet<string> pointerSet)
     {
         var lookup = documentContext.Document.Items
             .ToDictionary(item => item.Pointer.ToCompactString(), item => item, StringComparer.Ordinal);
 
-        var paragraphs = new List<CharacterBibleParagraph>(pointerSet.Count);
+        var paragraphs = new List<TextFragment>(pointerSet.Count);
         foreach (var pointer in pointerSet)
         {
             if (!lookup.TryGetValue(pointer, out var item))
@@ -238,7 +238,7 @@ public sealed class CharacterDossiersGenerator
                 continue;
             }
 
-            paragraphs.Add(new CharacterBibleParagraph(pointer, item.Markdown));
+            paragraphs.Add(new TextFragment(pointer, item.Markdown));
         }
 
         return paragraphs;

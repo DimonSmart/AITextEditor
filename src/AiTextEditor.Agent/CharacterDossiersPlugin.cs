@@ -134,7 +134,7 @@ public sealed class CharacterDossiersPlugin
             return new CharacterDossiersCommandResult(dossiers.DossiersId, dossiers.Version, Status: "updated");
         }
 
-        var refreshed = await workflowRunner.RunAsync(new CharacterBibleWorkflowRequest(normalized), cancellationToken);
+        var refreshed = await workflowRunner.RunAsync(new CharacterBibleWorkflowInput(normalized), cancellationToken);
         return new CharacterDossiersCommandResult(refreshed.Dossiers.DossiersId, refreshed.Dossiers.Version, Status: "updated");
     }
 

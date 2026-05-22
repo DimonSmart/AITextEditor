@@ -18,15 +18,15 @@ public sealed class CharacterBibleWorkflowRunner
         this.loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
     }
 
-    public async Task<CharacterBibleWorkflowResult> RunAsync(
-        CharacterBibleWorkflowRequest? request = null,
+    public async Task<CharacterBibleWorkflowOutput> RunAsync(
+        CharacterBibleWorkflowInput? request = null,
         CancellationToken cancellationToken = default)
     {
-        request ??= new CharacterBibleWorkflowRequest();
+        request ??= new CharacterBibleWorkflowInput();
 
-        var traversalExecutor = new CollectCharacterBibleParagraphsExecutor(
+        var traversalExecutor = new CollectTextFragmentsExecutor(
             generator,
-            loggerFactory.CreateLogger<CollectCharacterBibleParagraphsExecutor>());
+            loggerFactory.CreateLogger<CollectTextFragmentsExecutor>());
         var extractionExecutor = new ExtractCharacterBibleCandidatesExecutor(
             generator,
             loggerFactory.CreateLogger<ExtractCharacterBibleCandidatesExecutor>());
@@ -53,12 +53,11 @@ public sealed class CharacterBibleWorkflowRunner
         var run = await InProcessExecution.RunAsync(
             workflow,
             request,
-            sessionId: request.WorkflowRunId,
             cancellationToken: cancellationToken);
 
         foreach (var outputEvent in run.NewEvents.OfType<WorkflowOutputEvent>().Reverse())
         {
-            if (outputEvent.Is<CharacterBibleWorkflowResult>(out var result))
+            if (outputEvent.Is<CharacterBibleWorkflowOutput>(out var result))
             {
                 if (result.Failure is not null)
                 {
@@ -93,14 +92,14 @@ public sealed class CharacterBibleWorkflowRunner
     }
 }
 
-internal sealed class CollectCharacterBibleParagraphsExecutor : Executor<CharacterBibleWorkflowRequest, CharacterBibleTraversalResult>
+internal sealed class CollectTextFragmentsExecutor : Executor<CharacterBibleWorkflowInput, CharacterBibleTraversalResult>
 {
     private readonly CharacterDossiersGenerator generator;
-    private readonly ILogger<CollectCharacterBibleParagraphsExecutor> logger;
+    private readonly ILogger<CollectTextFragmentsExecutor> logger;
 
-    public CollectCharacterBibleParagraphsExecutor(
+    public CollectTextFragmentsExecutor(
         CharacterDossiersGenerator generator,
-        ILogger<CollectCharacterBibleParagraphsExecutor> logger)
+        ILogger<CollectTextFragmentsExecutor> logger)
         : base("collect_character_bible_paragraphs", ExecutorOptions.Default, declareCrossRunShareable: false)
     {
         this.generator = generator ?? throw new ArgumentNullException(nameof(generator));
@@ -108,7 +107,7 @@ internal sealed class CollectCharacterBibleParagraphsExecutor : Executor<Charact
     }
 
     public override ValueTask<CharacterBibleTraversalResult> HandleAsync(
-        CharacterBibleWorkflowRequest request,
+        CharacterBibleWorkflowInput request,
         IWorkflowContext context,
         CancellationToken cancellationToken)
     {
@@ -203,7 +202,7 @@ internal sealed class ResolveCharacterBibleCandidatesExecutor : Executor<Charact
     }
 }
 
-internal sealed class CommitCharacterBibleDossiersExecutor : Executor<CharacterBibleCommitPlan, CharacterBibleWorkflowResult>
+internal sealed class CommitCharacterBibleDossiersExecutor : Executor<CharacterBibleCommitPlan, CharacterBibleWorkflowOutput>
 {
     private readonly CharacterDossiersGenerator generator;
     private readonly ILogger<CommitCharacterBibleDossiersExecutor> logger;
@@ -217,7 +216,7 @@ internal sealed class CommitCharacterBibleDossiersExecutor : Executor<CharacterB
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public override ValueTask<CharacterBibleWorkflowResult> HandleAsync(
+    public override ValueTask<CharacterBibleWorkflowOutput> HandleAsync(
         CharacterBibleCommitPlan plan,
         IWorkflowContext context,
         CancellationToken cancellationToken)
@@ -228,7 +227,7 @@ internal sealed class CommitCharacterBibleDossiersExecutor : Executor<CharacterB
         if (plan.Failure is not null)
         {
             var failedPointerCount = NormalizePointers(plan.Request.ChangedPointers).Count;
-            return ValueTask.FromResult(new CharacterBibleWorkflowResult(
+            return ValueTask.FromResult(new CharacterBibleWorkflowOutput(
                 plan.ProjectedDossiers,
                 "failed",
                 failedPointerCount,
@@ -251,7 +250,7 @@ internal sealed class CommitCharacterBibleDossiersExecutor : Executor<CharacterB
             dossiers.Version,
             changedPointerCount);
 
-        return ValueTask.FromResult(new CharacterBibleWorkflowResult(
+        return ValueTask.FromResult(new CharacterBibleWorkflowOutput(
             dossiers,
             status,
             changedPointerCount,

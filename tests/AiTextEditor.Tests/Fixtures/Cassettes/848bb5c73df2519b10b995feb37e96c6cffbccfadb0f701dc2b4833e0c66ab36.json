@@ -1,0 +1,45 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-440\",\"object\":\"chat.completion\",\"created\":1779453270,\"model\":\"gpt-oss:20b\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"action\\\":\\\"continue\\\",\\\"batchFound\\\":false,\\\"newEvidence\\\":[],\\\"progress\\\":\\\"\\\",\\\"needMoreContext\\\":true}\",\"reasoning\":\"We need to output evidence relevant to the task: in Russian: \\\"Где в книге впервые упоминается профессор Звёздочкин?\\\" Excluding titles. Look for mention of \\\"профессор Звёздочкин\\\" or \\\"профессор Звёздочкин\\\" etc. Check paragraphs.\\n\\nSearch each markdown for \\\"профессор\\\" and name. None. In paragraph 1.1.1.p5 contains \\\"учёными малышками Фуксией и Селёдочкой\\\". paragraph 6 contains \\\"астронома Стекляшкина\\\". No professor mention. Also previous item1.1.1.p5 no professor. None mention of \\\"профессор Звёздочкин\\\".\\n\\nThus indeed none found in current batch. snapshot.evidenceCount is 0. Since no evidence, needMoreContext: true. action continue. batchFound false. progress maybe \\\"\\\". Need evidenceCount maybe 0.\\n\\nReturn JSON.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1818,\"completion_tokens\":238,\"total_tokens\":2056}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Alt-Svc": [
+      "h3=\":443\"; ma=2592000",
+      "h3-29=\":443\"; ma=2592000"
+    ],
+    "Date": [
+      "Fri, 22 May 2026 12:34:30 GMT"
+    ],
+    "Server": [
+      "Google",
+      "Frontend"
+    ],
+    "Set-Cookie": [
+      "aid=e51a59bd-b901-42e3-bee2-b524511203da; Path=/; Max-Age=31536000; HttpOnly; Secure; SameSite=Lax"
+    ],
+    "Traceparent": [
+      "00-729bad0447dc47031ead70b3eaceb1a7-58e4368bb423cc64-00"
+    ],
+    "Via": [
+      "1.1 google"
+    ],
+    "X-Build-Commit": [
+      "04586d41db50dbb6e25980c6e6a2561e95750cbf"
+    ],
+    "X-Build-Time": [
+      "2026-05-22T01:57:35-07:00"
+    ],
+    "X-Cloud-Trace-Context": [
+      "729bad0447dc47031ead70b3eaceb1a7/6405304543678286948"
+    ],
+    "X-Frame-Options": [
+      "DENY"
+    ],
+    "X-Request-ID": [
+      "d33b6d3f-0cf5-401d-83e9-8e9bcba155e3"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

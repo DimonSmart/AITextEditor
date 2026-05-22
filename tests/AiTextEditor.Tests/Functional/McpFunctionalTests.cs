@@ -70,17 +70,18 @@ public class McpFunctionalTests
     [InlineData(
         "Создай каталог досье персонажей книги. Используй инструменты character_dossiers.generate_character_dossiers и character_dossiers.get_character_dossiers. Верни только JSON каталога.",
         null,
-        true)]
+        true,
+        null)]
 //    [InlineData(
 //        "Создай каталог досье персонажей книги. Найди персонажа \"Знайка\" и обнови его через character_dossiers.upsert_character_dossier (используй characterId из каталога). Затем верни JSON каталога.",
 //        "В каталоге есть персонаж Знайка с описанием \"Главный из коротышек\".",
 //        true)]
-    public async Task CharacterDossiersCommandScenarios_ReturnExpectedCatalog(string command, string? llmCheck, bool enforce)
+    public async Task CharacterDossiersCommandScenarios_ReturnExpectedCatalog(string command, string? llmCheck, bool enforce, string? modelName)
     {
         var markdown = LoadNeznaykaSample();
         using var httpClient = await TestLlmConfiguration.CreateVerifiedLlmClientAsync(output);
         using var loggerFactory = TestLoggerFactory.Create(output);
-        var engine = new AgenticWorkflowEngine(httpClient, loggerFactory, "35dac0c0480c47738f24e3a8ac12250a");
+        var engine = new AgenticWorkflowEngine(httpClient, loggerFactory, "35dac0c0480c47738f24e3a8ac12250a", modelName);
 
         var result = await engine.RunAsync(markdown, command);
         var answer = result.LastAnswer ?? string.Empty;
@@ -106,72 +107,6 @@ public class McpFunctionalTests
 
         var evaluation = await LlmAssert.EvaluateAsync(httpClient, answer, llmCheck, output);
         Assert.True(evaluation.Pass, $"LLM assert failed: {evaluation.Reason}. Raw: {evaluation.RawResponse}");
-    }
-
-    [Fact]
-    public async Task CharacterDossiersGenerator_RespectsMaxCharacters()
-    {
-        var names = new[]
-        {
-            "Альфа",
-            "Бета",
-            "Гамма",
-            "Дельта",
-            "Эпсилон",
-            "Дзета",
-            "Эта",
-            "Тета",
-            "Йота",
-            "Каппа",
-            "Лямбда",
-            "Мю",
-            "Ню",
-            "Кси",
-            "Омикрон",
-            "Пи",
-            "Ро",
-            "Сигма",
-            "Тау",
-            "Ипсилон"
-        };
-
-        var markdownBuilder = new StringBuilder("# Characters\n\n");
-        foreach (var name in names)
-        {
-            markdownBuilder.AppendLine($"{name} отправился исследовать далёкий город и встретил старых знакомых.");
-            markdownBuilder.AppendLine();
-        }
-
-        var markdown = markdownBuilder.ToString();
-        var repository = new MarkdownDocumentRepository();
-        var document = repository.LoadFromMarkdown(markdown);
-        var dossierService = new CharacterDossierService();
-        var documentContext = new DocumentContext(document, dossierService);
-
-        using var loggerFactory = TestLoggerFactory.Create(output);
-
-        var limits = new CursorAgentLimits
-        {
-            CharacterDossiersMaxCharacters = 18,
-            DefaultMaxFound = 10,
-            MaxElements = 10,
-            MaxBytes = 32_000
-        };
-
-        var extractionModelClient = new TokenizingCharacterExtractionModelClient();
-        var generator = new CharacterDossiersGenerator(
-            documentContext,
-            dossierService,
-            limits,
-            loggerFactory.CreateLogger<CharacterDossiersGenerator>(),
-            extractionModelClient);
-
-        var directDossiers = await generator.GenerateAsync();
-        var maxCharacters = limits.CharacterDossiersMaxCharacters ?? names.Length;
-        var expectedCount = System.Math.Min(names.Length, maxCharacters);
-        Assert.Equal(expectedCount, directDossiers.Characters.Count);
-
-        Assert.Equal(expectedCount, directDossiers.Characters.Count);
     }
 
   

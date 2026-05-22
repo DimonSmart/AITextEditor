@@ -1,0 +1,45 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-359\",\"object\":\"chat.completion\",\"created\":1779453268,\"model\":\"gpt-oss:20b\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"action\\\":\\\"continue\\\",\\\"batchFound\\\":false,\\\"newEvidence\\\":[],\\\"progress\\\":\\\"\\\",\\\"needMoreContext\\\":true}\",\"reasoning\":\"We need to look for mentions of \\\"профессор Звёздочкин\\\" in this batch. The document covers chapters about Explorations, but I doubt the mention appears, but we need to scan all items.\\n\\nItems 1.1.1.p1 through p4. I read them. None mention \\\"профессор\\\" or \\\"Звёздочкин\\\". They mention architect \\\"Вертибутылкина\\\" or engineer \\\"Клёпки\\\". No. So no new evidence.\\n\\nThus output JSON: action \\\"continue\\\" (since we haven't found the 20 yet), batchFound false, newEvidence empty list, progress maybe empty, needMoreContext true? The knowledge might require more batches, but short ambiguous? Since nothing found, we might need more context. The spec: needMoreContext true only if the batch is too short/ambiguous and you must read further before making progress. Since task: find where first mention appears; we might need whole text, but first batch is short. The snapshot.evidenceCount 0. We don't know if more batches exist; hasMoreBatches true.\\n\\nThus we set needMoreContext true.\\n\\nReturn:\\n\\n{\\n  \\\"action\\\":\\\"continue\\\",\\n  \\\"batchFound\\\":false,\\n  \\\"newEvidence\\\":[],\\n  \\\"progress\\\":\\\"\\\",\\n  \\\"needMoreContext\\\":true\\n}\\n\\nMake sure JSON.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1930,\"completion_tokens\":313,\"total_tokens\":2243}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Alt-Svc": [
+      "h3=\":443\"; ma=2592000",
+      "h3-29=\":443\"; ma=2592000"
+    ],
+    "Date": [
+      "Fri, 22 May 2026 12:34:28 GMT"
+    ],
+    "Server": [
+      "Google",
+      "Frontend"
+    ],
+    "Set-Cookie": [
+      "aid=7e0139f8-56db-4c57-989e-ce33e7a5a600; Path=/; Max-Age=31536000; HttpOnly; Secure; SameSite=Lax"
+    ],
+    "Traceparent": [
+      "00-1d48b08ca128a503d0cab703f5383d93-7c0c0163cc00016b-00"
+    ],
+    "Via": [
+      "1.1 google"
+    ],
+    "X-Build-Commit": [
+      "04586d41db50dbb6e25980c6e6a2561e95750cbf"
+    ],
+    "X-Build-Time": [
+      "2026-05-22T01:57:35-07:00"
+    ],
+    "X-Cloud-Trace-Context": [
+      "1d48b08ca128a503d0cab703f5383d93/8938520888559534443"
+    ],
+    "X-Frame-Options": [
+      "DENY"
+    ],
+    "X-Request-ID": [
+      "aab27918-11da-4d9b-b197-e3a7218e74aa"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

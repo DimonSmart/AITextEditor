@@ -56,7 +56,7 @@ public sealed class CharacterBibleWorkflowRunnerTests
             Facts: [],
             Gender: "unknown"));
 
-        var result = await runner.RunAsync(new CharacterBibleWorkflowRequest(["p2"]));
+        var result = await runner.RunAsync(new CharacterBibleWorkflowInput(["p2"]));
 
         Assert.Equal("refreshed", result.Status);
         Assert.Equal(1, result.ChangedPointerCount);

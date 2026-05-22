@@ -23,12 +23,14 @@ public sealed class AgenticWorkflowEngine
     private readonly HttpClient httpClient;
     private readonly string? fixedDossiersId;
     private readonly ILoggerFactory loggerFactory;
+    private readonly string? modelOverride;
 
-    public AgenticWorkflowEngine(HttpClient? httpClient = null, ILoggerFactory? loggerFactory = null, string? fixedDossiersId = null)
+    public AgenticWorkflowEngine(HttpClient? httpClient = null, ILoggerFactory? loggerFactory = null, string? fixedDossiersId = null, string? modelOverride = null)
     {
         this.loggerFactory = loggerFactory ?? CreateDefaultLoggerFactory();
         this.httpClient = httpClient ?? CreateHttpClient(this.loggerFactory);
         this.fixedDossiersId = fixedDossiersId;
+        this.modelOverride = modelOverride;
     }
 
     public async Task<AgenticWorkflowContext> RunAsync(
@@ -52,7 +54,7 @@ public sealed class AgenticWorkflowEngine
         var cursorRegistry = new CursorRegistry();
         var limits = new CursorAgentLimits();
 
-        var modelId = Environment.GetEnvironmentVariable("LLM_MODEL") ?? "gpt-oss:120b-cloud";
+        var modelId = modelOverride ?? Environment.GetEnvironmentVariable("LLM_MODEL") ?? "gpt-oss:120b-cloud";
         var baseUrl = Environment.GetEnvironmentVariable("LLM_BASE_URL") ?? "http://localhost:11434";
         var apiKey = Environment.GetEnvironmentVariable("LLM_API_KEY") ?? "ollama";
         var endpoint = NormalizeOpenAiEndpoint(baseUrl);

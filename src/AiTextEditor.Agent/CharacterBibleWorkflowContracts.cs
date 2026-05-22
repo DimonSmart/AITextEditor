@@ -2,11 +2,11 @@ using AiTextEditor.Core.Model;
 
 namespace AiTextEditor.Agent;
 
-public sealed record CharacterBibleWorkflowRequest(
-    IReadOnlyCollection<string>? ChangedPointers = null,
-    string? WorkflowRunId = null);
+public sealed record CharacterBibleWorkflowInput(
+    IReadOnlyCollection<string>? ChangedPointers = null
+    );
 
-public sealed record CharacterBibleWorkflowResult(
+public sealed record CharacterBibleWorkflowOutput(
     CharacterDossiers Dossiers,
     string Status,
     int ChangedPointerCount,
@@ -17,13 +17,13 @@ public sealed record CharacterBibleWorkflowResult(
     IReadOnlyList<CharacterBibleResolverDecision> Decisions,
     Exception? Failure = null);
 
-public sealed record CharacterBibleParagraph(
+public sealed record TextFragment(
     string Pointer,
     string Text);
 
 public sealed record CharacterBibleTraversalResult(
-    CharacterBibleWorkflowRequest Request,
-    IReadOnlyList<CharacterBibleParagraph> Paragraphs);
+    CharacterBibleWorkflowInput Request,
+    IReadOnlyList<TextFragment> Paragraphs);
 
 public sealed record CharacterBibleCharacterCandidate(
     string CanonicalName,
@@ -32,8 +32,8 @@ public sealed record CharacterBibleCharacterCandidate(
     string Description);
 
 public sealed record CharacterBibleExtractionResult(
-    CharacterBibleWorkflowRequest Request,
-    IReadOnlyList<CharacterBibleParagraph> Paragraphs,
+    CharacterBibleWorkflowInput Request,
+    IReadOnlyList<TextFragment> Paragraphs,
     IReadOnlyList<CharacterBibleCharacterCandidate> Candidates,
     Exception? Failure = null);
 
@@ -53,7 +53,7 @@ public sealed record CharacterBibleResolverDecision(
     string Reason);
 
 public sealed record CharacterBibleCommitPlan(
-    CharacterBibleWorkflowRequest Request,
+    CharacterBibleWorkflowInput Request,
     CharacterDossiers ProjectedDossiers,
     bool Changed,
     int ParagraphCount,
