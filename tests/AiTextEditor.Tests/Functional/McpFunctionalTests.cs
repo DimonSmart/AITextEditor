@@ -67,11 +67,7 @@ public class McpFunctionalTests
 
     [Theory]
     [Trait("Category", "Manual")]
-    [InlineData(
-        "Создай каталог досье персонажей книги",
-        null,
-        true,
-        "qwen3:latest")]
+    [InlineData("Создай каталог досье персонажей книги", null, true, "phi4:latest")]
 //    [InlineData(
 //        "Создай каталог досье персонажей книги. Найди персонажа \"Знайка\" и обнови его через character_dossiers.upsert_character_dossier (используй characterId из каталога). Затем верни JSON каталога.",
 //        "В каталоге есть персонаж Знайка с описанием \"Главный из коротышек\".",

@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-561\",\"object\":\"chat.completion\",\"created\":1779464824,\"model\":\"phi4:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"characters\\\": [\\n    {\\n      \\\"canonicalName\\\": \\\"Знайка\\\",\\n      \\\"gender\\\": \\\"unknown\\\",\\n      \\\"aliases\\\": [],\\n      \\\"description\\\": \\\"В данном фрагменте характер не раскрыт.\\\"\\n    }\\n  ]\\n}\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2888,\"completion_tokens\":60,\"total_tokens\":2948}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Fri, 22 May 2026 15:47:04 GMT"
+    ]
+  }
+}
