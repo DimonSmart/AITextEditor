@@ -1,0 +1,192 @@
+@page "/bible-operations"
+@rendermode InteractiveServer
+@implements IDisposable
+@inject CharacterBibleCommandParser CommandParser
+@inject ICharacterBibleOperationRunner OperationRunner
+@inject ISnackbar Snackbar
+
+<PageTitle>Bible Operations</PageTitle>
+
+<div class="operation-log">
+    @if (runs.Count == 0)
+    {
+        <p class="empty-state">No operations yet.</p>
+    }
+
+    @foreach (var run in runs.OrderByDescending(run => run.StartedAt))
+    {
+        <section class="operation-run">
+            <header>
+                <div>
+                    <strong>User</strong>
+                    <span>@run.UserCommand</span>
+                </div>
+                <span class="status-pill">@run.Status</span>
+            </header>
+
+            @foreach (var item in VisibleEvents(run))
+            {
+                <div class="operation-event @CssFor(item.Type)">
+                    <time>@item.Timestamp.ToLocalTime().ToString("HH:mm:ss")</time>
+                    <span>@item.Type</span>
+                    <p>@item.Message</p>
+                </div>
+            }
+
+            @if (run.Status == CharacterBibleOperationStatus.Completed && run.Events.Any(e => e.Type == CharacterBibleOperationEventType.Progress))
+            {
+                <details>
+                    <summary>Progress events</summary>
+                    @foreach (var item in run.Events.Where(e => e.Type == CharacterBibleOperationEventType.Progress))
+                    {
+                        <div class="operation-event muted">
+                            <time>@item.Timestamp.ToLocalTime().ToString("HH:mm:ss")</time>
+                            <span>@item.Type</span>
+                            <p>@item.Message</p>
+                        </div>
+                    }
+                </details>
+            }
+
+            @if (run.Events.LastOrDefault(e => e.Output is not null)?.Output is { } output)
+            {
+                <div class="operation-summary">
+                    <div><span>Status</span><strong>@output.Status</strong></div>
+                    <div><span>Changed pointers</span><strong>@output.ChangedPointerCount</strong></div>
+                    <div><span>Paragraphs</span><strong>@output.ParagraphCount</strong></div>
+                    <div><span>Candidates</span><strong>@output.CandidateCount</strong></div>
+                    <div><span>Decisions</span><strong>@output.DecisionCount</strong></div>
+                    <div><span>Ambiguous</span><strong>@output.AmbiguousDecisionCount</strong></div>
+                    <div><span>Dossiers</span><strong>@output.Dossiers.Characters.Count</strong></div>
+                </div>
+            }
+        </section>
+    }
+</div>
+
+<div class="command-bar">
+    <textarea class="form-control" @bind="command" @bind:event="oninput" placeholder="Generate character bible"></textarea>
+    <div class="command-actions">
+        <MudButton Variant="MudBlazor.Variant.Filled" Color="MudBlazor.Color.Primary" Disabled="@IsRunning" OnClick="@RunAsync">Run</MudButton>
+        <MudButton Variant="MudBlazor.Variant.Outlined" Color="MudBlazor.Color.Secondary" Disabled="@(!IsRunning)" OnClick="@CancelAsync">Cancel</MudButton>
+    </div>
+</div>
+
+@code {
+    private readonly List<CharacterBibleOperationRun> runs = [];
+    private CancellationTokenSource? currentCancellation;
+    private CharacterBibleOperationRun? currentRun;
+    private string command = "Generate character bible";
+
+    private bool IsRunning => currentRun?.Status == CharacterBibleOperationStatus.Running;
+
+    private async Task RunAsync()
+    {
+        var parseResult = CommandParser.Parse(command);
+        if (!parseResult.Success || parseResult.Request is null)
+        {
+            Snackbar.Add(parseResult.Error ?? "Invalid operation command.", MudBlazor.Severity.Warning);
+            return;
+        }
+
+        currentCancellation?.Dispose();
+        currentCancellation = new CancellationTokenSource();
+        currentRun = new CharacterBibleOperationRun
+        {
+            UserCommand = parseResult.Request.UserCommand,
+            Status = CharacterBibleOperationStatus.Running
+        };
+        runs.Add(currentRun);
+
+        try
+        {
+            await foreach (var operationEvent in OperationRunner.RunAsync(parseResult.Request, currentCancellation.Token))
+            {
+                currentRun.Events.Add(operationEvent);
+                currentRun.Status = StatusFromEvent(operationEvent.Type, currentRun.Status);
+                if (IsTerminal(operationEvent.Type))
+                {
+                    currentRun.FinishedAt = DateTimeOffset.UtcNow;
+                }
+
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+        finally
+        {
+            if (currentRun.Status == CharacterBibleOperationStatus.Running)
+            {
+                currentRun.Status = CharacterBibleOperationStatus.Cancelled;
+                currentRun.FinishedAt = DateTimeOffset.UtcNow;
+            }
+
+            currentCancellation?.Dispose();
+            currentCancellation = null;
+            currentRun = null;
+        }
+    }
+
+    private Task CancelAsync()
+    {
+        if (currentRun is not null)
+        {
+            currentRun.Status = CharacterBibleOperationStatus.Cancelled;
+            currentRun.FinishedAt = DateTimeOffset.UtcNow;
+        }
+
+        currentCancellation?.Cancel();
+        return Task.CompletedTask;
+    }
+
+    private static IEnumerable<CharacterBibleOperationEvent> VisibleEvents(CharacterBibleOperationRun run)
+    {
+        if (run.Status != CharacterBibleOperationStatus.Completed)
+        {
+            return run.Events;
+        }
+
+        var lastEvent = run.Events.LastOrDefault();
+        return run.Events.Where(item =>
+            item.Type != CharacterBibleOperationEventType.Progress
+            || ReferenceEquals(item, lastEvent)
+            || item.Type == CharacterBibleOperationEventType.Failed);
+    }
+
+    private static CharacterBibleOperationStatus StatusFromEvent(
+        CharacterBibleOperationEventType eventType,
+        CharacterBibleOperationStatus currentStatus)
+    {
+        return eventType switch
+        {
+            CharacterBibleOperationEventType.Completed => CharacterBibleOperationStatus.Completed,
+            CharacterBibleOperationEventType.Failed => CharacterBibleOperationStatus.Failed,
+            CharacterBibleOperationEventType.Cancelled => CharacterBibleOperationStatus.Cancelled,
+            CharacterBibleOperationEventType.Started => CharacterBibleOperationStatus.Running,
+            _ => currentStatus
+        };
+    }
+
+    private static bool IsTerminal(CharacterBibleOperationEventType eventType)
+    {
+        return eventType is CharacterBibleOperationEventType.Completed
+            or CharacterBibleOperationEventType.Failed
+            or CharacterBibleOperationEventType.Cancelled;
+    }
+
+    private static string CssFor(CharacterBibleOperationEventType eventType)
+    {
+        return eventType switch
+        {
+            CharacterBibleOperationEventType.Failed => "failed",
+            CharacterBibleOperationEventType.Cancelled => "cancelled",
+            CharacterBibleOperationEventType.Completed => "completed",
+            _ => string.Empty
+        };
+    }
+
+    public void Dispose()
+    {
+        currentCancellation?.Cancel();
+        currentCancellation?.Dispose();
+    }
+}

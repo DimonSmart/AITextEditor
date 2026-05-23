@@ -229,7 +229,7 @@ public sealed class CharacterDossierService
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(payload);
 
-        var parsed = yamlDeserializer.Deserialize<CharacterDossiers>(payload);
+        var parsed = yamlDeserializer.Deserialize<CharacterDossiersYaml>(payload)?.ToModel();
         if (parsed == null)
         {
             throw new InvalidOperationException("Failed to deserialize character dossiers from YAML.");
@@ -476,6 +476,69 @@ public sealed class CharacterDossierService
             id ?? Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture),
             1,
             Array.Empty<CharacterDossier>());
+    }
+
+    private sealed class CharacterDossiersYaml
+    {
+        public string? DossiersId { get; set; }
+
+        public int Version { get; set; }
+
+        public List<CharacterDossierYaml>? Characters { get; set; }
+
+        public CharacterDossiers ToModel()
+        {
+            return new CharacterDossiers(
+                DossiersId ?? string.Empty,
+                Version,
+                Characters?.Select(character => character.ToModel()).ToList() ?? []);
+        }
+    }
+
+    private sealed class CharacterDossierYaml
+    {
+        public string? CharacterId { get; set; }
+
+        public string? Name { get; set; }
+
+        public string? Description { get; set; }
+
+        public List<string>? Aliases { get; set; }
+
+        public Dictionary<string, string>? AliasExamples { get; set; }
+
+        public List<CharacterFactYaml>? Facts { get; set; }
+
+        public string? Gender { get; set; }
+
+        public CharacterDossier ToModel()
+        {
+            return new CharacterDossier(
+                CharacterId ?? string.Empty,
+                Name ?? string.Empty,
+                Description ?? string.Empty,
+                Aliases ?? [],
+                AliasExamples ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
+                Facts?.Select(fact => fact.ToModel()).ToList() ?? [],
+                Gender ?? "unknown");
+        }
+    }
+
+    private sealed class CharacterFactYaml
+    {
+        public string? Key { get; set; }
+
+        public string? Value { get; set; }
+
+        public string? Example { get; set; }
+
+        public CharacterFact ToModel()
+        {
+            return new CharacterFact(
+                Key ?? string.Empty,
+                Value ?? string.Empty,
+                Example ?? string.Empty);
+        }
     }
 }
 

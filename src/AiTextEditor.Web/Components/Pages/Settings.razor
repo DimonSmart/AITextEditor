@@ -1,0 +1,323 @@
+@page "/settings"
+@rendermode InteractiveServer
+@inject IProgramSettingsStore SettingsStore
+@inject ISnackbar Snackbar
+
+<PageTitle>Settings</PageTitle>
+
+@if (currentSettings is null)
+{
+    <p class="empty-state">Loading settings.</p>
+}
+else
+{
+    <div class="settings-form">
+        <section class="settings-section">
+            <h2>Active AI</h2>
+
+            <label>
+                <span>Server</span>
+                <select class="form-select" @bind="EditableSettings.SelectedAiServerName">
+                    <option value="">Select server</option>
+                    @foreach (var server in EditableSettings.AiServers)
+                    {
+                        <option value="@server.Name">@server.Name</option>
+                    }
+                </select>
+            </label>
+
+            <label>
+                <span>Model</span>
+                <input class="form-control" @bind="EditableSettings.SelectedAiModelName" @bind:event="oninput" />
+            </label>
+        </section>
+
+        <section class="settings-section">
+            <div class="settings-section-header">
+                <h2>AI Servers</h2>
+                <button type="button" class="btn btn-primary btn-sm" @onclick="AddServer">Add</button>
+            </div>
+
+            @if (EditableSettings.AiServers.Count == 0)
+            {
+                <p class="empty-state">No AI servers configured.</p>
+            }
+            else
+            {
+                <div class="table-wrap settings-table-wrap">
+                    <table class="table table-sm server-profile-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Base URL</th>
+                                <th>Timeout</th>
+                                <th>Flags</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (var index = 0; index < EditableSettings.AiServers.Count; index++)
+                            {
+                                var serverIndex = index;
+                                var server = EditableSettings.AiServers[serverIndex];
+                                <tr class="@GetServerRowClass(server)">
+                                    <td>@server.Name</td>
+                                    <td>@server.BaseUrl</td>
+                                    <td>@server.TimeoutMinutes min</td>
+                                    <td>@FormatFlags(server)</td>
+                                    <td class="settings-row-actions">
+                                        <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="() => SelectServer(server)">Select</button>
+                                        <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="() => StartEdit(serverIndex)">Edit</button>
+                                        <button type="button" class="btn btn-outline-danger btn-sm" @onclick="() => DeleteServer(serverIndex)">Delete</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </section>
+
+        @if (editingServer is not null)
+        {
+            <section class="settings-section server-editor">
+                <div class="settings-section-header">
+                    <h2>@EditorTitle</h2>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="CancelEdit">Cancel</button>
+                </div>
+
+                <label>
+                    <span>Name</span>
+                    <input class="form-control" @bind="EditingServer.Name" @bind:event="oninput" />
+                </label>
+
+                <label>
+                    <span>Base URL</span>
+                    <input class="form-control" type="url" @bind="EditingServer.BaseUrl" @bind:event="oninput" />
+                </label>
+
+                <label>
+                    <span>API key</span>
+                    <input class="form-control" type="password" @bind="EditingServer.ApiKey" @bind:event="oninput" autocomplete="off" />
+                </label>
+
+                <label>
+                    <span>Username</span>
+                    <input class="form-control" @bind="EditingServer.Username" @bind:event="oninput" autocomplete="off" />
+                </label>
+
+                <label>
+                    <span>Password</span>
+                    <input class="form-control" type="password" @bind="EditingServer.Password" @bind:event="oninput" autocomplete="off" />
+                </label>
+
+                <label>
+                    <span>Timeout minutes</span>
+                    <input class="form-control" type="number" min="1" @bind="EditingServer.TimeoutMinutes" @bind:event="oninput" />
+                </label>
+
+                <div class="settings-checks">
+                    <label class="form-check">
+                        <input class="form-check-input" type="checkbox" @bind="EditingServer.IgnoreSslErrors" />
+                        <span class="form-check-label">Ignore SSL errors</span>
+                    </label>
+
+                    <label class="form-check">
+                        <input class="form-check-input" type="checkbox" @bind="EditingServer.LogRequestBody" />
+                        <span class="form-check-label">Log request body</span>
+                    </label>
+                </div>
+
+                <div class="settings-actions">
+                    <button type="button" class="btn btn-primary" @onclick="ApplyServerEdit">Apply</button>
+                </div>
+            </section>
+        }
+
+        <div class="settings-actions">
+            <MudButton Variant="MudBlazor.Variant.Filled" Color="MudBlazor.Color.Primary" Disabled="@isSaving" OnClick="@SaveAsync">Save</MudButton>
+        </div>
+    </div>
+}
+
+@code {
+    private ProgramSettings? currentSettings;
+    private AiServerSettings? editingServer;
+    private int? editingServerIndex;
+    private bool isSaving;
+
+    private ProgramSettings EditableSettings => currentSettings ?? throw new InvalidOperationException("Settings are not loaded.");
+
+    private AiServerSettings EditingServer => editingServer ?? throw new InvalidOperationException("Server editor is not open.");
+
+    private string EditorTitle => editingServerIndex is null ? "Add AI Server" : "Edit AI Server";
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            currentSettings = await SettingsStore.LoadAsync(CancellationToken.None);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, MudBlazor.Severity.Error);
+        }
+    }
+
+    private void AddServer()
+    {
+        editingServer = new AiServerSettings();
+        editingServerIndex = null;
+    }
+
+    private void StartEdit(int serverIndex)
+    {
+        editingServer = EditableSettings.AiServers[serverIndex].Clone();
+        editingServerIndex = serverIndex;
+    }
+
+    private void CancelEdit()
+    {
+        editingServer = null;
+        editingServerIndex = null;
+    }
+
+    private void SelectServer(AiServerSettings server)
+    {
+        EditableSettings.SelectedAiServerName = server.Name;
+    }
+
+    private bool IsSelectedServer(AiServerSettings server)
+    {
+        return string.Equals(
+            server.Name,
+            EditableSettings.SelectedAiServerName,
+            StringComparison.OrdinalIgnoreCase);
+    }
+
+    private string GetServerRowClass(AiServerSettings server)
+    {
+        return IsSelectedServer(server) ? "selected-row" : string.Empty;
+    }
+
+    private void DeleteServer(int serverIndex)
+    {
+        var server = EditableSettings.AiServers[serverIndex];
+        EditableSettings.AiServers.RemoveAt(serverIndex);
+        if (IsSelectedServer(server))
+        {
+            EditableSettings.SelectedAiServerName = string.Empty;
+        }
+
+        if (editingServerIndex == serverIndex)
+        {
+            CancelEdit();
+        }
+    }
+
+    private void ApplyServerEdit()
+    {
+        TryApplyServerEdit();
+    }
+
+    private bool TryApplyServerEdit()
+    {
+        var server = NormalizeServer(EditingServer);
+        var candidateSettings = EditableSettings.Clone();
+        var oldName = editingServerIndex is int index
+            ? candidateSettings.AiServers[index].Name
+            : string.Empty;
+
+        if (editingServerIndex is int existingIndex)
+        {
+            candidateSettings.AiServers[existingIndex] = server;
+            if (string.Equals(
+                candidateSettings.SelectedAiServerName,
+                oldName,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                candidateSettings.SelectedAiServerName = server.Name;
+            }
+        }
+        else
+        {
+            candidateSettings.AiServers.Add(server);
+            if (string.IsNullOrWhiteSpace(candidateSettings.SelectedAiServerName))
+            {
+                candidateSettings.SelectedAiServerName = server.Name;
+            }
+        }
+
+        var errors = ProgramSettingsValidation.ValidateForSave(candidateSettings);
+        if (errors.Count > 0)
+        {
+            Snackbar.Add(string.Join(" ", errors), MudBlazor.Severity.Warning);
+            return false;
+        }
+
+        currentSettings = candidateSettings;
+        CancelEdit();
+        return true;
+    }
+
+    private async Task SaveAsync()
+    {
+        if (editingServer is not null && !TryApplyServerEdit())
+        {
+            return;
+        }
+
+        var errors = ProgramSettingsValidation.ValidateForSave(EditableSettings);
+        if (errors.Count > 0)
+        {
+            Snackbar.Add(string.Join(" ", errors), MudBlazor.Severity.Warning);
+            return;
+        }
+
+        isSaving = true;
+        try
+        {
+            await SettingsStore.SaveAsync(EditableSettings, CancellationToken.None);
+            Snackbar.Add("Saved.", MudBlazor.Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, MudBlazor.Severity.Error);
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+    private static AiServerSettings NormalizeServer(AiServerSettings server)
+    {
+        return new AiServerSettings
+        {
+            Name = server.Name.Trim(),
+            BaseUrl = server.BaseUrl.Trim(),
+            ApiKey = server.ApiKey.Trim(),
+            Username = server.Username.Trim(),
+            Password = server.Password,
+            IgnoreSslErrors = server.IgnoreSslErrors,
+            LogRequestBody = server.LogRequestBody,
+            TimeoutMinutes = server.TimeoutMinutes
+        };
+    }
+
+    private static string FormatFlags(AiServerSettings server)
+    {
+        var flags = new List<string>();
+        if (server.IgnoreSslErrors)
+        {
+            flags.Add("SSL");
+        }
+
+        if (server.LogRequestBody)
+        {
+            flags.Add("Body log");
+        }
+
+        return flags.Count == 0 ? string.Empty : string.Join(", ", flags);
+    }
+}

@@ -34,7 +34,7 @@ public class EditorSession
 
     public LinearDocument LoadDefaultDocument(string markdown, string? documentId = null)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(markdown);
+        ArgumentNullException.ThrowIfNull(markdown);
         if (documentId != null && string.IsNullOrWhiteSpace(documentId))
         {
             throw new ArgumentException("Document id cannot be empty or whitespace when provided.", nameof(documentId));

@@ -1,0 +1,90 @@
+@implements IDisposable
+
+@if (!string.IsNullOrWhiteSpace(Title))
+{
+    <h2>@Title</h2>
+}
+
+<MudSplitPanel Class="markdown-split-editor"
+               ClassFirstPanel="markdown-editor-pane"
+               ClassSecondPanel="markdown-preview-pane"
+               ClassDivider="markdown-split-divider"
+               FirstPanelInitialSize="640"
+               MinPanelSize="260"
+               PanelGap="8">
+    <FirstPanel>
+        <textarea class="markdown-source"
+                  readonly="@ReadOnly"
+                  value="@currentValue"
+                  @oninput="OnInputAsync"></textarea>
+    </FirstPanel>
+    <SecondPanel>
+        <div class="markdown-preview">
+            @((MarkupString)previewHtml)
+        </div>
+    </SecondPanel>
+</MudSplitPanel>
+
+@code {
+    private CancellationTokenSource? previewDebounce;
+    private string currentValue = string.Empty;
+    private string previewHtml = string.Empty;
+
+    [Parameter] public string? Title { get; set; }
+
+    [Parameter] public string Value { get; set; } = string.Empty;
+
+    [Parameter] public EventCallback<string> ValueChanged { get; set; }
+
+    [Parameter] public bool ReadOnly { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        if (!string.Equals(Value, currentValue, StringComparison.Ordinal))
+        {
+            currentValue = Value ?? string.Empty;
+            previewHtml = MarkdownPreviewHtmlRenderer.Render(currentValue);
+        }
+    }
+
+    private async Task OnInputAsync(ChangeEventArgs args)
+    {
+        if (ReadOnly)
+        {
+            return;
+        }
+
+        currentValue = args.Value?.ToString() ?? string.Empty;
+        DebouncePreview();
+        await ValueChanged.InvokeAsync(currentValue);
+    }
+
+    private void DebouncePreview()
+    {
+        previewDebounce?.Cancel();
+        previewDebounce?.Dispose();
+        previewDebounce = new CancellationTokenSource();
+        var token = previewDebounce.Token;
+
+        _ = UpdatePreviewAfterDelayAsync(currentValue, token);
+    }
+
+    private async Task UpdatePreviewAfterDelayAsync(string markdown, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await Task.Delay(300, cancellationToken);
+            previewHtml = MarkdownPreviewHtmlRenderer.Render(markdown);
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+        }
+    }
+
+    public void Dispose()
+    {
+        previewDebounce?.Cancel();
+        previewDebounce?.Dispose();
+    }
+}

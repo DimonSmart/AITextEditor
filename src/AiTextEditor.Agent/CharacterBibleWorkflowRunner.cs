@@ -18,24 +18,36 @@ public sealed class CharacterBibleWorkflowRunner
         this.loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
     }
 
+    public Task<CharacterBibleWorkflowOutput> RunAsync(
+        CharacterBibleWorkflowInput? request,
+        CancellationToken cancellationToken)
+    {
+        return RunAsync(request, null, cancellationToken);
+    }
+
     public async Task<CharacterBibleWorkflowOutput> RunAsync(
         CharacterBibleWorkflowInput? request = null,
+        IProgress<CharacterBibleWorkflowProgress>? progress = null,
         CancellationToken cancellationToken = default)
     {
         request ??= new CharacterBibleWorkflowInput();
 
         var traversalExecutor = new CollectTextFragmentsExecutor(
             generator,
-            loggerFactory.CreateLogger<CollectTextFragmentsExecutor>());
+            loggerFactory.CreateLogger<CollectTextFragmentsExecutor>(),
+            progress);
         var extractionExecutor = new ExtractCharacterBibleCandidatesExecutor(
             generator,
-            loggerFactory.CreateLogger<ExtractCharacterBibleCandidatesExecutor>());
+            loggerFactory.CreateLogger<ExtractCharacterBibleCandidatesExecutor>(),
+            progress);
         var resolutionExecutor = new ResolveCharacterBibleCandidatesExecutor(
             generator,
-            loggerFactory.CreateLogger<ResolveCharacterBibleCandidatesExecutor>());
+            loggerFactory.CreateLogger<ResolveCharacterBibleCandidatesExecutor>(),
+            progress);
         var commitExecutor = new CommitCharacterBibleDossiersExecutor(
             generator,
-            loggerFactory.CreateLogger<CommitCharacterBibleDossiersExecutor>());
+            loggerFactory.CreateLogger<CommitCharacterBibleDossiersExecutor>(),
+            progress);
 
         ExecutorBinding traversalBinding = traversalExecutor;
         ExecutorBinding extractionBinding = extractionExecutor;
@@ -96,14 +108,17 @@ internal sealed class CollectTextFragmentsExecutor : Executor<CharacterBibleWork
 {
     private readonly CharacterDossiersGenerator generator;
     private readonly ILogger<CollectTextFragmentsExecutor> logger;
+    private readonly IProgress<CharacterBibleWorkflowProgress>? progress;
 
     public CollectTextFragmentsExecutor(
         CharacterDossiersGenerator generator,
-        ILogger<CollectTextFragmentsExecutor> logger)
+        ILogger<CollectTextFragmentsExecutor> logger,
+        IProgress<CharacterBibleWorkflowProgress>? progress)
         : base("collect_character_bible_paragraphs", ExecutorOptions.Default, declareCrossRunShareable: false)
     {
         this.generator = generator ?? throw new ArgumentNullException(nameof(generator));
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        this.progress = progress;
     }
 
     public override ValueTask<CharacterBibleTraversalResult> HandleAsync(
@@ -114,8 +129,12 @@ internal sealed class CollectTextFragmentsExecutor : Executor<CharacterBibleWork
         ArgumentNullException.ThrowIfNull(request);
         cancellationToken.ThrowIfCancellationRequested();
 
-        var paragraphs = generator.CollectParagraphs(request.ChangedPointers);
+        progress?.Report(new CharacterBibleWorkflowProgress("collect", "Collecting character bible paragraphs."));
+        var paragraphs = generator.CollectParagraphs(request.ChangedPointers, progress);
         logger.LogInformation("character_bible_paragraphs_collected: count={Count}", paragraphs.Count);
+        progress?.Report(new CharacterBibleWorkflowProgress(
+            "collect",
+            $"Collected {paragraphs.Count} paragraphs for character bible processing."));
 
         return ValueTask.FromResult(new CharacterBibleTraversalResult(request, paragraphs));
     }
@@ -125,14 +144,17 @@ internal sealed class ExtractCharacterBibleCandidatesExecutor : Executor<Charact
 {
     private readonly CharacterDossiersGenerator generator;
     private readonly ILogger<ExtractCharacterBibleCandidatesExecutor> logger;
+    private readonly IProgress<CharacterBibleWorkflowProgress>? progress;
 
     public ExtractCharacterBibleCandidatesExecutor(
         CharacterDossiersGenerator generator,
-        ILogger<ExtractCharacterBibleCandidatesExecutor> logger)
+        ILogger<ExtractCharacterBibleCandidatesExecutor> logger,
+        IProgress<CharacterBibleWorkflowProgress>? progress)
         : base("extract_character_bible_candidates", ExecutorOptions.Default, declareCrossRunShareable: false)
     {
         this.generator = generator ?? throw new ArgumentNullException(nameof(generator));
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        this.progress = progress;
     }
 
     public override async ValueTask<CharacterBibleExtractionResult> HandleAsync(
@@ -144,7 +166,10 @@ internal sealed class ExtractCharacterBibleCandidatesExecutor : Executor<Charact
 
         try
         {
-            var candidates = await generator.ExtractCandidatesAsync(input.Paragraphs, cancellationToken);
+            progress?.Report(new CharacterBibleWorkflowProgress(
+                "extract",
+                $"Starting candidate extraction from {input.Paragraphs.Count} paragraphs."));
+            var candidates = await generator.ExtractCandidatesAsync(input.Paragraphs, progress, cancellationToken);
             logger.LogInformation("character_bible_candidates_extracted: count={Count}", candidates.Count);
 
             return new CharacterBibleExtractionResult(input.Request, input.Paragraphs, candidates);
@@ -152,6 +177,9 @@ internal sealed class ExtractCharacterBibleCandidatesExecutor : Executor<Charact
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
             logger.LogError(ex, "character_bible_candidates_extraction_failed");
+            progress?.Report(new CharacterBibleWorkflowProgress(
+                "extract",
+                $"Candidate extraction failed: {ex.Message}"));
             return new CharacterBibleExtractionResult(input.Request, input.Paragraphs, [], ex);
         }
     }
@@ -161,14 +189,17 @@ internal sealed class ResolveCharacterBibleCandidatesExecutor : Executor<Charact
 {
     private readonly CharacterDossiersGenerator generator;
     private readonly ILogger<ResolveCharacterBibleCandidatesExecutor> logger;
+    private readonly IProgress<CharacterBibleWorkflowProgress>? progress;
 
     public ResolveCharacterBibleCandidatesExecutor(
         CharacterDossiersGenerator generator,
-        ILogger<ResolveCharacterBibleCandidatesExecutor> logger)
+        ILogger<ResolveCharacterBibleCandidatesExecutor> logger,
+        IProgress<CharacterBibleWorkflowProgress>? progress)
         : base("resolve_character_bible_candidates", ExecutorOptions.Default, declareCrossRunShareable: false)
     {
         this.generator = generator ?? throw new ArgumentNullException(nameof(generator));
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        this.progress = progress;
     }
 
     public override ValueTask<CharacterBibleCommitPlan> HandleAsync(
@@ -181,6 +212,9 @@ internal sealed class ResolveCharacterBibleCandidatesExecutor : Executor<Charact
 
         if (input.Failure is not null)
         {
+            progress?.Report(new CharacterBibleWorkflowProgress(
+                "resolve",
+                "Skipping candidate resolution because extraction failed."));
             return ValueTask.FromResult(new CharacterBibleCommitPlan(
                 input.Request,
                 generator.GetCurrentDossiers(),
@@ -191,12 +225,18 @@ internal sealed class ResolveCharacterBibleCandidatesExecutor : Executor<Charact
                 input.Failure));
         }
 
-        var plan = generator.CreateCommitPlan(input.Request, input.Paragraphs.Count, input.Candidates);
+        progress?.Report(new CharacterBibleWorkflowProgress(
+            "resolve",
+            $"Resolving {input.Candidates.Count} character candidates."));
+        var plan = generator.CreateCommitPlan(input.Request, input.Paragraphs.Count, input.Candidates, progress);
         logger.LogInformation(
             "character_bible_candidates_resolved: candidates={CandidateCount}, decisions={DecisionCount}, changed={Changed}",
             plan.CandidateCount,
             plan.Decisions.Count,
             plan.Changed);
+        progress?.Report(new CharacterBibleWorkflowProgress(
+            "resolve",
+            $"Resolved {plan.Decisions.Count} decisions; ambiguous: {plan.Decisions.Count(decision => decision.Kind == CharacterBibleDecisionKind.Ambiguous)}."));
 
         return ValueTask.FromResult(plan);
     }
@@ -206,14 +246,17 @@ internal sealed class CommitCharacterBibleDossiersExecutor : Executor<CharacterB
 {
     private readonly CharacterDossiersGenerator generator;
     private readonly ILogger<CommitCharacterBibleDossiersExecutor> logger;
+    private readonly IProgress<CharacterBibleWorkflowProgress>? progress;
 
     public CommitCharacterBibleDossiersExecutor(
         CharacterDossiersGenerator generator,
-        ILogger<CommitCharacterBibleDossiersExecutor> logger)
+        ILogger<CommitCharacterBibleDossiersExecutor> logger,
+        IProgress<CharacterBibleWorkflowProgress>? progress)
         : base("commit_character_bible_dossiers", ExecutorOptions.Default, declareCrossRunShareable: false)
     {
         this.generator = generator ?? throw new ArgumentNullException(nameof(generator));
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        this.progress = progress;
     }
 
     public override ValueTask<CharacterBibleWorkflowOutput> HandleAsync(
@@ -227,6 +270,9 @@ internal sealed class CommitCharacterBibleDossiersExecutor : Executor<CharacterB
         if (plan.Failure is not null)
         {
             var failedPointerCount = NormalizePointers(plan.Request.ChangedPointers).Count;
+            progress?.Report(new CharacterBibleWorkflowProgress(
+                "commit",
+                "Bible update skipped because the workflow failed."));
             return ValueTask.FromResult(new CharacterBibleWorkflowOutput(
                 plan.ProjectedDossiers,
                 "failed",
@@ -239,6 +285,9 @@ internal sealed class CommitCharacterBibleDossiersExecutor : Executor<CharacterB
                 plan.Failure));
         }
 
+        progress?.Report(new CharacterBibleWorkflowProgress(
+            "commit",
+            $"Updating character bible from {plan.Decisions.Count} decisions."));
         var dossiers = generator.CommitPlan(plan);
         var changedPointerCount = NormalizePointers(plan.Request.ChangedPointers).Count;
         var status = plan.Request.ChangedPointers is null ? "generated" : "refreshed";
@@ -249,6 +298,10 @@ internal sealed class CommitCharacterBibleDossiersExecutor : Executor<CharacterB
             dossiers.DossiersId,
             dossiers.Version,
             changedPointerCount);
+
+        progress?.Report(new CharacterBibleWorkflowProgress(
+            "commit",
+            $"Character bible {status}: {dossiers.Characters.Count} dossiers, version {dossiers.Version}."));
 
         return ValueTask.FromResult(new CharacterBibleWorkflowOutput(
             dossiers,

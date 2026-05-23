@@ -17,6 +17,10 @@ public sealed record CharacterBibleWorkflowOutput(
     IReadOnlyList<CharacterBibleResolverDecision> Decisions,
     Exception? Failure = null);
 
+public sealed record CharacterBibleWorkflowProgress(
+    string Stage,
+    string Message);
+
 public sealed record TextFragment(
     string Pointer,
     string Text);

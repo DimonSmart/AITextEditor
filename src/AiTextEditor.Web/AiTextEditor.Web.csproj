@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Markdig" Version="0.44.0" />
+    <PackageReference Include="MatBlazor" Version="2.10.0" />
+    <PackageReference Include="MudBlazor" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AiTextEditor.Agent\AiTextEditor.Agent.csproj" />
+    <ProjectReference Include="..\AiTextEditor.Core\AiTextEditor.Core.csproj" />
+  </ItemGroup>
+
+</Project>

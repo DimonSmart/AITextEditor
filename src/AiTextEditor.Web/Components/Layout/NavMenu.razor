@@ -1,0 +1,41 @@
+<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="book">AI Text Editor</a>
+    </div>
+</div>
+
+<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+
+<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
+    <nav class="nav flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="book">
+                <span class="bi bi-book-nav-menu" aria-hidden="true"></span> Book
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="items">
+                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Linear Items
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="character-bible">
+                <span class="bi bi-people-nav-menu" aria-hidden="true"></span> Character Bible
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="bible-operations">
+                <span class="bi bi-terminal-nav-menu" aria-hidden="true"></span> Bible Operations
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="settings">
+                <span class="bi bi-gear-nav-menu" aria-hidden="true"></span> Settings
+            </NavLink>
+        </div>
+    </nav>
+</div>

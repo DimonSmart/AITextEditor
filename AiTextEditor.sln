@@ -20,6 +20,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{5A1E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AiTextEditor.Agent", "src\AiTextEditor.Agent\AiTextEditor.Agent.csproj", "{B508ED94-5838-4FAF-A742-9FA0A55B24DA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AiTextEditor.Web", "src\AiTextEditor.Web\AiTextEditor.Web.csproj", "{23D1C620-6530-4A2C-A0D6-8075B37A47AB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -78,11 +80,24 @@ Global
 		{B508ED94-5838-4FAF-A742-9FA0A55B24DA}.Release|x64.Build.0 = Release|Any CPU
 		{B508ED94-5838-4FAF-A742-9FA0A55B24DA}.Release|x86.ActiveCfg = Release|Any CPU
 		{B508ED94-5838-4FAF-A742-9FA0A55B24DA}.Release|x86.Build.0 = Release|Any CPU
+		{23D1C620-6530-4A2C-A0D6-8075B37A47AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23D1C620-6530-4A2C-A0D6-8075B37A47AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23D1C620-6530-4A2C-A0D6-8075B37A47AB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{23D1C620-6530-4A2C-A0D6-8075B37A47AB}.Debug|x64.Build.0 = Debug|Any CPU
+		{23D1C620-6530-4A2C-A0D6-8075B37A47AB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{23D1C620-6530-4A2C-A0D6-8075B37A47AB}.Debug|x86.Build.0 = Debug|Any CPU
+		{23D1C620-6530-4A2C-A0D6-8075B37A47AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23D1C620-6530-4A2C-A0D6-8075B37A47AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23D1C620-6530-4A2C-A0D6-8075B37A47AB}.Release|x64.ActiveCfg = Release|Any CPU
+		{23D1C620-6530-4A2C-A0D6-8075B37A47AB}.Release|x64.Build.0 = Release|Any CPU
+		{23D1C620-6530-4A2C-A0D6-8075B37A47AB}.Release|x86.ActiveCfg = Release|Any CPU
+		{23D1C620-6530-4A2C-A0D6-8075B37A47AB}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{B508ED94-5838-4FAF-A742-9FA0A55B24DA} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
+		{23D1C620-6530-4A2C-A0D6-8075B37A47AB} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 	EndGlobalSection
 EndGlobal

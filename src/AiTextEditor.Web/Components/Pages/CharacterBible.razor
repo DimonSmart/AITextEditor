@@ -1,0 +1,63 @@
+@page "/character-bible"
+@rendermode InteractiveServer
+@inject EditorWorkspaceState Workspace
+@inject ICharacterBibleMarkdownRenderer MarkdownRenderer
+@inject ISnackbar Snackbar
+
+<PageTitle>Character Bible</PageTitle>
+
+<div class="tabs-row">
+    <button class="btn btn-sm @(activeTab == "markdown" ? "btn-primary" : "btn-outline-primary")" @onclick='() => SetTab("markdown")'>Markdown</button>
+    <button class="btn btn-sm @(activeTab == "yaml" ? "btn-primary" : "btn-outline-primary")" @onclick='() => SetTab("yaml")'>YAML</button>
+</div>
+
+@if (activeTab == "markdown")
+{
+    <MarkdownSplitEditor Title="Projection" Value="@markdownProjection" ReadOnly="true" />
+}
+else
+{
+    <div class="yaml-editor">
+        <textarea class="form-control" @bind="yaml" @bind:event="oninput"></textarea>
+        <MudButton Variant="MudBlazor.Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="@ApplyYamlAsync">Apply YAML</MudButton>
+    </div>
+}
+
+@code {
+    private string markdownProjection = string.Empty;
+    private string yaml = string.Empty;
+    private string activeTab = "markdown";
+
+    protected override void OnInitialized()
+    {
+        RefreshViews();
+    }
+
+    private void SetTab(string tab)
+    {
+        activeTab = tab;
+    }
+
+    private Task ApplyYamlAsync()
+    {
+        try
+        {
+            Workspace.CharacterDossiers.LoadFromYaml(yaml);
+            RefreshViews();
+            Snackbar.Add("YAML applied.", MudBlazor.Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, MudBlazor.Severity.Error);
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private void RefreshViews()
+    {
+        var dossiers = Workspace.CharacterDossiers.GetDossiers();
+        markdownProjection = MarkdownRenderer.Render(dossiers);
+        yaml = Workspace.CharacterDossiers.SaveToYaml();
+    }
+}

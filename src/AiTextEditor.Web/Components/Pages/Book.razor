@@ -1,0 +1,125 @@
+@page "/"
+@page "/book"
+@rendermode InteractiveServer
+@inject EditorWorkspaceState Workspace
+@inject ISnackbar Snackbar
+@inject IJSRuntime JsRuntime
+
+<PageTitle>Book</PageTitle>
+
+<div class="book-file-bar">
+    <MudTextField @bind-Value="bookPath"
+                  Label="Book path"
+                  Variant="MudBlazor.Variant.Outlined"
+                  Margin="MudBlazor.Margin.Dense"
+                  Immediate="true" />
+    <MudButton Variant="MudBlazor.Variant.Filled"
+               Color="MudBlazor.Color.Primary"
+               StartIcon="@Icons.Material.Filled.UploadFile"
+               OnClick="OpenBookFilePickerAsync">
+        Load Book
+    </MudButton>
+    <InputFile id="@BookFileInputId"
+               class="book-file-input"
+               OnChange="LoadUploadedBookAsync"
+               accept=".md,.markdown,.txt,text/markdown,text/plain" />
+    <MudButton Variant="MudBlazor.Variant.Outlined"
+               Color="MudBlazor.Color.Primary"
+               StartIcon="@Icons.Material.Filled.FolderOpen"
+               Disabled="@string.IsNullOrWhiteSpace(bookPath)"
+               OnClick="LoadBookFromPathAsync">
+        Load Path
+    </MudButton>
+    <MudButton Variant="MudBlazor.Variant.Filled"
+               Color="MudBlazor.Color.Secondary"
+               StartIcon="@Icons.Material.Filled.Save"
+               Disabled="@string.IsNullOrWhiteSpace(Workspace.CurrentBookPath)"
+               OnClick="SaveBookAsync">
+        Save
+    </MudButton>
+</div>
+
+<MarkdownSplitEditor Title="Markdown" Value="@markdown" ValueChanged="OnMarkdownChangedAsync" />
+
+@code {
+    private const string BookFileInputId = "book-file-input";
+    private const long MaxUploadedBookBytes = 4L * 1024 * 1024;
+    private string markdown = string.Empty;
+    private string bookPath = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        markdown = Workspace.CurrentMarkdown;
+        bookPath = Workspace.CurrentBookPath ?? string.Empty;
+    }
+
+    private Task OnMarkdownChangedAsync(string value)
+    {
+        markdown = value;
+        try
+        {
+            Workspace.LoadMarkdown(markdown);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, MudBlazor.Severity.Error);
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private async Task OpenBookFilePickerAsync()
+    {
+        await JsRuntime.InvokeVoidAsync("aiTextEditorBookFiles.click", BookFileInputId);
+    }
+
+    private async Task LoadUploadedBookAsync(InputFileChangeEventArgs args)
+    {
+        try
+        {
+            var selectedBook = args.File;
+            await using var stream = selectedBook.OpenReadStream(MaxUploadedBookBytes);
+            using var reader = new StreamReader(stream);
+            var uploadedMarkdown = await reader.ReadToEndAsync();
+
+            Workspace.LoadUploadedBook(uploadedMarkdown, selectedBook.Name);
+            markdown = Workspace.CurrentMarkdown;
+            bookPath = string.Empty;
+            Snackbar.Add($"Loaded book: {selectedBook.Name}", MudBlazor.Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, MudBlazor.Severity.Error);
+        }
+    }
+
+    private async Task LoadBookFromPathAsync()
+    {
+        try
+        {
+            await Workspace.LoadBookAsync(bookPath);
+            markdown = Workspace.CurrentMarkdown;
+            var loadMessage = Workspace.CurrentCharacterBibleLoadedFromFile
+                ? $"Loaded book and character bible: {Workspace.CurrentCharacterBiblePath}"
+                : $"Loaded book. Character bible file was not found, using empty dossiers: {Workspace.CurrentCharacterBiblePath}";
+            Snackbar.Add(loadMessage, MudBlazor.Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, MudBlazor.Severity.Error);
+        }
+    }
+
+    private async Task SaveBookAsync()
+    {
+        try
+        {
+            await Workspace.SaveBookAsync();
+            Snackbar.Add($"Saved book and character bible: {Workspace.CurrentCharacterBiblePath}", MudBlazor.Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, MudBlazor.Severity.Error);
+        }
+    }
+}

@@ -30,7 +30,9 @@ public sealed class CharacterDossiersGenerator
         this.characterExtractionModelClient = characterExtractionModelClient ?? throw new ArgumentNullException(nameof(characterExtractionModelClient));
     }
 
-    internal IReadOnlyList<TextFragment> CollectParagraphs(IReadOnlyCollection<string>? changedPointers)
+    internal IReadOnlyList<TextFragment> CollectParagraphs(
+        IReadOnlyCollection<string>? changedPointers,
+        IProgress<CharacterBibleWorkflowProgress>? progress = null)
     {
         var pointerSet = changedPointers?
             .Where(pointer => !string.IsNullOrWhiteSpace(pointer))
@@ -39,19 +41,23 @@ public sealed class CharacterDossiersGenerator
 
         if (pointerSet is { Count: > 0 })
         {
-            return CollectChangedParagraphs(pointerSet);
+            return CollectChangedParagraphs(pointerSet, progress);
         }
 
         if (changedPointers is not null)
         {
+            progress?.Report(new CharacterBibleWorkflowProgress(
+                "collect",
+                "No changed pointers were provided after normalization."));
             return [];
         }
 
-        return CollectAllParagraphs();
+        return CollectAllParagraphs(progress);
     }
 
     internal async Task<IReadOnlyList<CharacterBibleCharacterCandidate>> ExtractCandidatesAsync(
         IReadOnlyList<TextFragment> paragraphs,
+        IProgress<CharacterBibleWorkflowProgress>? progress = null,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(paragraphs);
@@ -59,23 +65,39 @@ public sealed class CharacterDossiersGenerator
 
         if (paragraphs.Count == 0)
         {
+            progress?.Report(new CharacterBibleWorkflowProgress(
+                "extract",
+                "No paragraphs available for candidate extraction."));
             return [];
         }
 
         var candidates = new List<CharacterBibleCharacterCandidate>();
+        var batchNumber = 0;
         foreach (var batch in SplitParagraphs(paragraphs.Select(p => (p.Pointer, p.Text)).ToList()))
         {
+            batchNumber++;
+            progress?.Report(new CharacterBibleWorkflowProgress(
+                "extract",
+                $"Extracting candidates from batch {batchNumber} ({batch.Count} paragraphs, {batch[0].Pointer}..{batch[^1].Pointer})."));
             var hits = await ExtractCharactersWithModelAsync(batch, cancellationToken);
-            candidates.AddRange(hits.Select(ToCandidate));
+            var batchCandidates = hits.Select(ToCandidate).ToList();
+            candidates.AddRange(batchCandidates);
+            progress?.Report(new CharacterBibleWorkflowProgress(
+                "extract",
+                $"Batch {batchNumber} produced {batchCandidates.Count} character candidates."));
         }
 
+        progress?.Report(new CharacterBibleWorkflowProgress(
+            "extract",
+            $"Candidate extraction finished: {candidates.Count} candidates."));
         return candidates;
     }
 
     internal CharacterBibleCommitPlan CreateCommitPlan(
         CharacterBibleWorkflowInput request,
         int paragraphCount,
-        IReadOnlyList<CharacterBibleCharacterCandidate> candidates)
+        IReadOnlyList<CharacterBibleCharacterCandidate> candidates,
+        IProgress<CharacterBibleWorkflowProgress>? progress = null)
     {
         ArgumentNullException.ThrowIfNull(request);
         ArgumentNullException.ThrowIfNull(candidates);
@@ -83,18 +105,26 @@ public sealed class CharacterDossiersGenerator
         var baseDossiers = dossierService.GetDossiers();
         if (candidates.Count == 0)
         {
+            progress?.Report(new CharacterBibleWorkflowProgress(
+                "resolve",
+                "No candidates to resolve."));
             return new CharacterBibleCommitPlan(request, baseDossiers, false, paragraphCount, 0, []);
         }
 
         var index = new DossierIndex(baseDossiers);
         var decisions = new List<CharacterBibleResolverDecision>(candidates.Count);
         var changed = false;
+        var candidateNumber = 0;
 
         foreach (var candidate in candidates)
         {
+            candidateNumber++;
             var hit = ToCharacterExtractionCharacter(candidate);
             changed |= ApplyHitToIndex(index, hit, out var decision);
             decisions.Add(decision);
+            progress?.Report(new CharacterBibleWorkflowProgress(
+                "resolve",
+                $"Resolved candidate {candidateNumber}/{candidates.Count}: {candidate.CanonicalName} -> {decision.Kind}."));
         }
 
         var projectedDossiers = changed
@@ -171,7 +201,7 @@ public sealed class CharacterDossiersGenerator
         return changed;
     }
 
-    private IReadOnlyList<TextFragment> CollectAllParagraphs()
+    private IReadOnlyList<TextFragment> CollectAllParagraphs(IProgress<CharacterBibleWorkflowProgress>? progress)
     {
         var cursor = new FullScanCursorStream(
             documentContext.Document,
@@ -182,6 +212,7 @@ public sealed class CharacterDossiersGenerator
             logger);
 
         var paragraphs = new List<TextFragment>();
+        var chunkNumber = 0;
         while (true)
         {
             var portion = cursor.NextPortion();
@@ -190,6 +221,8 @@ public sealed class CharacterDossiersGenerator
                 break;
             }
 
+            chunkNumber++;
+            var beforeCount = paragraphs.Count;
             foreach (var item in portion.Items)
             {
                 if (item.Type == LinearItemType.Heading)
@@ -205,6 +238,10 @@ public sealed class CharacterDossiersGenerator
                 paragraphs.Add(new TextFragment(item.Pointer.ToCompactString(), item.Markdown));
             }
 
+            progress?.Report(new CharacterBibleWorkflowProgress(
+                "collect",
+                $"Read book chunk {chunkNumber}: {paragraphs.Count - beforeCount} paragraphs collected, {paragraphs.Count} total."));
+
             if (!portion.HasMore)
             {
                 break;
@@ -214,7 +251,9 @@ public sealed class CharacterDossiersGenerator
         return paragraphs;
     }
 
-    private IReadOnlyList<TextFragment> CollectChangedParagraphs(IReadOnlySet<string> pointerSet)
+    private IReadOnlyList<TextFragment> CollectChangedParagraphs(
+        IReadOnlySet<string> pointerSet,
+        IProgress<CharacterBibleWorkflowProgress>? progress)
     {
         var lookup = documentContext.Document.Items
             .ToDictionary(item => item.Pointer.ToCompactString(), item => item, StringComparer.Ordinal);
@@ -222,23 +261,39 @@ public sealed class CharacterDossiersGenerator
         var paragraphs = new List<TextFragment>(pointerSet.Count);
         foreach (var pointer in pointerSet)
         {
+            progress?.Report(new CharacterBibleWorkflowProgress(
+                "collect",
+                $"Reading changed pointer {pointer}."));
+
             if (!lookup.TryGetValue(pointer, out var item))
             {
                 logger.LogWarning("RefreshCharacterDossiers: pointer not found: {Pointer}", pointer);
+                progress?.Report(new CharacterBibleWorkflowProgress(
+                    "collect",
+                    $"Changed pointer {pointer} was not found."));
                 continue;
             }
 
             if (item.Type == LinearItemType.Heading)
             {
+                progress?.Report(new CharacterBibleWorkflowProgress(
+                    "collect",
+                    $"Changed pointer {pointer} is a heading and was skipped."));
                 continue;
             }
 
             if (string.IsNullOrWhiteSpace(item.Markdown))
             {
+                progress?.Report(new CharacterBibleWorkflowProgress(
+                    "collect",
+                    $"Changed pointer {pointer} is empty and was skipped."));
                 continue;
             }
 
             paragraphs.Add(new TextFragment(pointer, item.Markdown));
+            progress?.Report(new CharacterBibleWorkflowProgress(
+                "collect",
+                $"Changed pointer {pointer} added to extraction input."));
         }
 
         return paragraphs;

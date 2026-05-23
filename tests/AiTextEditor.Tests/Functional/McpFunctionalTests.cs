@@ -67,14 +67,14 @@ public class McpFunctionalTests
 
     [Theory]
     [Trait("Category", "Manual")]
-    [InlineData("Создай каталог досье персонажей книги", null, true, "phi4:latest")]
+    [InlineData("Создай каталог досье персонажей книги", null, true, "phi4:latest", "Neznayka_full.txt")]
 //    [InlineData(
 //        "Создай каталог досье персонажей книги. Найди персонажа \"Знайка\" и обнови его через character_dossiers.upsert_character_dossier (используй characterId из каталога). Затем верни JSON каталога.",
 //        "В каталоге есть персонаж Знайка с описанием \"Главный из коротышек\".",
 //        true)]
-    public async Task CharacterDossiersCommandScenarios_ReturnExpectedCatalog(string command, string? llmCheck, bool enforce, string? modelName)
+    public async Task CharacterDossiersCommandScenarios_ReturnExpectedCatalog(string command, string? llmCheck, bool enforce, string? modelName, string bookFileName)
     {
-        var markdown = LoadNeznaykaSample();
+        var markdown = LoadNeznaykaSample(bookFileName);
         using var httpClient = await TestLlmConfiguration.CreateVerifiedLlmClientAsync(output);
         using var loggerFactory = TestLoggerFactory.Create(output);
         var engine = new AgenticWorkflowEngine(httpClient, loggerFactory, "35dac0c0480c47738f24e3a8ac12250a", modelName);
@@ -86,7 +86,8 @@ public class McpFunctionalTests
             Assert.NotNull(result.CharacterDossiers);
             Assert.NotEmpty(result.CharacterDossiers.Characters);
 
-            var outputPath = Path.Combine(AppContext.BaseDirectory, "character_dossiers_output.json");
+            var bookBaseName = Path.GetFileNameWithoutExtension(bookFileName);
+            var outputPath = Path.Combine(AppContext.BaseDirectory, $"{bookBaseName}_dossiers.json");
             answer = FormatJson(JsonSerializer.Serialize(result.CharacterDossiers));
             File.WriteAllText(outputPath, answer, new UTF8Encoding(encoderShouldEmitUTF8Identifier: true));
             output.WriteLine($"Character dossiers saved to {outputPath}");
@@ -105,9 +106,9 @@ public class McpFunctionalTests
     }
 
   
-    private static string LoadNeznaykaSample()
+    private static string LoadNeznaykaSample(string fileName = "neznayka_sample.md")
     {
-        var path = Path.Combine(AppContext.BaseDirectory, "Fixtures", "MarkdownBooks", "neznayka_sample.md");
+        var path = Path.Combine(AppContext.BaseDirectory, "Fixtures", "MarkdownBooks", fileName);
         return File.ReadAllText(path);
     }
 

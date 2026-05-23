@@ -1,0 +1,88 @@
+@page "/items"
+@rendermode InteractiveServer
+@using AiTextEditor.Core.Model
+@inject EditorWorkspaceState Workspace
+
+<PageTitle>Linear Items</PageTitle>
+
+<div class="filters-row">
+    <label>
+        Type
+        <select class="form-select" @bind="selectedType">
+            <option value="">All</option>
+            @foreach (var type in Enum.GetValues<LinearItemType>())
+            {
+                <option value="@type">@type</option>
+            }
+        </select>
+    </label>
+    <label>
+        Text
+        <input class="form-control" @bind="textSearch" @bind:event="oninput" />
+    </label>
+    <label>
+        Pointer prefix
+        <input class="form-control" @bind="pointerPrefix" @bind:event="oninput" />
+    </label>
+</div>
+
+<div class="table-wrap">
+    <table class="table table-sm linear-items-table">
+        <thead>
+            <tr>
+                <th>Index</th>
+                <th>Pointer</th>
+                <th>Type</th>
+                <th>Text excerpt</th>
+                <th>Markdown excerpt</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in FilteredItems)
+            {
+                <tr>
+                    <td>@item.Index</td>
+                    <td><code>@item.Pointer.ToCompactString()</code></td>
+                    <td>@item.Type</td>
+                    <td>@Excerpt(item.Text)</td>
+                    <td><code>@Excerpt(item.Markdown)</code></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    private string? selectedType;
+    private string textSearch = string.Empty;
+    private string pointerPrefix = string.Empty;
+
+    private IEnumerable<LinearItem> FilteredItems => Workspace.CurrentDocument.Items
+        .Where(MatchesType)
+        .Where(MatchesText)
+        .Where(MatchesPointerPrefix);
+
+    private bool MatchesType(LinearItem item)
+    {
+        return string.IsNullOrWhiteSpace(selectedType)
+            || string.Equals(item.Type.ToString(), selectedType, StringComparison.Ordinal);
+    }
+
+    private bool MatchesText(LinearItem item)
+    {
+        return string.IsNullOrWhiteSpace(textSearch)
+            || item.Text.Contains(textSearch, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private bool MatchesPointerPrefix(LinearItem item)
+    {
+        return string.IsNullOrWhiteSpace(pointerPrefix)
+            || item.Pointer.ToCompactString().StartsWith(pointerPrefix.Trim(), StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string Excerpt(string value)
+    {
+        var normalized = (value ?? string.Empty).ReplaceLineEndings(" ").Trim();
+        return normalized.Length <= 180 ? normalized : $"{normalized[..180]}...";
+    }
+}

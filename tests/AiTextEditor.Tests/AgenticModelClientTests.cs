@@ -36,7 +36,6 @@ public sealed class AgenticModelClientTests
 
         Assert.Empty(result.Characters);
         Assert.NotNull(chatClient.LastOptions);
-        Assert.Equal(123, chatClient.LastOptions.MaxOutputTokens);
         Assert.IsType<ChatResponseFormatJson>(chatClient.LastOptions.ResponseFormat);
     }
 

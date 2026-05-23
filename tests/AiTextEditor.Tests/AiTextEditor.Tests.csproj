@@ -17,6 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\AiTextEditor.Core\AiTextEditor.Core.csproj" />
     <ProjectReference Include="..\..\src\AiTextEditor.Agent\AiTextEditor.Agent.csproj" />
+    <ProjectReference Include="..\..\src\AiTextEditor.Web\AiTextEditor.Web.csproj" />
   </ItemGroup>
 
   <ItemGroup>
