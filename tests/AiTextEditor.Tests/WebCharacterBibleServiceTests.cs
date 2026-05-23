@@ -122,11 +122,23 @@ public sealed class WebCharacterBibleServiceTests
     }
 
     [Fact]
-    public async Task CharacterBibleFileStore_SavesAndLoadsCompanionMarkdown()
+    public void CharacterBibleFileStore_GetCompanionPath_UsesJsonExtension()
     {
         var directory = Path.Combine(Path.GetTempPath(), "AiTextEditorTests", Guid.NewGuid().ToString("N"));
         var bookPath = Path.Combine(directory, "novel.md");
-        var store = new CharacterBibleFileStore(new CharacterBibleMarkdownRenderer());
+        var store = new CharacterBibleFileStore();
+
+        var characterBiblePath = store.GetCompanionPath(bookPath);
+
+        Assert.Equal(Path.Combine(directory, "novel-character-bible.json"), characterBiblePath);
+    }
+
+    [Fact]
+    public async Task CharacterBibleFileStore_SavesAndLoadsCompanionJson()
+    {
+        var directory = Path.Combine(Path.GetTempPath(), "AiTextEditorTests", Guid.NewGuid().ToString("N"));
+        var bookPath = Path.Combine(directory, "novel.md");
+        var store = new CharacterBibleFileStore();
         var characterBiblePath = store.GetCompanionPath(bookPath);
         var source = new CharacterDossierService("d1");
         source.UpsertDossier(new CharacterDossier(
@@ -146,9 +158,135 @@ public sealed class WebCharacterBibleServiceTests
         var loaded = await store.LoadAsync(characterBiblePath, target, CancellationToken.None);
 
         Assert.True(loaded);
-        Assert.Equal(Path.Combine(directory, "novel-character-bible.md"), characterBiblePath);
-        Assert.Contains("<!-- ai-text-editor-character-dossiers:start -->", await File.ReadAllTextAsync(characterBiblePath));
+        Assert.Equal(Path.Combine(directory, "novel-character-bible.json"), characterBiblePath);
+        Assert.Contains("\"dossiersId\":\"d1\"", await File.ReadAllTextAsync(characterBiblePath));
         var dossier = Assert.Single(target.GetDossiers().Characters);
+        Assert.Equal("Alice", dossier.Name);
+        Assert.Equal("female", dossier.Gender);
+        Assert.Equal(["Al"], dossier.Aliases);
+        Assert.Equal("Al opened the notebook.", dossier.AliasExamples["Al"]);
+        var fact = Assert.Single(dossier.Facts);
+        Assert.Equal("role", fact.Key);
+        Assert.Equal("editor", fact.Value);
+        Assert.Equal("Alice revised the chapter.", fact.Example);
+    }
+
+    [Fact]
+    public async Task CharacterBibleFileStore_LoadsLegacyMarkdownYamlCompanionWhenJsonMissing()
+    {
+        var directory = Path.Combine(Path.GetTempPath(), "AiTextEditorTests", Guid.NewGuid().ToString("N"));
+        var bookPath = Path.Combine(directory, "novel.md");
+        var store = new CharacterBibleFileStore();
+        var characterBiblePath = store.GetCompanionPath(bookPath);
+        var legacyCharacterBiblePath = Path.Combine(directory, "novel-character-bible.md");
+        var source = new CharacterDossierService("d1");
+        source.UpsertDossier(new CharacterDossier(
+            "c1",
+            "Alice",
+            "Keeps careful notes.",
+            ["Al"],
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["Al"] = "Al opened the notebook."
+            },
+            [new CharacterFact("role", "editor", "Alice revised the chapter.")],
+            "female"));
+
+        Directory.CreateDirectory(directory);
+        await File.WriteAllTextAsync(
+            legacyCharacterBiblePath,
+            $"""
+            # Character Bible
+
+            <!-- ai-text-editor-character-dossiers:start -->
+            ```yaml
+            {source.SaveToYaml().TrimEnd()}
+            ```
+            <!-- ai-text-editor-character-dossiers:end -->
+
+            ## Markdown projection
+            """);
+
+        var target = new CharacterDossierService("empty");
+        var loaded = await store.LoadAsync(characterBiblePath, target, CancellationToken.None);
+
+        Assert.True(loaded);
+        Assert.False(File.Exists(characterBiblePath));
+        var dossier = Assert.Single(target.GetDossiers().Characters);
+        Assert.Equal("Alice", dossier.Name);
+        Assert.Equal("female", dossier.Gender);
+        Assert.Equal(["Al"], dossier.Aliases);
+    }
+
+    [Fact]
+    public void CharacterDossierService_SaveToJson_LoadFromJson_RoundTrips()
+    {
+        var source = new CharacterDossierService("d1");
+        source.UpsertDossier(new CharacterDossier(
+            "c1",
+            "Alice",
+            "Keeps careful notes.",
+            ["unused"],
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["Al"] = "Al opened the notebook.",
+                ["alice"] = "alice checked the facts."
+            },
+            [
+                new CharacterFact("role", "editor", "Alice revised the chapter."),
+                new CharacterFact("role", "Editor", "Duplicate by key and value should normalize away."),
+                new CharacterFact("empty", "", "ignored")
+            ],
+            "Female"));
+
+        var json = source.SaveToJson();
+        var target = new CharacterDossierService("empty");
+        target.LoadFromJson(json);
+
+        var dossier = Assert.Single(target.GetDossiers().Characters);
+        Assert.Equal("Alice", dossier.Name);
+        Assert.Equal("female", dossier.Gender);
+        Assert.Equal(["Al", "alice"], dossier.Aliases);
+        Assert.Equal("Al opened the notebook.", dossier.AliasExamples["Al"]);
+        Assert.Equal("alice checked the facts.", dossier.AliasExamples["alice"]);
+        var fact = Assert.Single(dossier.Facts);
+        Assert.Equal("role", fact.Key);
+        Assert.Equal("editor", fact.Value);
+        Assert.Equal("Alice revised the chapter.", fact.Example);
+    }
+
+    [Theory]
+    [InlineData("alice")]
+    [InlineData("NOTE KEEPER")]
+    [InlineData("EDITOR")]
+    public void CharacterDossierSearch_FiltersByNameAliasAndFactValueCaseInsensitively(string query)
+    {
+        var dossiers = new[]
+        {
+            new CharacterDossier(
+                "c1",
+                "Alice",
+                "Keeps careful notes.",
+                ["Note Keeper"],
+                new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                {
+                    ["Note Keeper"] = "Al opened the notebook."
+                },
+                [new CharacterFact("role", "editor", "Alice revised the chapter.")],
+                "female"),
+            new CharacterDossier(
+                "c2",
+                "Bob",
+                "Tracks deadlines.",
+                [],
+                new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
+                [new CharacterFact("role", "planner", "Bob updated the outline.")],
+                "male")
+        };
+
+        var result = CharacterDossierSearch.Filter(dossiers, query);
+
+        var dossier = Assert.Single(result);
         Assert.Equal("Alice", dossier.Name);
     }
 
@@ -288,8 +426,9 @@ public sealed class WebCharacterBibleServiceTests
     public async Task OperationRunner_EmitsStartedAndCompleted()
     {
         var output = CreateOutput("generated");
+        var workspace = new EditorWorkspaceState();
         var runner = new CharacterBibleOperationRunner(
-            new EditorWorkspaceState(),
+            workspace,
             new FakeWorkflowClient(output));
 
         var events = await CollectAsync(runner.RunAsync(
@@ -298,6 +437,8 @@ public sealed class WebCharacterBibleServiceTests
 
         Assert.Equal(CharacterBibleOperationEventType.Started, events[0].Type);
         Assert.Contains(events, item => item.Type == CharacterBibleOperationEventType.Completed && ReferenceEquals(output, item.Output));
+        var dossier = Assert.Single(workspace.CharacterDossiers.GetDossiers().Characters);
+        Assert.Equal("Alice", dossier.Name);
     }
 
     [Fact]
@@ -347,7 +488,22 @@ public sealed class WebCharacterBibleServiceTests
 
     private static CharacterBibleWorkflowOutput CreateOutput(string status)
     {
-        var dossiers = new CharacterDossiers("d1", 1, []);
+        var dossiers = new CharacterDossiers(
+            "d1",
+            1,
+            [
+                new CharacterDossier(
+                    "c1",
+                    "Alice",
+                    "Keeps careful notes.",
+                    ["Al"],
+                    new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                    {
+                        ["Al"] = "Al opened the notebook."
+                    },
+                    [],
+                    "female")
+            ]);
         return new CharacterBibleWorkflowOutput(dossiers, status, 0, 1, 0, 0, 0, []);
     }
 

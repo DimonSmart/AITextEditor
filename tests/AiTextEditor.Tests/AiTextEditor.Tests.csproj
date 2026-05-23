@@ -30,6 +30,9 @@
     <None Include="..\Samples\neznayka_sample.md" Link="Fixtures\MarkdownBooks\neznayka_sample.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="..\Samples\Neznayka_full.txt" Link="Fixtures\MarkdownBooks\Neznayka_full.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

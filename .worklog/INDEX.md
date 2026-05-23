@@ -19,6 +19,7 @@ If this index conflicts with a numbered document, trust the numbered document.
 | 0009 | spec | Program settings tab | Add a persisted Settings tab for program and LLM server connection values used by the Web UI. | 0007, 0008 |
 | 0010 | spec | AI server profiles | Add multiple OpenAI-compatible AI server profiles with separate persisted current server and model selections. | 0006, 0009 |
 | 0011 | spec | Character bible progress events | Show detailed progress events for character bible operations across document loading, traversal, extraction, resolution, and bible update stages. | 0003, 0007 |
+| 0012 | spec | JSON character bible UI | Make Character Bible storage canonical JSON and replace the Markdown/YAML page with searchable MudBlazor character cards. | 0007, 0008 |
 
 ## Archived documents
 

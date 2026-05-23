@@ -36,7 +36,50 @@ public sealed class AgenticModelClientTests
 
         Assert.Empty(result.Characters);
         Assert.NotNull(chatClient.LastOptions);
-        Assert.IsType<ChatResponseFormatJson>(chatClient.LastOptions.ResponseFormat);
+        var responseFormat = Assert.IsType<ChatResponseFormatJson>(chatClient.LastOptions.ResponseFormat);
+        Assert.NotNull(responseFormat.Schema);
+        Assert.Equal(nameof(CharacterExtractionResponse), responseFormat.SchemaName);
+    }
+
+    [Fact]
+    public async Task AgenticFrameworkModelClient_RetriesMalformedStructuredOutput()
+    {
+        var chatClient = new CapturingChatClient(
+            """
+            ```json
+            {
+              "characters": []
+            }
+            ```
+            """,
+            """
+            {
+              "characters": []
+            }
+            """);
+        var agent = new ChatClientAgent(
+            chatClient,
+            new ChatClientAgentOptions
+            {
+                Name = "test_agent",
+                UseProvidedChatClientAsIs = true
+            },
+            NullLoggerFactory.Instance);
+        var client = new AgenticFrameworkModelClient(
+            agent,
+            NullLogger<AgenticFrameworkModelClient>.Instance);
+
+        var result = await client.RunAsync<CharacterExtractionResponse>(
+            new AgenticModelRequest(
+                [new ChatMessage(ChatRole.User, "extract")],
+                InvalidContractError: "invalid_contract"));
+
+        Assert.Empty(result.Characters);
+        Assert.Equal(2, chatClient.CallCount);
+        Assert.Contains(
+            chatClient.LastMessages,
+            message => message.Role == ChatRole.System
+                       && message.Text?.Contains("previous response was malformed", StringComparison.OrdinalIgnoreCase) == true);
     }
 
     [Fact]
@@ -63,16 +106,27 @@ public sealed class AgenticModelClientTests
         Assert.Equal("character_extraction_response_contract_invalid", exception.Message);
     }
 
-    private sealed class CapturingChatClient(string responseText) : IChatClient
+    private sealed class CapturingChatClient(params string[] responseTexts) : IChatClient
     {
+        private readonly Queue<string> responses = new(responseTexts);
+
+        public int CallCount { get; private set; }
+
         public ChatOptions? LastOptions { get; private set; }
+
+        public IReadOnlyList<ChatMessage> LastMessages { get; private set; } = [];
 
         public Task<ChatResponse> GetResponseAsync(
             IEnumerable<ChatMessage> messages,
             ChatOptions? options = null,
             CancellationToken cancellationToken = default)
         {
+            CallCount++;
+            LastMessages = messages.ToArray();
             LastOptions = options;
+            var responseText = responses.Count > 0
+                ? responses.Dequeue()
+                : throw new InvalidOperationException("No scripted chat response is available.");
             return Task.FromResult(new ChatResponse(new ChatMessage(ChatRole.Assistant, responseText)));
         }
 

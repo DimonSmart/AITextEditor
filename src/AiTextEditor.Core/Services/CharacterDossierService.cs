@@ -9,6 +9,11 @@ namespace AiTextEditor.Core.Services;
 
 public sealed class CharacterDossierService
 {
+    private static readonly JsonSerializerOptions DossierJsonOptions = new(SerializationOptions.RelaxedCompact)
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+    };
+
     private readonly object syncRoot = new();
     private CharacterDossiers dossiers;
     private readonly IDeserializer yamlDeserializer;
@@ -200,7 +205,7 @@ public sealed class CharacterDossierService
     {
         lock (syncRoot)
         {
-            return JsonSerializer.Serialize(dossiers, SerializationOptions.RelaxedCompact);
+            return JsonSerializer.Serialize(dossiers, DossierJsonOptions);
         }
     }
 
@@ -216,7 +221,7 @@ public sealed class CharacterDossierService
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(payload);
 
-        var parsed = JsonSerializer.Deserialize<CharacterDossiers>(payload, SerializationOptions.RelaxedCompact);
+        var parsed = JsonSerializer.Deserialize<CharacterDossiers>(payload, DossierJsonOptions);
         if (parsed == null)
         {
             throw new InvalidOperationException("Failed to deserialize character dossiers from JSON.");

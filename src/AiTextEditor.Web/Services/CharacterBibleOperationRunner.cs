@@ -122,6 +122,7 @@ public sealed class CharacterBibleOperationRunner : ICharacterBibleOperationRunn
         try
         {
             var output = await activeWorkflowTask;
+            workspace.CharacterDossiers.ReplaceDossiers(output.Dossiers.Characters);
 
             terminalEvent = new CharacterBibleOperationEvent(
                 CharacterBibleOperationEventType.Completed,

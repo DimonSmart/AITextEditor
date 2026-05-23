@@ -1,63 +1,271 @@
 @page "/character-bible"
-@rendermode InteractiveServer
+@using AiTextEditor.Core.Model
+@using AiTextEditor.Web.Components.Dialogs
 @inject EditorWorkspaceState Workspace
-@inject ICharacterBibleMarkdownRenderer MarkdownRenderer
+@inject IDialogService DialogService
 @inject ISnackbar Snackbar
 
 <PageTitle>Character Bible</PageTitle>
 
-<div class="tabs-row">
-    <button class="btn btn-sm @(activeTab == "markdown" ? "btn-primary" : "btn-outline-primary")" @onclick='() => SetTab("markdown")'>Markdown</button>
-    <button class="btn btn-sm @(activeTab == "yaml" ? "btn-primary" : "btn-outline-primary")" @onclick='() => SetTab("yaml")'>YAML</button>
-</div>
+<MudStack Spacing="3">
+    <MudText Typo="Typo.h4">Character Bible</MudText>
 
-@if (activeTab == "markdown")
-{
-    <MarkdownSplitEditor Title="Projection" Value="@markdownProjection" ReadOnly="true" />
-}
-else
-{
-    <div class="yaml-editor">
-        <textarea class="form-control" @bind="yaml" @bind:event="oninput"></textarea>
-        <MudButton Variant="MudBlazor.Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="@ApplyYamlAsync">Apply YAML</MudButton>
+    <div class="character-bible-toolbar">
+        <MudTextField @bind-Value="searchQuery"
+                      Label="Search"
+                      Variant="MudBlazor.Variant.Outlined"
+                      Margin="MudBlazor.Margin.Dense"
+                      Immediate="true"
+                      Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Search" />
+        <MudText Typo="Typo.body2" Class="character-count">
+            @FilteredCharacters.Count of @characters.Count characters
+        </MudText>
+        <MudButton Variant="MudBlazor.Variant.Filled"
+                   Color="MudBlazor.Color.Primary"
+                   StartIcon="@Icons.Material.Filled.PersonAdd"
+                   OnClick="AddCharacterAsync">
+            Add character
+        </MudButton>
+        <MudButton Variant="MudBlazor.Variant.Outlined"
+                   Color="MudBlazor.Color.Primary"
+                   StartIcon="@Icons.Material.Filled.Save"
+                   OnClick="SaveCharacterBibleAsync">
+            Save
+        </MudButton>
     </div>
-}
+
+    @if (characters.Count == 0)
+    {
+        <MudPaper Class="empty-state character-bible-empty" Outlined="true">
+            <MudIcon Icon="@Icons.Material.Filled.Groups" Size="MudBlazor.Size.Large" />
+            <MudText Typo="Typo.h6">No characters yet.</MudText>
+            <MudText Typo="Typo.body2">Add a character or run a character bible operation.</MudText>
+        </MudPaper>
+    }
+    else if (FilteredCharacters.Count == 0)
+    {
+        <MudPaper Class="empty-state character-bible-empty" Outlined="true">
+            <MudIcon Icon="@Icons.Material.Filled.SearchOff" Size="MudBlazor.Size.Large" />
+            <MudText Typo="Typo.h6">No matching characters.</MudText>
+            <MudText Typo="Typo.body2">Change the search text to show more cards.</MudText>
+        </MudPaper>
+    }
+    else
+    {
+        <MudGrid Spacing="3">
+            @foreach (var dossier in FilteredCharacters)
+            {
+                <MudItem xs="12" sm="6" lg="4" xl="3">
+                    <MudCard Class="character-card" Outlined="true">
+                        <MudCardContent>
+                            <div class="character-card-header">
+                                <MudAvatar Color="MudBlazor.Color.Primary">@GetInitials(dossier.Name)</MudAvatar>
+                                <div>
+                                    <MudText Typo="Typo.h6" Class="character-card-name">@dossier.Name</MudText>
+                                    <MudChip T="string"
+                                             Size="MudBlazor.Size.Small"
+                                             Color="@GenderColor(dossier.Gender)"
+                                             Variant="MudBlazor.Variant.Outlined">
+                                        @dossier.Gender
+                                    </MudChip>
+                                </div>
+                            </div>
+
+                            <MudText Typo="Typo.body2" Class="character-description">
+                                @DescriptionPreview(dossier.Description)
+                            </MudText>
+
+                            <div class="character-card-metadata">
+                                <MudText Typo="Typo.caption">
+                                    Aliases: @dossier.Aliases.Count
+                                </MudText>
+                                <MudText Typo="Typo.caption" Class="character-alias-preview">
+                                    @AliasPreview(dossier)
+                                </MudText>
+                                <MudText Typo="Typo.caption">
+                                    Facts: @dossier.Facts.Count
+                                </MudText>
+                            </div>
+                        </MudCardContent>
+                        <MudCardActions>
+                            <MudSpacer />
+                            <MudTooltip Text="Edit character">
+                                <MudIconButton Icon="@Icons.Material.Filled.Edit"
+                                               Color="MudBlazor.Color.Primary"
+                                               OnClick="@(() => EditCharacterAsync(dossier))"
+                                               aria-label="Edit character" />
+                            </MudTooltip>
+                            <MudTooltip Text="Delete character">
+                                <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                               Color="MudBlazor.Color.Error"
+                                               OnClick="@(() => DeleteCharacterAsync(dossier))"
+                                               aria-label="Delete character" />
+                            </MudTooltip>
+                        </MudCardActions>
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
+    }
+</MudStack>
 
 @code {
-    private string markdownProjection = string.Empty;
-    private string yaml = string.Empty;
-    private string activeTab = "markdown";
+    private static readonly DialogOptions EditDialogOptions = new()
+    {
+        FullWidth = true,
+        MaxWidth = MaxWidth.Medium
+    };
+
+    private static readonly DialogOptions DeleteDialogOptions = new()
+    {
+        FullWidth = true,
+        MaxWidth = MaxWidth.ExtraSmall
+    };
+
+    private List<CharacterDossier> characters = [];
+    private string searchQuery = string.Empty;
+
+    private IReadOnlyList<CharacterDossier> FilteredCharacters =>
+        CharacterDossierSearch.Filter(characters, searchQuery);
 
     protected override void OnInitialized()
     {
-        RefreshViews();
+        RefreshCards();
     }
 
-    private void SetTab(string tab)
+    private async Task AddCharacterAsync()
     {
-        activeTab = tab;
+        await OpenEditorAsync(null);
     }
 
-    private Task ApplyYamlAsync()
+    private async Task EditCharacterAsync(CharacterDossier dossier)
+    {
+        await OpenEditorAsync(dossier);
+    }
+
+    private async Task OpenEditorAsync(CharacterDossier? dossier)
+    {
+        var title = dossier is null ? "Add character" : $"Edit {dossier.Name}";
+        var parameters = new DialogParameters<CharacterDossierEditDialog>
+        {
+            { dialog => dialog.Dossier, dossier }
+        };
+
+        var dialog = await DialogService.ShowAsync<CharacterDossierEditDialog>(title, parameters, EditDialogOptions);
+        var result = await dialog.Result;
+        if (result?.Canceled != false || result.Data is not CharacterDossier updatedDossier)
+        {
+            return;
+        }
+
+        Workspace.CharacterDossiers.UpsertDossier(updatedDossier);
+        RefreshCards();
+        await SaveAfterChangeAsync("Character saved.");
+    }
+
+    private async Task DeleteCharacterAsync(CharacterDossier dossier)
+    {
+        var confirmed = await DialogService.ShowMessageBoxAsync(
+            "Delete character",
+            $"Delete \"{dossier.Name}\" from the character bible?",
+            "Delete",
+            "Cancel",
+            null,
+            DeleteDialogOptions);
+
+        if (confirmed != true)
+        {
+            return;
+        }
+
+        if (Workspace.CharacterDossiers.RemoveDossier(dossier.CharacterId))
+        {
+            RefreshCards();
+            await SaveAfterChangeAsync("Character deleted.");
+        }
+    }
+
+    private async Task SaveCharacterBibleAsync()
     {
         try
         {
-            Workspace.CharacterDossiers.LoadFromYaml(yaml);
-            RefreshViews();
-            Snackbar.Add("YAML applied.", MudBlazor.Severity.Success);
+            await Workspace.SaveCharacterBibleAsync();
+            Snackbar.Add($"Saved character bible: {Workspace.CurrentCharacterBiblePath}", MudBlazor.Severity.Success);
         }
         catch (Exception ex)
         {
             Snackbar.Add(ex.Message, MudBlazor.Severity.Error);
         }
-
-        return Task.CompletedTask;
     }
 
-    private void RefreshViews()
+    private async Task SaveAfterChangeAsync(string successMessage)
     {
-        var dossiers = Workspace.CharacterDossiers.GetDossiers();
-        markdownProjection = MarkdownRenderer.Render(dossiers);
-        yaml = Workspace.CharacterDossiers.SaveToYaml();
+        try
+        {
+            await Workspace.SaveCharacterBibleAsync();
+            Snackbar.Add(successMessage, MudBlazor.Severity.Success);
+        }
+        catch (InvalidOperationException)
+        {
+            Snackbar.Add("Character changed in memory. No book disk path is set yet.", MudBlazor.Severity.Warning);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, MudBlazor.Severity.Error);
+        }
+    }
+
+    private void RefreshCards()
+    {
+        characters = Workspace.CharacterDossiers
+            .GetDossiers()
+            .Characters
+            .OrderBy(dossier => dossier.Name, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+    }
+
+    private static string GetInitials(string name)
+    {
+        var parts = name
+            .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Take(2)
+            .Select(part => char.ToUpperInvariant(part[0]).ToString())
+            .ToArray();
+
+        return parts.Length == 0 ? "?" : string.Concat(parts);
+    }
+
+    private static string DescriptionPreview(string description)
+    {
+        var normalized = string.IsNullOrWhiteSpace(description)
+            ? "No description."
+            : description.Trim();
+
+        return normalized.Length <= 180 ? normalized : normalized[..177] + "...";
+    }
+
+    private static string AliasPreview(CharacterDossier dossier)
+    {
+        if (dossier.Aliases.Count == 0)
+        {
+            return "No aliases.";
+        }
+
+        var aliases = dossier.Aliases.Take(3).ToArray();
+        var preview = string.Join(", ", aliases);
+        return dossier.Aliases.Count > aliases.Length
+            ? preview + ", ..."
+            : preview;
+    }
+
+    private static MudBlazor.Color GenderColor(string gender)
+    {
+        return gender switch
+        {
+            "male" => MudBlazor.Color.Info,
+            "female" => MudBlazor.Color.Secondary,
+            _ => MudBlazor.Color.Default
+        };
     }
 }

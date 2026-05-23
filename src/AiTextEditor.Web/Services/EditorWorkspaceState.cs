@@ -11,7 +11,7 @@ public sealed class EditorWorkspaceState
 
     public EditorWorkspaceState(ICharacterBibleFileStore? characterBibleFileStore = null)
     {
-        this.characterBibleFileStore = characterBibleFileStore ?? new CharacterBibleFileStore(new CharacterBibleMarkdownRenderer());
+        this.characterBibleFileStore = characterBibleFileStore ?? new CharacterBibleFileStore();
         Session = new EditorSession();
         CurrentMarkdown = DefaultMarkdown;
         CurrentDocument = Session.LoadDefaultDocument(CurrentMarkdown, DefaultDocumentId);
@@ -104,6 +104,17 @@ public sealed class EditorWorkspaceState
 
         CurrentCharacterBiblePath ??= characterBibleFileStore.GetCompanionPath(CurrentBookPath);
         await File.WriteAllTextAsync(CurrentBookPath, CurrentMarkdown, cancellationToken);
+        await SaveCharacterBibleAsync(cancellationToken);
+    }
+
+    public async Task SaveCharacterBibleAsync(CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(CurrentBookPath))
+        {
+            throw new InvalidOperationException("Book path is not set.");
+        }
+
+        CurrentCharacterBiblePath ??= characterBibleFileStore.GetCompanionPath(CurrentBookPath);
         await characterBibleFileStore.SaveAsync(CurrentCharacterBiblePath, CharacterDossiers, cancellationToken);
     }
 }

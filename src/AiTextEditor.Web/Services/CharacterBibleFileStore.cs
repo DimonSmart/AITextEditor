@@ -1,4 +1,3 @@
-using System.Text;
 using AiTextEditor.Core.Services;
 
 namespace AiTextEditor.Web.Services;
@@ -12,9 +11,10 @@ public interface ICharacterBibleFileStore
     Task SaveAsync(string characterBiblePath, CharacterDossierService characterDossiers, CancellationToken cancellationToken);
 }
 
-public sealed class CharacterBibleFileStore(ICharacterBibleMarkdownRenderer markdownRenderer) : ICharacterBibleFileStore
+public sealed class CharacterBibleFileStore : ICharacterBibleFileStore
 {
-    private const string CompanionSuffix = "-character-bible.md";
+    private const string CompanionSuffix = "-character-bible.json";
+    private const string LegacyCompanionSuffix = "-character-bible.md";
     private const string DossiersFenceStart = "<!-- ai-text-editor-character-dossiers:start -->";
     private const string DossiersFenceEnd = "<!-- ai-text-editor-character-dossiers:end -->";
 
@@ -43,13 +43,21 @@ public sealed class CharacterBibleFileStore(ICharacterBibleMarkdownRenderer mark
         ArgumentException.ThrowIfNullOrWhiteSpace(characterBiblePath);
         ArgumentNullException.ThrowIfNull(characterDossiers);
 
-        if (!File.Exists(characterBiblePath))
+        if (File.Exists(characterBiblePath))
+        {
+            var json = await File.ReadAllTextAsync(characterBiblePath, cancellationToken);
+            characterDossiers.LoadFromJson(json);
+            return true;
+        }
+
+        var legacyCharacterBiblePath = GetLegacyCompanionPath(characterBiblePath);
+        if (!File.Exists(legacyCharacterBiblePath))
         {
             return false;
         }
 
-        var markdown = await File.ReadAllTextAsync(characterBiblePath, cancellationToken);
-        var yaml = ExtractDossiersYaml(markdown, characterBiblePath);
+        var markdown = await File.ReadAllTextAsync(legacyCharacterBiblePath, cancellationToken);
+        var yaml = ExtractDossiersYaml(markdown, legacyCharacterBiblePath);
         characterDossiers.LoadFromYaml(yaml);
         return true;
     }
@@ -68,24 +76,27 @@ public sealed class CharacterBibleFileStore(ICharacterBibleMarkdownRenderer mark
             Directory.CreateDirectory(directory);
         }
 
-        var dossiers = characterDossiers.GetDossiers();
-        var yaml = characterDossiers.SaveToYaml().TrimEnd();
-        var markdownProjection = markdownRenderer.Render(dossiers).TrimEnd();
-        var fileContent = new StringBuilder()
-            .AppendLine("# Character Bible")
-            .AppendLine()
-            .AppendLine(DossiersFenceStart)
-            .AppendLine("```yaml")
-            .AppendLine(yaml)
-            .AppendLine("```")
-            .AppendLine(DossiersFenceEnd)
-            .AppendLine()
-            .AppendLine("## Markdown projection")
-            .AppendLine()
-            .AppendLine(markdownProjection)
-            .ToString();
+        await File.WriteAllTextAsync(characterBiblePath, characterDossiers.SaveToJson(), cancellationToken);
+    }
 
-        await File.WriteAllTextAsync(characterBiblePath, fileContent, cancellationToken);
+    private static string GetLegacyCompanionPath(string characterBiblePath)
+    {
+        var directory = Path.GetDirectoryName(characterBiblePath);
+        var fileName = Path.GetFileName(characterBiblePath);
+        string legacyFileName;
+
+        if (fileName.EndsWith(CompanionSuffix, StringComparison.OrdinalIgnoreCase))
+        {
+            legacyFileName = fileName[..^CompanionSuffix.Length] + LegacyCompanionSuffix;
+        }
+        else
+        {
+            legacyFileName = Path.GetFileNameWithoutExtension(characterBiblePath) + ".md";
+        }
+
+        return string.IsNullOrWhiteSpace(directory)
+            ? legacyFileName
+            : Path.Combine(directory, legacyFileName);
     }
 
     private static string ExtractDossiersYaml(string markdown, string characterBiblePath)
