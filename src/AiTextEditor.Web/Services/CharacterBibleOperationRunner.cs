@@ -1,4 +1,5 @@
 using AiTextEditor.Agent;
+using System.Threading.Channels;
 
 namespace AiTextEditor.Web.Services;
 
@@ -14,6 +15,7 @@ public interface ICharacterBibleWorkflowClient
     Task<CharacterBibleWorkflowOutput> RunAsync(
         EditorWorkspaceState workspace,
         CharacterBibleWorkflowInput request,
+        IProgress<CharacterBibleWorkflowProgress>? progress,
         CancellationToken cancellationToken);
 }
 
@@ -60,15 +62,66 @@ public sealed class CharacterBibleOperationRunner : ICharacterBibleOperationRunn
             yield break;
         }
 
+        yield return CreateEvent(
+            CharacterBibleOperationEventType.Progress,
+            $"Current document loaded: {workspace.CurrentDocument.Items.Count} linear items.");
         yield return CreateEvent(CharacterBibleOperationEventType.Progress, "Running character bible workflow.");
+
+        var progressChannel = Channel.CreateUnbounded<CharacterBibleOperationEvent>(
+            new UnboundedChannelOptions
+            {
+                SingleReader = true,
+                SingleWriter = false
+            });
+        var workflowProgress = new CharacterBibleOperationProgress(progressChannel.Writer);
+
+        Task<CharacterBibleWorkflowOutput>? workflowTask = null;
+        CharacterBibleOperationEvent? immediateFailure = null;
+        try
+        {
+            workflowTask = workflowClient.RunAsync(
+                workspace,
+                new CharacterBibleWorkflowInput(request.ChangedPointers),
+                workflowProgress,
+                cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            immediateFailure = new CharacterBibleOperationEvent(
+                CharacterBibleOperationEventType.Failed,
+                ex.Message,
+                DateTimeOffset.UtcNow,
+                Error: ex);
+        }
+
+        if (immediateFailure is not null)
+        {
+            yield return immediateFailure;
+            yield break;
+        }
+
+        var activeWorkflowTask = workflowTask
+            ?? throw new InvalidOperationException("character_bible_workflow_task_missing");
+
+        while (!activeWorkflowTask.IsCompleted)
+        {
+            while (progressChannel.Reader.TryRead(out var progressEvent))
+            {
+                yield return progressEvent;
+            }
+
+            await Task.WhenAny(activeWorkflowTask, Task.Delay(TimeSpan.FromMilliseconds(100), CancellationToken.None));
+        }
+
+        while (progressChannel.Reader.TryRead(out var progressEvent))
+        {
+            yield return progressEvent;
+        }
 
         CharacterBibleOperationEvent terminalEvent;
         try
         {
-            var output = await workflowClient.RunAsync(
-                workspace,
-                new CharacterBibleWorkflowInput(request.ChangedPointers),
-                cancellationToken);
+            var output = await activeWorkflowTask;
 
             terminalEvent = new CharacterBibleOperationEvent(
                 CharacterBibleOperationEventType.Completed,
@@ -95,5 +148,22 @@ public sealed class CharacterBibleOperationRunner : ICharacterBibleOperationRunn
     private static CharacterBibleOperationEvent CreateEvent(CharacterBibleOperationEventType type, string message)
     {
         return new CharacterBibleOperationEvent(type, message, DateTimeOffset.UtcNow);
+    }
+
+    private sealed class CharacterBibleOperationProgress : IProgress<CharacterBibleWorkflowProgress>
+    {
+        private readonly ChannelWriter<CharacterBibleOperationEvent> writer;
+
+        public CharacterBibleOperationProgress(ChannelWriter<CharacterBibleOperationEvent> writer)
+        {
+            this.writer = writer ?? throw new ArgumentNullException(nameof(writer));
+        }
+
+        public void Report(CharacterBibleWorkflowProgress value)
+        {
+            ArgumentNullException.ThrowIfNull(value);
+
+            writer.TryWrite(CreateEvent(CharacterBibleOperationEventType.Progress, value.Message));
+        }
     }
 }

@@ -20,6 +20,7 @@ public sealed class CharacterBibleWorkflowClient : ICharacterBibleWorkflowClient
     public async Task<CharacterBibleWorkflowOutput> RunAsync(
         EditorWorkspaceState workspace,
         CharacterBibleWorkflowInput request,
+        IProgress<CharacterBibleWorkflowProgress>? progress,
         CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(workspace);
@@ -47,7 +48,7 @@ public sealed class CharacterBibleWorkflowClient : ICharacterBibleWorkflowClient
             extractionClient);
         var runner = new CharacterBibleWorkflowRunner(generator, loggerFactory);
 
-        return await runner.RunAsync(request, cancellationToken);
+        return await runner.RunAsync(request, progress, cancellationToken);
     }
 
     private HttpClient CreateHttpClient(ValidatedAiConnectionSettings settings)

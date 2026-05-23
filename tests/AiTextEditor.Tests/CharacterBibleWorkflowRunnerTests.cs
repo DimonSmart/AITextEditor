@@ -122,6 +122,31 @@ public sealed class CharacterBibleWorkflowRunnerTests
     }
 
     [Fact]
+    public async Task RunAsync_ReportsDetailedProgress()
+    {
+        var runner = CreateRunner(
+            "John smiled.\n\nMary waved.",
+            Response(
+                new CharacterExtractionCharacter("John", "unknown", [], "В данном фрагменте характер не раскрыт."),
+                new CharacterExtractionCharacter("Mary", "unknown", [], "В данном фрагменте характер не раскрыт.")),
+            out _,
+            out _);
+        var progress = new List<CharacterBibleWorkflowProgress>();
+
+        await runner.RunAsync(
+            new CharacterBibleWorkflowInput(),
+            new ListProgress(progress),
+            CancellationToken.None);
+
+        Assert.Contains(progress, item => item.Message.StartsWith("Collecting character bible paragraphs.", StringComparison.Ordinal));
+        Assert.Contains(progress, item => item.Message.StartsWith("Read book chunk 1:", StringComparison.Ordinal));
+        Assert.Contains(progress, item => item.Message.StartsWith("Starting candidate extraction from 2 paragraphs.", StringComparison.Ordinal));
+        Assert.Contains(progress, item => item.Message.StartsWith("Batch 1 produced 2 character candidates.", StringComparison.Ordinal));
+        Assert.Contains(progress, item => item.Message.StartsWith("Resolved candidate 1/2: John -> New.", StringComparison.Ordinal));
+        Assert.Contains(progress, item => item.Message.StartsWith("Character bible generated:", StringComparison.Ordinal));
+    }
+
+    [Fact]
     public async Task RunAsync_WhenExtractionFails_PropagatesOriginalError()
     {
         var repository = new MarkdownDocumentRepository();
@@ -195,5 +220,14 @@ public sealed class CharacterBibleWorkflowRunnerTests
             CharacterExtractionModelRequest request,
             CancellationToken cancellationToken = default)
             => throw new InvalidOperationException(message);
+    }
+
+    private sealed class ListProgress(List<CharacterBibleWorkflowProgress> items)
+        : IProgress<CharacterBibleWorkflowProgress>
+    {
+        public void Report(CharacterBibleWorkflowProgress value)
+        {
+            items.Add(value);
+        }
     }
 }

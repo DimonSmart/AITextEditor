@@ -301,6 +301,35 @@ public sealed class WebCharacterBibleServiceTests
     }
 
     [Fact]
+    public async Task OperationRunner_ForwardsWorkflowProgressEvents()
+    {
+        var output = CreateOutput("generated");
+        var runner = new CharacterBibleOperationRunner(
+            new EditorWorkspaceState(),
+            new FakeWorkflowClient(
+                output,
+                [
+                    new CharacterBibleWorkflowProgress("collect", "Collected 25 paragraphs for character bible processing."),
+                    new CharacterBibleWorkflowProgress("extract", "Batch 1 produced 13 character candidates."),
+                    new CharacterBibleWorkflowProgress("commit", "Character bible generated: 11 dossiers, version 2.")
+                ]));
+
+        var events = await CollectAsync(runner.RunAsync(
+            new CharacterBibleOperationRequest("Generate character bible", null),
+            CancellationToken.None));
+
+        var progressMessages = events
+            .Where(item => item.Type == CharacterBibleOperationEventType.Progress)
+            .Select(item => item.Message)
+            .ToArray();
+
+        Assert.Contains(progressMessages, message => message.StartsWith("Current document loaded:", StringComparison.Ordinal));
+        Assert.Contains("Collected 25 paragraphs for character bible processing.", progressMessages);
+        Assert.Contains("Batch 1 produced 13 character candidates.", progressMessages);
+        Assert.Contains("Character bible generated: 11 dossiers, version 2.", progressMessages);
+    }
+
+    [Fact]
     public async Task OperationRunner_EmitsFailedForWorkflowException()
     {
         var runner = new CharacterBibleOperationRunner(
@@ -338,25 +367,36 @@ public sealed class WebCharacterBibleServiceTests
     {
         private readonly CharacterBibleWorkflowOutput? output;
         private readonly Exception? exception;
+        private readonly IReadOnlyList<CharacterBibleWorkflowProgress> progressEvents;
 
-        public FakeWorkflowClient(CharacterBibleWorkflowOutput output)
+        public FakeWorkflowClient(
+            CharacterBibleWorkflowOutput output,
+            IReadOnlyList<CharacterBibleWorkflowProgress>? progressEvents = null)
         {
             this.output = output;
+            this.progressEvents = progressEvents ?? [];
         }
 
         public FakeWorkflowClient(Exception exception)
         {
             this.exception = exception;
+            progressEvents = [];
         }
 
         public Task<CharacterBibleWorkflowOutput> RunAsync(
             EditorWorkspaceState workspace,
             CharacterBibleWorkflowInput request,
+            IProgress<CharacterBibleWorkflowProgress>? progress,
             CancellationToken cancellationToken)
         {
             if (exception is not null)
             {
                 throw exception;
+            }
+
+            foreach (var progressEvent in progressEvents)
+            {
+                progress?.Report(progressEvent);
             }
 
             return Task.FromResult(output ?? throw new InvalidOperationException("missing fake output"));
