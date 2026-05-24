@@ -1,0 +1,180 @@
+@using AiTextEditor.Core.Model
+@using Microsoft.AspNetCore.Components.Web
+
+<MudCard Class="@CardClass" Outlined="true">
+    <MudCardContent>
+        <div class="character-card-click-target"
+             role="button"
+             tabindex="0"
+             @onclick="SelectAsync"
+             @onkeydown="SelectFromKeyboardAsync">
+            <header class="character-card-header">
+                <div class="@AvatarClass" aria-hidden="true">@Initial</div>
+                <div class="character-card-title">
+                    <div class="character-card-name" title="@Dossier.Name">@DisplayName</div>
+                    <div class="character-card-summary">
+                        <span class="@GenderBadgeClass">@GenderLabel</span>
+                        <span>@AliasesSummary</span>
+                        <span title="@FactsTitle">@FactsSummary</span>
+                    </div>
+                </div>
+                @if (IsIncomplete)
+                {
+                    <span class="character-incomplete-badge">Incomplete</span>
+                }
+            </header>
+
+            <p class="@DescriptionClass">
+                @DescriptionText
+            </p>
+
+            <section class="character-aliases" aria-label="Aliases">
+                <div class="character-card-section-title">Aliases</div>
+                <div class="character-alias-chip-row">
+                    @if (Dossier.Aliases.Count == 0)
+                    {
+                        <span class="character-empty-note">No aliases</span>
+                    }
+                    else
+                    {
+                        @foreach (var alias in Dossier.Aliases.Take(MaxVisibleAliases))
+                        {
+                            <span class="character-alias-chip" title="@alias">@alias</span>
+                        }
+
+                        @if (HiddenAliasCount > 0)
+                        {
+                            <span class="character-alias-chip character-alias-more">+@HiddenAliasCount more</span>
+                        }
+                    }
+                </div>
+            </section>
+        </div>
+    </MudCardContent>
+    <MudCardActions Class="character-card-actions">
+        <MudButton Variant="MudBlazor.Variant.Text"
+                   Color="MudBlazor.Color.Primary"
+                   Size="MudBlazor.Size.Small"
+                   StartIcon="@Icons.Material.Filled.Edit"
+                   Disabled="@IsReadOnly"
+                   OnClick="EditAsync">
+            Edit
+        </MudButton>
+        <MudButton Variant="MudBlazor.Variant.Text"
+                   Color="MudBlazor.Color.Error"
+                   Size="MudBlazor.Size.Small"
+                   StartIcon="@Icons.Material.Filled.Delete"
+                   Disabled="@IsReadOnly"
+                   OnClick="DeleteAsync">
+            Delete
+        </MudButton>
+    </MudCardActions>
+</MudCard>
+
+@code {
+    private const int MaxVisibleAliases = 3;
+
+    [Parameter, EditorRequired]
+    public CharacterDossier Dossier { get; set; } = null!;
+
+    [Parameter]
+    public bool IsSelected { get; set; }
+
+    [Parameter]
+    public bool IsReadOnly { get; set; }
+
+    [Parameter]
+    public EventCallback<CharacterDossier> OnEdit { get; set; }
+
+    [Parameter]
+    public EventCallback<CharacterDossier> OnDelete { get; set; }
+
+    [Parameter]
+    public EventCallback<CharacterDossier> OnSelected { get; set; }
+
+    private bool IsIncomplete => CharacterDossierSearch.IsIncomplete(Dossier);
+
+    private bool HasDescription => !string.IsNullOrWhiteSpace(Dossier.Description);
+
+    private int HiddenAliasCount => Math.Max(0, Dossier.Aliases.Count - MaxVisibleAliases);
+
+    private string DisplayName => string.IsNullOrWhiteSpace(Dossier.Name) ? "Unnamed character" : Dossier.Name.Trim();
+
+    private string Initial => string.IsNullOrWhiteSpace(Dossier.Name)
+        ? "?"
+        : char.ToUpperInvariant(Dossier.Name.Trim()[0]).ToString();
+
+    private string DescriptionText => HasDescription ? Dossier.Description.Trim() : "No description yet";
+
+    private string DescriptionClass => HasDescription
+        ? "character-description"
+        : "character-description character-description-muted";
+
+    private string AliasesSummary => CountText(Dossier.Aliases.Count, "alias", "aliases");
+
+    private string FactsSummary => Dossier.Facts.Count == 0
+        ? "No facts"
+        : CountText(Dossier.Facts.Count, "fact", "facts");
+
+    private string FactsTitle => Dossier.Facts.Count == 0
+        ? "Facts are not extracted for this character yet."
+        : FactsSummary;
+
+    private string GenderLabel => Dossier.Gender switch
+    {
+        "male" => "Male",
+        "female" => "Female",
+        _ => "Unknown"
+    };
+
+    private string GenderClass => Dossier.Gender switch
+    {
+        "male" => "male",
+        "female" => "female",
+        _ => "unknown"
+    };
+
+    private string CardClass =>
+        $"character-card{(IsSelected ? " character-card-selected" : "")}{(IsIncomplete ? " character-card-incomplete" : "")}";
+
+    private string AvatarClass => $"character-avatar character-avatar-{GenderClass}";
+
+    private string GenderBadgeClass => $"character-gender-badge character-gender-{GenderClass}";
+
+    private Task EditAsync()
+    {
+        if (IsReadOnly)
+        {
+            return Task.CompletedTask;
+        }
+
+        return OnEdit.InvokeAsync(Dossier);
+    }
+
+    private Task DeleteAsync()
+    {
+        if (IsReadOnly)
+        {
+            return Task.CompletedTask;
+        }
+
+        return OnDelete.InvokeAsync(Dossier);
+    }
+
+    private Task SelectAsync()
+    {
+        return OnSelected.InvokeAsync(Dossier);
+    }
+
+    private Task SelectFromKeyboardAsync(KeyboardEventArgs args)
+    {
+        return args.Key is "Enter" or " "
+            ? SelectAsync()
+            : Task.CompletedTask;
+    }
+
+    private static string CountText(int count, string singular, string plural)
+    {
+        return count == 1 ? $"1 {singular}" : $"{count} {plural}";
+    }
+}

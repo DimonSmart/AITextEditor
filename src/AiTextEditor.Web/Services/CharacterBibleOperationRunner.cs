@@ -41,6 +41,7 @@ public sealed class CharacterBibleOperationRunner : ICharacterBibleOperationRunn
 
         yield return CreateEvent(CharacterBibleOperationEventType.Started, "Operation started.");
         yield return CreateEvent(CharacterBibleOperationEventType.Progress, "Loading current document.");
+        using var automationLease = workspace.BeginAutomation();
 
         Exception? documentError = null;
         try
@@ -122,11 +123,17 @@ public sealed class CharacterBibleOperationRunner : ICharacterBibleOperationRunn
         try
         {
             var output = await activeWorkflowTask;
-            workspace.CharacterDossiers.ReplaceDossiers(output.Dossiers.Characters);
+            workspace.ReplaceCharacterDossiers(output.Dossiers.Characters);
+            var completedMessage = "Operation completed.";
+            if (!string.IsNullOrWhiteSpace(workspace.CurrentBookPath))
+            {
+                await workspace.SaveCharacterBibleAsync(cancellationToken);
+                completedMessage = $"Operation completed. Character bible saved: {workspace.CurrentCharacterBiblePath}";
+            }
 
             terminalEvent = new CharacterBibleOperationEvent(
                 CharacterBibleOperationEventType.Completed,
-                "Operation completed.",
+                completedMessage,
                 DateTimeOffset.UtcNow,
                 Output: output);
         }

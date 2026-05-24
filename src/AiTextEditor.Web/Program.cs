@@ -21,6 +21,7 @@ builder.Services.AddScoped<ICharacterBibleFileStore, CharacterBibleFileStore>();
 builder.Services.AddScoped<EditorWorkspaceState>();
 builder.Services.AddScoped<ICharacterBibleMarkdownRenderer, CharacterBibleMarkdownRenderer>();
 builder.Services.AddScoped<ICharacterBibleOperationRunner, CharacterBibleOperationRunner>();
+builder.Services.AddScoped<CharacterBibleOperationState>();
 builder.Services.AddScoped<ICharacterBibleWorkflowClient, CharacterBibleWorkflowClient>();
 builder.Services.AddSingleton<CharacterBibleCommandParser>();
 

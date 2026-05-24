@@ -19,4 +19,8 @@ public sealed class CursorAgentLimits
     public int MaxElements { get; init; } = 20;
 
     public int MaxBytes { get; init; } = 8000;
+
+    public int BatchOverlapElements { get; init; }
+
+    public int FullScanMaxElements { get; init; } = 100;
 }

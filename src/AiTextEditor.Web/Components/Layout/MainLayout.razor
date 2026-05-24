@@ -1,24 +1,30 @@
 @inherits LayoutComponentBase
 
+<MudThemeProvider />
 <MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
 
-<div class="page">
-    <div class="sidebar">
+<MudLayout Class="app-shell">
+    <MudAppBar Elevation="1" Dense="true">
+        <MudText Typo="Typo.h6">AI Text Editor</MudText>
+    </MudAppBar>
+
+    <MudDrawer Open="true"
+               Variant="DrawerVariant.Persistent"
+               ClipMode="DrawerClipMode.Always"
+               Fixed="true"
+               Elevation="1"
+               Class="app-drawer">
         <NavMenu />
-    </div>
+    </MudDrawer>
 
-    <main>
-        <div class="top-row px-4">
-            <span>AI Text Editor</span>
-        </div>
-
-        <article class="content px-4">
+    <MudMainContent Class="app-main-content">
+        <article class="app-content">
             @Body
         </article>
-    </main>
-</div>
+    </MudMainContent>
+</MudLayout>
 
 <div id="blazor-error-ui" data-nosnippet>
     An unhandled error has occurred.

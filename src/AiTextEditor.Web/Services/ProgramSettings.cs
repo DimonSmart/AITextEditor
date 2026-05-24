@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using AiTextEditor.Agent;
 
 namespace AiTextEditor.Web.Services;
 
@@ -7,17 +8,23 @@ public sealed class ProgramSettings
 {
     public List<AiServerSettings> AiServers { get; set; } = [];
 
+    public string LastBookPath { get; set; } = string.Empty;
+
     public string SelectedAiServerName { get; set; } = string.Empty;
 
     public string SelectedAiModelName { get; set; } = string.Empty;
+
+    public CharacterBibleExtractionSettings CharacterBibleExtraction { get; set; } = new();
 
     public ProgramSettings Clone()
     {
         return new ProgramSettings
         {
             AiServers = [.. AiServers.Select(server => server.Clone())],
+            LastBookPath = LastBookPath ?? string.Empty,
             SelectedAiServerName = SelectedAiServerName,
-            SelectedAiModelName = SelectedAiModelName
+            SelectedAiModelName = SelectedAiModelName,
+            CharacterBibleExtraction = CharacterBibleExtraction.Clone()
         };
     }
 
@@ -99,6 +106,39 @@ public sealed class AiServerSettings
             IgnoreSslErrors = IgnoreSslErrors,
             LogRequestBody = LogRequestBody,
             TimeoutMinutes = TimeoutMinutes
+        };
+    }
+}
+
+public sealed class CharacterBibleExtractionSettings
+{
+    public int MaxParagraphsPerBatch { get; set; } = 20;
+
+    public int MaxBatchBytes { get; set; } = 8000;
+
+    public int OverlapParagraphs { get; set; } = 1;
+
+    public int FullScanMaxItems { get; set; } = 100;
+
+    public CharacterBibleExtractionSettings Clone()
+    {
+        return new CharacterBibleExtractionSettings
+        {
+            MaxParagraphsPerBatch = MaxParagraphsPerBatch,
+            MaxBatchBytes = MaxBatchBytes,
+            OverlapParagraphs = OverlapParagraphs,
+            FullScanMaxItems = FullScanMaxItems
+        };
+    }
+
+    public CursorAgentLimits ToCursorAgentLimits()
+    {
+        return new CursorAgentLimits
+        {
+            MaxElements = MaxParagraphsPerBatch,
+            MaxBytes = MaxBatchBytes,
+            BatchOverlapElements = OverlapParagraphs,
+            FullScanMaxElements = FullScanMaxItems
         };
     }
 }
@@ -217,6 +257,32 @@ public static class ProgramSettingsValidation
             }
         }
 
+        var extraction = settings.CharacterBibleExtraction;
+        if (extraction.MaxParagraphsPerBatch <= 0)
+        {
+            errors.Add("Character bible max paragraphs per batch must be greater than zero.");
+        }
+
+        if (extraction.MaxBatchBytes <= 0)
+        {
+            errors.Add("Character bible max batch bytes must be greater than zero.");
+        }
+
+        if (extraction.OverlapParagraphs < 0)
+        {
+            errors.Add("Character bible overlap paragraphs cannot be negative.");
+        }
+
+        if (extraction.OverlapParagraphs >= extraction.MaxParagraphsPerBatch)
+        {
+            errors.Add("Character bible overlap paragraphs must be less than max paragraphs per batch.");
+        }
+
+        if (extraction.FullScanMaxItems <= 0)
+        {
+            errors.Add("Character bible full-scan item limit must be greater than zero.");
+        }
+
         if (!string.IsNullOrWhiteSpace(settings.SelectedAiServerName) &&
             !settings.AiServers.Any(server => string.Equals(
                 server.Name.Trim(),
@@ -272,7 +338,8 @@ public static class ProgramSettingsValidation
             server.Password,
             server.IgnoreSslErrors,
             server.LogRequestBody,
-            TimeSpan.FromMinutes(server.TimeoutMinutes));
+            TimeSpan.FromMinutes(server.TimeoutMinutes),
+            settings.CharacterBibleExtraction.ToCursorAgentLimits());
     }
 
     private static string DisplayServerName(AiServerSettings server)
@@ -300,4 +367,5 @@ public sealed record ValidatedAiConnectionSettings(
     string Password,
     bool IgnoreSslErrors,
     bool LogRequestBody,
-    TimeSpan Timeout);
+    TimeSpan Timeout,
+    CursorAgentLimits CharacterBibleLimits);

@@ -8,6 +8,8 @@ public sealed class EditorWorkspaceState
     private const string DefaultMarkdown = "# Untitled\n\nStart writing here.\n";
     private const string DefaultDocumentId = "ui-book";
     private readonly ICharacterBibleFileStore characterBibleFileStore;
+    private readonly object syncRoot = new();
+    private int automationLockCount;
 
     public EditorWorkspaceState(ICharacterBibleFileStore? characterBibleFileStore = null)
     {
@@ -25,15 +27,43 @@ public sealed class EditorWorkspaceState
 
     public string? CurrentBookPath { get; private set; }
 
-    public string? CurrentCharacterBiblePath { get; private set; }
+    public string? CurrentCharacterBiblePath =>
+        string.IsNullOrWhiteSpace(CurrentBookPath)
+            ? null
+            : characterBibleFileStore.GetCompanionPath(CurrentBookPath);
 
     public bool CurrentCharacterBibleLoadedFromFile { get; private set; }
 
     public CharacterDossierService CharacterDossiers => Session.GetCharacterDossierService();
 
+    public bool IsReadOnly
+    {
+        get
+        {
+            lock (syncRoot)
+            {
+                return automationLockCount > 0;
+            }
+        }
+    }
+
+    public event Action? Changed;
+
+    public IDisposable BeginAutomation()
+    {
+        lock (syncRoot)
+        {
+            automationLockCount++;
+        }
+
+        NotifyChanged();
+        return new AutomationLease(this);
+    }
+
     public LinearDocument LoadMarkdown(string markdown, string? documentId = null)
     {
         ArgumentNullException.ThrowIfNull(markdown);
+        EnsureEditable();
 
         var resolvedDocumentId = string.IsNullOrWhiteSpace(documentId)
             ? CurrentDocument.Id
@@ -41,30 +71,14 @@ public sealed class EditorWorkspaceState
 
         CurrentMarkdown = markdown;
         CurrentDocument = Session.LoadDefaultDocument(markdown, resolvedDocumentId);
+        NotifyChanged();
         return CurrentDocument;
-    }
-
-    public LinearDocument LoadUploadedBook(string markdown, string fileName)
-    {
-        ArgumentNullException.ThrowIfNull(markdown);
-        ArgumentException.ThrowIfNullOrWhiteSpace(fileName);
-
-        var nextSession = new EditorSession();
-        var documentId = Path.GetFileNameWithoutExtension(fileName);
-        var document = nextSession.LoadDefaultDocument(markdown, documentId);
-
-        Session = nextSession;
-        CurrentMarkdown = markdown;
-        CurrentDocument = document;
-        CurrentBookPath = null;
-        CurrentCharacterBiblePath = null;
-        CurrentCharacterBibleLoadedFromFile = false;
-        return document;
     }
 
     public async Task LoadBookAsync(string bookPath, CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(bookPath);
+        EnsureEditable();
 
         if (!File.Exists(bookPath))
         {
@@ -85,12 +99,14 @@ public sealed class EditorWorkspaceState
         CurrentMarkdown = markdown;
         CurrentDocument = document;
         CurrentBookPath = bookPath;
-        CurrentCharacterBiblePath = characterBiblePath;
         CurrentCharacterBibleLoadedFromFile = loadedCharacterBible;
+        NotifyChanged();
     }
 
     public async Task SaveBookAsync(CancellationToken cancellationToken = default)
     {
+        EnsureEditable();
+
         if (string.IsNullOrWhiteSpace(CurrentBookPath))
         {
             throw new InvalidOperationException("Book path is not set.");
@@ -102,19 +118,93 @@ public sealed class EditorWorkspaceState
             Directory.CreateDirectory(directory);
         }
 
-        CurrentCharacterBiblePath ??= characterBibleFileStore.GetCompanionPath(CurrentBookPath);
         await File.WriteAllTextAsync(CurrentBookPath, CurrentMarkdown, cancellationToken);
         await SaveCharacterBibleAsync(cancellationToken);
     }
 
+    public CharacterDossier UpsertCharacterDossier(CharacterDossier dossier)
+    {
+        EnsureEditable();
+        var saved = CharacterDossiers.UpsertDossier(dossier);
+        NotifyChanged();
+        return saved;
+    }
+
+    public bool RemoveCharacterDossier(string characterId)
+    {
+        EnsureEditable();
+        var removed = CharacterDossiers.RemoveDossier(characterId);
+        if (removed)
+        {
+            NotifyChanged();
+        }
+
+        return removed;
+    }
+
+    public void ReplaceCharacterDossiers(IReadOnlyCollection<CharacterDossier> characters)
+    {
+        CharacterDossiers.ReplaceDossiers(characters);
+        NotifyChanged();
+    }
+
     public async Task SaveCharacterBibleAsync(CancellationToken cancellationToken = default)
+    {
+        var characterBiblePath = GetRequiredCharacterBiblePath();
+        await characterBibleFileStore.SaveAsync(characterBiblePath, CharacterDossiers, cancellationToken);
+    }
+
+    private string GetRequiredCharacterBiblePath()
     {
         if (string.IsNullOrWhiteSpace(CurrentBookPath))
         {
-            throw new InvalidOperationException("Book path is not set.");
+            throw new InvalidOperationException("Book path is not set. Load a book from a disk path before saving the character bible.");
         }
 
-        CurrentCharacterBiblePath ??= characterBibleFileStore.GetCompanionPath(CurrentBookPath);
-        await characterBibleFileStore.SaveAsync(CurrentCharacterBiblePath, CharacterDossiers, cancellationToken);
+        return characterBibleFileStore.GetCompanionPath(CurrentBookPath);
+    }
+
+    private void EndAutomation()
+    {
+        lock (syncRoot)
+        {
+            if (automationLockCount == 0)
+            {
+                throw new InvalidOperationException("Workspace automation lock is not held.");
+            }
+
+            automationLockCount--;
+        }
+
+        NotifyChanged();
+    }
+
+    private void EnsureEditable()
+    {
+        if (IsReadOnly)
+        {
+            throw new InvalidOperationException("The editor is read-only while character bible generation is running.");
+        }
+    }
+
+    public void NotifyChanged()
+    {
+        Changed?.Invoke();
+    }
+
+    private sealed class AutomationLease : IDisposable
+    {
+        private EditorWorkspaceState? owner;
+
+        public AutomationLease(EditorWorkspaceState owner)
+        {
+            this.owner = owner;
+        }
+
+        public void Dispose()
+        {
+            var workspace = Interlocked.Exchange(ref owner, null);
+            workspace?.EndAutomation();
+        }
     }
 }

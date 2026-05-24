@@ -43,7 +43,7 @@ public sealed class CharacterBibleWorkflowClient : ICharacterBibleWorkflowClient
         var generator = new CharacterDossiersGenerator(
             documentContext,
             workspace.CharacterDossiers,
-            new CursorAgentLimits(),
+            modelSettings.CharacterBibleLimits,
             loggerFactory.CreateLogger<CharacterDossiersGenerator>(),
             extractionClient);
         var runner = new CharacterBibleWorkflowRunner(generator, loggerFactory);

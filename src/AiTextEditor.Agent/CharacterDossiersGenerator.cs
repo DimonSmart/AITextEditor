@@ -209,7 +209,8 @@ public sealed class CharacterDossiersGenerator
             limits.MaxBytes,
             null,
             includeHeadings: false,
-            logger);
+            logger,
+            limits.FullScanMaxElements);
 
         var paragraphs = new List<TextFragment>();
         var chunkNumber = 0;
@@ -312,7 +313,8 @@ public sealed class CharacterDossiersGenerator
             limits.MaxBytes,
             null,
             includeHeadings: false,
-            logger);
+            logger,
+            limits.FullScanMaxElements);
 
         while (true)
         {
@@ -474,29 +476,50 @@ public sealed class CharacterDossiersGenerator
         var maxElements = Math.Max(1, limits.MaxElements);
         var maxBytes = Math.Max(1, limits.MaxBytes);
 
-        var batch = new List<(string Pointer, string Text)>(Math.Min(maxElements, paragraphs.Count));
-        var batchBytes = 0;
-
-        foreach (var paragraph in paragraphs)
+        var startIndex = 0;
+        while (startIndex < paragraphs.Count)
         {
-            var text = paragraph.Text ?? string.Empty;
-            var size = Encoding.UTF8.GetByteCount(text);
-            var wouldOverflow = batch.Count >= maxElements || (batchBytes + size) > maxBytes;
+            var batch = new List<(string Pointer, string Text)>(Math.Min(maxElements, paragraphs.Count - startIndex));
+            var batchBytes = 0;
+            var nextIndex = startIndex;
 
-            if (wouldOverflow && batch.Count > 0)
+            while (nextIndex < paragraphs.Count)
             {
-                yield return batch;
-                batch = new List<(string Pointer, string Text)>(Math.Min(maxElements, paragraphs.Count));
-                batchBytes = 0;
+                var paragraph = paragraphs[nextIndex];
+                var text = paragraph.Text ?? string.Empty;
+                var size = Encoding.UTF8.GetByteCount(text);
+                var wouldOverflow = batch.Count >= maxElements || (batchBytes + size) > maxBytes;
+
+                if (wouldOverflow && batch.Count > 0)
+                {
+                    break;
+                }
+
+                batch.Add(paragraph);
+                batchBytes += size;
+                nextIndex++;
+
+                if (batchBytes >= maxBytes)
+                {
+                    break;
+                }
             }
 
-            batch.Add(paragraph);
-            batchBytes += size;
-        }
+            if (batch.Count == 0)
+            {
+                batch.Add(paragraphs[startIndex]);
+                nextIndex = startIndex + 1;
+            }
 
-        if (batch.Count > 0)
-        {
             yield return batch;
+
+            if (nextIndex >= paragraphs.Count)
+            {
+                yield break;
+            }
+
+            var overlap = Math.Min(Math.Max(0, limits.BatchOverlapElements), Math.Max(0, batch.Count - 1));
+            startIndex = nextIndex - overlap;
         }
     }
 
@@ -1155,25 +1178,31 @@ Structured response contract:
 - character.canonicalName: best stable name as in text, without title; do NOT invent patronymics/missing parts.
 - character.gender: male, female, or unknown.
 - character.aliases: array of name variants found in text. Each alias object MUST contain exactly "form" and "example"; "example" is a short sentence containing this form.
-- character.description: 2-5 sentences, see below.
+- character.description: empty string when no personality is revealed; otherwise 2-5 sentences, see below.
 
 Name Rules:
 - Canonical Name: Prefer the best stable name as in text WITHOUT title. Do NOT invent patronymics or missing parts of the name.
 - If title is needed for disambiguation, include it in canonicalName, but add an alias without title.
 - Aliases: Must belong to the SAME character. Do not merge different characters listed together.
+- Aliases: Pronouns are NEVER aliases. Do not output pronouns such as "he", "she", "they", "он", "она", "они", "его", "её", "им", "их" as alias forms.
 - One object per character. Merge mentions across paragraphs. If unsure two mentions are the same person, keep separate objects.
 - Aliases: Keep up to 5. Prefer the most informative forms.
 
 Description Rules (Critical):
 - Language: RUSSIAN.
 - Create a cohesive psychological portrait (temperament, habits, values) ONLY based on EXPLICIT evidence in the text (actions, dialogue, internal monologue).
-- If the character is merely present (e.g., "was there", "flew with X") but their personality is not revealed, write exactly: "В данном фрагменте характер не раскрыт."
+- Describe stable or repeated personality signals: temperament, habits, values, motives, relationship patterns, or typical behavior.
+- If the character is merely present (e.g., "was there", "flew with X") but their personality is not revealed, write an empty description string.
+- If evidence only shows appearance, location, posture, physical sensations, where the character stood, what they saw, or what happened in the scene, write an empty description string.
+- If personality cannot be inferred, DO NOT explain that details are missing, absent, limited, or not revealed. The description field MUST be "".
 - STRICTLY FORBIDDEN: Inventing positive/professional traits (e.g., "initiative", "attentive", "supportive") without direct evidence.
 - STRICTLY FORBIDDEN: Generalizing single ambiguous actions into permanent personality traits.
+- STRICTLY FORBIDDEN: Quotes, quoted dialogue, and book-excerpt-like summaries.
 - You may infer weak traits ONLY with uncertainty words ("вероятно", "похоже") and only if supported by at least TWO separate cues.
-- Abstract generalizations; DO NOT retell scenes or quote text.
+- Abstract generalizations; DO NOT retell scenes, summarize events, list observed actions, describe appearance, or quote text.
+- Do not justify the portrait with phrases like "поскольку он сказал", "видно, что", "это показывает", or "это свидетельствует"; write the trait directly.
 - Plain prose only (no lists).
-- Usage of meta-phrases ("in the book", "author says", "в тексте") is FORBIDDEN (except for the "характер не раскрыт" phrase).
+- Usage of meta-phrases ("in the book", "author says", "в тексте") is FORBIDDEN.
 - Do NOT use double quotes (") inside any string fields.
 
 Output:

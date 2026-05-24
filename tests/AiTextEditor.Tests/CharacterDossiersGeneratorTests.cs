@@ -67,6 +67,43 @@ public sealed class CharacterDossiersGeneratorTests
     }
 
     [Fact]
+    public async Task WorkflowExtraction_UsesConfiguredParagraphOverlap()
+    {
+        var names = new[] { "Анна", "Борис", "Вера", "Глеб", "Дина" };
+        var repository = new MarkdownDocumentRepository();
+        var document = repository.LoadFromMarkdown(BuildMarkdown(names));
+        var dossierService = new CharacterDossierService();
+        var documentContext = new DocumentContext(document, dossierService);
+        var limits = new CursorAgentLimits
+        {
+            MaxElements = 2,
+            MaxBytes = 1024 * 128,
+            BatchOverlapElements = 1,
+            FullScanMaxElements = 20
+        };
+        var extractionModelClient = new CapturingCharacterExtractionModelClient();
+        var generator = new CharacterDossiersGenerator(
+            documentContext,
+            dossierService,
+            limits,
+            NullLogger<CharacterDossiersGenerator>.Instance,
+            extractionModelClient);
+        var runner = new CharacterBibleWorkflowRunner(generator, NullLoggerFactory.Instance);
+
+        await runner.RunAsync(new CharacterBibleWorkflowInput());
+
+        Assert.Equal(4, extractionModelClient.Requests.Count);
+        Assert.Equal(
+            [
+                ["p1", "p2"],
+                ["p2", "p3"],
+                ["p3", "p4"],
+                ["p4", "p5"]
+            ],
+            extractionModelClient.Requests.Select(ReadPromptPointers).ToArray());
+    }
+
+    [Fact]
     public async Task DescriptionStability_WhenOnlyAliasesChange_DescriptionIsNotTouched()
     {
         var dossierService = new CharacterDossierService();
@@ -111,6 +148,125 @@ public sealed class CharacterDossiersGeneratorTests
         Assert.Contains("Johnny", updated.AliasExamples.Keys, StringComparer.OrdinalIgnoreCase);
 
         Assert.Equal(1, extractionModelClient.CallCount);
+    }
+
+    [Fact]
+    public async Task GenerateDossiers_ReplacesEmptyDescriptionWithMeaningfulDescription()
+    {
+        var dossierService = new CharacterDossierService();
+        var repository = new MarkdownDocumentRepository();
+        var document = repository.LoadFromMarkdown("John arrived.\n\nJohn stayed calm and helped Mary.");
+        var documentContext = new DocumentContext(document, dossierService);
+        var limits = new CursorAgentLimits { MaxElements = 1, MaxBytes = 1024 * 128, FullScanMaxElements = 10 };
+        var extractionModelClient = new ScriptedCharacterExtractionModelClient(
+            Response(new CharacterExtractionCharacter(
+                "John",
+                "unknown",
+                [new CharacterExtractionAlias("John", "John arrived.")],
+                "")),
+            Response(new CharacterExtractionCharacter(
+                "John",
+                "unknown",
+                [new CharacterExtractionAlias("John", "John stayed calm and helped Mary.")],
+                "John stays calm under pressure and helps others.")));
+
+        var generator = new CharacterDossiersGenerator(
+            documentContext,
+            dossierService,
+            limits,
+            NullLogger<CharacterDossiersGenerator>.Instance,
+            extractionModelClient);
+
+        var dossiers = await generator.GenerateAsync();
+
+        var dossier = Assert.Single(dossiers.Characters);
+        Assert.Equal("John stays calm under pressure and helps others.", dossier.Description);
+    }
+
+    [Fact]
+    public async Task GenerateDossiers_DoesNotReplaceMeaningfulDescriptionWithEmptyDescription()
+    {
+        var dossierService = new CharacterDossierService();
+        var repository = new MarkdownDocumentRepository();
+        var document = repository.LoadFromMarkdown("John stayed calm.\n\nJohn arrived.");
+        var documentContext = new DocumentContext(document, dossierService);
+        var limits = new CursorAgentLimits { MaxElements = 1, MaxBytes = 1024 * 128, FullScanMaxElements = 10 };
+        var extractionModelClient = new ScriptedCharacterExtractionModelClient(
+            Response(new CharacterExtractionCharacter(
+                "John",
+                "unknown",
+                [new CharacterExtractionAlias("John", "John stayed calm.")],
+                "John stays calm under pressure.")),
+            Response(new CharacterExtractionCharacter(
+                "John",
+                "unknown",
+                [new CharacterExtractionAlias("John", "John arrived.")],
+                "")));
+
+        var generator = new CharacterDossiersGenerator(
+            documentContext,
+            dossierService,
+            limits,
+            NullLogger<CharacterDossiersGenerator>.Instance,
+            extractionModelClient);
+
+        var dossiers = await generator.GenerateAsync();
+
+        var dossier = Assert.Single(dossiers.Characters);
+        Assert.Equal("John stays calm under pressure.", dossier.Description);
+    }
+
+    [Fact]
+    public async Task GenerateDossiers_PromptForbidsPronounAliases()
+    {
+        var dossierService = new CharacterDossierService();
+        var repository = new MarkdownDocumentRepository();
+        var document = repository.LoadFromMarkdown("Андерс оглянулся. Он услышал шум.");
+        var documentContext = new DocumentContext(document, dossierService);
+        var limits = new CursorAgentLimits { MaxElements = 256, MaxBytes = 1024 * 128 };
+        var extractionModelClient = new CapturingCharacterExtractionModelClient();
+
+        var generator = new CharacterDossiersGenerator(
+            documentContext,
+            dossierService,
+            limits,
+            NullLogger<CharacterDossiersGenerator>.Instance,
+            extractionModelClient);
+
+        await generator.GenerateAsync();
+
+        Assert.NotNull(extractionModelClient.LastRequest);
+        Assert.Contains("Pronouns are NEVER aliases", extractionModelClient.LastRequest!.SystemPrompt, StringComparison.Ordinal);
+        Assert.Contains("он", extractionModelClient.LastRequest.SystemPrompt, StringComparison.Ordinal);
+        Assert.Contains("она", extractionModelClient.LastRequest.SystemPrompt, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task GenerateDossiers_PromptRequiresEmptyDescriptionsWhenPersonalityIsAbsent()
+    {
+        var dossierService = new CharacterDossierService();
+        var repository = new MarkdownDocumentRepository();
+        var document = repository.LoadFromMarkdown("Она стояла в толпе. У неё была родинка под левым глазом.");
+        var documentContext = new DocumentContext(document, dossierService);
+        var limits = new CursorAgentLimits { MaxElements = 256, MaxBytes = 1024 * 128 };
+        var extractionModelClient = new CapturingCharacterExtractionModelClient();
+
+        var generator = new CharacterDossiersGenerator(
+            documentContext,
+            dossierService,
+            limits,
+            NullLogger<CharacterDossiersGenerator>.Instance,
+            extractionModelClient);
+
+        await generator.GenerateAsync();
+
+        Assert.NotNull(extractionModelClient.LastRequest);
+        var systemPrompt = extractionModelClient.LastRequest!.SystemPrompt;
+        Assert.Contains("The description field MUST be", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("DO NOT explain that details are missing", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("DO NOT retell scenes", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("describe appearance", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("what they saw", systemPrompt, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -227,6 +383,7 @@ public sealed class CharacterDossiersGeneratorTests
     private sealed class CapturingCharacterExtractionModelClient : ICharacterExtractionModelClient
     {
         public CharacterExtractionModelRequest? LastRequest { get; private set; }
+        public List<CharacterExtractionModelRequest> Requests { get; } = [];
         public int CallCount { get; private set; }
 
         public Task<CharacterExtractionResponse> ExtractCharactersAsync(
@@ -234,6 +391,7 @@ public sealed class CharacterDossiersGeneratorTests
             CancellationToken cancellationToken = default)
         {
             LastRequest = request;
+            Requests.Add(request);
             CallCount++;
             return Task.FromResult(BuildCharacterResponse(request.UserPrompt));
         }
@@ -273,7 +431,7 @@ public sealed class CharacterDossiersGeneratorTests
                         name,
                         "unknown",
                         [],
-                        "В данном фрагменте характер не раскрыт."));
+                        ""));
                 }
 
                 return Response(characters.ToArray());
@@ -283,6 +441,16 @@ public sealed class CharacterDossiersGeneratorTests
                 return Response();
             }
         }
+    }
+
+    private static string[] ReadPromptPointers(CharacterExtractionModelRequest request)
+    {
+        using var json = JsonDocument.Parse(request.UserPrompt);
+        return json.RootElement
+            .GetProperty("paragraphs")
+            .EnumerateArray()
+            .Select(paragraph => paragraph.GetProperty("pointer").GetString() ?? string.Empty)
+            .ToArray();
     }
 
     private sealed class ScriptedCharacterExtractionModelClient : ICharacterExtractionModelClient

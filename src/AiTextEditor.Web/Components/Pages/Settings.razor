@@ -32,6 +32,30 @@ else
         </section>
 
         <section class="settings-section">
+            <h2>Character Bible Extraction</h2>
+
+            <label>
+                <span>Max paragraphs per batch</span>
+                <input class="form-control" type="number" min="1" @bind="EditableSettings.CharacterBibleExtraction.MaxParagraphsPerBatch" @bind:event="oninput" />
+            </label>
+
+            <label>
+                <span>Max batch bytes</span>
+                <input class="form-control" type="number" min="1" @bind="EditableSettings.CharacterBibleExtraction.MaxBatchBytes" @bind:event="oninput" />
+            </label>
+
+            <label>
+                <span>Overlap paragraphs</span>
+                <input class="form-control" type="number" min="0" @bind="EditableSettings.CharacterBibleExtraction.OverlapParagraphs" @bind:event="oninput" />
+            </label>
+
+            <label>
+                <span>Full-scan item limit</span>
+                <input class="form-control" type="number" min="1" @bind="EditableSettings.CharacterBibleExtraction.FullScanMaxItems" @bind:event="oninput" />
+            </label>
+        </section>
+
+        <section class="settings-section">
             <div class="settings-section-header">
                 <h2>AI Servers</h2>
                 <button type="button" class="btn btn-primary btn-sm" @onclick="AddServer">Add</button>

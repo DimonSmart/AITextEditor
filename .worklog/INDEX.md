@@ -20,6 +20,10 @@ If this index conflicts with a numbered document, trust the numbered document.
 | 0010 | spec | AI server profiles | Add multiple OpenAI-compatible AI server profiles with separate persisted current server and model selections. | 0006, 0009 |
 | 0011 | spec | Character bible progress events | Show detailed progress events for character bible operations across document loading, traversal, extraction, resolution, and bible update stages. | 0003, 0007 |
 | 0012 | spec | JSON character bible UI | Make Character Bible storage canonical JSON and replace the Markdown/YAML page with searchable MudBlazor character cards. | 0007, 0008 |
+| 0013 | spec | Character Bible catalog polish | Improve the Character Bible catalog card hierarchy, toolbar filters, incomplete state, and edit dialog readability. | 0012 |
+| 0014 | spec | Remembered book folder loading | Remember the last loaded book path in program settings and make Load use a selected or remembered disk path with derived companion bibles. | 0008, 0012 |
+| 0015 | spec | Fixed MudBlazor shell navigation | Keep left navigation fixed in the MudBlazor app shell and use MudBlazor's default overlay layers for dialogs. | 0007, 0013 |
+| 0016 | spec | Background character bible generation | Let character bible generation continue across page navigation, keep manual editing read-only while it runs, and make extraction batching configurable with overlap. | 0003, 0007, 0009, 0011, 0012 |
 
 ## Archived documents
 

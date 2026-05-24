@@ -1,8 +1,9 @@
 @page "/"
 @page "/book"
+@implements IDisposable
 @inject EditorWorkspaceState Workspace
+@inject IProgramSettingsStore SettingsStore
 @inject ISnackbar Snackbar
-@inject IJSRuntime JsRuntime
 
 <PageTitle>Book</PageTitle>
 
@@ -11,49 +12,53 @@
                   Label="Book path"
                   Variant="MudBlazor.Variant.Outlined"
                   Margin="MudBlazor.Margin.Dense"
-                  Immediate="true" />
+                  Immediate="true"
+                  Disabled="@Workspace.IsReadOnly" />
     <MudButton Variant="MudBlazor.Variant.Filled"
                Color="MudBlazor.Color.Primary"
-               StartIcon="@Icons.Material.Filled.UploadFile"
-               OnClick="OpenBookFilePickerAsync">
-        Load Book
-    </MudButton>
-    <InputFile id="@BookFileInputId"
-               class="book-file-input"
-               OnChange="LoadUploadedBookAsync"
-               accept=".md,.markdown,.txt,text/markdown,text/plain" />
-    <MudButton Variant="MudBlazor.Variant.Outlined"
-               Color="MudBlazor.Color.Primary"
                StartIcon="@Icons.Material.Filled.FolderOpen"
-               Disabled="@string.IsNullOrWhiteSpace(bookPath)"
+               Disabled="@(Workspace.IsReadOnly || string.IsNullOrWhiteSpace(bookPath))"
                OnClick="LoadBookFromPathAsync">
-        Load Path
+        Load Book
     </MudButton>
     <MudButton Variant="MudBlazor.Variant.Filled"
                Color="MudBlazor.Color.Secondary"
                StartIcon="@Icons.Material.Filled.Save"
-               Disabled="@string.IsNullOrWhiteSpace(Workspace.CurrentBookPath)"
+               Disabled="@(Workspace.IsReadOnly || string.IsNullOrWhiteSpace(Workspace.CurrentBookPath))"
                OnClick="SaveBookAsync">
         Save
     </MudButton>
 </div>
 
-<MarkdownSplitEditor Title="Markdown" Value="@markdown" ValueChanged="OnMarkdownChangedAsync" />
+<MarkdownSplitEditor Title="Markdown" Value="@markdown" ValueChanged="OnMarkdownChangedAsync" ReadOnly="@Workspace.IsReadOnly" />
 
 @code {
-    private const string BookFileInputId = "book-file-input";
-    private const long MaxUploadedBookBytes = 4L * 1024 * 1024;
     private string markdown = string.Empty;
     private string bookPath = string.Empty;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        Workspace.Changed += OnWorkspaceChanged;
         markdown = Workspace.CurrentMarkdown;
-        bookPath = Workspace.CurrentBookPath ?? string.Empty;
+        try
+        {
+            var settings = await SettingsStore.LoadAsync(CancellationToken.None);
+            bookPath = Workspace.CurrentBookPath ?? settings.LastBookPath ?? string.Empty;
+        }
+        catch (Exception ex)
+        {
+            bookPath = Workspace.CurrentBookPath ?? string.Empty;
+            Snackbar.Add(ex.Message, MudBlazor.Severity.Error);
+        }
     }
 
     private Task OnMarkdownChangedAsync(string value)
     {
+        if (Workspace.IsReadOnly)
+        {
+            return Task.CompletedTask;
+        }
+
         markdown = value;
         try
         {
@@ -67,37 +72,20 @@
         return Task.CompletedTask;
     }
 
-    private async Task OpenBookFilePickerAsync()
-    {
-        await JsRuntime.InvokeVoidAsync("aiTextEditorBookFiles.click", BookFileInputId);
-    }
-
-    private async Task LoadUploadedBookAsync(InputFileChangeEventArgs args)
-    {
-        try
-        {
-            var selectedBook = args.File;
-            await using var stream = selectedBook.OpenReadStream(MaxUploadedBookBytes);
-            using var reader = new StreamReader(stream);
-            var uploadedMarkdown = await reader.ReadToEndAsync();
-
-            Workspace.LoadUploadedBook(uploadedMarkdown, selectedBook.Name);
-            markdown = Workspace.CurrentMarkdown;
-            bookPath = string.Empty;
-            Snackbar.Add($"Loaded book: {selectedBook.Name}", MudBlazor.Severity.Success);
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add(ex.Message, MudBlazor.Severity.Error);
-        }
-    }
-
     private async Task LoadBookFromPathAsync()
     {
+        if (Workspace.IsReadOnly)
+        {
+            return;
+        }
+
         try
         {
-            await Workspace.LoadBookAsync(bookPath);
+            var resolvedBookPath = bookPath.Trim();
+            await Workspace.LoadBookAsync(resolvedBookPath);
             markdown = Workspace.CurrentMarkdown;
+            bookPath = Workspace.CurrentBookPath ?? bookPath;
+            await SaveLastBookPathAsync(bookPath);
             var loadMessage = Workspace.CurrentCharacterBibleLoadedFromFile
                 ? $"Loaded book and character bible: {Workspace.CurrentCharacterBiblePath}"
                 : $"Loaded book. Character bible file was not found, using empty dossiers: {Workspace.CurrentCharacterBiblePath}";
@@ -109,8 +97,20 @@
         }
     }
 
+    private async Task SaveLastBookPathAsync(string loadedBookPath)
+    {
+        var settings = await SettingsStore.LoadAsync(CancellationToken.None);
+        settings.LastBookPath = loadedBookPath;
+        await SettingsStore.SaveAsync(settings, CancellationToken.None);
+    }
+
     private async Task SaveBookAsync()
     {
+        if (Workspace.IsReadOnly)
+        {
+            return;
+        }
+
         try
         {
             await Workspace.SaveBookAsync();
@@ -120,5 +120,16 @@
         {
             Snackbar.Add(ex.Message, MudBlazor.Severity.Error);
         }
+    }
+
+    private void OnWorkspaceChanged()
+    {
+        markdown = Workspace.CurrentMarkdown;
+        _ = InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        Workspace.Changed -= OnWorkspaceChanged;
     }
 }

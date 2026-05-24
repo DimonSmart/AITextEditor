@@ -6,19 +6,28 @@ public static class CharacterDossierSearch
 {
     public static IReadOnlyList<CharacterDossier> Filter(
         IEnumerable<CharacterDossier> dossiers,
-        string? query)
+        string? query,
+        string? gender = null,
+        bool onlyIncomplete = false)
     {
         ArgumentNullException.ThrowIfNull(dossiers);
 
         var normalizedQuery = query?.Trim();
-        if (string.IsNullOrWhiteSpace(normalizedQuery))
-        {
-            return dossiers.ToList();
-        }
+        var normalizedGender = gender?.Trim();
 
         return dossiers
-            .Where(dossier => Matches(dossier, normalizedQuery))
+            .Where(dossier => string.IsNullOrWhiteSpace(normalizedQuery) || Matches(dossier, normalizedQuery))
+            .Where(dossier => MatchesGender(dossier, normalizedGender))
+            .Where(dossier => !onlyIncomplete || IsIncomplete(dossier))
             .ToList();
+    }
+
+    public static bool IsIncomplete(CharacterDossier dossier)
+    {
+        ArgumentNullException.ThrowIfNull(dossier);
+
+        return string.IsNullOrWhiteSpace(dossier.Description)
+            || dossier.Facts.Count == 0;
     }
 
     private static bool Matches(CharacterDossier dossier, string query)
@@ -36,5 +45,12 @@ public static class CharacterDossierSearch
     private static bool Contains(string? value, string query)
     {
         return value?.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0;
+    }
+
+    private static bool MatchesGender(CharacterDossier dossier, string? gender)
+    {
+        return string.IsNullOrWhiteSpace(gender)
+            || string.Equals(gender, "all", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(dossier.Gender, gender, StringComparison.OrdinalIgnoreCase);
     }
 }

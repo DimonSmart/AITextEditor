@@ -6,21 +6,28 @@ namespace AiTextEditor.Core.Services;
 
 public sealed class FullScanCursorStream : FilteredCursorStream, INamedCursorStream
 {
-    private const int TemporaryTotalItemLimit = 25;
+    private const int DefaultTotalItemLimit = 100;
+    private readonly int totalItemLimit;
     private int totalReturned;
 
-    public FullScanCursorStream(LinearDocument document, int maxElements, int maxBytes, string? startAfterPointer, bool includeHeadings = true, ILogger? logger = null)
+    public FullScanCursorStream(
+        LinearDocument document,
+        int maxElements,
+        int maxBytes,
+        string? startAfterPointer,
+        bool includeHeadings = true,
+        ILogger? logger = null,
+        int? totalItemLimit = null)
         : base(document, maxElements, maxBytes, startAfterPointer, includeHeadings, logger)
     {
-
+        this.totalItemLimit = Math.Max(1, totalItemLimit ?? DefaultTotalItemLimit);
     }
 
     CursorPortion INamedCursorStream.NextPortion() => NextPortion();
 
     public new CursorPortion NextPortion()
     {
-        // TEMP: limit full-scan cursors to the first 25 items to keep local LLM runs fast and logs manageable.
-        if (totalReturned >= TemporaryTotalItemLimit)
+        if (totalReturned >= totalItemLimit)
         {
             return new CursorPortion([], false);
         }
@@ -31,7 +38,7 @@ public sealed class FullScanCursorStream : FilteredCursorStream, INamedCursorStr
             return portion;
         }
 
-        var remaining = TemporaryTotalItemLimit - totalReturned;
+        var remaining = totalItemLimit - totalReturned;
         if (portion.Items.Count <= remaining)
         {
             totalReturned += portion.Items.Count;

@@ -2,6 +2,7 @@ using AiTextEditor.Agent;
 using AiTextEditor.Core.Model;
 using AiTextEditor.Core.Services;
 using AiTextEditor.Web.Services;
+using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
 namespace AiTextEditor.Tests;
@@ -18,21 +19,6 @@ public sealed class WebCharacterBibleServiceTests
         Assert.Empty(workspace.CurrentMarkdown);
         Assert.Empty(document.Items);
         Assert.Empty(workspace.CurrentDocument.Items);
-    }
-
-    [Fact]
-    public void EditorWorkspaceState_LoadUploadedBook_LoadsContentWithoutDiskPath()
-    {
-        var workspace = new EditorWorkspaceState();
-
-        var document = workspace.LoadUploadedBook("# Uploaded\n\nText.", "uploaded.md");
-
-        Assert.Equal("# Uploaded\n\nText.", workspace.CurrentMarkdown);
-        Assert.Equal("uploaded", document.Id);
-        Assert.Equal("uploaded", workspace.CurrentDocument.Id);
-        Assert.Null(workspace.CurrentBookPath);
-        Assert.Null(workspace.CurrentCharacterBiblePath);
-        Assert.False(workspace.CurrentCharacterBibleLoadedFromFile);
     }
 
     [Fact]
@@ -219,6 +205,81 @@ public sealed class WebCharacterBibleServiceTests
     }
 
     [Fact]
+    public async Task EditorWorkspaceState_LoadBookAsync_LoadsBookAndDerivedCharacterBible()
+    {
+        var directory = Path.Combine(Path.GetTempPath(), "AiTextEditorTests", Guid.NewGuid().ToString("N"));
+        var bookPath = Path.Combine(directory, "novel.md");
+        Directory.CreateDirectory(directory);
+        await File.WriteAllTextAsync(bookPath, "# Novel\n\nText.");
+        var characterBiblePath = Path.Combine(directory, "novel-character-bible.json");
+        var characterDossiers = new CharacterDossierService("d1");
+        characterDossiers.UpsertDossier(new CharacterDossier(
+            "c1",
+            "Alice",
+            "Keeps careful notes.",
+            [],
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
+            [],
+            "female"));
+        await File.WriteAllTextAsync(characterBiblePath, characterDossiers.SaveToJson());
+        var workspace = new EditorWorkspaceState();
+
+        await workspace.LoadBookAsync(bookPath);
+
+        Assert.Equal("# Novel\n\nText.", workspace.CurrentMarkdown);
+        Assert.Equal("novel", workspace.CurrentDocument.Id);
+        Assert.Equal(bookPath, workspace.CurrentBookPath);
+        Assert.Equal(characterBiblePath, workspace.CurrentCharacterBiblePath);
+        Assert.True(workspace.CurrentCharacterBibleLoadedFromFile);
+        var dossier = Assert.Single(workspace.CharacterDossiers.GetDossiers().Characters);
+        Assert.Equal("Alice", dossier.Name);
+    }
+
+    [Fact]
+    public async Task EditorWorkspaceState_SaveCharacterBibleAsync_SavesDerivedCompanionPath()
+    {
+        var directory = Path.Combine(Path.GetTempPath(), "AiTextEditorTests", Guid.NewGuid().ToString("N"));
+        var bookPath = Path.Combine(directory, "novel.md");
+        Directory.CreateDirectory(directory);
+        await File.WriteAllTextAsync(bookPath, "# Novel\n\nText.");
+        var workspace = new EditorWorkspaceState();
+        await workspace.LoadBookAsync(bookPath);
+        workspace.CharacterDossiers.UpsertDossier(new CharacterDossier(
+            "c1",
+            "Alice",
+            "Keeps careful notes.",
+            [],
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
+            [],
+            "female"));
+
+        await workspace.SaveCharacterBibleAsync();
+
+        var characterBiblePath = Path.Combine(directory, "novel-character-bible.json");
+        Assert.Equal(characterBiblePath, workspace.CurrentCharacterBiblePath);
+        Assert.True(File.Exists(characterBiblePath));
+        Assert.Contains("\"name\":\"Alice\"", await File.ReadAllTextAsync(characterBiblePath));
+    }
+
+    [Fact]
+    public void EditorWorkspaceState_AutomationLeaseBlocksManualMutations()
+    {
+        var workspace = new EditorWorkspaceState();
+        using var lease = workspace.BeginAutomation();
+
+        Assert.True(workspace.IsReadOnly);
+        Assert.Throws<InvalidOperationException>(() => workspace.LoadMarkdown("# Updated"));
+        Assert.Throws<InvalidOperationException>(() => workspace.UpsertCharacterDossier(new CharacterDossier(
+            "c1",
+            "Alice",
+            string.Empty,
+            [],
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
+            [],
+            "female")));
+    }
+
+    [Fact]
     public void CharacterDossierService_SaveToJson_LoadFromJson_RoundTrips()
     {
         var source = new CharacterDossierService("d1");
@@ -291,6 +352,36 @@ public sealed class WebCharacterBibleServiceTests
     }
 
     [Fact]
+    public void CharacterDossierSearch_FiltersByGenderAndIncompleteState()
+    {
+        var dossiers = new[]
+        {
+            new CharacterDossier(
+                "c1",
+                "Alice",
+                "Keeps careful notes.",
+                ["Al"],
+                new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
+                [new CharacterFact("role", "editor", "Alice revised the chapter.")],
+                "female"),
+            new CharacterDossier(
+                "c2",
+                "Bob",
+                "",
+                [],
+                new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
+                [],
+                "male")
+        };
+
+        var result = CharacterDossierSearch.Filter(dossiers, null, "male", onlyIncomplete: true);
+
+        var dossier = Assert.Single(result);
+        Assert.Equal("Bob", dossier.Name);
+        Assert.True(CharacterDossierSearch.IsIncomplete(dossier));
+    }
+
+    [Fact]
     public async Task ProgramSettingsStore_LoadsInitialSettingsWhenFileIsMissing()
     {
         var path = Path.Combine(Path.GetTempPath(), "AiTextEditorTests", Guid.NewGuid().ToString("N"), "settings.json");
@@ -306,6 +397,7 @@ public sealed class WebCharacterBibleServiceTests
                     TimeoutMinutes = 15
                 }
             ],
+            LastBookPath = @"C:\Books\novel.md",
             SelectedAiServerName = "Local",
             SelectedAiModelName = "qwen3:latest"
         };
@@ -318,6 +410,7 @@ public sealed class WebCharacterBibleServiceTests
         Assert.Equal("http://localhost:11434", server.BaseUrl);
         Assert.Equal("ollama", server.ApiKey);
         Assert.Equal(15, server.TimeoutMinutes);
+        Assert.Equal(@"C:\Books\novel.md", settings.LastBookPath);
         Assert.Equal("Local", settings.SelectedAiServerName);
         Assert.Equal("qwen3:latest", settings.SelectedAiModelName);
     }
@@ -343,8 +436,16 @@ public sealed class WebCharacterBibleServiceTests
                     TimeoutMinutes = 7
                 }
             ],
+            LastBookPath = @"C:\Books\novel.md",
             SelectedAiServerName = "Remote",
-            SelectedAiModelName = "model-a"
+            SelectedAiModelName = "model-a",
+            CharacterBibleExtraction = new CharacterBibleExtractionSettings
+            {
+                MaxParagraphsPerBatch = 12,
+                MaxBatchBytes = 4096,
+                OverlapParagraphs = 2,
+                FullScanMaxItems = 250
+            }
         };
 
         await store.SaveAsync(savedSettings, CancellationToken.None);
@@ -359,8 +460,13 @@ public sealed class WebCharacterBibleServiceTests
         Assert.True(server.IgnoreSslErrors);
         Assert.True(server.LogRequestBody);
         Assert.Equal(7, server.TimeoutMinutes);
+        Assert.Equal(@"C:\Books\novel.md", loadedSettings.LastBookPath);
         Assert.Equal("Remote", loadedSettings.SelectedAiServerName);
         Assert.Equal("model-a", loadedSettings.SelectedAiModelName);
+        Assert.Equal(12, loadedSettings.CharacterBibleExtraction.MaxParagraphsPerBatch);
+        Assert.Equal(4096, loadedSettings.CharacterBibleExtraction.MaxBatchBytes);
+        Assert.Equal(2, loadedSettings.CharacterBibleExtraction.OverlapParagraphs);
+        Assert.Equal(250, loadedSettings.CharacterBibleExtraction.FullScanMaxItems);
     }
 
     [Fact]
@@ -387,6 +493,29 @@ public sealed class WebCharacterBibleServiceTests
         Assert.Equal(new Uri("http://localhost:11434/v1"), validated.Endpoint);
         Assert.Equal("qwen3:latest", validated.ModelName);
         Assert.Equal(TimeSpan.FromMinutes(30), validated.Timeout);
+        Assert.Equal(20, validated.CharacterBibleLimits.MaxElements);
+        Assert.Equal(8000, validated.CharacterBibleLimits.MaxBytes);
+        Assert.Equal(1, validated.CharacterBibleLimits.BatchOverlapElements);
+        Assert.Equal(100, validated.CharacterBibleLimits.FullScanMaxElements);
+    }
+
+    [Fact]
+    public void ProgramSettingsValidation_RejectsInvalidCharacterBibleExtractionSettings()
+    {
+        var settings = new ProgramSettings
+        {
+            CharacterBibleExtraction = new CharacterBibleExtractionSettings
+            {
+                MaxParagraphsPerBatch = 2,
+                MaxBatchBytes = 8000,
+                OverlapParagraphs = 2,
+                FullScanMaxItems = 100
+            }
+        };
+
+        var errors = ProgramSettingsValidation.ValidateForSave(settings);
+
+        Assert.Contains("Character bible overlap paragraphs must be less than max paragraphs per batch.", errors);
     }
 
     [Fact]
@@ -442,6 +571,31 @@ public sealed class WebCharacterBibleServiceTests
     }
 
     [Fact]
+    public async Task OperationRunner_SavesGeneratedCharacterBibleWhenBookPathIsKnown()
+    {
+        var directory = Path.Combine(Path.GetTempPath(), "AiTextEditorTests", Guid.NewGuid().ToString("N"));
+        var bookPath = Path.Combine(directory, "novel.md");
+        Directory.CreateDirectory(directory);
+        await File.WriteAllTextAsync(bookPath, "# Novel\n\nText.");
+        var output = CreateOutput("generated");
+        var workspace = new EditorWorkspaceState();
+        await workspace.LoadBookAsync(bookPath);
+        var runner = new CharacterBibleOperationRunner(
+            workspace,
+            new FakeWorkflowClient(output));
+
+        var events = await CollectAsync(runner.RunAsync(
+            new CharacterBibleOperationRequest("Generate character bible", null),
+            CancellationToken.None));
+
+        var characterBiblePath = Path.Combine(directory, "novel-character-bible.json");
+        var completed = Assert.Single(events, item => item.Type == CharacterBibleOperationEventType.Completed);
+        Assert.Contains(characterBiblePath, completed.Message, StringComparison.Ordinal);
+        Assert.True(File.Exists(characterBiblePath));
+        Assert.Contains("\"name\":\"Alice\"", await File.ReadAllTextAsync(characterBiblePath));
+    }
+
+    [Fact]
     public async Task OperationRunner_ForwardsWorkflowProgressEvents()
     {
         var output = CreateOutput("generated");
@@ -486,6 +640,36 @@ public sealed class WebCharacterBibleServiceTests
         Assert.IsType<InvalidOperationException>(failed.Error);
     }
 
+    [Fact]
+    public async Task OperationState_StartsRunWithoutAwaitingCompletion()
+    {
+        var output = CreateOutput("generated");
+        var releaseWorkflow = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var workspace = new EditorWorkspaceState();
+        var runner = new CharacterBibleOperationRunner(
+            workspace,
+            new BlockingWorkflowClient(releaseWorkflow.Task, output));
+        using var state = new CharacterBibleOperationState(
+            runner,
+            NullLogger<CharacterBibleOperationState>.Instance);
+
+        await state.StartAsync(new CharacterBibleOperationRequest("Generate character bible", null));
+        await WaitUntilAsync(() => state.IsRunning && workspace.IsReadOnly);
+
+        Assert.True(state.IsRunning);
+        Assert.True(workspace.IsReadOnly);
+        Assert.Throws<InvalidOperationException>(() => workspace.LoadMarkdown("# Blocked"));
+
+        releaseWorkflow.SetResult();
+        await WaitUntilAsync(() => state.GetRuns().Single().Status == CharacterBibleOperationStatus.Completed);
+
+        Assert.False(state.IsRunning);
+        Assert.False(workspace.IsReadOnly);
+        Assert.Contains(
+            state.GetRuns().Single().Events,
+            item => item.Type == CharacterBibleOperationEventType.Completed && ReferenceEquals(output, item.Output));
+    }
+
     private static CharacterBibleWorkflowOutput CreateOutput(string status)
     {
         var dossiers = new CharacterDossiers(
@@ -517,6 +701,15 @@ public sealed class WebCharacterBibleServiceTests
         }
 
         return items;
+    }
+
+    private static async Task WaitUntilAsync(Func<bool> condition)
+    {
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+        while (!condition())
+        {
+            await Task.Delay(10, timeout.Token);
+        }
     }
 
     private sealed class FakeWorkflowClient : ICharacterBibleWorkflowClient
@@ -556,6 +749,28 @@ public sealed class WebCharacterBibleServiceTests
             }
 
             return Task.FromResult(output ?? throw new InvalidOperationException("missing fake output"));
+        }
+    }
+
+    private sealed class BlockingWorkflowClient : ICharacterBibleWorkflowClient
+    {
+        private readonly Task releaseWorkflow;
+        private readonly CharacterBibleWorkflowOutput output;
+
+        public BlockingWorkflowClient(Task releaseWorkflow, CharacterBibleWorkflowOutput output)
+        {
+            this.releaseWorkflow = releaseWorkflow;
+            this.output = output;
+        }
+
+        public async Task<CharacterBibleWorkflowOutput> RunAsync(
+            EditorWorkspaceState workspace,
+            CharacterBibleWorkflowInput request,
+            IProgress<CharacterBibleWorkflowProgress>? progress,
+            CancellationToken cancellationToken)
+        {
+            await releaseWorkflow.WaitAsync(cancellationToken);
+            return output;
         }
     }
 }

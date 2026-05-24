@@ -14,8 +14,8 @@ public sealed class CharacterBibleWorkflowRunnerTests
         var runner = CreateRunner(
             "John smiled.\n\nMary waved.",
             Response(
-                new CharacterExtractionCharacter("John", "unknown", [], "В данном фрагменте характер не раскрыт."),
-                new CharacterExtractionCharacter("Mary", "unknown", [], "В данном фрагменте характер не раскрыт.")),
+                new CharacterExtractionCharacter("John", "unknown", [], ""),
+                new CharacterExtractionCharacter("Mary", "unknown", [], "")),
             out var dossierService,
             out var extractionModelClient);
 
@@ -40,7 +40,7 @@ public sealed class CharacterBibleWorkflowRunnerTests
                 "John",
                 "unknown",
                 [new CharacterExtractionAlias("Johnny", "Johnny smiled.")],
-                "В данном фрагменте характер не раскрыт.")),
+                "")),
             out var dossierService,
             out _);
 
@@ -78,7 +78,7 @@ public sealed class CharacterBibleWorkflowRunnerTests
                 "Alex Prime",
                 "unknown",
                 [new CharacterExtractionAlias("Alex Prime", "Alex Prime arrived.")],
-                "В данном фрагменте характер не раскрыт.")),
+                "")),
             out var dossierService,
             out _);
 
@@ -127,8 +127,8 @@ public sealed class CharacterBibleWorkflowRunnerTests
         var runner = CreateRunner(
             "John smiled.\n\nMary waved.",
             Response(
-                new CharacterExtractionCharacter("John", "unknown", [], "В данном фрагменте характер не раскрыт."),
-                new CharacterExtractionCharacter("Mary", "unknown", [], "В данном фрагменте характер не раскрыт.")),
+                new CharacterExtractionCharacter("John", "unknown", [], ""),
+                new CharacterExtractionCharacter("Mary", "unknown", [], "")),
             out _,
             out _);
         var progress = new List<CharacterBibleWorkflowProgress>();

@@ -93,7 +93,7 @@ public sealed class AgenticModelClientTests
                     "John",
                     "unknown",
                     [new CharacterExtractionAlias("Johnny", "")],
-                    "В данном фрагменте характер не раскрыт.")
+                    "")
             ]
         };
         var client = new AgenticCharacterExtractionModelClient(
