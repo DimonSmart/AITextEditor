@@ -33,7 +33,6 @@ public sealed record CharacterBibleCharacterCandidate(
     string CanonicalName,
     string Gender,
     IReadOnlyDictionary<string, string> AliasExamples,
-    string Description,
     CharacterProfile Profile);
 
 public sealed record CharacterBibleExtractionResult(

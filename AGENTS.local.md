@@ -31,5 +31,7 @@ Read `AGENTS.md` first, then apply the rules here with higher priority.
 - The character bible companion file path is always derived from the current book file path; do not require users or callers to set a separate bible path.
 - The application shell owns left-side navigation. Keep the left menu fixed relative to the viewport and let page content manage its own vertical or horizontal scrolling when needed.
 - Character bible extraction prompt must tell the LLM that aliases are name forms, nicknames, titles, or spelling/pronunciation variants, not pronouns. Do not add deterministic pronoun filtering in storage or post-processing unless explicitly requested.
-- Character bible extraction prompt must require empty descriptions when personality cannot be inferred. Do not let the LLM write absence-of-detail notes or scene retellings as character descriptions.
+- Character bible extraction prompt must require empty profile fields when evidence is absent. Do not let the LLM write absence-of-detail notes or scene retellings in character profile fields.
 - Do not add alias-based full-text character importance recalculation to ordinary Character Bible generation. Treat it as a separate explicit command with its own ambiguity rules.
+- Do not keep compatibility for the old Character Bible JSON profile schema with `description`, `keyRoleBonds`, or `backgroundStatusEducation`; there are no saved character bible files that need this schema.
+- When a UI task explicitly asks to use MudBlazor capabilities, prefer MudBlazor layout/components such as `MudGrid` and `MudItem` over custom layout CSS unless the requested behavior is not supported by MudBlazor.

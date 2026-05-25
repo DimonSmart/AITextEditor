@@ -89,7 +89,6 @@ public sealed class CharacterDossierService
         string? name,
         string? gender,
         IReadOnlyDictionary<string, string>? aliasExamples,
-        string? description,
         CharacterProfile? profile = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(characterId);
@@ -99,7 +98,7 @@ public sealed class CharacterDossierService
             var existing = TryGetDossier(characterId)
                 ?? throw new InvalidOperationException($"character_not_found: {characterId}");
 
-            var merged = Merge(existing, name, gender, aliasExamples, description, profile);
+            var merged = Merge(existing, name, gender, aliasExamples, profile);
             return UpsertDossier(merged);
         }
     }
@@ -108,7 +107,6 @@ public sealed class CharacterDossierService
         string name,
         string? gender,
         IReadOnlyDictionary<string, string>? aliasExamples,
-        string? description,
         CharacterProfile? profile = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
@@ -144,7 +142,7 @@ public sealed class CharacterDossierService
 
             if (distinct.Count == 0)
             {
-                var created = CreateNew(canonicalName, gender, aliasExamples, description, profile);
+                var created = CreateNew(canonicalName, gender, aliasExamples, profile);
                 var saved = UpsertDossier(created);
                 return ResolveAndUpsertResult.Created(saved.CharacterId, dossiers.DossiersId, dossiers.Version);
             }
@@ -152,7 +150,7 @@ public sealed class CharacterDossierService
             if (distinct.Count == 1)
             {
                 var existing = distinct[0];
-                var merged = Merge(existing, null, gender, aliasExamples, description, profile);
+                var merged = Merge(existing, null, gender, aliasExamples, profile);
                 var saved = UpsertDossier(merged);
                 return ResolveAndUpsertResult.Updated(saved.CharacterId, dossiers.DossiersId, dossiers.Version);
             }
@@ -164,7 +162,7 @@ public sealed class CharacterDossierService
             if (exactByName.Count == 1)
             {
                 var existing = exactByName[0];
-                var merged = Merge(existing, null, gender, aliasExamples, description, profile);
+                var merged = Merge(existing, null, gender, aliasExamples, profile);
                 var saved = UpsertDossier(merged);
                 return ResolveAndUpsertResult.Updated(saved.CharacterId, dossiers.DossiersId, dossiers.Version);
             }
@@ -266,7 +264,6 @@ public sealed class CharacterDossierService
         string name,
         string? gender,
         IReadOnlyDictionary<string, string>? aliasExamples,
-        string? description,
         CharacterProfile? profile)
     {
         var normalizedName = name.Trim();
@@ -279,7 +276,6 @@ public sealed class CharacterDossierService
         return new CharacterDossier(
             id,
             normalizedName,
-            (description ?? string.Empty).Trim(),
             normalizedAliasExamples.Keys.OrderBy(a => a, StringComparer.OrdinalIgnoreCase).ToList(),
             normalizedAliasExamples,
             NormalizeGender(gender),
@@ -292,7 +288,6 @@ public sealed class CharacterDossierService
         string? name,
         string? gender,
         IReadOnlyDictionary<string, string>? aliasExamples,
-        string? description,
         CharacterProfile? profile = null)
     {
         var canonicalName = string.IsNullOrWhiteSpace(name) ? existing.Name : name.Trim();
@@ -323,12 +318,6 @@ public sealed class CharacterDossierService
             resolvedGender = normalizedCandidateGender;
         }
 
-        var resolvedDescription = existing.Description;
-        if (!string.IsNullOrWhiteSpace(description))
-        {
-            resolvedDescription = description.Trim();
-        }
-
         var aliases = normalizedAliasExamples.Keys
             .OrderBy(a => a, StringComparer.OrdinalIgnoreCase)
             .ToList();
@@ -336,7 +325,6 @@ public sealed class CharacterDossierService
         return existing with
         {
             Name = canonicalName,
-            Description = resolvedDescription,
             Gender = resolvedGender,
             AliasExamples = normalizedAliasExamples,
             Aliases = aliases,
@@ -353,7 +341,6 @@ public sealed class CharacterDossierService
         {
             CharacterId = dossier.CharacterId.Trim(),
             Name = dossier.Name.Trim(),
-            Description = dossier.Description?.Trim() ?? string.Empty,
             Gender = NormalizeGender(dossier.Gender),
             AliasExamples = aliasExamples,
             Aliases = aliases,
@@ -439,8 +426,6 @@ public sealed class CharacterDossierService
 
         public string? Name { get; set; }
 
-        public string? Description { get; set; }
-
         public List<string>? Aliases { get; set; }
 
         public Dictionary<string, string>? AliasExamples { get; set; }
@@ -456,7 +441,6 @@ public sealed class CharacterDossierService
             return new CharacterDossier(
                 CharacterId ?? string.Empty,
                 Name ?? string.Empty,
-                Description ?? string.Empty,
                 Aliases ?? [],
                 AliasExamples ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
                 Gender ?? "unknown",
@@ -469,43 +453,22 @@ public sealed class CharacterDossierService
     {
         public string? Appearance { get; set; }
 
-        public string? BackgroundStatusEducation { get; set; }
+        public string? StatusAndCompetence { get; set; }
 
         public string? PsychologicalProfile { get; set; }
 
         public string? SpeechAndCommunication { get; set; }
 
-        public List<CharacterRoleBondYaml>? KeyRoleBonds { get; set; }
-
         public CharacterProfile ToModel()
         {
             return new CharacterProfile(
                 Appearance ?? string.Empty,
-                BackgroundStatusEducation ?? string.Empty,
+                StatusAndCompetence ?? string.Empty,
                 PsychologicalProfile ?? string.Empty,
-                SpeechAndCommunication ?? string.Empty,
-                KeyRoleBonds?.Select(bond => bond.ToModel()).ToList() ?? []);
+                SpeechAndCommunication ?? string.Empty);
         }
     }
-
-    private sealed class CharacterRoleBondYaml
-    {
-        public string? CharacterName { get; set; }
-
-        public string? Role { get; set; }
-
-        public string? Description { get; set; }
-
-        public CharacterRoleBond ToModel()
-        {
-            return new CharacterRoleBond(
-                CharacterName ?? string.Empty,
-                Role ?? string.Empty,
-                Description ?? string.Empty);
-        }
-    }
-
-    }
+}
 
     public sealed record ResolveAndUpsertResult(
     string DossiersId,

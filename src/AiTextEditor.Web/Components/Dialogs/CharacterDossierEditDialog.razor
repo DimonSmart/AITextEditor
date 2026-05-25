@@ -33,13 +33,6 @@
                                  Max="10"
                                  Immediate="true" />
 
-                <MudTextField @bind-Value="model.Description"
-                              Label="Description"
-                              Variant="MudBlazor.Variant.Outlined"
-                              Margin="MudBlazor.Margin.Dense"
-                              Immediate="true"
-                              Lines="4" />
-
                 <MudExpansionPanels MultiExpansion="true" Elevation="0">
                     <MudExpansionPanel Text="@($"Aliases ({aliasRows.Count})")" Expanded="true">
                         <MudStack Spacing="2">
@@ -90,8 +83,8 @@
                                           Immediate="true"
                                           Lines="3" />
 
-                            <MudTextField @bind-Value="model.BackgroundStatusEducation"
-                                          Label="Происхождение, статус и образование"
+                            <MudTextField @bind-Value="model.StatusAndCompetence"
+                                          Label="Статус и компетенции"
                                           Variant="MudBlazor.Variant.Outlined"
                                           Margin="MudBlazor.Margin.Dense"
                                           Immediate="true"
@@ -111,49 +104,6 @@
                                           Immediate="true"
                                           Lines="3" />
 
-                            <div class="character-edit-section-title">Ключевые ролевые связки</div>
-                            @foreach (var row in roleBondRows)
-                            {
-                                <MudGrid Spacing="2" Class="character-edit-row">
-                                    <MudItem xs="12" sm="3">
-                                        <MudTextField @bind-Value="row.CharacterName"
-                                                      Label="Character"
-                                                      Variant="MudBlazor.Variant.Outlined"
-                                                      Margin="MudBlazor.Margin.Dense"
-                                                      Immediate="true" />
-                                    </MudItem>
-                                    <MudItem xs="12" sm="3">
-                                        <MudTextField @bind-Value="row.Role"
-                                                      Label="Role"
-                                                      Variant="MudBlazor.Variant.Outlined"
-                                                      Margin="MudBlazor.Margin.Dense"
-                                                      Immediate="true" />
-                                    </MudItem>
-                                    <MudItem xs="12" sm="5">
-                                        <MudTextField @bind-Value="row.Description"
-                                                      Label="Description"
-                                                      Variant="MudBlazor.Variant.Outlined"
-                                                      Margin="MudBlazor.Margin.Dense"
-                                                      Immediate="true" />
-                                    </MudItem>
-                                    <MudItem xs="12" sm="1" Class="character-edit-row-action">
-                                        <MudTooltip Text="Remove role bond">
-                                            <MudIconButton Icon="@Icons.Material.Filled.Delete"
-                                                           Color="MudBlazor.Color.Error"
-                                                           Size="MudBlazor.Size.Small"
-                                                           OnClick="@(() => RemoveRoleBond(row))"
-                                                           aria-label="Remove role bond" />
-                                        </MudTooltip>
-                                    </MudItem>
-                                </MudGrid>
-                            }
-
-                            <MudButton Variant="MudBlazor.Variant.Outlined"
-                                       Color="MudBlazor.Color.Primary"
-                                       StartIcon="@Icons.Material.Filled.Add"
-                                       OnClick="AddRoleBond">
-                                Add role bond
-                            </MudButton>
                         </MudStack>
                     </MudExpansionPanel>
 
@@ -181,7 +131,6 @@
     private MudForm? form;
     private EditableCharacterDossier model = new();
     private readonly List<AliasRow> aliasRows = [];
-    private readonly List<RoleBondRow> roleBondRows = [];
 
     [CascadingParameter]
     private IMudDialogInstance MudDialog { get; set; } = null!;
@@ -194,11 +143,6 @@
         model = EditableCharacterDossier.From(Dossier);
         aliasRows.Clear();
         aliasRows.AddRange(model.AliasExamples.Select(item => new AliasRow(item.Key, item.Value)));
-        roleBondRows.Clear();
-        roleBondRows.AddRange(model.Profile.KeyRoleBonds?.Select(bond => new RoleBondRow(
-            bond.CharacterName,
-            bond.Role,
-            bond.Description)) ?? []);
     }
 
     private void AddAlias()
@@ -209,16 +153,6 @@
     private void RemoveAlias(AliasRow row)
     {
         aliasRows.Remove(row);
-    }
-
-    private void AddRoleBond()
-    {
-        roleBondRows.Add(new RoleBondRow());
-    }
-
-    private void RemoveRoleBond(RoleBondRow row)
-    {
-        roleBondRows.Remove(row);
     }
 
     private async Task SaveAsync()
@@ -264,24 +198,13 @@
 
         var profile = CharacterProfile.Normalize(new CharacterProfile(
             model.Appearance,
-            model.BackgroundStatusEducation,
+            model.StatusAndCompetence,
             model.PsychologicalProfile,
-            model.SpeechAndCommunication,
-            roleBondRows
-                .Where(row =>
-                    !string.IsNullOrWhiteSpace(row.CharacterName)
-                    && !string.IsNullOrWhiteSpace(row.Role)
-                    && !string.IsNullOrWhiteSpace(row.Description))
-                .Select(row => new CharacterRoleBond(
-                    row.CharacterName.Trim(),
-                    row.Role.Trim(),
-                    row.Description.Trim()))
-                .ToList()));
+            model.SpeechAndCommunication));
 
         return new CharacterDossier(
             model.CharacterId,
             model.Name.Trim(),
-            model.Description.Trim(),
             aliasExamples.Keys.OrderBy(alias => alias, StringComparer.OrdinalIgnoreCase).ToList(),
             aliasExamples,
             model.Gender,
@@ -300,15 +223,13 @@
 
         public string Name { get; set; } = string.Empty;
 
-        public string Description { get; set; } = string.Empty;
-
         public string Gender { get; set; } = UnknownGender;
 
         public int? ImportanceLevel { get; set; }
 
         public string Appearance { get; set; } = string.Empty;
 
-        public string BackgroundStatusEducation { get; set; } = string.Empty;
+        public string StatusAndCompetence { get; set; } = string.Empty;
 
         public string PsychologicalProfile { get; set; } = string.Empty;
 
@@ -331,11 +252,10 @@
             {
                 CharacterId = dossier.CharacterId,
                 Name = dossier.Name,
-                Description = dossier.Description,
                 Gender = AllowedGenders.Contains(dossier.Gender) ? dossier.Gender : UnknownGender,
                 ImportanceLevel = CharacterImportance.NormalizeLevel(dossier.ImportanceLevel),
                 Appearance = profile.Appearance,
-                BackgroundStatusEducation = profile.BackgroundStatusEducation,
+                StatusAndCompetence = profile.StatusAndCompetence,
                 PsychologicalProfile = profile.PsychologicalProfile,
                 SpeechAndCommunication = profile.SpeechAndCommunication,
                 Profile = profile,
@@ -351,13 +271,4 @@
         public string Example { get; set; } = example;
     }
 
-    private sealed class RoleBondRow(string characterName = "", string role = "", string description = "")
-    {
-        public string CharacterName { get; set; } = characterName;
-
-        public string Role { get; set; } = role;
-
-        public string Description { get; set; } = description;
-    }
-
-    }
+}

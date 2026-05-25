@@ -1,81 +1,39 @@
 @using AiTextEditor.Core.Model
-@using Microsoft.AspNetCore.Components.Web
 
 <MudCard Class="@CardClass" Outlined="true">
     <MudCardContent>
-        <div class="character-card-click-target"
-             role="button"
-             tabindex="0"
-             @onclick="SelectAsync"
-             @onkeydown="SelectFromKeyboardAsync">
-            <header class="character-card-header">
-                <div class="@AvatarClass" aria-hidden="true">@Initial</div>
-                <div class="character-card-title">
-                    <div class="character-card-name" title="@Dossier.Name">@DisplayName</div>
-                    <div class="character-card-summary">
-                        <span class="@GenderBadgeClass">@GenderLabel</span>
-                        <span>@ImportanceLabel</span>
-                        <span>@AliasesSummary</span>
-                        <span>@ProfileCompletenessText</span>
-                    </div>
-                </div>
-                @if (IsIncomplete)
-                {
-                    <span class="character-incomplete-badge">Incomplete</span>
-                }
-            </header>
-
-            <p class="@DescriptionClass">
-                @DescriptionText
-            </p>
-
-            <section class="character-profile-preview" aria-label="Profile preview">
-                <div class="character-profile-preview-row">
-                    <span class="character-profile-preview-label">Внешность</span>
-                    <span class="@ProfileValueClass(Profile.Appearance)" title="@Profile.Appearance">@ProfileText(Profile.Appearance)</span>
-                </div>
-                <div class="character-profile-preview-row">
-                    <span class="character-profile-preview-label">Статус/образование</span>
-                    <span class="@ProfileValueClass(Profile.BackgroundStatusEducation)" title="@Profile.BackgroundStatusEducation">@ProfileText(Profile.BackgroundStatusEducation)</span>
-                </div>
-                <div class="character-profile-preview-row">
-                    <span class="character-profile-preview-label">Психология</span>
-                    <span class="@ProfileValueClass(Profile.PsychologicalProfile, clampLines: 2)" title="@Profile.PsychologicalProfile">@ProfileText(Profile.PsychologicalProfile)</span>
-                </div>
-                <div class="character-profile-preview-row">
-                    <span class="character-profile-preview-label">Речь</span>
-                    <span class="@ProfileValueClass(Profile.SpeechAndCommunication)" title="@Profile.SpeechAndCommunication">@ProfileText(Profile.SpeechAndCommunication)</span>
-                </div>
-                <div class="character-profile-preview-row">
-                    <span class="character-profile-preview-label">Связки</span>
-                    <span class="@ProfileValueClass(RoleBondsPreview)" title="@RoleBondsPreview">@ProfileText(RoleBondsPreview)</span>
-                </div>
-            </section>
-
-            <section class="character-aliases" aria-label="Aliases">
-                <div class="character-card-section-title">Aliases</div>
-                <div class="character-alias-chip-row">
-                    @if (Dossier.Aliases.Count == 0)
-                    {
-                        <span class="character-empty-note">No aliases</span>
-                    }
-                    else
-                    {
-                        @foreach (var alias in Dossier.Aliases.Take(MaxVisibleAliases))
-                        {
-                            <span class="character-alias-chip" title="@alias">@alias</span>
-                        }
-
-                        @if (HiddenAliasCount > 0)
-                        {
-                            <span class="character-alias-chip character-alias-more">+@HiddenAliasCount more</span>
-                        }
-                    }
-                </div>
-            </section>
-        </div>
+        @if (IsExpanded)
+        {
+            <CharacterFullBody Dossier="Dossier"
+                               OnToggleExpanded="ToggleExpandedAsync" />
+        }
+        else
+        {
+            <CharacterCompactBody Dossier="Dossier"
+                                  OnToggleExpanded="ToggleExpandedAsync" />
+        }
     </MudCardContent>
     <MudCardActions Class="character-card-actions">
+        @if (IsExpanded)
+        {
+            <MudButton Variant="MudBlazor.Variant.Text"
+                       Color="MudBlazor.Color.Primary"
+                       Size="MudBlazor.Size.Small"
+                       StartIcon="@Icons.Material.Filled.ExpandLess"
+                       OnClick="ToggleExpandedAsync">
+                Collapse
+            </MudButton>
+        }
+        else
+        {
+            <MudButton Variant="MudBlazor.Variant.Text"
+                       Color="MudBlazor.Color.Primary"
+                       Size="MudBlazor.Size.Small"
+                       StartIcon="@Icons.Material.Filled.Visibility"
+                       OnClick="ToggleExpandedAsync">
+                View
+            </MudButton>
+        }
         <MudButton Variant="MudBlazor.Variant.Text"
                    Color="MudBlazor.Color.Primary"
                    Size="MudBlazor.Size.Small"
@@ -96,13 +54,11 @@
 </MudCard>
 
 @code {
-    private const int MaxVisibleAliases = 3;
-
     [Parameter, EditorRequired]
     public CharacterDossier Dossier { get; set; } = null!;
 
     [Parameter]
-    public bool IsSelected { get; set; }
+    public bool IsExpanded { get; set; }
 
     [Parameter]
     public bool IsReadOnly { get; set; }
@@ -114,69 +70,16 @@
     public EventCallback<CharacterDossier> OnDelete { get; set; }
 
     [Parameter]
-    public EventCallback<CharacterDossier> OnSelected { get; set; }
+    public EventCallback<CharacterDossier> OnToggleExpanded { get; set; }
 
     private bool IsIncomplete => CharacterDossierSearch.IsIncomplete(Dossier);
 
-    private bool HasDescription => !string.IsNullOrWhiteSpace(Dossier.Description);
-
-    private CharacterProfile Profile => CharacterProfile.Normalize(Dossier.Profile);
-
-    private int CompletedProfileSections => CharacterProfile.CountCompletedSections(Profile);
-
-    private int HiddenAliasCount => Math.Max(0, Dossier.Aliases.Count - MaxVisibleAliases);
-
-    private string DisplayName => string.IsNullOrWhiteSpace(Dossier.Name) ? "Unnamed character" : Dossier.Name.Trim();
-
-    private string Initial => string.IsNullOrWhiteSpace(Dossier.Name)
-        ? "?"
-        : char.ToUpperInvariant(Dossier.Name.Trim()[0]).ToString();
-
-    private string DescriptionText => HasDescription ? Dossier.Description.Trim() : "No description yet";
-
-    private string DescriptionClass => HasDescription
-        ? "character-description"
-        : "character-description character-description-muted";
-
-    private string AliasesSummary => CountText(Dossier.Aliases.Count, "alias", "aliases");
-
-    private string ProfileCompletenessText => $"Профиль {CompletedProfileSections}/5";
-
-    private string RoleBondsPreview => Profile.KeyRoleBonds is { Count: > 0 } bonds
-        ? $"{bonds.Count}: {bonds[0].CharacterName} — {bonds[0].Role}"
-        : string.Empty;
-
-    private string GenderLabel => Dossier.Gender switch
-    {
-        "male" => "Male",
-        "female" => "Female",
-        _ => "Unknown"
-    };
-
-    private string ImportanceLabel => CharacterImportance.GetLabel(Dossier.ImportanceLevel);
-
-    private string GenderClass => Dossier.Gender switch
-    {
-        "male" => "male",
-        "female" => "female",
-        _ => "unknown"
-    };
-
     private string CardClass =>
-        $"character-card{(IsSelected ? " character-card-selected" : "")}{(IsIncomplete ? " character-card-incomplete" : "")}";
+        $"character-card{(IsExpanded ? " character-card-expanded" : "")}{(IsIncomplete ? " character-card-incomplete" : "")}";
 
-    private string AvatarClass => $"character-avatar character-avatar-{GenderClass}";
-
-    private string GenderBadgeClass => $"character-gender-badge character-gender-{GenderClass}";
-
-    private static string ProfileText(string? value)
-        => string.IsNullOrWhiteSpace(value) ? "Не указано" : value.Trim();
-
-    private static string ProfileValueClass(string? value, int clampLines = 1)
+    private Task ToggleExpandedAsync()
     {
-        var clampClass = clampLines == 2 ? "character-line-clamp-2" : "character-line-clamp-1";
-        var mutedClass = string.IsNullOrWhiteSpace(value) ? " character-profile-preview-muted" : string.Empty;
-        return $"character-profile-preview-value {clampClass}{mutedClass}";
+        return OnToggleExpanded.InvokeAsync(Dossier);
     }
 
     private Task EditAsync()
@@ -197,22 +100,5 @@
         }
 
         return OnDelete.InvokeAsync(Dossier);
-    }
-
-    private Task SelectAsync()
-    {
-        return OnSelected.InvokeAsync(Dossier);
-    }
-
-    private Task SelectFromKeyboardAsync(KeyboardEventArgs args)
-    {
-        return args.Key is "Enter" or " "
-            ? SelectAsync()
-            : Task.CompletedTask;
-    }
-
-    private static string CountText(int count, string singular, string plural)
-    {
-        return count == 1 ? $"1 {singular}" : $"{count} {plural}";
     }
 }

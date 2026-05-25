@@ -84,17 +84,22 @@
     }
     else
     {
-        <div class="character-grid">
+        <MudGrid Spacing="3" Class="character-grid">
             @foreach (var dossier in FilteredCharacters)
             {
-                <CharacterCard Dossier="dossier"
-                               IsSelected="@(selectedCharacterId == dossier.CharacterId)"
-                               IsReadOnly="@Workspace.IsReadOnly"
-                               OnSelected="SelectCharacter"
-                               OnEdit="EditCharacterAsync"
-                               OnDelete="DeleteCharacterAsync" />
+                var isExpanded = ExpandedCharacterId == dossier.CharacterId;
+                <MudItem xs="12"
+                         sm="@(isExpanded ? 12 : 6)"
+                         lg="@(isExpanded ? 12 : 4)">
+                    <CharacterCard Dossier="dossier"
+                                   IsExpanded="@isExpanded"
+                                   IsReadOnly="@Workspace.IsReadOnly"
+                                   OnToggleExpanded="ToggleExpanded"
+                                   OnEdit="EditCharacterAsync"
+                                   OnDelete="DeleteCharacterAsync" />
+                </MudItem>
             }
-        </div>
+        </MudGrid>
     }
 </section>
 
@@ -125,7 +130,7 @@
     private bool isSaving;
     private bool hasUnsavedChanges;
     private bool hasSavedSuccessfully;
-    private string? selectedCharacterId;
+    private string? ExpandedCharacterId;
 
     private IReadOnlyList<CharacterDossier> FilteredCharacters =>
         CharacterDossierSearch.Filter(characters, searchQuery, genderFilter, onlyIncomplete, importanceFilter.Matches);
@@ -178,7 +183,6 @@
         }
 
         Workspace.UpsertCharacterDossier(updatedDossier);
-        selectedCharacterId = updatedDossier.CharacterId;
         RefreshCards();
         hasUnsavedChanges = true;
         await SaveAfterChangeAsync("Character saved.");
@@ -206,9 +210,9 @@
 
         if (Workspace.RemoveCharacterDossier(dossier.CharacterId))
         {
-            if (selectedCharacterId == dossier.CharacterId)
+            if (ExpandedCharacterId == dossier.CharacterId)
             {
-                selectedCharacterId = null;
+                ExpandedCharacterId = null;
             }
 
             RefreshCards();
@@ -260,11 +264,18 @@
             .Characters
             .OrderBy(dossier => dossier.Name, StringComparer.OrdinalIgnoreCase)
             .ToList();
+
+        if (ExpandedCharacterId is not null && characters.All(dossier => dossier.CharacterId != ExpandedCharacterId))
+        {
+            ExpandedCharacterId = null;
+        }
     }
 
-    private void SelectCharacter(CharacterDossier dossier)
+    private void ToggleExpanded(CharacterDossier dossier)
     {
-        selectedCharacterId = dossier.CharacterId;
+        ExpandedCharacterId = ExpandedCharacterId == dossier.CharacterId
+            ? null
+            : dossier.CharacterId;
     }
 
     private void OnWorkspaceChanged()

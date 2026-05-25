@@ -30,8 +30,6 @@ public sealed record CharacterExtractionCharacter(
     [property: JsonRequired]
     [property: JsonPropertyName("aliases")] List<CharacterExtractionAlias>? Aliases,
     [property: JsonRequired]
-    [property: JsonPropertyName("description")] string? Description,
-    [property: JsonRequired]
     [property: JsonPropertyName("profile")] CharacterExtractionProfile? Profile = null);
 
 public sealed record CharacterExtractionAlias(
@@ -44,24 +42,14 @@ public sealed record CharacterExtractionProfile(
     [property: JsonRequired]
     [property: JsonPropertyName("appearance")] string? Appearance,
     [property: JsonRequired]
-    [property: JsonPropertyName("backgroundStatusEducation")] string? BackgroundStatusEducation,
+    [property: JsonPropertyName("statusAndCompetence")] string? StatusAndCompetence,
     [property: JsonRequired]
     [property: JsonPropertyName("psychologicalProfile")] string? PsychologicalProfile,
     [property: JsonRequired]
-    [property: JsonPropertyName("speechAndCommunication")] string? SpeechAndCommunication,
-    [property: JsonRequired]
-    [property: JsonPropertyName("keyRoleBonds")] List<CharacterExtractionRoleBond>? KeyRoleBonds)
+    [property: JsonPropertyName("speechAndCommunication")] string? SpeechAndCommunication)
 {
-    public static CharacterExtractionProfile Empty { get; } = new("", "", "", "", []);
+    public static CharacterExtractionProfile Empty { get; } = new("", "", "", "");
 }
-
-public sealed record CharacterExtractionRoleBond(
-    [property: JsonRequired]
-    [property: JsonPropertyName("characterName")] string? CharacterName,
-    [property: JsonRequired]
-    [property: JsonPropertyName("role")] string? Role,
-    [property: JsonRequired]
-    [property: JsonPropertyName("description")] string? Description);
 
 public sealed class AgenticCharacterExtractionModelClient : ICharacterExtractionModelClient
 {
@@ -133,12 +121,6 @@ public sealed class AgenticCharacterExtractionModelClient : ICharacterExtraction
                 return false;
             }
 
-            if (character.Description is null)
-            {
-                error = $"characters[{characterIndex}].description is required.";
-                return false;
-            }
-
             if (!IsValidProfile(character.Profile, characterIndex, out error))
             {
                 return false;
@@ -179,9 +161,9 @@ public sealed class AgenticCharacterExtractionModelClient : ICharacterExtraction
             return false;
         }
 
-        if (profile.BackgroundStatusEducation is null)
+        if (profile.StatusAndCompetence is null)
         {
-            error = $"characters[{characterIndex}].profile.backgroundStatusEducation is required.";
+            error = $"characters[{characterIndex}].profile.statusAndCompetence is required.";
             return false;
         }
 
@@ -195,34 +177,6 @@ public sealed class AgenticCharacterExtractionModelClient : ICharacterExtraction
         {
             error = $"characters[{characterIndex}].profile.speechAndCommunication is required.";
             return false;
-        }
-
-        if (profile.KeyRoleBonds is null)
-        {
-            error = $"characters[{characterIndex}].profile.keyRoleBonds is required.";
-            return false;
-        }
-
-        for (var bondIndex = 0; bondIndex < profile.KeyRoleBonds.Count; bondIndex++)
-        {
-            var bond = profile.KeyRoleBonds[bondIndex];
-            if (string.IsNullOrWhiteSpace(bond.CharacterName))
-            {
-                error = $"characters[{characterIndex}].profile.keyRoleBonds[{bondIndex}].characterName is required.";
-                return false;
-            }
-
-            if (string.IsNullOrWhiteSpace(bond.Role))
-            {
-                error = $"characters[{characterIndex}].profile.keyRoleBonds[{bondIndex}].role is required.";
-                return false;
-            }
-
-            if (string.IsNullOrWhiteSpace(bond.Description))
-            {
-                error = $"characters[{characterIndex}].profile.keyRoleBonds[{bondIndex}].description is required.";
-                return false;
-            }
         }
 
         error = string.Empty;

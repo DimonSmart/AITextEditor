@@ -98,19 +98,11 @@ public sealed class AgenticModelClientTests
                       "example": "Johnny entered."
                     }
                   ],
-                  "description": "",
                   "profile": {
                     "appearance": "Tall and still.",
-                    "backgroundStatusEducation": "Former student.",
+                    "statusAndCompetence": "Former student.",
                     "psychologicalProfile": "Careful under pressure.",
-                    "speechAndCommunication": "Short answers.",
-                    "keyRoleBonds": [
-                      {
-                        "characterName": "Mary",
-                        "role": "mentor",
-                        "description": "Mary defines John's training role."
-                      }
-                    ]
+                    "speechAndCommunication": "Short answers."
                   }
                 }
               ]
@@ -137,9 +129,7 @@ public sealed class AgenticModelClientTests
         Assert.Equal("John", character.CanonicalName);
         Assert.NotNull(character.Profile);
         Assert.Equal("Tall and still.", character.Profile.Appearance);
-        var bond = Assert.Single(character.Profile.KeyRoleBonds!);
-        Assert.Equal("Mary", bond.CharacterName);
-        Assert.Equal("mentor", bond.Role);
+        Assert.Equal("Former student.", character.Profile.StatusAndCompetence);
     }
 
     [Fact]
@@ -152,8 +142,7 @@ public sealed class AgenticModelClientTests
                 new CharacterExtractionCharacter(
                     "John",
                     "unknown",
-                    [new CharacterExtractionAlias("Johnny", "")],
-                    "")
+                    [new CharacterExtractionAlias("Johnny", "")])
             ]
         };
         var client = new AgenticCharacterExtractionModelClient(
@@ -177,13 +166,11 @@ public sealed class AgenticModelClientTests
                     "John",
                     "unknown",
                     [new CharacterExtractionAlias("Johnny", "Johnny entered.")],
-                    "",
                     new CharacterExtractionProfile(
                         "",
                         "",
                         "",
-                        "",
-                        [new CharacterExtractionRoleBond("Mary", "mentor", "Mary defines John's training role.")]))
+                        ""))
             ]
         };
         var client = new AgenticCharacterExtractionModelClient(
@@ -194,7 +181,7 @@ public sealed class AgenticModelClientTests
 
         var character = Assert.Single(result.Characters);
         Assert.NotNull(character.Profile);
-        Assert.Single(character.Profile.KeyRoleBonds!);
+        Assert.Equal(string.Empty, character.Profile.StatusAndCompetence);
     }
 
     [Fact]
@@ -208,7 +195,6 @@ public sealed class AgenticModelClientTests
                     "John",
                     "unknown",
                     [],
-                    "",
                     null)
             ]
         };
@@ -223,7 +209,7 @@ public sealed class AgenticModelClientTests
     }
 
     [Fact]
-    public async Task CharacterExtractionClient_WhenRoleBondsAreNull_FailsContractValidation()
+    public async Task CharacterExtractionClient_WhenStatusAndCompetenceIsNull_FailsContractValidation()
     {
         var response = new CharacterExtractionResponse
         {
@@ -233,8 +219,7 @@ public sealed class AgenticModelClientTests
                     "John",
                     "unknown",
                     [],
-                    "",
-                    new CharacterExtractionProfile("", "", "", "", null))
+                    new CharacterExtractionProfile("", null, "", ""))
             ]
         };
         var client = new AgenticCharacterExtractionModelClient(

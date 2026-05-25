@@ -343,9 +343,7 @@ a, .btn-link {
 }
 
 .character-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1.25rem;
+    width: 100%;
 }
 
 .character-card {
@@ -364,27 +362,36 @@ a, .btn-link {
     transform: translateY(-1px);
 }
 
-.character-card-selected {
+.character-card-expanded {
     border-color: #2f7dbd;
     background: #f7fbff;
     box-shadow: 0 0 0 2px rgb(47 125 189 / 0.18);
+}
+
+.character-card-expanded:hover {
+    transform: none;
 }
 
 .character-card-incomplete {
     border-style: solid;
 }
 
-.character-card-click-target {
-    cursor: pointer;
+.character-card-expanded {
+    min-height: 0;
+}
+
+.character-card-body {
     display: grid;
     gap: 0.85rem;
-    min-height: 19.5rem;
     outline: none;
 }
 
-.character-card-click-target:focus-visible {
-    border-radius: 6px;
-    box-shadow: 0 0 0 3px rgb(37 132 204 / 0.22);
+.character-card-compact-body {
+    min-height: 19.5rem;
+}
+
+.character-card-full-body {
+    gap: 1.05rem;
 }
 
 .character-card-header {
@@ -425,14 +432,28 @@ a, .btn-link {
     min-width: 0;
 }
 
-.character-card-name {
+.character-card-name-button {
+    max-width: 100%;
+    min-width: 0;
+    justify-content: flex-start;
+    padding: 0;
+    text-align: left;
+    text-transform: none;
+}
+
+.character-card-name-button .mud-button-label {
+    display: block;
+    max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    color: #202b36;
     font-size: 1.05rem;
     font-weight: 650;
     letter-spacing: 0;
+}
+
+.character-card-name-button:hover .mud-button-label {
+    text-decoration: underline;
 }
 
 .character-card-summary {
@@ -491,24 +512,6 @@ a, .btn-link {
     border-color: #f0d38d;
     background: #fff8e8;
     color: #7d5b18;
-}
-
-.character-description {
-    display: -webkit-box;
-    min-height: 3.9rem;
-    margin: 0;
-    overflow: hidden;
-    color: #354252;
-    font-size: 0.9rem;
-    line-height: 1.45;
-    overflow-wrap: anywhere;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;
-}
-
-.character-description-muted {
-    color: #8a95a3;
-    font-style: italic;
 }
 
 .character-profile-preview {
@@ -606,8 +609,58 @@ a, .btn-link {
 
 .character-card-actions {
     border-top: 1px solid #edf1f5;
-    justify-content: flex-end;
+    justify-content: space-between;
     padding: 0.45rem 0.75rem 0.6rem;
+}
+
+.character-card-actions > :not(:first-child) {
+    margin-left: auto;
+}
+
+.character-card-actions > :not(:first-child) ~ * {
+    margin-left: 0;
+}
+
+.character-full-sections {
+    margin-top: 0;
+}
+
+.character-full-section {
+    display: grid;
+    gap: 0.45rem;
+    height: 100%;
+    min-width: 0;
+}
+
+.character-full-section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: #4d5966;
+    font-size: 0.82rem;
+    font-weight: 750;
+}
+
+.character-full-section p {
+    margin: 0;
+    color: #202b36;
+    font-size: 0.94rem;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+}
+
+.character-full-chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    min-width: 0;
+}
+
+.character-alias-example-table {
+    border: 1px solid #e3e8ef;
+    border-radius: 6px;
+    overflow: hidden;
 }
 
 .character-edit-dialog,
@@ -727,18 +780,6 @@ a, .btn-link {
 .server-editor {
     border-top: 1px solid #d7dce2;
     padding-top: 1rem;
-}
-
-@media (min-width: 760px) {
-    .character-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-}
-
-@media (min-width: 1180px) {
-    .character-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
 }
 
 @media (max-width: 1180px) {

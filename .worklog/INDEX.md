@@ -25,13 +25,19 @@ If this index conflicts with a numbered document, trust the numbered document.
 | 0015 | spec | Fixed MudBlazor shell navigation | Keep left navigation fixed in the MudBlazor app shell and use MudBlazor's default overlay layers for dialogs. | 0007, 0013 |
 | 0016 | spec | Background character bible generation | Let character bible generation continue across page navigation, keep manual editing read-only while it runs, and make extraction batching configurable with overlap. | 0003, 0007, 0009, 0011, 0012 |
 | 0017 | spec | Character importance level | Add a stable nullable Character Bible importance level derived from transient resolved-character activity during generation. | 0003, 0004, 0012, 0016 |
-| 0018 | spec | Character dossier structured profile | Add a typed five-section character profile, thread it through generation, and make cards, editing, search, and Markdown projection prefer it over legacy facts. | 0012, 0013, 0016, 0017 |
+| 0019 | spec | Simplified character dossier card | Remove generic description and role bonds from character dossiers, and rename the status field to `statusAndCompetence`. | 0012, 0013, 0016, 0017 |
+| 0020 | spec | Character card expanded readonly view | Add one-at-a-time expanded read-only character cards inside the Character Bible grid while keeping editing in the existing dialog. | 0012, 0013, 0019 |
 
 ## Archived documents
 
 Archived documents live in `archive/` and are not current requirements.
 
 Read archived documents only when a current document references them through `Replaces`, when history is explicitly requested, or when explaining why a decision was made.
+
+| ID | Type | Title | Summary | Replaced by |
+|---|---|---|---|---|
+| 0005 | spec | Remove Semantic Kernel from agent path | Move model calls from Semantic Kernel to typed Microsoft Agent Framework/OpenAI-compatible contracts. | 0006 |
+| 0018 | spec | Character dossier structured profile | Added the earlier five-section profile shape that is superseded by the simplified four-field profile. | 0019 |
 
 ## Maintenance
 

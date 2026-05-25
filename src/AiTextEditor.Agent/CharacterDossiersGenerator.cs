@@ -213,13 +213,10 @@ public sealed class CharacterDossiersGenerator
 
         changed |= profile.SetGenderIfUnknown(hit.Gender);
 
-        var descriptionChanged = profile.SetDescriptionIfEmpty(hit.Description);
-        changed |= descriptionChanged;
-
         var profileChanged = profile.MergeProfile(ToCharacterProfile(hit.Profile));
         changed |= profileChanged;
 
-        if (resolution.Created || nameChanged || anyAliasChanged || descriptionChanged)
+        if (resolution.Created || nameChanged || anyAliasChanged)
         {
             index.UpdateKeys(profile);
         }
@@ -695,7 +692,6 @@ public sealed class CharacterDossiersGenerator
     private static CharacterExtractionCharacter NormalizeHit(CharacterExtractionCharacter hit)
     {
         var canonical = (hit.CanonicalName ?? string.Empty).Trim();
-        var description = (hit.Description ?? string.Empty).Trim();
         var profile = ToExtractionProfile(ToCharacterProfile(hit.Profile));
 
         var normalizedAliases = (hit.Aliases ?? [])
@@ -712,7 +708,6 @@ public sealed class CharacterDossiersGenerator
             CanonicalName = canonical,
             Aliases = normalizedAliases,
             Gender = NormalizeGender(hit.Gender),
-            Description = description,
             Profile = profile
         };
     }
@@ -730,7 +725,6 @@ public sealed class CharacterDossiersGenerator
             hit.CanonicalName?.Trim() ?? string.Empty,
             NormalizeGender(hit.Gender),
             aliasExamples,
-            hit.Description?.Trim() ?? string.Empty,
             ToCharacterProfile(hit.Profile));
     }
 
@@ -746,7 +740,6 @@ public sealed class CharacterDossiersGenerator
             candidate.CanonicalName,
             candidate.Gender,
             aliases,
-            candidate.Description,
             ToExtractionProfile(candidate.Profile)));
     }
 
@@ -759,16 +752,9 @@ public sealed class CharacterDossiersGenerator
 
         return CharacterProfile.Normalize(new CharacterProfile(
             profile.Appearance ?? string.Empty,
-            profile.BackgroundStatusEducation ?? string.Empty,
+            profile.StatusAndCompetence ?? string.Empty,
             profile.PsychologicalProfile ?? string.Empty,
-            profile.SpeechAndCommunication ?? string.Empty,
-            profile.KeyRoleBonds?
-                .Where(bond => bond is not null)
-                .Select(bond => new CharacterRoleBond(
-                    bond.CharacterName ?? string.Empty,
-                    bond.Role ?? string.Empty,
-                    bond.Description ?? string.Empty))
-                .ToList() ?? []));
+            profile.SpeechAndCommunication ?? string.Empty));
     }
 
     private static CharacterExtractionProfile ToExtractionProfile(CharacterProfile? profile)
@@ -776,15 +762,9 @@ public sealed class CharacterDossiersGenerator
         var normalized = CharacterProfile.Normalize(profile);
         return new CharacterExtractionProfile(
             normalized.Appearance,
-            normalized.BackgroundStatusEducation,
+            normalized.StatusAndCompetence,
             normalized.PsychologicalProfile,
-            normalized.SpeechAndCommunication,
-            normalized.KeyRoleBonds?
-                .Select(bond => new CharacterExtractionRoleBond(
-                    bond.CharacterName,
-                    bond.Role,
-                    bond.Description))
-                .ToList() ?? []);
+            normalized.SpeechAndCommunication);
     }
 
     private static List<CharacterExtractionAlias> AddPossessiveBaseAliases(List<CharacterExtractionAlias> aliases)
@@ -1066,7 +1046,6 @@ public sealed class CharacterDossiersGenerator
 
         public string Id { get; }
         public string Name { get; private set; }
-        public string Description { get; private set; }
         public string Gender { get; private set; }
         public int? ImportanceLevel { get; private set; }
         public CharacterProfile Profile { get; private set; }
@@ -1076,7 +1055,6 @@ public sealed class CharacterDossiersGenerator
         {
             Id = dossier.CharacterId;
             Name = dossier.Name;
-            Description = dossier.Description;
             Gender = string.IsNullOrWhiteSpace(dossier.Gender) ? "unknown" : dossier.Gender;
             ImportanceLevel = dossier.ImportanceLevel;
             Profile = CharacterProfile.Normalize(dossier.Profile);
@@ -1088,7 +1066,6 @@ public sealed class CharacterDossiersGenerator
             string name,
             string gender,
             IEnumerable<CharacterExtractionAlias>? aliases,
-            string? description,
             CharacterProfile? profile)
         {
             Name = name.Trim();
@@ -1097,7 +1074,6 @@ public sealed class CharacterDossiersGenerator
             Id = new Guid(hash).ToString("N");
 
             Gender = string.IsNullOrWhiteSpace(gender) ? "unknown" : gender.Trim();
-            Description = description?.Trim() ?? string.Empty;
             ImportanceLevel = null;
             Profile = CharacterProfile.Normalize(profile);
 
@@ -1117,7 +1093,6 @@ public sealed class CharacterDossiersGenerator
                 name,
                 candidate.Gender ?? "unknown",
                 candidate.Aliases,
-                candidate.Description,
                 ToCharacterProfile(candidate.Profile));
         }
 
@@ -1201,23 +1176,6 @@ public sealed class CharacterDossiersGenerator
             return changed;
         }
 
-        public bool SetDescriptionIfEmpty(string? description)
-        {
-            var normalized = description?.Trim() ?? string.Empty;
-            if (normalized.Length == 0)
-            {
-                return false;
-            }
-
-            if (!string.IsNullOrWhiteSpace(Description))
-            {
-                return false;
-            }
-
-            Description = normalized;
-            return true;
-        }
-
         public bool SetImportanceLevelIfMissing(int level)
         {
             if (ImportanceLevel is not null)
@@ -1261,7 +1219,6 @@ public sealed class CharacterDossiersGenerator
             return new CharacterDossier(
                 Id,
                 Name,
-                Description?.Trim() ?? string.Empty,
                 aliases,
                 normalizedAliasExamples,
                 string.IsNullOrWhiteSpace(Gender) ? "unknown" : Gender,
@@ -1489,9 +1446,7 @@ Structured response contract:
 - character.canonicalName: primary display name in nominative/base form when grammar or local context supports it, without title; do NOT invent patronymics/missing parts.
 - character.gender: male, female, or unknown.
 - character.aliases: array of name variants found in text. Each alias object MUST contain exactly "form" and "example"; "example" is a short sentence containing this form.
-- character.description: empty string when no personality is revealed; otherwise 2-5 sentences, see below.
-- character.profile: REQUIRED object with appearance, backgroundStatusEducation, psychologicalProfile, speechAndCommunication, and keyRoleBonds.
-- character.profile.keyRoleBonds: REQUIRED array. It may be empty. Each item MUST contain characterName, role, and description.
+- character.profile: REQUIRED object with exactly appearance, statusAndCompetence, psychologicalProfile, and speechAndCommunication.
 
 Name Rules:
 - Canonical Name is the primary display name, not necessarily the first surface form found in the text.
@@ -1506,23 +1461,6 @@ Name Rules:
 - One object per character. Merge mentions across paragraphs. If unsure two mentions are the same person, keep separate objects.
 - Aliases: Keep up to 5. Prefer the most informative forms.
 
-Description Rules (Critical):
-- Language: RUSSIAN.
-- Create a cohesive psychological portrait (temperament, habits, values) ONLY based on EXPLICIT evidence in the text (actions, dialogue, internal monologue).
-- Describe stable or repeated personality signals: temperament, habits, values, motives, relationship patterns, or typical behavior.
-- If the character is merely present (e.g., "was there", "flew with X") but their personality is not revealed, write an empty description string.
-- If evidence only shows appearance, location, posture, physical sensations, where the character stood, what they saw, or what happened in the scene, write an empty description string.
-- If personality cannot be inferred, DO NOT explain that details are missing, absent, limited, or not revealed. The description field MUST be "".
-- STRICTLY FORBIDDEN: Inventing positive/professional traits (e.g., "initiative", "attentive", "supportive") without direct evidence.
-- STRICTLY FORBIDDEN: Generalizing single ambiguous actions into permanent personality traits.
-- STRICTLY FORBIDDEN: Quotes, quoted dialogue, and book-excerpt-like summaries.
-- You may infer weak traits ONLY with uncertainty words ("вероятно", "похоже") and only if supported by at least TWO separate cues.
-- Abstract generalizations; DO NOT retell scenes, summarize events, list observed actions, describe appearance, or quote text.
-- Do not justify the portrait with phrases like "поскольку он сказал", "видно, что", "это показывает", or "это свидетельствует"; write the trait directly.
-- Plain prose only (no lists).
-- Usage of meta-phrases ("in the book", "author says", "в тексте") is FORBIDDEN.
-- Do NOT use double quotes (") inside any string fields.
-
 Profile Rules:
 - Language: RUSSIAN.
 - Fill profile fields only from provided text fragments.
@@ -1534,11 +1472,11 @@ Profile Rules:
 - Prefer stable character properties over one-time actions.
 - Do not add generic positive traits without direct evidence.
 - appearance: visible physical details only, including age impression, body type, face, hair, clothes, posture, gestures, and visually recognizable details.
-- backgroundStatusEducation: social status, profession, education, rank, origin, expertise, or stable life experience relevant to behavior. No biography retelling.
-- psychologicalProfile: temperament, values, fears, desires, contradictions, vulnerabilities, and typical pressure reactions. Infer weakly only when supported by repeated cues.
+- statusAndCompetence: who the character is in the book world: social role, profession, occupation, competencies, field of knowledge, and position in the group. Do not retell events. Do not invent education when it is not stated.
+- psychologicalProfile: stable character traits, motivation, reactions, fears, values, and habitual behavior patterns. Do not retell plot. Infer weakly only when supported by repeated cues.
 - speechAndCommunication: speech style, tone, vocabulary level, sentence style, manner of asking, arguing, joking, commanding, or staying silent. Paraphrase, do not quote.
-- keyRoleBonds: only role-defining relationships. Exclude ordinary relatives, acquaintances, random allies, one-time contacts, and links that only say who met whom.
-- Include a keyRoleBonds item only if removing the relationship would noticeably weaken the character's recognizable role.
+- Do NOT add relationship lists, role bonds, story function, or event facts.
+- Do NOT use double quotes (") inside any string fields.
 
 Output:
 Populate only the structured response contract. If no characters are found, return an empty characters collection.

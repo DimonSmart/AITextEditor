@@ -21,7 +21,6 @@ public sealed record CharacterDossierEntry(
     [property: JsonPropertyName("name")] string Name,
     [property: JsonPropertyName("gender")] string Gender,
     [property: JsonPropertyName("importanceLevel")] int? ImportanceLevel,
-    [property: JsonPropertyName("description")] string Description,
     [property: JsonPropertyName("profile")] CharacterProfile Profile,
     [property: JsonPropertyName("aliases")] IReadOnlyList<string> Aliases,
     [property: JsonPropertyName("aliasExamples")] IReadOnlyDictionary<string, string> AliasExamples);

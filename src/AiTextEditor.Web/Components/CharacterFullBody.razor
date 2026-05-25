@@ -1,0 +1,200 @@
+@using AiTextEditor.Core.Model
+
+<div class="character-card-body character-card-full-body">
+    <header class="character-card-header character-card-full-header">
+        <div class="@AvatarClass" aria-hidden="true">@Initial</div>
+        <div class="character-card-title">
+            <MudButton Variant="MudBlazor.Variant.Text"
+                       Color="MudBlazor.Color.Primary"
+                       Size="MudBlazor.Size.Small"
+                       Class="character-card-name-button"
+                       OnClick="ToggleExpandedAsync"
+                       title="@Dossier.Name">
+                @DisplayName
+            </MudButton>
+            <div class="character-card-summary">
+                <span class="@GenderBadgeClass">@GenderLabel</span>
+                <span>@ImportanceLabel</span>
+                <span>@AliasesSummary</span>
+                <span>@ProfileCompletenessText</span>
+            </div>
+        </div>
+        @if (IsIncomplete)
+        {
+            <span class="character-incomplete-badge">Incomplete</span>
+        }
+    </header>
+
+    @if (CompletedProfileSections == 0)
+    {
+        <MudAlert Severity="MudBlazor.Severity.Info" Variant="MudBlazor.Variant.Outlined" Dense="true">
+            Профиль пока не заполнен
+        </MudAlert>
+    }
+
+    <MudGrid Spacing="3" Class="character-full-sections">
+        @if (!string.IsNullOrWhiteSpace(Profile.Appearance))
+        {
+            <MudItem xs="12" md="6">
+                <section class="character-full-section">
+                    <div class="character-full-section-title">
+                        <MudIcon Icon="@Icons.Material.Filled.Face" Size="MudBlazor.Size.Small" />
+                        <span>Внешность</span>
+                    </div>
+                    <p>@Profile.Appearance</p>
+                </section>
+            </MudItem>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(Profile.StatusAndCompetence))
+        {
+            <MudItem xs="12" md="6">
+                <section class="character-full-section">
+                    <div class="character-full-section-title">
+                        <MudIcon Icon="@Icons.Material.Filled.Work" Size="MudBlazor.Size.Small" />
+                        <span>Статус и компетенции</span>
+                    </div>
+                    <p>@Profile.StatusAndCompetence</p>
+                </section>
+            </MudItem>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(Profile.PsychologicalProfile))
+        {
+            <MudItem xs="12" md="6">
+                <section class="character-full-section">
+                    <div class="character-full-section-title">
+                        <MudIcon Icon="@Icons.Material.Filled.Psychology" Size="MudBlazor.Size.Small" />
+                        <span>Психологический профиль</span>
+                    </div>
+                    <p>@Profile.PsychologicalProfile</p>
+                </section>
+            </MudItem>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(Profile.SpeechAndCommunication))
+        {
+            <MudItem xs="12" md="6">
+                <section class="character-full-section">
+                    <div class="character-full-section-title">
+                        <MudIcon Icon="@Icons.Material.Filled.RecordVoiceOver" Size="MudBlazor.Size.Small" />
+                        <span>Речь и манера общения</span>
+                    </div>
+                    <p>@Profile.SpeechAndCommunication</p>
+                </section>
+            </MudItem>
+        }
+
+        @if (Dossier.Aliases.Count > 0)
+        {
+            <MudItem xs="12" md="@(AliasExampleRows.Count > 0 ? 4 : 12)">
+                <section class="character-full-section">
+                    <div class="character-full-section-title">
+                        <MudIcon Icon="@Icons.Material.Filled.LocalOffer" Size="MudBlazor.Size.Small" />
+                        <span>Aliases (@Dossier.Aliases.Count)</span>
+                    </div>
+                    <div class="character-full-chip-row">
+                        @foreach (var alias in Dossier.Aliases)
+                        {
+                            <MudChip T="string"
+                                     Variant="MudBlazor.Variant.Outlined"
+                                     Color="MudBlazor.Color.Primary"
+                                     Size="MudBlazor.Size.Small">
+                                @alias
+                            </MudChip>
+                        }
+                    </div>
+                </section>
+            </MudItem>
+        }
+
+        @if (AliasExampleRows.Count > 0)
+        {
+            <MudItem xs="12" md="8">
+                <section class="character-full-section">
+                    <div class="character-full-section-title">
+                        <MudIcon Icon="@Icons.Material.Filled.FormatQuote" Size="MudBlazor.Size.Small" />
+                        <span>Alias examples</span>
+                    </div>
+                    <MudTable T="AliasExampleView"
+                              Items="@AliasExampleRows"
+                              Dense="true"
+                              Hover="false"
+                              Elevation="0"
+                              Class="character-alias-example-table">
+                        <HeaderContent>
+                            <MudTh>Alias</MudTh>
+                            <MudTh>Example</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="Alias">@context.Alias</MudTd>
+                            <MudTd DataLabel="Example">@context.Example</MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                </section>
+            </MudItem>
+        }
+    </MudGrid>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public CharacterDossier Dossier { get; set; } = null!;
+
+    [Parameter]
+    public EventCallback OnToggleExpanded { get; set; }
+
+    private bool IsIncomplete => CharacterDossierSearch.IsIncomplete(Dossier);
+
+    private CharacterProfile Profile => CharacterProfile.Normalize(Dossier.Profile);
+
+    private int CompletedProfileSections => CharacterProfile.CountCompletedSections(Profile);
+
+    private string DisplayName => string.IsNullOrWhiteSpace(Dossier.Name) ? "Unnamed character" : Dossier.Name.Trim();
+
+    private string Initial => string.IsNullOrWhiteSpace(Dossier.Name)
+        ? "?"
+        : char.ToUpperInvariant(Dossier.Name.Trim()[0]).ToString();
+
+    private string AliasesSummary => CountText(Dossier.Aliases.Count, "alias", "aliases");
+
+    private string ProfileCompletenessText => $"Профиль {CompletedProfileSections}/4";
+
+    private string GenderLabel => Dossier.Gender switch
+    {
+        "male" => "Male",
+        "female" => "Female",
+        _ => "Unknown"
+    };
+
+    private string ImportanceLabel => CharacterImportance.GetLabel(Dossier.ImportanceLevel);
+
+    private string GenderClass => Dossier.Gender switch
+    {
+        "male" => "male",
+        "female" => "female",
+        _ => "unknown"
+    };
+
+    private string AvatarClass => $"character-avatar character-avatar-{GenderClass}";
+
+    private string GenderBadgeClass => $"character-gender-badge character-gender-{GenderClass}";
+
+    private IReadOnlyList<AliasExampleView> AliasExampleRows => Dossier.AliasExamples
+        .Where(item => !string.IsNullOrWhiteSpace(item.Key) && !string.IsNullOrWhiteSpace(item.Value))
+        .OrderBy(item => item.Key, StringComparer.OrdinalIgnoreCase)
+        .Select(item => new AliasExampleView(item.Key.Trim(), item.Value.Trim()))
+        .ToList();
+
+    private Task ToggleExpandedAsync()
+    {
+        return OnToggleExpanded.InvokeAsync();
+    }
+
+    private static string CountText(int count, string singular, string plural)
+    {
+        return count == 1 ? $"1 {singular}" : $"{count} {plural}";
+    }
+
+    private sealed record AliasExampleView(string Alias, string Example);
+}

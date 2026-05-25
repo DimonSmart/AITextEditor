@@ -53,7 +53,6 @@ public sealed class WebCharacterBibleServiceTests
                 new CharacterDossier(
                     "c1",
                     "Alice",
-                    "Keeps careful notes.",
                     ["Al"],
                     new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
                     {
@@ -70,17 +69,15 @@ public sealed class WebCharacterBibleServiceTests
         Assert.Contains("**Gender:** female", markdown, StringComparison.Ordinal);
         Assert.Contains("### Appearance", markdown, StringComparison.Ordinal);
         Assert.Contains("Thin silhouette and silver hair.", markdown, StringComparison.Ordinal);
-        Assert.Contains("### Background, status and education", markdown, StringComparison.Ordinal);
+        Assert.Contains("### Status and competence", markdown, StringComparison.Ordinal);
         Assert.Contains("### Psychological profile", markdown, StringComparison.Ordinal);
         Assert.Contains("### Speech and communication", markdown, StringComparison.Ordinal);
-        Assert.Contains("### Key role bonds", markdown, StringComparison.Ordinal);
-        Assert.Contains("- Bob — trusted rival: Their contrast defines Alice's choices.", markdown, StringComparison.Ordinal);
         Assert.Contains("- Al: Al opened the notebook.", markdown, StringComparison.Ordinal);
-        Assert.True(markdown.IndexOf("### Description", StringComparison.Ordinal) < markdown.IndexOf("### Appearance", StringComparison.Ordinal));
-        Assert.True(markdown.IndexOf("### Appearance", StringComparison.Ordinal) < markdown.IndexOf("### Background, status and education", StringComparison.Ordinal));
-        Assert.True(markdown.IndexOf("### Background, status and education", StringComparison.Ordinal) < markdown.IndexOf("### Psychological profile", StringComparison.Ordinal));
+        Assert.DoesNotContain("### Description", markdown, StringComparison.Ordinal);
+        Assert.DoesNotContain("### Key role bonds", markdown, StringComparison.Ordinal);
+        Assert.True(markdown.IndexOf("### Appearance", StringComparison.Ordinal) < markdown.IndexOf("### Status and competence", StringComparison.Ordinal));
+        Assert.True(markdown.IndexOf("### Status and competence", StringComparison.Ordinal) < markdown.IndexOf("### Psychological profile", StringComparison.Ordinal));
         Assert.True(markdown.IndexOf("### Psychological profile", StringComparison.Ordinal) < markdown.IndexOf("### Speech and communication", StringComparison.Ordinal));
-        Assert.True(markdown.IndexOf("### Speech and communication", StringComparison.Ordinal) < markdown.IndexOf("### Key role bonds", StringComparison.Ordinal));
     }
 
     [Theory]
@@ -140,7 +137,6 @@ public sealed class WebCharacterBibleServiceTests
         source.UpsertDossier(new CharacterDossier(
             "c1",
             "Alice",
-            "Keeps careful notes.",
             ["Al"],
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
@@ -154,7 +150,7 @@ public sealed class WebCharacterBibleServiceTests
 
         Assert.True(loaded);
         Assert.Equal(Path.Combine(directory, "novel-character-bible.json"), characterBiblePath);
-        Assert.Contains("\"dossiersId\":\"d1\"", await File.ReadAllTextAsync(characterBiblePath));
+        Assert.Contains("\"dossiersId\": \"d1\"", await File.ReadAllTextAsync(characterBiblePath));
         var dossier = Assert.Single(target.GetDossiers().Characters);
         Assert.Equal("Alice", dossier.Name);
         Assert.Equal("female", dossier.Gender);
@@ -174,7 +170,6 @@ public sealed class WebCharacterBibleServiceTests
         source.UpsertDossier(new CharacterDossier(
             "c1",
             "Alice",
-            "Keeps careful notes.",
             ["Al"],
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
@@ -220,7 +215,6 @@ public sealed class WebCharacterBibleServiceTests
         characterDossiers.UpsertDossier(new CharacterDossier(
             "c1",
             "Alice",
-            "Keeps careful notes.",
             [],
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
             "female"));
@@ -250,7 +244,6 @@ public sealed class WebCharacterBibleServiceTests
         workspace.CharacterDossiers.UpsertDossier(new CharacterDossier(
             "c1",
             "Alice",
-            "Keeps careful notes.",
             [],
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
             "female"));
@@ -260,7 +253,7 @@ public sealed class WebCharacterBibleServiceTests
         var characterBiblePath = Path.Combine(directory, "novel-character-bible.json");
         Assert.Equal(characterBiblePath, workspace.CurrentCharacterBiblePath);
         Assert.True(File.Exists(characterBiblePath));
-        Assert.Contains("\"name\":\"Alice\"", await File.ReadAllTextAsync(characterBiblePath));
+        Assert.Contains("\"name\": \"Alice\"", await File.ReadAllTextAsync(characterBiblePath));
     }
 
     [Fact]
@@ -274,7 +267,6 @@ public sealed class WebCharacterBibleServiceTests
         Assert.Throws<InvalidOperationException>(() => workspace.UpsertCharacterDossier(new CharacterDossier(
             "c1",
             "Alice",
-            string.Empty,
             [],
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
             "female")));
@@ -287,7 +279,6 @@ public sealed class WebCharacterBibleServiceTests
         source.UpsertDossier(new CharacterDossier(
             "c1",
             "Alice",
-            "Keeps careful notes.",
             ["unused"],
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
@@ -302,7 +293,7 @@ public sealed class WebCharacterBibleServiceTests
         var target = new CharacterDossierService("empty");
         target.LoadFromJson(json);
 
-        Assert.Contains("\"importanceLevel\":7", json, StringComparison.Ordinal);
+        Assert.Contains("\"importanceLevel\": 7", json, StringComparison.Ordinal);
         Assert.Contains("\"profile\":", json, StringComparison.Ordinal);
         var dossier = Assert.Single(target.GetDossiers().Characters);
         Assert.Equal("Alice", dossier.Name);
@@ -310,13 +301,9 @@ public sealed class WebCharacterBibleServiceTests
         Assert.Equal(7, dossier.ImportanceLevel);
         Assert.NotNull(dossier.Profile);
         Assert.Equal("Thin silhouette and silver hair.", dossier.Profile.Appearance);
-        Assert.Equal("Archivist with formal training.", dossier.Profile.BackgroundStatusEducation);
+        Assert.Equal("Archivist with formal training.", dossier.Profile.StatusAndCompetence);
         Assert.Equal("Careful under pressure.", dossier.Profile.PsychologicalProfile);
         Assert.Equal("Dry, precise questions.", dossier.Profile.SpeechAndCommunication);
-        var roleBond = Assert.Single(dossier.Profile.KeyRoleBonds!);
-        Assert.Equal("Bob", roleBond.CharacterName);
-        Assert.Equal("trusted rival", roleBond.Role);
-        Assert.Equal("Their contrast defines Alice's choices.", roleBond.Description);
         Assert.Equal(["Al", "alice"], dossier.Aliases);
         Assert.Equal("Al opened the notebook.", dossier.AliasExamples["Al"]);
         Assert.Equal("alice checked the facts.", dossier.AliasExamples["alice"]);
@@ -336,7 +323,6 @@ public sealed class WebCharacterBibleServiceTests
                 {
                   "characterId": "c1",
                   "name": "Alice",
-                  "description": "",
                   "aliases": [],
                   "aliasExamples": {},
                   "facts": [],
@@ -364,7 +350,6 @@ public sealed class WebCharacterBibleServiceTests
                 {
                   "characterId": "c1",
                   "name": "Alice",
-                  "description": "",
                   "aliases": [],
                   "aliasExamples": {},
                   "facts": [],
@@ -377,7 +362,6 @@ public sealed class WebCharacterBibleServiceTests
         var dossier = Assert.Single(service.GetDossiers().Characters);
         Assert.NotNull(dossier.Profile);
         Assert.Equal(CharacterProfile.Empty, dossier.Profile);
-        Assert.Empty(dossier.Profile.KeyRoleBonds!);
     }
 
     [Fact]
@@ -387,7 +371,6 @@ public sealed class WebCharacterBibleServiceTests
         service.UpsertDossier(new CharacterDossier(
             "c1",
             "Alice",
-            "",
             [],
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
             "unknown",
@@ -395,26 +378,15 @@ public sealed class WebCharacterBibleServiceTests
                 "  silver hair  ",
                 "  archivist  ",
                 "  cautious  ",
-                "  clipped speech  ",
-                [
-                    new CharacterRoleBond(" Bob ", " rival ", " contrast pair "),
-                    new CharacterRoleBond("bob", "RIVAL", "duplicate"),
-                    new CharacterRoleBond("", "mentor", "ignored"),
-                    new CharacterRoleBond("Charlie", "", "ignored"),
-                    new CharacterRoleBond("Dana", "mirror", "")
-                ])));
+                "  clipped speech  ")));
 
         var dossier = Assert.Single(service.GetDossiers().Characters);
 
         Assert.NotNull(dossier.Profile);
         Assert.Equal("silver hair", dossier.Profile.Appearance);
-        Assert.Equal("archivist", dossier.Profile.BackgroundStatusEducation);
+        Assert.Equal("archivist", dossier.Profile.StatusAndCompetence);
         Assert.Equal("cautious", dossier.Profile.PsychologicalProfile);
         Assert.Equal("clipped speech", dossier.Profile.SpeechAndCommunication);
-        var bond = Assert.Single(dossier.Profile.KeyRoleBonds!);
-        Assert.Equal("Bob", bond.CharacterName);
-        Assert.Equal("rival", bond.Role);
-        Assert.Equal("contrast pair", bond.Description);
     }
 
     [Fact]
@@ -429,10 +401,8 @@ public sealed class WebCharacterBibleServiceTests
             characters:
             - characterId: c1
               name: Alice
-              description: ""
               aliases: []
               aliasExamples: {}
-              facts: []
               gender: female
             """);
 
@@ -453,7 +423,6 @@ public sealed class WebCharacterBibleServiceTests
         service.UpsertDossier(new CharacterDossier(
             "c1",
             "Alice",
-            "",
             [],
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
             "unknown",
@@ -473,7 +442,6 @@ public sealed class WebCharacterBibleServiceTests
             new CharacterDossier(
                 "c1",
                 "Alice",
-                "Keeps careful notes.",
                 ["Note Keeper"],
                 new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
                 {
@@ -483,7 +451,6 @@ public sealed class WebCharacterBibleServiceTests
             new CharacterDossier(
                 "c2",
                 "Bob",
-                "Tracks deadlines.",
                 [],
                 new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
                 "male")
@@ -497,18 +464,16 @@ public sealed class WebCharacterBibleServiceTests
 
     [Theory]
     [InlineData("silver hair")]
+    [InlineData("Archivist")]
     [InlineData("CAREFUL UNDER PRESSURE")]
-    [InlineData("Bob")]
-    [InlineData("TRUSTED RIVAL")]
-    [InlineData("defines Alice")]
-    public void CharacterDossierSearch_FiltersByProfileAndRoleBonds(string query)
+    [InlineData("precise questions")]
+    public void CharacterDossierSearch_FiltersByProfile(string query)
     {
         var dossiers = new[]
         {
             new CharacterDossier(
                 "c1",
                 "Alice",
-                "Keeps careful notes.",
                 [],
                 new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
                 "female",
@@ -516,7 +481,6 @@ public sealed class WebCharacterBibleServiceTests
             new CharacterDossier(
                 "c2",
                 "Charlie",
-                "",
                 [],
                 new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
                 "unknown")
@@ -536,14 +500,12 @@ public sealed class WebCharacterBibleServiceTests
             new CharacterDossier(
                 "c1",
                 "Alice",
-                "Keeps careful notes.",
                 ["Al"],
                 new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
                 "female"),
             new CharacterDossier(
                 "c2",
                 "Bob",
-                "",
                 [],
                 new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
                 "male")
@@ -767,7 +729,7 @@ public sealed class WebCharacterBibleServiceTests
         var completed = Assert.Single(events, item => item.Type == CharacterBibleOperationEventType.Completed);
         Assert.Contains(characterBiblePath, completed.Message, StringComparison.Ordinal);
         Assert.True(File.Exists(characterBiblePath));
-        Assert.Contains("\"name\":\"Alice\"", await File.ReadAllTextAsync(characterBiblePath));
+        Assert.Contains("\"name\": \"Alice\"", await File.ReadAllTextAsync(characterBiblePath));
     }
 
     [Fact]
@@ -854,7 +816,6 @@ public sealed class WebCharacterBibleServiceTests
                 new CharacterDossier(
                     "c1",
                     "Alice",
-                    "Keeps careful notes.",
                     ["Al"],
                     new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
                     {
@@ -871,8 +832,7 @@ public sealed class WebCharacterBibleServiceTests
             "Thin silhouette and silver hair.",
             "Archivist with formal training.",
             "Careful under pressure.",
-            "Dry, precise questions.",
-            [new CharacterRoleBond("Bob", "trusted rival", "Their contrast defines Alice's choices.")]);
+            "Dry, precise questions.");
     }
 
     private static async Task<List<CharacterBibleOperationEvent>> CollectAsync(

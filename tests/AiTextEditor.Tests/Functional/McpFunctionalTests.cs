@@ -218,7 +218,7 @@ public class McpFunctionalTests
                             continue;
                         }
 
-                        characters.Add(new CharacterExtractionCharacter(name, "unknown", [], string.Empty));
+                        characters.Add(new CharacterExtractionCharacter(name, "unknown", []));
                     }
                 }
 

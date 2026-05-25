@@ -104,125 +104,12 @@ public sealed class CharacterDossiersGeneratorTests
     }
 
     [Fact]
-    public async Task DescriptionStability_WhenOnlyAliasesChange_DescriptionIsNotTouched()
-    {
-        var dossierService = new CharacterDossierService();
-
-        dossierService.UpsertDossier(new AiTextEditor.Core.Model.CharacterDossier(
-            CharacterId: "c1",
-            Name: "John",
-            Description: "John is a doctor.",
-            Aliases: ["John"],
-            AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
-            {
-                ["John"] = "John examined the patient."
-            },
-            Gender: "unknown"));
-
-        var repository = new MarkdownDocumentRepository();
-        var document = repository.LoadFromMarkdown("John arrived.");
-        var documentContext = new DocumentContext(document, dossierService);
-        var limits = new CursorAgentLimits { MaxElements = 256, MaxBytes = 1024 * 128 };
-
-        var extractionModelClient = new ScriptedCharacterExtractionModelClient(
-            Response(new CharacterExtractionCharacter(
-                "John",
-                "unknown",
-                [new CharacterExtractionAlias("Johnny", "Johnny smiled.")],
-                null)));
-
-        var generator = new CharacterDossiersGenerator(
-            documentContext,
-            dossierService,
-            limits,
-            NullLogger<CharacterDossiersGenerator>.Instance,
-            extractionModelClient);
-
-        var evidence = new[] { new AiTextEditor.Core.Model.EvidenceItem("1.p1", "Johnny smiled.", null) };
-        await generator.UpdateFromEvidenceBatchAsync(evidence);
-
-        var updated = dossierService.TryGetDossier("c1");
-        Assert.NotNull(updated);
-        Assert.Equal("John is a doctor.", updated!.Description);
-        Assert.Contains("Johnny", updated.AliasExamples.Keys, StringComparer.OrdinalIgnoreCase);
-
-        Assert.Equal(1, extractionModelClient.CallCount);
-    }
-
-    [Fact]
-    public async Task GenerateDossiers_ReplacesEmptyDescriptionWithMeaningfulDescription()
-    {
-        var dossierService = new CharacterDossierService();
-        var repository = new MarkdownDocumentRepository();
-        var document = repository.LoadFromMarkdown("John arrived.\n\nJohn stayed calm and helped Mary.");
-        var documentContext = new DocumentContext(document, dossierService);
-        var limits = new CursorAgentLimits { MaxElements = 1, MaxBytes = 1024 * 128, FullScanMaxElements = 10 };
-        var extractionModelClient = new ScriptedCharacterExtractionModelClient(
-            Response(new CharacterExtractionCharacter(
-                "John",
-                "unknown",
-                [new CharacterExtractionAlias("John", "John arrived.")],
-                "")),
-            Response(new CharacterExtractionCharacter(
-                "John",
-                "unknown",
-                [new CharacterExtractionAlias("John", "John stayed calm and helped Mary.")],
-                "John stays calm under pressure and helps others.")));
-
-        var generator = new CharacterDossiersGenerator(
-            documentContext,
-            dossierService,
-            limits,
-            NullLogger<CharacterDossiersGenerator>.Instance,
-            extractionModelClient);
-
-        var dossiers = await generator.GenerateAsync();
-
-        var dossier = Assert.Single(dossiers.Characters);
-        Assert.Equal("John stays calm under pressure and helps others.", dossier.Description);
-    }
-
-    [Fact]
-    public async Task GenerateDossiers_DoesNotReplaceMeaningfulDescriptionWithEmptyDescription()
-    {
-        var dossierService = new CharacterDossierService();
-        var repository = new MarkdownDocumentRepository();
-        var document = repository.LoadFromMarkdown("John stayed calm.\n\nJohn arrived.");
-        var documentContext = new DocumentContext(document, dossierService);
-        var limits = new CursorAgentLimits { MaxElements = 1, MaxBytes = 1024 * 128, FullScanMaxElements = 10 };
-        var extractionModelClient = new ScriptedCharacterExtractionModelClient(
-            Response(new CharacterExtractionCharacter(
-                "John",
-                "unknown",
-                [new CharacterExtractionAlias("John", "John stayed calm.")],
-                "John stays calm under pressure.")),
-            Response(new CharacterExtractionCharacter(
-                "John",
-                "unknown",
-                [new CharacterExtractionAlias("John", "John arrived.")],
-                "")));
-
-        var generator = new CharacterDossiersGenerator(
-            documentContext,
-            dossierService,
-            limits,
-            NullLogger<CharacterDossiersGenerator>.Instance,
-            extractionModelClient);
-
-        var dossiers = await generator.GenerateAsync();
-
-        var dossier = Assert.Single(dossiers.Characters);
-        Assert.Equal("John stays calm under pressure.", dossier.Description);
-    }
-
-    [Fact]
     public async Task GenerateDossiers_MergesProfileWithoutOverwritingManualSections()
     {
         var dossierService = new CharacterDossierService();
         dossierService.UpsertDossier(new AiTextEditor.Core.Model.CharacterDossier(
             CharacterId: "c1",
             Name: "John",
-            Description: "",
             Aliases: ["John"],
             AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
@@ -230,14 +117,7 @@ public sealed class CharacterDossiersGeneratorTests
             },
             Gender: "unknown",
             Profile: new AiTextEditor.Core.Model.CharacterProfile(
-                PsychologicalProfile: "Manual psychological profile.",
-                KeyRoleBonds:
-                [
-                    new AiTextEditor.Core.Model.CharacterRoleBond(
-                        "Mary",
-                        "mentor",
-                        "Mary anchors John's training role.")
-                ])));
+                PsychologicalProfile: "Manual psychological profile.")));
 
         var repository = new MarkdownDocumentRepository();
         var document = repository.LoadFromMarkdown("John and Mary met Bob.");
@@ -248,17 +128,11 @@ public sealed class CharacterDossiersGeneratorTests
                 "John",
                 "unknown",
                 [new CharacterExtractionAlias("John", "John and Mary met Bob.")],
-                "",
                 ExtractionProfile(
                     appearance: "Tall and still.",
                     background: "Former student.",
                     psychology: "Generated profile should not overwrite manual text.",
-                    speech: "Short answers.",
-                    roleBonds:
-                    [
-                        new CharacterExtractionRoleBond("Mary", "mentor", "Duplicate should not replace manual bond."),
-                        new CharacterExtractionRoleBond("Bob", "rival", "Bob defines John's competitive role.")
-                    ]))));
+                    speech: "Short answers."))));
 
         var generator = new CharacterDossiersGenerator(
             documentContext,
@@ -271,15 +145,9 @@ public sealed class CharacterDossiersGeneratorTests
 
         var dossier = Assert.Single(dossiers.Characters);
         Assert.Equal("Tall and still.", dossier.Profile!.Appearance);
-        Assert.Equal("Former student.", dossier.Profile.BackgroundStatusEducation);
+        Assert.Equal("Former student.", dossier.Profile.StatusAndCompetence);
         Assert.Equal("Manual psychological profile.", dossier.Profile.PsychologicalProfile);
         Assert.Equal("Short answers.", dossier.Profile.SpeechAndCommunication);
-        var bonds = dossier.Profile.KeyRoleBonds!.ToDictionary(
-            bond => $"{bond.CharacterName}|{bond.Role}",
-            StringComparer.OrdinalIgnoreCase);
-        Assert.Equal("Mary anchors John's training role.", bonds["Mary|mentor"].Description);
-        Assert.Equal("Bob defines John's competitive role.", bonds["Bob|rival"].Description);
-        Assert.Equal(2, bonds.Count);
     }
 
     [Fact]
@@ -308,7 +176,7 @@ public sealed class CharacterDossiersGeneratorTests
     }
 
     [Fact]
-    public async Task GenerateDossiers_PromptRequiresEmptyDescriptionsWhenPersonalityIsAbsent()
+    public async Task GenerateDossiers_PromptRequiresEmptyProfileFieldsWhenEvidenceIsAbsent()
     {
         var dossierService = new CharacterDossierService();
         var repository = new MarkdownDocumentRepository();
@@ -328,11 +196,10 @@ public sealed class CharacterDossiersGeneratorTests
 
         Assert.NotNull(extractionModelClient.LastRequest);
         var systemPrompt = extractionModelClient.LastRequest!.SystemPrompt;
-        Assert.Contains("The description field MUST be", systemPrompt, StringComparison.Ordinal);
-        Assert.Contains("DO NOT explain that details are missing", systemPrompt, StringComparison.Ordinal);
-        Assert.Contains("DO NOT retell scenes", systemPrompt, StringComparison.Ordinal);
-        Assert.Contains("describe appearance", systemPrompt, StringComparison.Ordinal);
-        Assert.Contains("what they saw", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("Use empty string when there is no evidence", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("Do not retell scenes", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("statusAndCompetence", systemPrompt, StringComparison.Ordinal);
+        Assert.DoesNotContain("description field", systemPrompt, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -359,8 +226,9 @@ public sealed class CharacterDossiersGeneratorTests
         Assert.Contains("character.profile", systemPrompt, StringComparison.Ordinal);
         Assert.Contains("Profile Rules", systemPrompt, StringComparison.Ordinal);
         Assert.Contains("Language: RUSSIAN", systemPrompt, StringComparison.Ordinal);
-        Assert.Contains("keyRoleBonds", systemPrompt, StringComparison.Ordinal);
-        Assert.Contains("role-defining relationships", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("statusAndCompetence", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("Do NOT add relationship lists", systemPrompt, StringComparison.Ordinal);
+        Assert.DoesNotContain("keyRoleBonds", systemPrompt, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -370,7 +238,6 @@ public sealed class CharacterDossiersGeneratorTests
         dossierService.UpsertDossier(new AiTextEditor.Core.Model.CharacterDossier(
             CharacterId: "c1",
             Name: "John",
-            Description: "",
             Aliases: ["Johnny"],
             AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
@@ -477,15 +344,13 @@ public sealed class CharacterDossiersGeneratorTests
         string appearance = "",
         string background = "",
         string psychology = "",
-        string speech = "",
-        List<CharacterExtractionRoleBond>? roleBonds = null)
+        string speech = "")
     {
         return new CharacterExtractionProfile(
             appearance,
             background,
             psychology,
-            speech,
-            roleBonds ?? []);
+            speech);
     }
 
     private sealed class CapturingCharacterExtractionModelClient : ICharacterExtractionModelClient
@@ -538,8 +403,7 @@ public sealed class CharacterDossiersGeneratorTests
                     characters.Add(new CharacterExtractionCharacter(
                         name,
                         "unknown",
-                        [],
-                        ""));
+                        []));
                 }
 
                 return Response(characters.ToArray());

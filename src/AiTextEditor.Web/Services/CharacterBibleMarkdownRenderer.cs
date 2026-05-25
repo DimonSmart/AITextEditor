@@ -34,38 +34,12 @@ public sealed class CharacterBibleMarkdownRenderer : ICharacterBibleMarkdownRend
         builder.Append("**Gender:** ");
         builder.AppendLine(string.IsNullOrWhiteSpace(dossier.Gender) ? "unknown" : dossier.Gender.Trim());
         builder.AppendLine();
-        builder.AppendLine("### Description");
-        builder.AppendLine();
-        builder.AppendLine(string.IsNullOrWhiteSpace(dossier.Description) ? "No description." : dossier.Description.Trim());
-        builder.AppendLine();
         var profile = CharacterProfile.Normalize(dossier.Profile);
 
         AppendTextSection(builder, "Appearance", profile.Appearance);
-        AppendTextSection(builder, "Background, status and education", profile.BackgroundStatusEducation);
+        AppendTextSection(builder, "Status and competence", profile.StatusAndCompetence);
         AppendTextSection(builder, "Psychological profile", profile.PsychologicalProfile);
         AppendTextSection(builder, "Speech and communication", profile.SpeechAndCommunication);
-
-        builder.AppendLine("### Key role bonds");
-        builder.AppendLine();
-
-        if (profile.KeyRoleBonds is not { Count: > 0 })
-        {
-            builder.AppendLine("- none");
-        }
-        else
-        {
-            foreach (var bond in profile.KeyRoleBonds)
-            {
-                builder.Append("- ");
-                builder.Append(NormalizeMarkdownLine(bond.CharacterName));
-                builder.Append(" — ");
-                builder.Append(NormalizeMarkdownLine(bond.Role));
-                builder.Append(": ");
-                builder.AppendLine(NormalizeMarkdownLine(bond.Description));
-            }
-        }
-
-        builder.AppendLine();
         builder.AppendLine("### Aliases");
         builder.AppendLine();
 

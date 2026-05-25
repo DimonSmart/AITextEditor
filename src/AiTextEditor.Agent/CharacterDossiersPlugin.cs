@@ -104,7 +104,6 @@ public sealed class CharacterDossiersPlugin
                 c.Name,
                 c.Gender,
                 c.ImportanceLevel,
-                c.Description,
                 CharacterProfile.Normalize(c.Profile),
                 c.Aliases,
                 c.AliasExamples))
@@ -156,7 +155,6 @@ public sealed class CharacterDossiersPlugin
                 name: name.Trim(),
                 gender: gender,
                 aliasExamples: aliasExamples,
-                description: null,
                 profile: null);
 
             var dossiers = dossierService.GetDossiers();
@@ -168,7 +166,6 @@ public sealed class CharacterDossiersPlugin
             name.Trim(),
             gender,
             aliasExamples,
-            description: null,
             profile: null);
 
         return new CharacterDossiersCommandResult(

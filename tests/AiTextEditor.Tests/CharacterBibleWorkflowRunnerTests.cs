@@ -14,8 +14,8 @@ public sealed class CharacterBibleWorkflowRunnerTests
         var runner = CreateRunner(
             "John smiled.\n\nMary waved.",
             Response(
-                new CharacterExtractionCharacter("John", "unknown", [], ""),
-                new CharacterExtractionCharacter("Mary", "unknown", [], "")),
+                new CharacterExtractionCharacter("John", "unknown", []),
+                new CharacterExtractionCharacter("Mary", "unknown", [])),
             out var dossierService,
             out var extractionModelClient);
 
@@ -39,15 +39,13 @@ public sealed class CharacterBibleWorkflowRunnerTests
             Response(new CharacterExtractionCharacter(
                 "John",
                 "unknown",
-                [new CharacterExtractionAlias("Johnny", "Johnny smiled.")],
-                "")),
+                [new CharacterExtractionAlias("Johnny", "Johnny smiled.")])),
             out var dossierService,
             out _);
 
         dossierService.UpsertDossier(new CharacterDossier(
             CharacterId: "c1",
             Name: "John",
-            Description: "",
             Aliases: ["John"],
             AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
@@ -73,14 +71,13 @@ public sealed class CharacterBibleWorkflowRunnerTests
     {
         var runner = CreateRunner(
             "John arrived.",
-            Response(new CharacterExtractionCharacter("John", "unknown", [], "")),
+            Response(new CharacterExtractionCharacter("John", "unknown", [])),
             out var dossierService,
             out _);
 
         dossierService.UpsertDossier(new CharacterDossier(
             CharacterId: "c1",
             Name: "John",
-            Description: "",
             Aliases: [],
             AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
             Gender: "unknown"));
@@ -97,14 +94,13 @@ public sealed class CharacterBibleWorkflowRunnerTests
     {
         var runner = CreateRunner(
             "John arrived.",
-            Response(new CharacterExtractionCharacter("John", "unknown", [], "")),
+            Response(new CharacterExtractionCharacter("John", "unknown", [])),
             out var dossierService,
             out _);
 
         dossierService.UpsertDossier(new CharacterDossier(
             CharacterId: "c1",
             Name: "John",
-            Description: "",
             Aliases: [],
             AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
             Gender: "unknown",
@@ -122,14 +118,13 @@ public sealed class CharacterBibleWorkflowRunnerTests
     {
         var runner = CreateRunner(
             "John arrived.",
-            Response(new CharacterExtractionCharacter("John", "unknown", [], "")),
+            Response(new CharacterExtractionCharacter("John", "unknown", [])),
             out var dossierService,
             out _);
 
         dossierService.UpsertDossier(new CharacterDossier(
             CharacterId: "c1",
             Name: "John",
-            Description: "",
             Aliases: [],
             AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
             Gender: "unknown",
@@ -147,7 +142,7 @@ public sealed class CharacterBibleWorkflowRunnerTests
     {
         var repeatedNewCharacter = Enumerable
             .Range(0, 12)
-            .Select(_ => new CharacterExtractionCharacter("Newcomer", "unknown", [], ""))
+            .Select(_ => new CharacterExtractionCharacter("Newcomer", "unknown", []))
             .ToArray();
         var runner = CreateRunner(
             "Newcomer arrived.",
@@ -170,15 +165,13 @@ public sealed class CharacterBibleWorkflowRunnerTests
             Response(new CharacterExtractionCharacter(
                 "Alex Prime",
                 "unknown",
-                [new CharacterExtractionAlias("Alex Prime", "Alex Prime arrived.")],
-                "")),
+                [new CharacterExtractionAlias("Alex Prime", "Alex Prime arrived.")])),
             out var dossierService,
             out _);
 
         dossierService.UpsertDossier(new CharacterDossier(
             CharacterId: "c1",
             Name: "Alexander Reed",
-            Description: "",
             Aliases: ["Alex Prime"],
             AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
@@ -189,7 +182,6 @@ public sealed class CharacterBibleWorkflowRunnerTests
         dossierService.UpsertDossier(new CharacterDossier(
             CharacterId: "c2",
             Name: "Alexandra Stone",
-            Description: "",
             Aliases: ["Alex Prime"],
             AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
@@ -219,8 +211,8 @@ public sealed class CharacterBibleWorkflowRunnerTests
         var runner = CreateRunner(
             "John smiled.\n\nMary waved.",
             Response(
-                new CharacterExtractionCharacter("John", "unknown", [], ""),
-                new CharacterExtractionCharacter("Mary", "unknown", [], "")),
+                new CharacterExtractionCharacter("John", "unknown", []),
+                new CharacterExtractionCharacter("Mary", "unknown", [])),
             out _,
             out _);
         var progress = new List<CharacterBibleWorkflowProgress>();
@@ -233,7 +225,7 @@ public sealed class CharacterBibleWorkflowRunnerTests
         Assert.Contains(progress, item => item.Message.StartsWith("Collecting character bible paragraphs.", StringComparison.Ordinal));
         Assert.Contains(progress, item => item.Message.StartsWith("Read book chunk 1:", StringComparison.Ordinal));
         Assert.Contains(progress, item => item.Message.StartsWith("Starting candidate extraction from 2 paragraphs.", StringComparison.Ordinal));
-        Assert.Contains(progress, item => item.Message.StartsWith("Batch 1 produced 2 character candidates.", StringComparison.Ordinal));
+        Assert.Contains(progress, item => item.Message.StartsWith("Batch 1 produced 2 character candidates", StringComparison.Ordinal));
         Assert.Contains(progress, item => item.Message.StartsWith("Resolved candidate 1/2: John -> New.", StringComparison.Ordinal));
         Assert.Contains(progress, item => item.Message.StartsWith("Character bible generated:", StringComparison.Ordinal));
     }
