@@ -8,7 +8,8 @@ public static class CharacterDossierSearch
         IEnumerable<CharacterDossier> dossiers,
         string? query,
         string? gender = null,
-        bool onlyIncomplete = false)
+        bool onlyIncomplete = false,
+        Func<int?, bool>? importancePredicate = null)
     {
         ArgumentNullException.ThrowIfNull(dossiers);
 
@@ -19,6 +20,7 @@ public static class CharacterDossierSearch
             .Where(dossier => string.IsNullOrWhiteSpace(normalizedQuery) || Matches(dossier, normalizedQuery))
             .Where(dossier => MatchesGender(dossier, normalizedGender))
             .Where(dossier => !onlyIncomplete || IsIncomplete(dossier))
+            .Where(dossier => importancePredicate == null || importancePredicate(dossier.ImportanceLevel))
             .ToList();
     }
 

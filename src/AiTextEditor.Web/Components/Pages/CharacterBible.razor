@@ -2,6 +2,7 @@
 @implements IDisposable
 @using AiTextEditor.Core.Model
 @using AiTextEditor.Web.Components.Dialogs
+@using AiTextEditor.Web.Services
 @inject EditorWorkspaceState Workspace
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
@@ -30,6 +31,17 @@
                 <MudSelectItem T="string" Value="@MaleGender">Male</MudSelectItem>
                 <MudSelectItem T="string" Value="@FemaleGender">Female</MudSelectItem>
                 <MudSelectItem T="string" Value="@UnknownGender">Unknown</MudSelectItem>
+            </MudSelect>
+            <MudSelect T="ImportanceFilterOption"
+                       @bind-Value="importanceFilter"
+                       Label="Importance"
+                       Variant="MudBlazor.Variant.Outlined"
+                       Margin="MudBlazor.Margin.Dense"
+                       ToStringFunc="@(o => o?.Label ?? string.Empty)">
+                @foreach (var option in ImportanceFilterOption.All)
+                {
+                    <MudSelectItem T="ImportanceFilterOption" Value="@option">@option.Label</MudSelectItem>
+                }
             </MudSelect>
             <MudCheckBox T="bool"
                          @bind-Value="onlyIncomplete"
@@ -108,6 +120,7 @@
     private List<CharacterDossier> characters = [];
     private string searchQuery = string.Empty;
     private string genderFilter = AllGenders;
+    private ImportanceFilterOption importanceFilter = ImportanceFilterOption.Any;
     private bool onlyIncomplete;
     private bool isSaving;
     private bool hasUnsavedChanges;
@@ -115,7 +128,7 @@
     private string? selectedCharacterId;
 
     private IReadOnlyList<CharacterDossier> FilteredCharacters =>
-        CharacterDossierSearch.Filter(characters, searchQuery, genderFilter, onlyIncomplete);
+        CharacterDossierSearch.Filter(characters, searchQuery, genderFilter, onlyIncomplete, importanceFilter.Matches);
 
     private string SaveButtonText =>
         isSaving ? "Saving..." :

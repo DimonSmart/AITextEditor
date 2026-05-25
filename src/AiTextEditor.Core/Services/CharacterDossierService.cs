@@ -11,7 +11,8 @@ public sealed class CharacterDossierService
 {
     private static readonly JsonSerializerOptions DossierJsonOptions = new(SerializationOptions.RelaxedCompact)
     {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        WriteIndented = true
     };
 
     private readonly object syncRoot = new();

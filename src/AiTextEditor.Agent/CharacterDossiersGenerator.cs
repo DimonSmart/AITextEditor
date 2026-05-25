@@ -84,9 +84,12 @@ public sealed class CharacterDossiersGenerator
             var hits = await ExtractCharactersWithModelAsync(batch, cancellationToken);
             var batchCandidates = hits.Select(ToCandidate).ToList();
             candidates.AddRange(batchCandidates);
+            var batchNames = batchCandidates.Count > 0
+                ? ": " + string.Join(", ", batchCandidates.Select(c => c.CanonicalName))
+                : string.Empty;
             progress?.Report(new CharacterBibleWorkflowProgress(
                 "extract",
-                $"Batch {batchNumber} produced {batchCandidates.Count} character candidates."));
+                $"Batch {batchNumber} produced {batchCandidates.Count} character candidates{batchNames}."));
         }
 
         progress?.Report(new CharacterBibleWorkflowProgress(
