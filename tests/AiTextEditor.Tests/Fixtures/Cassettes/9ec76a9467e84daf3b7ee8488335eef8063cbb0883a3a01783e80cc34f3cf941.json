@@ -1,0 +1,45 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-722\",\"object\":\"chat.completion\",\"created\":1779743414,\"model\":\"gpt-oss:20b\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"action\\\":\\\"continue\\\",\\\"batchFound\\\":true,\\\"newEvidence\\\":[{\\\"pointer\\\":\\\"1.1.1.p67\\\",\\\"excerpt\\\":\\\"Кусочек Луны пошёл по рукам. Каждому хотелось поближе посмотреть на него. Пока коротышки разглядывали камень, передавая его из рук в руки, Знайка рассказывал, как они с Фуксией и Селёдочкой путешествовали по Луне и что там видели. Всем очень понравился Знайкин рассказ. Все остались очень довольны. Только профессор Звёздочкин был не очень доволен. Как только Знайка кончил свой рассказ и сошёл с трибуны, профессор Звёздочкин выскочил на трибуну и сказал:\\\",\\\"reason\\\":\\\"mentions professor Zvezdochkin\\\"}],\\\"progress\\\":\\\"Found a reference to professor Zvezdochkin in pointer 1.1.1.p67\\\",\\\"needMoreContext\\\":false}\",\"reasoning\":\"We need find where professor Zvezdochkin first mentioned in this batch. Items: p53-p67. Need check each excerpt refers to professor Zvezdochkin. I see pointer p67 ending \\\"...Только профессор Звёздочкин был не очень доволен.\\\" That is mention. Check earlier items: none prior mention. So new evidence: pointer p67 excerpt is the entire paragraph. We need excerpt exactly from markdown of that item. So we output one evidence with pointer \\\"1.1.1.p67\\\", excerpt that markdown. Reason: hit mention professor Zvezdochkin. progress maybe mention found. NeedMoreContext false. Action continue? evidenceCount currently 4. Could meet max 20 later. So action continue. batchFound true. That's the only evidence.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2306,\"completion_tokens\":375,\"total_tokens\":2681}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Alt-Svc": [
+      "h3=\":443\"; ma=2592000",
+      "h3-29=\":443\"; ma=2592000"
+    ],
+    "Date": [
+      "Mon, 25 May 2026 21:10:14 GMT"
+    ],
+    "Server": [
+      "Google",
+      "Frontend"
+    ],
+    "Set-Cookie": [
+      "aid=818dd012-de86-4990-b9e4-04960d6dbb6d; Path=/; Max-Age=31536000; HttpOnly; Secure; SameSite=Lax"
+    ],
+    "Traceparent": [
+      "00-fa67d18276fb7862626c075c92c4ac4c-507431d17918e993-00"
+    ],
+    "Via": [
+      "1.1 google"
+    ],
+    "X-Build-Commit": [
+      "d4e28fdcb8fe19c32e680b518b58adcda18a58ef"
+    ],
+    "X-Build-Time": [
+      "2026-05-25T12:27:18-07:00"
+    ],
+    "X-Cloud-Trace-Context": [
+      "fa67d18276fb7862626c075c92c4ac4c/5797313396082272659"
+    ],
+    "X-Frame-Options": [
+      "DENY"
+    ],
+    "X-Request-ID": [
+      "3d7cf2c2-c086-4ed5-b353-d609e00976d8"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

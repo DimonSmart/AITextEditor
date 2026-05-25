@@ -1,0 +1,45 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-250\",\"object\":\"chat.completion\",\"created\":1779743400,\"model\":\"gpt-oss:20b\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"action\\\":\\\"continue\\\",\\\"batchFound\\\":false,\\\"newEvidence\\\":[],\\\"progress\\\":null,\\\"needMoreContext\\\":true}\",\"reasoning\":\"We need to extract all evidence of professor Zvezdochkin. The task: \\\"Где в книге впервые упоминается профессор Звёздочкин? (исключая заголовки)\\\". We search for mention \\\"профессор Звёздочкин\\\" or the like. In excerpt we have \\\"професор\\\"? Let's see: In provided paragraphs, I see \\\"стаколи? 'ученые малышками Фуксией и Селёдочкой'\\\". No mention of Zvezdochkin. Also mention \\\"астронома Стекляшкина\\\". No professor. So no evidence.\\n\\nThus newEvidence empty. action: continue (? Not stop because not enough evidence). batchFound false. progress maybe empty or null. needMoreContext: true because need more batches to find mention.\\n\\nLet's produce JSON.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":1818,\"completion_tokens\":211,\"total_tokens\":2029}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Alt-Svc": [
+      "h3=\":443\"; ma=2592000",
+      "h3-29=\":443\"; ma=2592000"
+    ],
+    "Date": [
+      "Mon, 25 May 2026 21:10:00 GMT"
+    ],
+    "Server": [
+      "Google",
+      "Frontend"
+    ],
+    "Set-Cookie": [
+      "aid=c8f23aaf-92c9-4995-8c72-50f4ba0c46fc; Path=/; Max-Age=31536000; HttpOnly; Secure; SameSite=Lax"
+    ],
+    "Traceparent": [
+      "00-3b36ee751af3d80f2fb770f3f2b6e747-6bce548624b38809-00"
+    ],
+    "Via": [
+      "1.1 google"
+    ],
+    "X-Build-Commit": [
+      "d4e28fdcb8fe19c32e680b518b58adcda18a58ef"
+    ],
+    "X-Build-Time": [
+      "2026-05-25T12:27:18-07:00"
+    ],
+    "X-Cloud-Trace-Context": [
+      "3b36ee751af3d80f2fb770f3f2b6e747/7768239342378780681"
+    ],
+    "X-Frame-Options": [
+      "DENY"
+    ],
+    "X-Request-ID": [
+      "1cbb6239-dacc-42ec-b811-114766ba62d3"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

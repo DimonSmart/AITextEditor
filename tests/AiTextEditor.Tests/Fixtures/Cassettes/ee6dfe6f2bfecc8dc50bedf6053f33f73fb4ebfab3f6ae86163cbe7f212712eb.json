@@ -1,0 +1,45 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-279\",\"object\":\"chat.completion\",\"created\":1779743406,\"model\":\"gpt-oss:20b\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"action\\\":\\\"continue\\\",\\\"batchFound\\\":true,\\\"newEvidence\\\":[{\\\"pointer\\\":\\\"1.1.1.p21\\\",\\\"excerpt\\\":\\\"Эта Знайкина книжка наделала много шума. Все коротышки с увлечением читали её. Многие учёные хвалили эту книжку за то, что она интересно написана, но всё же высказывали недовольство тем, что она научно не обоснована. А действительный член академии астрономических наук профессор Звёздочкин, которому тоже случилось прочитать Знайкину книжку, просто кипел от негодования и говорил, что книга эта – вовсе не книга, а какая-то, как он выразился, чёртова чепуха. Этот профессор Звёздочкин был не то чтобы какой-нибудь очень сердитый субъект. Нет, он был довольно добрый коротышка, но очень, как бы это сказать, требовательный, непримиримый. Во всяком деле он ценил больше всего точность, порядок и терпеть не мог никаких фантазий, то есть выдумок.\\\",\\\"reason\\\":\\\"Mention of professor Звёздочкин appears in this paragraph.\\\"}],\\\"progress\\\":\\\"Found first mention of professor Звёздочкин in paragraph 21.\\\",\\\"needMoreContext\\\":false}\",\"reasoning\":\"We need to find first mention of профессор Звёздочкин in book, excluding headings. This batch contains items from 1.1.1.p20 up to p32. Need to find if professor first mention appears. Content: In paragraph 21 the text: \\\"А действительный член академии астрономических наук профессор Звёздочкин, которому тоже случилось прочитать Знайкину книжку\\\". So pointer 1.1.1.p21 contains first mention. Must ensure no earlier mention in this batch (p20 doesn't mention). So new evidence: pointer 1.1.1.p21 excerpt exactly from markdown. But we must EXCLUDE headings; this is paragraph. The excerpt will be the entire paragraph text. It includes the mention. So we must produce newEvidence array with that item. action should likely \\\"continue\\\" because we need up to maxEvidenceCount 20 but we found 1. So action=continue, batchFound=true. progress summarizing this.\\n\\nAlso need to check if we should mark needMoreContext: maybe not, because we have found mention but it's the first mention? The task: \\\"Где в книге впервые упоминается профессор Звёздочкин? (исключая заголовки)\\\" We found paragraph; maybe indeed first mention. But we can't be sure until we scan rest, but likely this is first; but to be safe we set action=\\\"continue\\\" as the spec says until we hit maxEvidenceCount. But we might also stop if we are sure this is first. But the spec says to not stop until we hit maxEvidenceCount. Hmm, user asks for location of first mention. We might treat as guidance: we should only provide pointer to first mention. But we are not answering directly; we just provide evidence. The snapshot.evidenceCount is 0. We found 1 new evidence. Since maxEvidenceCount 20, we are not hitting it. So action continue. ok.\\n\\nOutput JSON accordingly.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2208,\"completion_tokens\":698,\"total_tokens\":2906}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Alt-Svc": [
+      "h3=\":443\"; ma=2592000",
+      "h3-29=\":443\"; ma=2592000"
+    ],
+    "Date": [
+      "Mon, 25 May 2026 21:10:06 GMT"
+    ],
+    "Server": [
+      "Google",
+      "Frontend"
+    ],
+    "Set-Cookie": [
+      "aid=a1f232fd-7aef-497c-b940-24fb34d1fa06; Path=/; Max-Age=31536000; HttpOnly; Secure; SameSite=Lax"
+    ],
+    "Traceparent": [
+      "00-3fcfee39c58a48f5b3647317de20c3c0-0eb8f0bea5414daf-00"
+    ],
+    "Via": [
+      "1.1 google"
+    ],
+    "X-Build-Commit": [
+      "d4e28fdcb8fe19c32e680b518b58adcda18a58ef"
+    ],
+    "X-Build-Time": [
+      "2026-05-25T12:27:18-07:00"
+    ],
+    "X-Cloud-Trace-Context": [
+      "3fcfee39c58a48f5b3647317de20c3c0/1060862413852724655"
+    ],
+    "X-Frame-Options": [
+      "DENY"
+    ],
+    "X-Request-ID": [
+      "291e6933-3e8a-4ffa-b3ec-342169129abb"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

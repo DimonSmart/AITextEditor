@@ -1,0 +1,45 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-739\",\"object\":\"chat.completion\",\"created\":1779743411,\"model\":\"gpt-oss:20b\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"action\\\":\\\"continue\\\",\\\"batchFound\\\":true,\\\"newEvidence\\\":[{\\\"pointer\\\":\\\"1.1.1.p34\\\",\\\"excerpt\\\":\\\"– Вот, вот! – подхватил Звёздочкин. – Только объясните, пожалуйста, нам, почему вы втемяшили себе в голову, что Луна изнутри пустая?\\\",\\\"reason\\\":\\\"Mentions Professor Zvezdochkin by name\\\"},{\\\"pointer\\\":\\\"1.1.1.p39\\\",\\\"excerpt\\\":\\\"– Вот видите, сами говорите – жидкость, – усмехнулся Звёздочкин. – Откуда же в Луне взялась пустота, если там была жидкость, садовая вы голова?\\\",\\\"reason\\\":\\\"Mentions Professor Zvezdochkin by name\\\"},{\\\"pointer\\\":\\\"1.1.1.p48\\\",\\\"excerpt\\\":\\\"– Долой Звёздочкина!\\\",\\\"reason\\\":\\\"Refers to Professor Zvezdochkin by nickname\\\"}],\\\"progress\\\":\\\"Found additional mentions of Professor Zvezdochkin in current batch.\\\",\\\"needMoreContext\\\":false}\",\"reasoning\":\"We need to find first mention of \\\"профессор Звёздочкин\\\" in the book (excluding headings). The task: \\\"Где в книге впервые упоминается профессор Звёздочкин? (исключая заголовки)\\\" So we need paragraph? But we just need evidence of first mention. We have snapshot evidenceCount:1 recently returned pointer [\\\"1.1.1.p21\\\"] presumably earlier mention. But we need to scan current batch to see if any mention again. But we need new evidence if within current batch, maybe earlier pointer in current batch? But first mention may be earlier in book before p21. But current batch starts at p33. We need to find if there is first mention? But since we already have evidenceCount 1 (the last found pointer p21 has one mention). Might be that earlier mention not present in current batch. We just need evidence that professor Zvezdochkin appears. We need statements that mention the professor. We see pointer p34: \\\"– Вот, вот! – подхватил Звёздочкин.\\\" That mentions Zvezdochkin but that person. That is a mention. Also p39: \\\"– … – усмехнулся Звёздочкин.\\\" And p41: \\\"– Надо полагать, знаю, – сердито буркнул профессор.\\\" That reference \\\"профессор\\\", but not name. p48 etc mention. Also p48: \\\"– Долой Звёздочкина!\\\" again. So we must collect evidence for returns. But rule: Do not add evidence for a pointer that appears in snapshot.recentEvidencePointers. That is only p21. So we can provide evidence from p34, p39, p48 etc.\\n\\nThe output must contain newEvidence array containing objects with pointer, excerpt, reason. We need ONE JSON object. Must set action continue or stop accordingly. We have max evidence count 20. We currently have 1 evidence. Adding potentially we'll add many, but we can stop perhaps if gather enough evidence? But query needs first mention location. But the system's logic will count how many evidence entries before still not exceed max but we just need to provide evidence known. We can output continue. There's no reason to stop. We'll provide many matches.\\n\\nWe must not modify excerpt. Use the excerpt exactly as it appears. It's full paragraph. We must also include reason: e.g., \\\"Mentions the professor by name.\\\" For p34: reference to Zvezdochkin; for p39: also.\\n\\nNo need to mention. For p48: This is \\\"– Долой Звёздочкина!\\\" This includes pronoun referring to. It's mention of the name.\\n\\nThus produce newEvidence array with 3 entries. That should be fine.\\n\\nCompute action: newEvidence length 3. total evidence count after = 4 \\u003c=20. So action continue.\\n\\nSet batchFound true.\\n\\nprogress maybe \\\"Found additional mentions of Professor Zvezdochkin in current batch.\\\" optional.\\n\\nneedMoreContext false.\\n\\nAll good.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2086,\"completion_tokens\":860,\"total_tokens\":2946}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Alt-Svc": [
+      "h3=\":443\"; ma=2592000",
+      "h3-29=\":443\"; ma=2592000"
+    ],
+    "Date": [
+      "Mon, 25 May 2026 21:10:11 GMT"
+    ],
+    "Server": [
+      "Google",
+      "Frontend"
+    ],
+    "Set-Cookie": [
+      "aid=0da52e45-a797-4d86-a5db-8ff76cb58073; Path=/; Max-Age=31536000; HttpOnly; Secure; SameSite=Lax"
+    ],
+    "Traceparent": [
+      "00-c279495e61a8afccf77e53ec62755f23-29153af83120feab-00"
+    ],
+    "Via": [
+      "1.1 google"
+    ],
+    "X-Build-Commit": [
+      "d4e28fdcb8fe19c32e680b518b58adcda18a58ef"
+    ],
+    "X-Build-Time": [
+      "2026-05-25T12:27:18-07:00"
+    ],
+    "X-Cloud-Trace-Context": [
+      "c279495e61a8afccf77e53ec62755f23/2960337167716515499"
+    ],
+    "X-Frame-Options": [
+      "DENY"
+    ],
+    "X-Request-ID": [
+      "a7e9e9ea-2977-4c92-8eec-376640d890ca"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-597\",\"object\":\"chat.completion\",\"created\":1779743403,\"model\":\"gpt-oss:20b\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\\"action\\\":\\\"continue\\\",\\\"batchFound\\\":false,\\\"newEvidence\\\":[],\\\"progress\\\":\\\"\\\",\\\"needMoreContext\\\":true}\",\"reasoning\":\"The task: \\\"Где в книге впервые упоминается профессор Звёздочкин? (исключая заголовки)\\\"\\n\\nWe need to scan current batch items, find the first mention of professor Zvezdochkin (the Math professor?). Actually the name 'профессор Звёздочкин' is the professor, spelled with Cyrillic. The markdown given in first batch items: many paragraphs about \\\"Знайка\\\" etc. But none mention \\\"профессор\\\" or \\\"Звёздочкин\\\". So we likely haven't found any evidence. However maybe \\\"профессор\\\" appears somewhere else. Let's parse all paragraphs. The paragraphs only mention \\\"Знайка\\\" etc. None mention \\\"профессор\\\". So no evidence. We have to output accordingly: action=continue, batchFound=false, newEvidence=[], progress maybe null, needMoreContext maybe true because we need more batches. The rule: \\\"You MUST output exactly ONE JSON object.\\\" The output JSON must contain fields as specified. Since no new evidence, newEvidence empty array. progress: maybe \\\"\\\" or null. Since the batch is too short or ambiguous and we still don't know where first mention is, needMoreContext true? The instructions: \\\"needMoreContext: set true only if the batch is too short/ambiguous and you must read further before making progress.\\\" Likely we set true.\\n\\nAlso action: Not enough evidence, we set continue.\\n\\nLet's craft JSON:\\n\\n{\\n \\\"action\\\":\\\"continue\\\",\\n \\\"batchFound\\\":false,\\n \\\"newEvidence\\\":[],\\n \\\"progress\\\":\\\"\\\",\\n \\\"needMoreContext\\\":true\\n}\\n\\nDouble-check formatting: They want string for progress maybe empty string. That's fine. Ensure no extra keys. So final.\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":2042,\"completion_tokens\":387,\"total_tokens\":2429}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Alt-Svc": [
+      "h3=\":443\"; ma=2592000",
+      "h3-29=\":443\"; ma=2592000"
+    ],
+    "Date": [
+      "Mon, 25 May 2026 21:10:03 GMT"
+    ],
+    "Server": [
+      "Google",
+      "Frontend"
+    ],
+    "Set-Cookie": [
+      "aid=725ab53a-3235-4244-bd86-f5844f056429; Path=/; Max-Age=31536000; HttpOnly; Secure; SameSite=Lax"
+    ],
+    "Traceparent": [
+      "00-2079c4c2865078b52fb770f3f2b6e699-b121592249f91f2b-00"
+    ],
+    "Via": [
+      "1.1 google"
+    ],
+    "X-Build-Commit": [
+      "d4e28fdcb8fe19c32e680b518b58adcda18a58ef"
+    ],
+    "X-Build-Time": [
+      "2026-05-25T12:27:18-07:00"
+    ],
+    "X-Cloud-Trace-Context": [
+      "2079c4c2865078b52fb770f3f2b6e699/12763580822749519659"
+    ],
+    "X-Frame-Options": [
+      "DENY"
+    ],
+    "X-Request-ID": [
+      "2eecf874-13de-44e5-96cb-fc9f9e6cbac0"
+    ],
+    "Transfer-Encoding": [
+      "chunked"
+    ]
+  }
+}
