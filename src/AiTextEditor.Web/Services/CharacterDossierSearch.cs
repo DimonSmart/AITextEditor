@@ -26,16 +26,29 @@ public static class CharacterDossierSearch
     {
         ArgumentNullException.ThrowIfNull(dossier);
 
-        return string.IsNullOrWhiteSpace(dossier.Description)
-            || dossier.Facts.Count == 0;
+        var profile = CharacterProfile.Normalize(dossier.Profile);
+        var emptySections = 5 - CharacterProfile.CountCompletedSections(profile);
+
+        return string.IsNullOrWhiteSpace(profile.PsychologicalProfile)
+            || emptySections >= 3;
     }
 
     private static bool Matches(CharacterDossier dossier, string query)
     {
+        var profile = CharacterProfile.Normalize(dossier.Profile);
+
         return Contains(dossier.Name, query)
             || Contains(dossier.Description, query)
             || dossier.Aliases.Any(alias => Contains(alias, query))
             || dossier.AliasExamples.Any(item => Contains(item.Key, query) || Contains(item.Value, query))
+            || Contains(profile.Appearance, query)
+            || Contains(profile.BackgroundStatusEducation, query)
+            || Contains(profile.PsychologicalProfile, query)
+            || Contains(profile.SpeechAndCommunication, query)
+            || (profile.KeyRoleBonds?.Any(bond =>
+                Contains(bond.CharacterName, query)
+                || Contains(bond.Role, query)
+                || Contains(bond.Description, query)) == true)
             || dossier.Facts.Any(fact =>
                 Contains(fact.Key, query)
                 || Contains(fact.Value, query)

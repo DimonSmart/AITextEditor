@@ -83,6 +83,66 @@ public sealed class AgenticModelClientTests
     }
 
     [Fact]
+    public async Task AgenticFrameworkModelClient_DeserializesCharacterExtractionProfile()
+    {
+        var chatClient = new CapturingChatClient(
+            """
+            {
+              "characters": [
+                {
+                  "canonicalName": "John",
+                  "gender": "unknown",
+                  "aliases": [
+                    {
+                      "form": "Johnny",
+                      "example": "Johnny entered."
+                    }
+                  ],
+                  "description": "",
+                  "profile": {
+                    "appearance": "Tall and still.",
+                    "backgroundStatusEducation": "Former student.",
+                    "psychologicalProfile": "Careful under pressure.",
+                    "speechAndCommunication": "Short answers.",
+                    "keyRoleBonds": [
+                      {
+                        "characterName": "Mary",
+                        "role": "mentor",
+                        "description": "Mary defines John's training role."
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+            """);
+        var agent = new ChatClientAgent(
+            chatClient,
+            new ChatClientAgentOptions
+            {
+                Name = "test_agent",
+                UseProvidedChatClientAsIs = true
+            },
+            NullLoggerFactory.Instance);
+        var client = new AgenticFrameworkModelClient(
+            agent,
+            NullLogger<AgenticFrameworkModelClient>.Instance);
+
+        var result = await client.RunAsync<CharacterExtractionResponse>(
+            new AgenticModelRequest(
+                [new ChatMessage(ChatRole.User, "extract")],
+                InvalidContractError: "invalid_contract"));
+
+        var character = Assert.Single(result.Characters);
+        Assert.Equal("John", character.CanonicalName);
+        Assert.NotNull(character.Profile);
+        Assert.Equal("Tall and still.", character.Profile.Appearance);
+        var bond = Assert.Single(character.Profile.KeyRoleBonds!);
+        Assert.Equal("Mary", bond.CharacterName);
+        Assert.Equal("mentor", bond.Role);
+    }
+
+    [Fact]
     public async Task CharacterExtractionClient_WhenAliasExampleIsMissing_FailsContractValidation()
     {
         var response = new CharacterExtractionResponse
@@ -94,6 +154,87 @@ public sealed class AgenticModelClientTests
                     "unknown",
                     [new CharacterExtractionAlias("Johnny", "")],
                     "")
+            ]
+        };
+        var client = new AgenticCharacterExtractionModelClient(
+            new StubAgenticModelClient(response),
+            NullLogger<AgenticCharacterExtractionModelClient>.Instance);
+
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(
+            () => client.ExtractCharactersAsync(new CharacterExtractionModelRequest("system", "user")));
+
+        Assert.Equal("character_extraction_response_contract_invalid", exception.Message);
+    }
+
+    [Fact]
+    public async Task CharacterExtractionClient_WhenProfileIsValid_PassesContractValidation()
+    {
+        var response = new CharacterExtractionResponse
+        {
+            Characters =
+            [
+                new CharacterExtractionCharacter(
+                    "John",
+                    "unknown",
+                    [new CharacterExtractionAlias("Johnny", "Johnny entered.")],
+                    "",
+                    new CharacterExtractionProfile(
+                        "",
+                        "",
+                        "",
+                        "",
+                        [new CharacterExtractionRoleBond("Mary", "mentor", "Mary defines John's training role.")]))
+            ]
+        };
+        var client = new AgenticCharacterExtractionModelClient(
+            new StubAgenticModelClient(response),
+            NullLogger<AgenticCharacterExtractionModelClient>.Instance);
+
+        var result = await client.ExtractCharactersAsync(new CharacterExtractionModelRequest("system", "user"));
+
+        var character = Assert.Single(result.Characters);
+        Assert.NotNull(character.Profile);
+        Assert.Single(character.Profile.KeyRoleBonds!);
+    }
+
+    [Fact]
+    public async Task CharacterExtractionClient_WhenProfileIsMissing_FailsContractValidation()
+    {
+        var response = new CharacterExtractionResponse
+        {
+            Characters =
+            [
+                new CharacterExtractionCharacter(
+                    "John",
+                    "unknown",
+                    [],
+                    "",
+                    null)
+            ]
+        };
+        var client = new AgenticCharacterExtractionModelClient(
+            new StubAgenticModelClient(response),
+            NullLogger<AgenticCharacterExtractionModelClient>.Instance);
+
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(
+            () => client.ExtractCharactersAsync(new CharacterExtractionModelRequest("system", "user")));
+
+        Assert.Equal("character_extraction_response_contract_invalid", exception.Message);
+    }
+
+    [Fact]
+    public async Task CharacterExtractionClient_WhenRoleBondsAreNull_FailsContractValidation()
+    {
+        var response = new CharacterExtractionResponse
+        {
+            Characters =
+            [
+                new CharacterExtractionCharacter(
+                    "John",
+                    "unknown",
+                    [],
+                    "",
+                    new CharacterExtractionProfile("", "", "", "", null))
             ]
         };
         var client = new AgenticCharacterExtractionModelClient(

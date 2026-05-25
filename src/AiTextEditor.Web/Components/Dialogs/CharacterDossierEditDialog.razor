@@ -24,10 +24,20 @@
                     <MudSelectItem T="string" Value="@FemaleGender">female</MudSelectItem>
                 </MudSelect>
 
+                <MudNumericField T="int?"
+                                 @bind-Value="model.ImportanceLevel"
+                                 Label="Importance level"
+                                 Variant="MudBlazor.Variant.Outlined"
+                                 Margin="MudBlazor.Margin.Dense"
+                                 Min="1"
+                                 Max="10"
+                                 Immediate="true" />
+
                 <MudTextField @bind-Value="model.Description"
                               Label="Description"
                               Variant="MudBlazor.Variant.Outlined"
                               Margin="MudBlazor.Margin.Dense"
+                              Immediate="true"
                               Lines="4" />
 
                 <MudExpansionPanels MultiExpansion="true" Elevation="0">
@@ -71,7 +81,83 @@
                         </MudStack>
                     </MudExpansionPanel>
 
-                    <MudExpansionPanel Text="@($"Facts ({factRows.Count})")" Expanded="true">
+                    <MudExpansionPanel Text="Profile sections" Expanded="true">
+                        <MudStack Spacing="2">
+                            <MudTextField @bind-Value="model.Appearance"
+                                          Label="Внешность"
+                                          Variant="MudBlazor.Variant.Outlined"
+                                          Margin="MudBlazor.Margin.Dense"
+                                          Immediate="true"
+                                          Lines="3" />
+
+                            <MudTextField @bind-Value="model.BackgroundStatusEducation"
+                                          Label="Происхождение, статус и образование"
+                                          Variant="MudBlazor.Variant.Outlined"
+                                          Margin="MudBlazor.Margin.Dense"
+                                          Immediate="true"
+                                          Lines="3" />
+
+                            <MudTextField @bind-Value="model.PsychologicalProfile"
+                                          Label="Психологический профиль"
+                                          Variant="MudBlazor.Variant.Outlined"
+                                          Margin="MudBlazor.Margin.Dense"
+                                          Immediate="true"
+                                          Lines="4" />
+
+                            <MudTextField @bind-Value="model.SpeechAndCommunication"
+                                          Label="Речь и манера общения"
+                                          Variant="MudBlazor.Variant.Outlined"
+                                          Margin="MudBlazor.Margin.Dense"
+                                          Immediate="true"
+                                          Lines="3" />
+
+                            <div class="character-edit-section-title">Ключевые ролевые связки</div>
+                            @foreach (var row in roleBondRows)
+                            {
+                                <MudGrid Spacing="2" Class="character-edit-row">
+                                    <MudItem xs="12" sm="3">
+                                        <MudTextField @bind-Value="row.CharacterName"
+                                                      Label="Character"
+                                                      Variant="MudBlazor.Variant.Outlined"
+                                                      Margin="MudBlazor.Margin.Dense"
+                                                      Immediate="true" />
+                                    </MudItem>
+                                    <MudItem xs="12" sm="3">
+                                        <MudTextField @bind-Value="row.Role"
+                                                      Label="Role"
+                                                      Variant="MudBlazor.Variant.Outlined"
+                                                      Margin="MudBlazor.Margin.Dense"
+                                                      Immediate="true" />
+                                    </MudItem>
+                                    <MudItem xs="12" sm="5">
+                                        <MudTextField @bind-Value="row.Description"
+                                                      Label="Description"
+                                                      Variant="MudBlazor.Variant.Outlined"
+                                                      Margin="MudBlazor.Margin.Dense"
+                                                      Immediate="true" />
+                                    </MudItem>
+                                    <MudItem xs="12" sm="1" Class="character-edit-row-action">
+                                        <MudTooltip Text="Remove role bond">
+                                            <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                                           Color="MudBlazor.Color.Error"
+                                                           Size="MudBlazor.Size.Small"
+                                                           OnClick="@(() => RemoveRoleBond(row))"
+                                                           aria-label="Remove role bond" />
+                                        </MudTooltip>
+                                    </MudItem>
+                                </MudGrid>
+                            }
+
+                            <MudButton Variant="MudBlazor.Variant.Outlined"
+                                       Color="MudBlazor.Color.Primary"
+                                       StartIcon="@Icons.Material.Filled.Add"
+                                       OnClick="AddRoleBond">
+                                Add role bond
+                            </MudButton>
+                        </MudStack>
+                    </MudExpansionPanel>
+
+                    <MudExpansionPanel Text="@($"Legacy facts ({factRows.Count})")" Expanded="false">
                         <MudStack Spacing="2">
                             @foreach (var row in factRows)
                             {
@@ -141,6 +227,7 @@
     private MudForm? form;
     private EditableCharacterDossier model = new();
     private readonly List<AliasRow> aliasRows = [];
+    private readonly List<RoleBondRow> roleBondRows = [];
     private readonly List<FactRow> factRows = [];
 
     [CascadingParameter]
@@ -154,6 +241,11 @@
         model = EditableCharacterDossier.From(Dossier);
         aliasRows.Clear();
         aliasRows.AddRange(model.AliasExamples.Select(item => new AliasRow(item.Key, item.Value)));
+        roleBondRows.Clear();
+        roleBondRows.AddRange(model.Profile.KeyRoleBonds?.Select(bond => new RoleBondRow(
+            bond.CharacterName,
+            bond.Role,
+            bond.Description)) ?? []);
         factRows.Clear();
         factRows.AddRange(model.Facts.Select(fact => new FactRow(fact.Key, fact.Value, fact.Example)));
     }
@@ -166,6 +258,16 @@
     private void RemoveAlias(AliasRow row)
     {
         aliasRows.Remove(row);
+    }
+
+    private void AddRoleBond()
+    {
+        roleBondRows.Add(new RoleBondRow());
+    }
+
+    private void RemoveRoleBond(RoleBondRow row)
+    {
+        roleBondRows.Remove(row);
     }
 
     private void AddFact()
@@ -227,6 +329,22 @@
             .Select(row => new CharacterFact(row.Key.Trim(), row.Value.Trim(), row.Example.Trim()))
             .ToList();
 
+        var profile = CharacterProfile.Normalize(new CharacterProfile(
+            model.Appearance,
+            model.BackgroundStatusEducation,
+            model.PsychologicalProfile,
+            model.SpeechAndCommunication,
+            roleBondRows
+                .Where(row =>
+                    !string.IsNullOrWhiteSpace(row.CharacterName)
+                    && !string.IsNullOrWhiteSpace(row.Role)
+                    && !string.IsNullOrWhiteSpace(row.Description))
+                .Select(row => new CharacterRoleBond(
+                    row.CharacterName.Trim(),
+                    row.Role.Trim(),
+                    row.Description.Trim()))
+                .ToList()));
+
         return new CharacterDossier(
             model.CharacterId,
             model.Name.Trim(),
@@ -234,7 +352,9 @@
             aliasExamples.Keys.OrderBy(alias => alias, StringComparer.OrdinalIgnoreCase).ToList(),
             aliasExamples,
             facts,
-            model.Gender);
+            model.Gender,
+            CharacterImportance.NormalizeLevel(model.ImportanceLevel),
+            profile);
     }
 
     private void Cancel()
@@ -252,6 +372,18 @@
 
         public string Gender { get; set; } = UnknownGender;
 
+        public int? ImportanceLevel { get; set; }
+
+        public string Appearance { get; set; } = string.Empty;
+
+        public string BackgroundStatusEducation { get; set; } = string.Empty;
+
+        public string PsychologicalProfile { get; set; } = string.Empty;
+
+        public string SpeechAndCommunication { get; set; } = string.Empty;
+
+        public CharacterProfile Profile { get; private set; } = CharacterProfile.Empty;
+
         public IReadOnlyDictionary<string, string> AliasExamples { get; private set; } =
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
@@ -264,12 +396,19 @@
                 return new EditableCharacterDossier();
             }
 
+            var profile = CharacterProfile.Normalize(dossier.Profile);
             return new EditableCharacterDossier
             {
                 CharacterId = dossier.CharacterId,
                 Name = dossier.Name,
                 Description = dossier.Description,
                 Gender = AllowedGenders.Contains(dossier.Gender) ? dossier.Gender : UnknownGender,
+                ImportanceLevel = CharacterImportance.NormalizeLevel(dossier.ImportanceLevel),
+                Appearance = profile.Appearance,
+                BackgroundStatusEducation = profile.BackgroundStatusEducation,
+                PsychologicalProfile = profile.PsychologicalProfile,
+                SpeechAndCommunication = profile.SpeechAndCommunication,
+                Profile = profile,
                 AliasExamples = new Dictionary<string, string>(dossier.AliasExamples, StringComparer.OrdinalIgnoreCase),
                 Facts = dossier.Facts.ToList()
             };
@@ -281,6 +420,15 @@
         public string Alias { get; set; } = alias;
 
         public string Example { get; set; } = example;
+    }
+
+    private sealed class RoleBondRow(string characterName = "", string role = "", string description = "")
+    {
+        public string CharacterName { get; set; } = characterName;
+
+        public string Role { get; set; } = role;
+
+        public string Description { get; set; } = description;
     }
 
     private sealed class FactRow(string key = "", string value = "", string example = "")

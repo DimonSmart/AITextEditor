@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using AiTextEditor.Core.Model;
 
 namespace AiTextEditor.Agent;
 
@@ -19,7 +20,9 @@ public sealed record CharacterDossierEntry(
     [property: JsonPropertyName("id")] string Id,
     [property: JsonPropertyName("name")] string Name,
     [property: JsonPropertyName("gender")] string Gender,
+    [property: JsonPropertyName("importanceLevel")] int? ImportanceLevel,
     [property: JsonPropertyName("description")] string Description,
+    [property: JsonPropertyName("profile")] CharacterProfile Profile,
     [property: JsonPropertyName("aliases")] IReadOnlyList<string> Aliases,
     [property: JsonPropertyName("aliasExamples")] IReadOnlyDictionary<string, string> AliasExamples);
 

@@ -217,6 +217,76 @@ public sealed class CharacterDossiersGeneratorTests
     }
 
     [Fact]
+    public async Task GenerateDossiers_MergesProfileWithoutOverwritingManualSections()
+    {
+        var dossierService = new CharacterDossierService();
+        dossierService.UpsertDossier(new AiTextEditor.Core.Model.CharacterDossier(
+            CharacterId: "c1",
+            Name: "John",
+            Description: "",
+            Aliases: ["John"],
+            AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["John"] = "John arrived."
+            },
+            Facts: [new AiTextEditor.Core.Model.CharacterFact("legacy", "kept", "Manual fact.")],
+            Gender: "unknown",
+            Profile: new AiTextEditor.Core.Model.CharacterProfile(
+                PsychologicalProfile: "Manual psychological profile.",
+                KeyRoleBonds:
+                [
+                    new AiTextEditor.Core.Model.CharacterRoleBond(
+                        "Mary",
+                        "mentor",
+                        "Mary anchors John's training role.")
+                ])));
+
+        var repository = new MarkdownDocumentRepository();
+        var document = repository.LoadFromMarkdown("John and Mary met Bob.");
+        var documentContext = new DocumentContext(document, dossierService);
+        var limits = new CursorAgentLimits { MaxElements = 256, MaxBytes = 1024 * 128 };
+        var extractionModelClient = new ScriptedCharacterExtractionModelClient(
+            Response(new CharacterExtractionCharacter(
+                "John",
+                "unknown",
+                [new CharacterExtractionAlias("John", "John and Mary met Bob.")],
+                "",
+                ExtractionProfile(
+                    appearance: "Tall and still.",
+                    background: "Former student.",
+                    psychology: "Generated profile should not overwrite manual text.",
+                    speech: "Short answers.",
+                    roleBonds:
+                    [
+                        new CharacterExtractionRoleBond("Mary", "mentor", "Duplicate should not replace manual bond."),
+                        new CharacterExtractionRoleBond("Bob", "rival", "Bob defines John's competitive role.")
+                    ]))));
+
+        var generator = new CharacterDossiersGenerator(
+            documentContext,
+            dossierService,
+            limits,
+            NullLogger<CharacterDossiersGenerator>.Instance,
+            extractionModelClient);
+
+        var dossiers = await generator.GenerateAsync();
+
+        var dossier = Assert.Single(dossiers.Characters);
+        Assert.Equal("Tall and still.", dossier.Profile!.Appearance);
+        Assert.Equal("Former student.", dossier.Profile.BackgroundStatusEducation);
+        Assert.Equal("Manual psychological profile.", dossier.Profile.PsychologicalProfile);
+        Assert.Equal("Short answers.", dossier.Profile.SpeechAndCommunication);
+        Assert.Single(dossier.Facts);
+
+        var bonds = dossier.Profile.KeyRoleBonds!.ToDictionary(
+            bond => $"{bond.CharacterName}|{bond.Role}",
+            StringComparer.OrdinalIgnoreCase);
+        Assert.Equal("Mary anchors John's training role.", bonds["Mary|mentor"].Description);
+        Assert.Equal("Bob defines John's competitive role.", bonds["Bob|rival"].Description);
+        Assert.Equal(2, bonds.Count);
+    }
+
+    [Fact]
     public async Task GenerateDossiers_PromptForbidsPronounAliases()
     {
         var dossierService = new CharacterDossierService();
@@ -267,6 +337,34 @@ public sealed class CharacterDossiersGeneratorTests
         Assert.Contains("DO NOT retell scenes", systemPrompt, StringComparison.Ordinal);
         Assert.Contains("describe appearance", systemPrompt, StringComparison.Ordinal);
         Assert.Contains("what they saw", systemPrompt, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task GenerateDossiers_PromptRequiresStructuredRussianProfile()
+    {
+        var dossierService = new CharacterDossierService();
+        var repository = new MarkdownDocumentRepository();
+        var document = repository.LoadFromMarkdown("Анна говорила коротко.");
+        var documentContext = new DocumentContext(document, dossierService);
+        var limits = new CursorAgentLimits { MaxElements = 256, MaxBytes = 1024 * 128 };
+        var extractionModelClient = new CapturingCharacterExtractionModelClient();
+
+        var generator = new CharacterDossiersGenerator(
+            documentContext,
+            dossierService,
+            limits,
+            NullLogger<CharacterDossiersGenerator>.Instance,
+            extractionModelClient);
+
+        await generator.GenerateAsync();
+
+        Assert.NotNull(extractionModelClient.LastRequest);
+        var systemPrompt = extractionModelClient.LastRequest!.SystemPrompt;
+        Assert.Contains("character.profile", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("Profile Rules", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("Language: RUSSIAN", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("keyRoleBonds", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("role-defining relationships", systemPrompt, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -379,6 +477,21 @@ public sealed class CharacterDossiersGeneratorTests
 
     private static CharacterExtractionResponse Response(params CharacterExtractionCharacter[] characters)
         => new() { Characters = characters.ToList() };
+
+    private static CharacterExtractionProfile ExtractionProfile(
+        string appearance = "",
+        string background = "",
+        string psychology = "",
+        string speech = "",
+        List<CharacterExtractionRoleBond>? roleBonds = null)
+    {
+        return new CharacterExtractionProfile(
+            appearance,
+            background,
+            psychology,
+            speech,
+            roleBonds ?? []);
+    }
 
     private sealed class CapturingCharacterExtractionModelClient : ICharacterExtractionModelClient
     {

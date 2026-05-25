@@ -10,6 +10,8 @@ namespace AiTextEditor.Agent;
 
 public sealed class CharacterDossiersGenerator
 {
+    private const int MaxIncrementalNewCharacterLevel = 4;
+
     private readonly IDocumentContext documentContext;
     private readonly CharacterDossierService dossierService;
     private readonly CursorAgentLimits limits;
@@ -108,10 +110,18 @@ public sealed class CharacterDossiersGenerator
             progress?.Report(new CharacterBibleWorkflowProgress(
                 "resolve",
                 "No candidates to resolve."));
-            return new CharacterBibleCommitPlan(request, baseDossiers, false, paragraphCount, 0, []);
+            return new CharacterBibleCommitPlan(
+                request,
+                baseDossiers,
+                false,
+                paragraphCount,
+                0,
+                []);
         }
 
         var index = new DossierIndex(baseDossiers);
+        var importanceAccumulator = new CharacterImportanceAccumulator();
+        var createdCharacterIds = new HashSet<string>(StringComparer.Ordinal);
         var decisions = new List<CharacterBibleResolverDecision>(candidates.Count);
         var changed = false;
         var candidateNumber = 0;
@@ -120,12 +130,18 @@ public sealed class CharacterDossiersGenerator
         {
             candidateNumber++;
             var hit = ToCharacterExtractionCharacter(candidate);
-            changed |= ApplyHitToIndex(index, hit, out var decision);
+            changed |= ApplyHitToIndex(index, hit, importanceAccumulator, createdCharacterIds, out var decision);
             decisions.Add(decision);
             progress?.Report(new CharacterBibleWorkflowProgress(
                 "resolve",
                 $"Resolved candidate {candidateNumber}/{candidates.Count}: {candidate.CanonicalName} -> {decision.Kind}."));
         }
+
+        changed |= ApplyImportanceLevels(
+            index,
+            request.ChangedPointers is null,
+            importanceAccumulator.Scores,
+            createdCharacterIds);
 
         var projectedDossiers = changed
             ? index.ToDossiers(baseDossiers, limits.CharacterDossiersMaxCharacters)
@@ -157,6 +173,8 @@ public sealed class CharacterDossiersGenerator
     private static bool ApplyHitToIndex(
         DossierIndex index,
         CharacterExtractionCharacter hit,
+        CharacterImportanceAccumulator importanceAccumulator,
+        ISet<string> createdCharacterIds,
         out CharacterBibleResolverDecision decision)
     {
         var resolution = index.ResolveCandidate(hit);
@@ -177,6 +195,15 @@ public sealed class CharacterDossiersGenerator
             ?? throw new InvalidOperationException("Resolved character profile is missing.");
 
         var changed = resolution.Created;
+        importanceAccumulator.AddResolved(profile.Id);
+
+        if (resolution.Created)
+        {
+            createdCharacterIds.Add(profile.Id);
+        }
+
+        var nameChanged = profile.RefineCanonicalName(hit, resolution.ExactNameMatch);
+        changed |= nameChanged;
 
         var anyAliasChanged = profile.MergeAliases(hit, resolution.ExactNameMatch);
         changed |= anyAliasChanged;
@@ -186,7 +213,10 @@ public sealed class CharacterDossiersGenerator
         var descriptionChanged = profile.SetDescriptionIfEmpty(hit.Description);
         changed |= descriptionChanged;
 
-        if (resolution.Created || anyAliasChanged || descriptionChanged)
+        var profileChanged = profile.MergeProfile(ToCharacterProfile(hit.Profile));
+        changed |= profileChanged;
+
+        if (resolution.Created || nameChanged || anyAliasChanged || descriptionChanged)
         {
             index.UpdateKeys(profile);
         }
@@ -197,6 +227,39 @@ public sealed class CharacterDossiersGenerator
             profile.Id,
             [],
             resolution.Created ? "No existing name or alias match was found." : "Matched by existing name or alias key.");
+
+        return changed;
+    }
+
+    private static bool ApplyImportanceLevels(
+        DossierIndex index,
+        bool isFullGeneration,
+        IReadOnlyDictionary<string, int> activityScores,
+        IReadOnlySet<string> createdCharacterIds)
+    {
+        if (activityScores.Count == 0)
+        {
+            return false;
+        }
+
+        var maxScore = activityScores.Values.Max();
+        var changed = false;
+
+        foreach (var (characterId, score) in activityScores)
+        {
+            if (!isFullGeneration && !createdCharacterIds.Contains(characterId))
+            {
+                continue;
+            }
+
+            var level = CharacterImportance.ToLevel(score, maxScore);
+            if (!isFullGeneration)
+            {
+                level = Math.Min(level, MaxIncrementalNewCharacterLevel);
+            }
+
+            changed |= index.SetImportanceLevelIfMissing(characterId, level);
+        }
 
         return changed;
     }
@@ -306,6 +369,8 @@ public sealed class CharacterDossiersGenerator
 
         var baseDossiers = dossierService.GetDossiers();
         var index = new DossierIndex(baseDossiers);
+        var importanceAccumulator = new CharacterImportanceAccumulator();
+        var createdCharacterIds = new HashSet<string>(StringComparer.Ordinal);
 
         var cursor = new FullScanCursorStream(
             documentContext.Document,
@@ -345,7 +410,12 @@ public sealed class CharacterDossiersGenerator
 
             if (paragraphs.Count > 0)
             {
-                await ApplyParagraphsAsync(index, paragraphs, cancellationToken);
+                await ApplyParagraphsAsync(
+                    index,
+                    paragraphs,
+                    importanceAccumulator,
+                    createdCharacterIds,
+                    cancellationToken);
             }
 
             if (!portion.HasMore)
@@ -353,6 +423,12 @@ public sealed class CharacterDossiersGenerator
                 break;
             }
         }
+
+        ApplyImportanceLevels(
+            index,
+            isFullGeneration: true,
+            importanceAccumulator.Scores,
+            createdCharacterIds);
 
         var dossiers = index.ToDossiers(baseDossiers, limits.CharacterDossiersMaxCharacters);
         dossierService.ReplaceDossiers(dossiers.Characters);
@@ -413,7 +489,19 @@ public sealed class CharacterDossiersGenerator
 
         var baseDossiers = dossierService.GetDossiers();
         var index = new DossierIndex(baseDossiers);
-        var changed = await ApplyParagraphsAsync(index, paragraphs, cancellationToken);
+        var importanceAccumulator = new CharacterImportanceAccumulator();
+        var createdCharacterIds = new HashSet<string>(StringComparer.Ordinal);
+        var changed = await ApplyParagraphsAsync(
+            index,
+            paragraphs,
+            importanceAccumulator,
+            createdCharacterIds,
+            cancellationToken);
+        changed |= ApplyImportanceLevels(
+            index,
+            isFullGeneration: false,
+            importanceAccumulator.Scores,
+            createdCharacterIds);
         if (!changed)
         {
             return dossierService.GetDossiers();
@@ -439,12 +527,25 @@ public sealed class CharacterDossiersGenerator
 
         var baseDossiers = dossierService.GetDossiers();
         var index = new DossierIndex(baseDossiers);
+        var importanceAccumulator = new CharacterImportanceAccumulator();
+        var createdCharacterIds = new HashSet<string>(StringComparer.Ordinal);
 
         var changed = false;
         foreach (var batch in SplitParagraphs(paragraphs))
         {
-            changed |= await ApplyParagraphsAsync(index, batch, cancellationToken);
+            changed |= await ApplyParagraphsAsync(
+                index,
+                batch,
+                importanceAccumulator,
+                createdCharacterIds,
+                cancellationToken);
         }
+
+        changed |= ApplyImportanceLevels(
+            index,
+            isFullGeneration: false,
+            importanceAccumulator.Scores,
+            createdCharacterIds);
 
         if (!changed)
         {
@@ -526,6 +627,8 @@ public sealed class CharacterDossiersGenerator
     private async Task<bool> ApplyParagraphsAsync(
         DossierIndex index,
         IReadOnlyList<(string Pointer, string Text)> paragraphs,
+        CharacterImportanceAccumulator importanceAccumulator,
+        ISet<string> createdCharacterIds,
         CancellationToken cancellationToken)
     {
         if (paragraphs.Count == 0)
@@ -539,19 +642,21 @@ public sealed class CharacterDossiersGenerator
             return false;
         }
 
-        return await ApplyHitsAsync(index, hits, cancellationToken);
+        return await ApplyHitsAsync(index, hits, importanceAccumulator, createdCharacterIds, cancellationToken);
     }
 
     private async Task<bool> ApplyHitsAsync(
         DossierIndex index,
         IReadOnlyList<CharacterExtractionCharacter> hits,
+        CharacterImportanceAccumulator importanceAccumulator,
+        ISet<string> createdCharacterIds,
         CancellationToken cancellationToken)
     {
         var changed = false;
 
         foreach (var hit in hits)
         {
-            changed |= ApplyHitToIndex(index, hit, out _);
+            changed |= ApplyHitToIndex(index, hit, importanceAccumulator, createdCharacterIds, out _);
         }
 
         return changed;
@@ -575,7 +680,7 @@ public sealed class CharacterDossiersGenerator
         var prompt = JsonSerializer.Serialize(payload, JsonOptions);
 
         var extractionResponse = await characterExtractionModelClient.ExtractCharactersAsync(
-            new CharacterExtractionModelRequest(CharacterExtractionSystemPrompt,prompt),
+            new CharacterExtractionModelRequest(CharacterExtractionSystemPrompt, prompt),
             cancellationToken);
 
         return extractionResponse.Characters
@@ -588,6 +693,7 @@ public sealed class CharacterDossiersGenerator
     {
         var canonical = (hit.CanonicalName ?? string.Empty).Trim();
         var description = (hit.Description ?? string.Empty).Trim();
+        var profile = ToExtractionProfile(ToCharacterProfile(hit.Profile));
 
         var normalizedAliases = (hit.Aliases ?? [])
             .Where(a => a is not null && !string.IsNullOrWhiteSpace(a.Form) && !string.IsNullOrWhiteSpace(a.Example))
@@ -603,7 +709,8 @@ public sealed class CharacterDossiersGenerator
             CanonicalName = canonical,
             Aliases = normalizedAliases,
             Gender = NormalizeGender(hit.Gender),
-            Description = description
+            Description = description,
+            Profile = profile
         };
     }
 
@@ -620,7 +727,8 @@ public sealed class CharacterDossiersGenerator
             hit.CanonicalName?.Trim() ?? string.Empty,
             NormalizeGender(hit.Gender),
             aliasExamples,
-            hit.Description?.Trim() ?? string.Empty);
+            hit.Description?.Trim() ?? string.Empty,
+            ToCharacterProfile(hit.Profile));
     }
 
     private static CharacterExtractionCharacter ToCharacterExtractionCharacter(CharacterBibleCharacterCandidate candidate)
@@ -635,7 +743,45 @@ public sealed class CharacterDossiersGenerator
             candidate.CanonicalName,
             candidate.Gender,
             aliases,
-            candidate.Description));
+            candidate.Description,
+            ToExtractionProfile(candidate.Profile)));
+    }
+
+    private static CharacterProfile ToCharacterProfile(CharacterExtractionProfile? profile)
+    {
+        if (profile is null)
+        {
+            return CharacterProfile.Empty;
+        }
+
+        return CharacterProfile.Normalize(new CharacterProfile(
+            profile.Appearance ?? string.Empty,
+            profile.BackgroundStatusEducation ?? string.Empty,
+            profile.PsychologicalProfile ?? string.Empty,
+            profile.SpeechAndCommunication ?? string.Empty,
+            profile.KeyRoleBonds?
+                .Where(bond => bond is not null)
+                .Select(bond => new CharacterRoleBond(
+                    bond.CharacterName ?? string.Empty,
+                    bond.Role ?? string.Empty,
+                    bond.Description ?? string.Empty))
+                .ToList() ?? []));
+    }
+
+    private static CharacterExtractionProfile ToExtractionProfile(CharacterProfile? profile)
+    {
+        var normalized = CharacterProfile.Normalize(profile);
+        return new CharacterExtractionProfile(
+            normalized.Appearance,
+            normalized.BackgroundStatusEducation,
+            normalized.PsychologicalProfile,
+            normalized.SpeechAndCommunication,
+            normalized.KeyRoleBonds?
+                .Select(bond => new CharacterExtractionRoleBond(
+                    bond.CharacterName,
+                    bond.Role,
+                    bond.Description))
+                .ToList() ?? []);
     }
 
     private static List<CharacterExtractionAlias> AddPossessiveBaseAliases(List<CharacterExtractionAlias> aliases)
@@ -701,6 +847,25 @@ public sealed class CharacterDossiersGenerator
     }
 
     private sealed record KeyVariant(string Key, int Weight);
+
+    private sealed class CharacterImportanceAccumulator
+    {
+        private readonly Dictionary<string, int> scores = new(StringComparer.Ordinal);
+
+        public IReadOnlyDictionary<string, int> Scores => scores;
+
+        public void AddResolved(string characterId)
+        {
+            if (string.IsNullOrWhiteSpace(characterId))
+            {
+                return;
+            }
+
+            scores[characterId] = scores.TryGetValue(characterId, out var current)
+                ? current + 1
+                : 1;
+        }
+    }
 
     private sealed record DossierMatchResult(
         ProfileAccumulator? Profile,
@@ -773,6 +938,16 @@ public sealed class CharacterDossiersGenerator
             return baseDossiers with { Characters = items };
         }
 
+        public bool SetImportanceLevelIfMissing(string characterId, int level)
+        {
+            if (!profiles.TryGetValue(characterId, out var profile))
+            {
+                return false;
+            }
+
+            return profile.SetImportanceLevelIfMissing(level);
+        }
+
         private void IndexProfile(ProfileAccumulator profile)
         {
             foreach (var key in BuildProfileKeys(profile))
@@ -805,6 +980,17 @@ public sealed class CharacterDossiersGenerator
                 {
                     return (null, false, exact);
                 }
+            }
+
+            var aliasNameMatches = FindAliasNameMatches(candidate);
+            if (aliasNameMatches.Count == 1)
+            {
+                return (aliasNameMatches[0], false, []);
+            }
+
+            if (aliasNameMatches.Count > 1)
+            {
+                return (null, false, aliasNameMatches);
             }
 
             var scores = new Dictionary<ProfileAccumulator, int>();
@@ -842,16 +1028,46 @@ public sealed class CharacterDossiersGenerator
 
             return best.Count == 1 ? (best[0], false, []) : (null, false, best);
         }
+
+        private IReadOnlyList<ProfileAccumulator> FindAliasNameMatches(CharacterExtractionCharacter candidate)
+        {
+            if (candidate.Aliases is not { Count: > 0 })
+            {
+                return [];
+            }
+
+            var matches = new HashSet<ProfileAccumulator>();
+            foreach (var alias in candidate.Aliases)
+            {
+                if (string.IsNullOrWhiteSpace(alias.Form))
+                {
+                    continue;
+                }
+
+                foreach (var profile in profiles.Values)
+                {
+                    if (profile.MatchesName(alias.Form))
+                    {
+                        matches.Add(profile);
+                    }
+                }
+            }
+
+            return matches.ToList();
+        }
     }
 
     private sealed class ProfileAccumulator
     {
         private readonly Dictionary<string, string> aliasExamples = new(StringComparer.OrdinalIgnoreCase);
+        private readonly List<CharacterFact> facts = [];
 
         public string Id { get; }
         public string Name { get; private set; }
         public string Description { get; private set; }
         public string Gender { get; private set; }
+        public int? ImportanceLevel { get; private set; }
+        public CharacterProfile Profile { get; private set; }
         public IReadOnlyDictionary<string, string> AliasExamples => aliasExamples;
 
         public ProfileAccumulator(CharacterDossier dossier)
@@ -860,11 +1076,19 @@ public sealed class CharacterDossiersGenerator
             Name = dossier.Name;
             Description = dossier.Description;
             Gender = string.IsNullOrWhiteSpace(dossier.Gender) ? "unknown" : dossier.Gender;
+            ImportanceLevel = dossier.ImportanceLevel;
+            Profile = CharacterProfile.Normalize(dossier.Profile);
+            facts.AddRange(dossier.Facts);
 
             MergeAliasExamples(dossier.AliasExamples);
         }
 
-        private ProfileAccumulator(string name, string gender, IEnumerable<CharacterExtractionAlias>? aliases, string? description)
+        private ProfileAccumulator(
+            string name,
+            string gender,
+            IEnumerable<CharacterExtractionAlias>? aliases,
+            string? description,
+            CharacterProfile? profile)
         {
             Name = name.Trim();
             using var md5 = System.Security.Cryptography.MD5.Create();
@@ -873,6 +1097,8 @@ public sealed class CharacterDossiersGenerator
 
             Gender = string.IsNullOrWhiteSpace(gender) ? "unknown" : gender.Trim();
             Description = description?.Trim() ?? string.Empty;
+            ImportanceLevel = null;
+            Profile = CharacterProfile.Normalize(profile);
 
             if (aliases is not null)
             {
@@ -886,11 +1112,49 @@ public sealed class CharacterDossiersGenerator
         public static ProfileAccumulator FromCandidate(CharacterExtractionCharacter candidate)
         {
             var name = candidate.CanonicalName?.Trim() ?? string.Empty;
-            return new ProfileAccumulator(name, candidate.Gender ?? "unknown", candidate.Aliases, candidate.Description);
+            return new ProfileAccumulator(
+                name,
+                candidate.Gender ?? "unknown",
+                candidate.Aliases,
+                candidate.Description,
+                ToCharacterProfile(candidate.Profile));
         }
 
         public bool MatchesName(string name)
             => string.Equals(Name, name?.Trim(), StringComparison.OrdinalIgnoreCase);
+
+        public bool RefineCanonicalName(CharacterExtractionCharacter candidate, bool exactNameMatch)
+        {
+            if (exactNameMatch)
+            {
+                return false;
+            }
+
+            var canonicalName = candidate.CanonicalName?.Trim();
+            if (string.IsNullOrWhiteSpace(canonicalName))
+            {
+                return false;
+            }
+
+            if (string.Equals(Name, canonicalName, StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
+            if (!IsGenderCompatible(candidate.Gender))
+            {
+                return false;
+            }
+
+            if (!TryFindExampleFor(Name, candidate.Aliases, out var currentNameExample))
+            {
+                return false;
+            }
+
+            AddAliasExample(Name, currentNameExample);
+            Name = canonicalName;
+            return true;
+        }
 
         public bool SetGenderIfUnknown(string? gender)
         {
@@ -953,6 +1217,35 @@ public sealed class CharacterDossiersGenerator
             return true;
         }
 
+        public bool SetImportanceLevelIfMissing(int level)
+        {
+            if (ImportanceLevel is not null)
+            {
+                return false;
+            }
+
+            var normalized = CharacterImportance.NormalizeLevel(level);
+            if (normalized is null)
+            {
+                return false;
+            }
+
+            ImportanceLevel = normalized;
+            return true;
+        }
+
+        public bool MergeProfile(CharacterProfile? candidateProfile)
+        {
+            var merged = CharacterProfile.MergeMissing(Profile, candidateProfile);
+            if (CharacterProfile.HasSameContent(Profile, merged))
+            {
+                return false;
+            }
+
+            Profile = merged;
+            return true;
+        }
+
         public CharacterDossier ToDossier()
         {
             var normalizedAliasExamples = aliasExamples
@@ -970,8 +1263,10 @@ public sealed class CharacterDossiersGenerator
                 Description?.Trim() ?? string.Empty,
                 aliases,
                 normalizedAliasExamples,
-                [],
-                string.IsNullOrWhiteSpace(Gender) ? "unknown" : Gender);
+                facts,
+                string.IsNullOrWhiteSpace(Gender) ? "unknown" : Gender,
+                ImportanceLevel,
+                Profile);
         }
 
         private bool AddAliasExample(string alias, string example)
@@ -1025,6 +1320,22 @@ public sealed class CharacterDossiersGenerator
 
             example = match.Example;
             return true;
+        }
+
+        private bool IsGenderCompatible(string? candidateGender)
+        {
+            var normalizedCandidateGender = NormalizeGender(candidateGender);
+            if (string.Equals(normalizedCandidateGender, "unknown", StringComparison.Ordinal))
+            {
+                return true;
+            }
+
+            if (string.Equals(Gender, "unknown", StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            return string.Equals(Gender, normalizedCandidateGender, StringComparison.OrdinalIgnoreCase);
         }
     }
 
@@ -1159,7 +1470,7 @@ public sealed class CharacterDossiersGenerator
         WriteIndented = false
     };
 
-private const string CharacterExtractionSystemPrompt = """
+    private const string CharacterExtractionSystemPrompt = """
 You are an expert Character Extractor.
 
 Task: Analyze the provided text fragments and extract structured data about CHARACTERS/PEOPLE mentioned.
@@ -1175,13 +1486,20 @@ General Rules:
 
 Structured response contract:
 - characters: array of character objects.
-- character.canonicalName: best stable name as in text, without title; do NOT invent patronymics/missing parts.
+- character.canonicalName: primary display name in nominative/base form when grammar or local context supports it, without title; do NOT invent patronymics/missing parts.
 - character.gender: male, female, or unknown.
 - character.aliases: array of name variants found in text. Each alias object MUST contain exactly "form" and "example"; "example" is a short sentence containing this form.
 - character.description: empty string when no personality is revealed; otherwise 2-5 sentences, see below.
+- character.profile: REQUIRED object with appearance, backgroundStatusEducation, psychologicalProfile, speechAndCommunication, and keyRoleBonds.
+- character.profile.keyRoleBonds: REQUIRED array. It may be empty. Each item MUST contain characterName, role, and description.
 
 Name Rules:
-- Canonical Name: Prefer the best stable name as in text WITHOUT title. Do NOT invent patronymics or missing parts of the name.
+- Canonical Name is the primary display name, not necessarily the first surface form found in the text.
+- Prefer nominative/base form for languages with case inflection when grammar or local context supports it.
+- If a mention is declined, possessive, object-case, or otherwise inflected, put that observed form in aliases and use the base form as canonicalName only when the provided text gives enough evidence through agreement, gender, later mentions, apposition, or other nearby context.
+- If the provided text does not support a base form, use the best observed stable name instead of guessing.
+- Do NOT store an inflected alias form as canonicalName when the same input provides enough evidence for the base form.
+- Do NOT invent patronymics or missing parts of the name.
 - If title is needed for disambiguation, include it in canonicalName, but add an alias without title.
 - Aliases: Must belong to the SAME character. Do not merge different characters listed together.
 - Aliases: Pronouns are NEVER aliases. Do not output pronouns such as "he", "she", "they", "он", "она", "они", "его", "её", "им", "их" as alias forms.
@@ -1204,6 +1522,23 @@ Description Rules (Critical):
 - Plain prose only (no lists).
 - Usage of meta-phrases ("in the book", "author says", "в тексте") is FORBIDDEN.
 - Do NOT use double quotes (") inside any string fields.
+
+Profile Rules:
+- Language: RUSSIAN.
+- Fill profile fields only from provided text fragments.
+- Use empty string when there is no evidence.
+- Do not retell scenes.
+- Do not summarize plot events.
+- Do not quote text.
+- Do not explain that information is missing.
+- Prefer stable character properties over one-time actions.
+- Do not add generic positive traits without direct evidence.
+- appearance: visible physical details only, including age impression, body type, face, hair, clothes, posture, gestures, and visually recognizable details.
+- backgroundStatusEducation: social status, profession, education, rank, origin, expertise, or stable life experience relevant to behavior. No biography retelling.
+- psychologicalProfile: temperament, values, fears, desires, contradictions, vulnerabilities, and typical pressure reactions. Infer weakly only when supported by repeated cues.
+- speechAndCommunication: speech style, tone, vocabulary level, sentence style, manner of asking, arguing, joking, commanding, or staying silent. Paraphrase, do not quote.
+- keyRoleBonds: only role-defining relationships. Exclude ordinary relatives, acquaintances, random allies, one-time contacts, and links that only say who met whom.
+- Include a keyRoleBonds item only if removing the relationship would noticeably weaken the character's recognizable role.
 
 Output:
 Populate only the structured response contract. If no characters are found, return an empty characters collection.

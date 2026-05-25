@@ -350,7 +350,7 @@ a, .btn-link {
 
 .character-card {
     height: 100%;
-    min-height: 17rem;
+    min-height: 24rem;
     border-color: #d6dee7;
     border-radius: 8px;
     background: #fff;
@@ -378,7 +378,7 @@ a, .btn-link {
     cursor: pointer;
     display: grid;
     gap: 0.85rem;
-    min-height: 12.5rem;
+    min-height: 19.5rem;
     outline: none;
 }
 
@@ -511,6 +511,53 @@ a, .btn-link {
     font-style: italic;
 }
 
+.character-profile-preview {
+    display: grid;
+    gap: 0.38rem;
+    min-width: 0;
+}
+
+.character-profile-preview-row {
+    display: grid;
+    grid-template-columns: 7.75rem minmax(0, 1fr);
+    gap: 0.55rem;
+    align-items: start;
+    min-width: 0;
+}
+
+.character-profile-preview-label {
+    overflow: hidden;
+    color: #697586;
+    font-size: 0.74rem;
+    font-weight: 700;
+    line-height: 1.35;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.character-profile-preview-value {
+    display: -webkit-box;
+    overflow: hidden;
+    color: #354252;
+    font-size: 0.82rem;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+    -webkit-box-orient: vertical;
+}
+
+.character-line-clamp-1 {
+    -webkit-line-clamp: 1;
+}
+
+.character-line-clamp-2 {
+    -webkit-line-clamp: 2;
+}
+
+.character-profile-preview-muted {
+    color: #9aa4b1;
+    font-style: italic;
+}
+
 .character-aliases {
     display: grid;
     gap: 0.45rem;
@@ -588,6 +635,13 @@ a, .btn-link {
 
 .character-edit-row {
     align-items: center;
+}
+
+.character-edit-section-title {
+    color: #4d5966;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0;
 }
 
 .character-edit-row-action {
@@ -727,6 +781,11 @@ a, .btn-link {
 
     .character-bible-actions {
         justify-content: flex-start;
+    }
+
+    .character-profile-preview-row {
+        grid-template-columns: 1fr;
+        gap: 0.15rem;
     }
 
     .operation-event {

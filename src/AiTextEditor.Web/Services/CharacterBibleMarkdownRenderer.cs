@@ -38,6 +38,34 @@ public sealed class CharacterBibleMarkdownRenderer : ICharacterBibleMarkdownRend
         builder.AppendLine();
         builder.AppendLine(string.IsNullOrWhiteSpace(dossier.Description) ? "No description." : dossier.Description.Trim());
         builder.AppendLine();
+        var profile = CharacterProfile.Normalize(dossier.Profile);
+
+        AppendTextSection(builder, "Appearance", profile.Appearance);
+        AppendTextSection(builder, "Background, status and education", profile.BackgroundStatusEducation);
+        AppendTextSection(builder, "Psychological profile", profile.PsychologicalProfile);
+        AppendTextSection(builder, "Speech and communication", profile.SpeechAndCommunication);
+
+        builder.AppendLine("### Key role bonds");
+        builder.AppendLine();
+
+        if (profile.KeyRoleBonds is not { Count: > 0 })
+        {
+            builder.AppendLine("- none");
+        }
+        else
+        {
+            foreach (var bond in profile.KeyRoleBonds)
+            {
+                builder.Append("- ");
+                builder.Append(NormalizeMarkdownLine(bond.CharacterName));
+                builder.Append(" — ");
+                builder.Append(NormalizeMarkdownLine(bond.Role));
+                builder.Append(": ");
+                builder.AppendLine(NormalizeMarkdownLine(bond.Description));
+            }
+        }
+
+        builder.AppendLine();
         builder.AppendLine("### Aliases");
         builder.AppendLine();
 
@@ -57,7 +85,7 @@ public sealed class CharacterBibleMarkdownRenderer : ICharacterBibleMarkdownRend
         }
 
         builder.AppendLine();
-        builder.AppendLine("### Facts");
+        builder.AppendLine("### Additional facts");
         builder.AppendLine();
 
         if (dossier.Facts.Count == 0)
@@ -77,6 +105,15 @@ public sealed class CharacterBibleMarkdownRenderer : ICharacterBibleMarkdownRend
             }
         }
 
+        builder.AppendLine();
+    }
+
+    private static void AppendTextSection(StringBuilder builder, string title, string? value)
+    {
+        builder.Append("### ");
+        builder.AppendLine(title);
+        builder.AppendLine();
+        builder.AppendLine(string.IsNullOrWhiteSpace(value) ? "Not specified." : value.Trim());
         builder.AppendLine();
     }
 

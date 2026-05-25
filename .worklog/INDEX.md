@@ -24,6 +24,8 @@ If this index conflicts with a numbered document, trust the numbered document.
 | 0014 | spec | Remembered book folder loading | Remember the last loaded book path in program settings and make Load use a selected or remembered disk path with derived companion bibles. | 0008, 0012 |
 | 0015 | spec | Fixed MudBlazor shell navigation | Keep left navigation fixed in the MudBlazor app shell and use MudBlazor's default overlay layers for dialogs. | 0007, 0013 |
 | 0016 | spec | Background character bible generation | Let character bible generation continue across page navigation, keep manual editing read-only while it runs, and make extraction batching configurable with overlap. | 0003, 0007, 0009, 0011, 0012 |
+| 0017 | spec | Character importance level | Add a stable nullable Character Bible importance level derived from transient resolved-character activity during generation. | 0003, 0004, 0012, 0016 |
+| 0018 | spec | Character dossier structured profile | Add a typed five-section character profile, thread it through generation, and make cards, editing, search, and Markdown projection prefer it over legacy facts. | 0012, 0013, 0016, 0017 |
 
 ## Archived documents
 

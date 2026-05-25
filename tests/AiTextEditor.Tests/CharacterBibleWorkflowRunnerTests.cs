@@ -70,6 +70,103 @@ public sealed class CharacterBibleWorkflowRunnerTests
     }
 
     [Fact]
+    public async Task RunAsync_FullGenerationSetsImportanceWhenNull()
+    {
+        var runner = CreateRunner(
+            "John arrived.",
+            Response(new CharacterExtractionCharacter("John", "unknown", [], "")),
+            out var dossierService,
+            out _);
+
+        dossierService.UpsertDossier(new CharacterDossier(
+            CharacterId: "c1",
+            Name: "John",
+            Description: "",
+            Aliases: [],
+            AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
+            Facts: [],
+            Gender: "unknown"));
+
+        await runner.RunAsync();
+
+        var updated = dossierService.TryGetDossier("c1");
+        Assert.NotNull(updated);
+        Assert.InRange(updated!.ImportanceLevel.GetValueOrDefault(), 1, 10);
+    }
+
+    [Fact]
+    public async Task RunAsync_FullGenerationDoesNotOverwriteExistingImportance()
+    {
+        var runner = CreateRunner(
+            "John arrived.",
+            Response(new CharacterExtractionCharacter("John", "unknown", [], "")),
+            out var dossierService,
+            out _);
+
+        dossierService.UpsertDossier(new CharacterDossier(
+            CharacterId: "c1",
+            Name: "John",
+            Description: "",
+            Aliases: [],
+            AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
+            Facts: [],
+            Gender: "unknown",
+            ImportanceLevel: 8));
+
+        await runner.RunAsync();
+
+        var updated = dossierService.TryGetDossier("c1");
+        Assert.NotNull(updated);
+        Assert.Equal(8, updated!.ImportanceLevel);
+    }
+
+    [Fact]
+    public async Task RunAsync_IncrementalUpdateDoesNotChangeExistingImportance()
+    {
+        var runner = CreateRunner(
+            "John arrived.",
+            Response(new CharacterExtractionCharacter("John", "unknown", [], "")),
+            out var dossierService,
+            out _);
+
+        dossierService.UpsertDossier(new CharacterDossier(
+            CharacterId: "c1",
+            Name: "John",
+            Description: "",
+            Aliases: [],
+            AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
+            Facts: [],
+            Gender: "unknown",
+            ImportanceLevel: 9));
+
+        await runner.RunAsync(new CharacterBibleWorkflowInput(["p1"]));
+
+        var updated = dossierService.TryGetDossier("c1");
+        Assert.NotNull(updated);
+        Assert.Equal(9, updated!.ImportanceLevel);
+    }
+
+    [Fact]
+    public async Task RunAsync_IncrementalUpdateCapsNewCharacterImportance()
+    {
+        var repeatedNewCharacter = Enumerable
+            .Range(0, 12)
+            .Select(_ => new CharacterExtractionCharacter("Newcomer", "unknown", [], ""))
+            .ToArray();
+        var runner = CreateRunner(
+            "Newcomer arrived.",
+            Response(repeatedNewCharacter),
+            out var dossierService,
+            out _);
+
+        await runner.RunAsync(new CharacterBibleWorkflowInput(["p1"]));
+
+        var dossier = Assert.Single(dossierService.GetDossiers().Characters);
+        Assert.NotNull(dossier.ImportanceLevel);
+        Assert.InRange(dossier.ImportanceLevel.Value, 1, 4);
+    }
+
+    [Fact]
     public async Task RunAsync_AmbiguousCandidate_DoesNotCreateNewDossier()
     {
         var runner = CreateRunner(
@@ -119,6 +216,7 @@ public sealed class CharacterBibleWorkflowRunnerTests
 
         Assert.Equal(2, dossierService.GetDossiers().Characters.Count);
         Assert.DoesNotContain(dossierService.FindByNameOrAlias("Alex Prime"), dossier => dossier.Name == "Alex Prime");
+        Assert.All(dossierService.GetDossiers().Characters, dossier => Assert.Null(dossier.ImportanceLevel));
     }
 
     [Fact]

@@ -103,7 +103,9 @@ public sealed class CharacterDossiersPlugin
                 c.CharacterId,
                 c.Name,
                 c.Gender,
+                c.ImportanceLevel,
                 c.Description,
+                CharacterProfile.Normalize(c.Profile),
                 c.Aliases,
                 c.AliasExamples))
             .ToList();
@@ -155,7 +157,8 @@ public sealed class CharacterDossiersPlugin
                 gender: gender,
                 aliasExamples: aliasExamples,
                 facts: null,
-                description: null);
+                description: null,
+                profile: null);
 
             var dossiers = dossierService.GetDossiers();
             logger.LogInformation("Character dossier updated: {CharacterId}", updated.CharacterId);
@@ -167,7 +170,8 @@ public sealed class CharacterDossiersPlugin
             gender,
             aliasExamples,
             facts: null,
-            description: null);
+            description: null,
+            profile: null);
 
         return new CharacterDossiersCommandResult(
             result.DossiersId,
