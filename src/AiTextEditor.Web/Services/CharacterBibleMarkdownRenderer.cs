@@ -85,27 +85,6 @@ public sealed class CharacterBibleMarkdownRenderer : ICharacterBibleMarkdownRend
         }
 
         builder.AppendLine();
-        builder.AppendLine("### Additional facts");
-        builder.AppendLine();
-
-        if (dossier.Facts.Count == 0)
-        {
-            builder.AppendLine("- none");
-        }
-        else
-        {
-            foreach (var fact in dossier.Facts.OrderBy(fact => fact.Key, StringComparer.OrdinalIgnoreCase).ThenBy(fact => fact.Value, StringComparer.OrdinalIgnoreCase))
-            {
-                builder.Append("- ");
-                builder.Append(NormalizeMarkdownLine(fact.Key));
-                builder.Append(": ");
-                builder.AppendLine(NormalizeMarkdownLine(fact.Value));
-                builder.Append("  Evidence: ");
-                builder.AppendLine(NormalizeMarkdownLine(fact.Example));
-            }
-        }
-
-        builder.AppendLine();
     }
 
     private static void AppendTextSection(StringBuilder builder, string title, string? value)

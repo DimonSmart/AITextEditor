@@ -156,7 +156,6 @@ public sealed class CharacterDossiersPlugin
                 name: name.Trim(),
                 gender: gender,
                 aliasExamples: aliasExamples,
-                facts: null,
                 description: null,
                 profile: null);
 
@@ -169,7 +168,6 @@ public sealed class CharacterDossiersPlugin
             name.Trim(),
             gender,
             aliasExamples,
-            facts: null,
             description: null,
             profile: null);
 

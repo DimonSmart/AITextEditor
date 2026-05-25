@@ -157,53 +157,7 @@
                         </MudStack>
                     </MudExpansionPanel>
 
-                    <MudExpansionPanel Text="@($"Legacy facts ({factRows.Count})")" Expanded="false">
-                        <MudStack Spacing="2">
-                            @foreach (var row in factRows)
-                            {
-                                <MudGrid Spacing="2" Class="character-edit-row">
-                                    <MudItem xs="12" sm="3">
-                                        <MudTextField @bind-Value="row.Key"
-                                                      Label="Key"
-                                                      Variant="MudBlazor.Variant.Outlined"
-                                                      Margin="MudBlazor.Margin.Dense"
-                                                      Immediate="true" />
-                                    </MudItem>
-                                    <MudItem xs="12" sm="3">
-                                        <MudTextField @bind-Value="row.Value"
-                                                      Label="Value"
-                                                      Variant="MudBlazor.Variant.Outlined"
-                                                      Margin="MudBlazor.Margin.Dense"
-                                                      Immediate="true" />
-                                    </MudItem>
-                                    <MudItem xs="12" sm="5">
-                                        <MudTextField @bind-Value="row.Example"
-                                                      Label="Example"
-                                                      Variant="MudBlazor.Variant.Outlined"
-                                                      Margin="MudBlazor.Margin.Dense"
-                                                      Immediate="true" />
-                                    </MudItem>
-                                    <MudItem xs="12" sm="1" Class="character-edit-row-action">
-                                        <MudTooltip Text="Remove fact">
-                                            <MudIconButton Icon="@Icons.Material.Filled.Delete"
-                                                           Color="MudBlazor.Color.Error"
-                                                           Size="MudBlazor.Size.Small"
-                                                           OnClick="@(() => RemoveFact(row))"
-                                                           aria-label="Remove fact" />
-                                        </MudTooltip>
-                                    </MudItem>
-                                </MudGrid>
-                            }
-
-                            <MudButton Variant="MudBlazor.Variant.Outlined"
-                                       Color="MudBlazor.Color.Primary"
-                                       StartIcon="@Icons.Material.Filled.Add"
-                                       OnClick="AddFact">
-                                Add fact
-                            </MudButton>
-                        </MudStack>
-                    </MudExpansionPanel>
-                </MudExpansionPanels>
+                    </MudExpansionPanels>
             </MudStack>
         </MudForm>
     </DialogContent>
@@ -228,7 +182,6 @@
     private EditableCharacterDossier model = new();
     private readonly List<AliasRow> aliasRows = [];
     private readonly List<RoleBondRow> roleBondRows = [];
-    private readonly List<FactRow> factRows = [];
 
     [CascadingParameter]
     private IMudDialogInstance MudDialog { get; set; } = null!;
@@ -246,8 +199,6 @@
             bond.CharacterName,
             bond.Role,
             bond.Description)) ?? []);
-        factRows.Clear();
-        factRows.AddRange(model.Facts.Select(fact => new FactRow(fact.Key, fact.Value, fact.Example)));
     }
 
     private void AddAlias()
@@ -268,16 +219,6 @@
     private void RemoveRoleBond(RoleBondRow row)
     {
         roleBondRows.Remove(row);
-    }
-
-    private void AddFact()
-    {
-        factRows.Add(new FactRow());
-    }
-
-    private void RemoveFact(FactRow row)
-    {
-        factRows.Remove(row);
     }
 
     private async Task SaveAsync()
@@ -321,14 +262,6 @@
             }
         }
 
-        var facts = factRows
-            .Where(row =>
-                !string.IsNullOrWhiteSpace(row.Key)
-                && !string.IsNullOrWhiteSpace(row.Value)
-                && !string.IsNullOrWhiteSpace(row.Example))
-            .Select(row => new CharacterFact(row.Key.Trim(), row.Value.Trim(), row.Example.Trim()))
-            .ToList();
-
         var profile = CharacterProfile.Normalize(new CharacterProfile(
             model.Appearance,
             model.BackgroundStatusEducation,
@@ -351,7 +284,6 @@
             model.Description.Trim(),
             aliasExamples.Keys.OrderBy(alias => alias, StringComparer.OrdinalIgnoreCase).ToList(),
             aliasExamples,
-            facts,
             model.Gender,
             CharacterImportance.NormalizeLevel(model.ImportanceLevel),
             profile);
@@ -387,8 +319,6 @@
         public IReadOnlyDictionary<string, string> AliasExamples { get; private set; } =
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-        public IReadOnlyList<CharacterFact> Facts { get; private set; } = [];
-
         public static EditableCharacterDossier From(CharacterDossier? dossier)
         {
             if (dossier is null)
@@ -410,7 +340,6 @@
                 SpeechAndCommunication = profile.SpeechAndCommunication,
                 Profile = profile,
                 AliasExamples = new Dictionary<string, string>(dossier.AliasExamples, StringComparer.OrdinalIgnoreCase),
-                Facts = dossier.Facts.ToList()
             };
         }
     }
@@ -431,12 +360,4 @@
         public string Description { get; set; } = description;
     }
 
-    private sealed class FactRow(string key = "", string value = "", string example = "")
-    {
-        public string Key { get; set; } = key;
-
-        public string Value { get; set; } = value;
-
-        public string Example { get; set; } = example;
     }
-}

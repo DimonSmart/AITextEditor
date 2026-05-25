@@ -117,7 +117,6 @@ public sealed class CharacterDossiersGeneratorTests
             {
                 ["John"] = "John examined the patient."
             },
-            Facts: [],
             Gender: "unknown"));
 
         var repository = new MarkdownDocumentRepository();
@@ -229,7 +228,6 @@ public sealed class CharacterDossiersGeneratorTests
             {
                 ["John"] = "John arrived."
             },
-            Facts: [new AiTextEditor.Core.Model.CharacterFact("legacy", "kept", "Manual fact.")],
             Gender: "unknown",
             Profile: new AiTextEditor.Core.Model.CharacterProfile(
                 PsychologicalProfile: "Manual psychological profile.",
@@ -276,8 +274,6 @@ public sealed class CharacterDossiersGeneratorTests
         Assert.Equal("Former student.", dossier.Profile.BackgroundStatusEducation);
         Assert.Equal("Manual psychological profile.", dossier.Profile.PsychologicalProfile);
         Assert.Equal("Short answers.", dossier.Profile.SpeechAndCommunication);
-        Assert.Single(dossier.Facts);
-
         var bonds = dossier.Profile.KeyRoleBonds!.ToDictionary(
             bond => $"{bond.CharacterName}|{bond.Role}",
             StringComparer.OrdinalIgnoreCase);
@@ -380,7 +376,6 @@ public sealed class CharacterDossiersGeneratorTests
             {
                 ["Johnny"] = "Johnny waved."
             },
-            Facts: [],
             Gender: "unknown"));
 
         var repository = new MarkdownDocumentRepository();

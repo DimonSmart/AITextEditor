@@ -1063,7 +1063,6 @@ public sealed class CharacterDossiersGenerator
     private sealed class ProfileAccumulator
     {
         private readonly Dictionary<string, string> aliasExamples = new(StringComparer.OrdinalIgnoreCase);
-        private readonly List<CharacterFact> facts = [];
 
         public string Id { get; }
         public string Name { get; private set; }
@@ -1081,7 +1080,6 @@ public sealed class CharacterDossiersGenerator
             Gender = string.IsNullOrWhiteSpace(dossier.Gender) ? "unknown" : dossier.Gender;
             ImportanceLevel = dossier.ImportanceLevel;
             Profile = CharacterProfile.Normalize(dossier.Profile);
-            facts.AddRange(dossier.Facts);
 
             MergeAliasExamples(dossier.AliasExamples);
         }
@@ -1266,7 +1264,6 @@ public sealed class CharacterDossiersGenerator
                 Description?.Trim() ?? string.Empty,
                 aliases,
                 normalizedAliasExamples,
-                facts,
                 string.IsNullOrWhiteSpace(Gender) ? "unknown" : Gender,
                 ImportanceLevel,
                 Profile);

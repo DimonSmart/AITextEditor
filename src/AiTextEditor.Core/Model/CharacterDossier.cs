@@ -8,7 +8,6 @@ public sealed record CharacterDossier(
     string Description,
     IReadOnlyList<string> Aliases,
     IReadOnlyDictionary<string, string> AliasExamples,
-    IReadOnlyList<CharacterFact> Facts,
     string Gender = "unknown",
     int? ImportanceLevel = null,
     CharacterProfile? Profile = null);

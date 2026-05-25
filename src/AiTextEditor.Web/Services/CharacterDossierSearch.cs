@@ -50,11 +50,7 @@ public static class CharacterDossierSearch
             || (profile.KeyRoleBonds?.Any(bond =>
                 Contains(bond.CharacterName, query)
                 || Contains(bond.Role, query)
-                || Contains(bond.Description, query)) == true)
-            || dossier.Facts.Any(fact =>
-                Contains(fact.Key, query)
-                || Contains(fact.Value, query)
-                || Contains(fact.Example, query));
+                || Contains(bond.Description, query)) == true);
     }
 
     private static bool Contains(string? value, string query)

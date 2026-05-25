@@ -53,7 +53,6 @@ public sealed class CharacterBibleWorkflowRunnerTests
             {
                 ["John"] = "John arrived."
             },
-            Facts: [],
             Gender: "unknown"));
 
         var result = await runner.RunAsync(new CharacterBibleWorkflowInput(["p2"]));
@@ -84,7 +83,6 @@ public sealed class CharacterBibleWorkflowRunnerTests
             Description: "",
             Aliases: [],
             AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
-            Facts: [],
             Gender: "unknown"));
 
         await runner.RunAsync();
@@ -109,7 +107,6 @@ public sealed class CharacterBibleWorkflowRunnerTests
             Description: "",
             Aliases: [],
             AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
-            Facts: [],
             Gender: "unknown",
             ImportanceLevel: 8));
 
@@ -135,7 +132,6 @@ public sealed class CharacterBibleWorkflowRunnerTests
             Description: "",
             Aliases: [],
             AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
-            Facts: [],
             Gender: "unknown",
             ImportanceLevel: 9));
 
@@ -188,7 +184,6 @@ public sealed class CharacterBibleWorkflowRunnerTests
             {
                 ["Alex Prime"] = "Alex Prime opened the door."
             },
-            Facts: [],
             Gender: "unknown"));
 
         dossierService.UpsertDossier(new CharacterDossier(
@@ -200,7 +195,6 @@ public sealed class CharacterBibleWorkflowRunnerTests
             {
                 ["Alex Prime"] = "Alex Prime closed the window."
             },
-            Facts: [],
             Gender: "unknown"));
 
         var result = await runner.RunAsync();

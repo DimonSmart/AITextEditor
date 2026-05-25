@@ -89,7 +89,6 @@ public sealed class CharacterDossierService
         string? name,
         string? gender,
         IReadOnlyDictionary<string, string>? aliasExamples,
-        IReadOnlyCollection<CharacterFact>? facts,
         string? description,
         CharacterProfile? profile = null)
     {
@@ -100,7 +99,7 @@ public sealed class CharacterDossierService
             var existing = TryGetDossier(characterId)
                 ?? throw new InvalidOperationException($"character_not_found: {characterId}");
 
-            var merged = Merge(existing, name, gender, aliasExamples, facts, description, profile);
+            var merged = Merge(existing, name, gender, aliasExamples, description, profile);
             return UpsertDossier(merged);
         }
     }
@@ -109,7 +108,6 @@ public sealed class CharacterDossierService
         string name,
         string? gender,
         IReadOnlyDictionary<string, string>? aliasExamples,
-        IReadOnlyCollection<CharacterFact>? facts,
         string? description,
         CharacterProfile? profile = null)
     {
@@ -146,7 +144,7 @@ public sealed class CharacterDossierService
 
             if (distinct.Count == 0)
             {
-                var created = CreateNew(canonicalName, gender, aliasExamples, facts, description, profile);
+                var created = CreateNew(canonicalName, gender, aliasExamples, description, profile);
                 var saved = UpsertDossier(created);
                 return ResolveAndUpsertResult.Created(saved.CharacterId, dossiers.DossiersId, dossiers.Version);
             }
@@ -154,7 +152,7 @@ public sealed class CharacterDossierService
             if (distinct.Count == 1)
             {
                 var existing = distinct[0];
-                var merged = Merge(existing, null, gender, aliasExamples, facts, description, profile);
+                var merged = Merge(existing, null, gender, aliasExamples, description, profile);
                 var saved = UpsertDossier(merged);
                 return ResolveAndUpsertResult.Updated(saved.CharacterId, dossiers.DossiersId, dossiers.Version);
             }
@@ -166,7 +164,7 @@ public sealed class CharacterDossierService
             if (exactByName.Count == 1)
             {
                 var existing = exactByName[0];
-                var merged = Merge(existing, null, gender, aliasExamples, facts, description, profile);
+                var merged = Merge(existing, null, gender, aliasExamples, description, profile);
                 var saved = UpsertDossier(merged);
                 return ResolveAndUpsertResult.Updated(saved.CharacterId, dossiers.DossiersId, dossiers.Version);
             }
@@ -268,13 +266,11 @@ public sealed class CharacterDossierService
         string name,
         string? gender,
         IReadOnlyDictionary<string, string>? aliasExamples,
-        IReadOnlyCollection<CharacterFact>? facts,
         string? description,
         CharacterProfile? profile)
     {
         var normalizedName = name.Trim();
         var normalizedAliasExamples = NormalizeAliasExamples(aliasExamples);
-        var normalizedFacts = NormalizeFacts(facts);
 
         using var md5 = System.Security.Cryptography.MD5.Create();
         var hash = md5.ComputeHash(System.Text.Encoding.UTF8.GetBytes(normalizedName));
@@ -286,7 +282,6 @@ public sealed class CharacterDossierService
             (description ?? string.Empty).Trim(),
             normalizedAliasExamples.Keys.OrderBy(a => a, StringComparer.OrdinalIgnoreCase).ToList(),
             normalizedAliasExamples,
-            normalizedFacts,
             NormalizeGender(gender),
             ImportanceLevel: null,
             Profile: CharacterProfile.Normalize(profile));
@@ -297,7 +292,6 @@ public sealed class CharacterDossierService
         string? name,
         string? gender,
         IReadOnlyDictionary<string, string>? aliasExamples,
-        IReadOnlyCollection<CharacterFact>? facts,
         string? description,
         CharacterProfile? profile = null)
     {
@@ -317,35 +311,6 @@ public sealed class CharacterDossierService
                 if (!normalizedAliasExamples.ContainsKey(trimmedAlias))
                 {
                     normalizedAliasExamples[trimmedAlias] = example.Trim();
-                }
-            }
-        }
-
-        var normalizedFacts = NormalizeFacts(existing.Facts);
-        if (facts is not null)
-        {
-            foreach (var fact in facts)
-            {
-                if (fact is null)
-                {
-                    continue;
-                }
-
-                var key = (fact.Key ?? string.Empty).Trim();
-                var value = (fact.Value ?? string.Empty).Trim();
-                var example = (fact.Example ?? string.Empty).Trim();
-                if (key.Length == 0 || value.Length == 0 || example.Length == 0)
-                {
-                    continue;
-                }
-
-                var exists = normalizedFacts.Any(f =>
-                    string.Equals(f.Key, key, StringComparison.OrdinalIgnoreCase) &&
-                    string.Equals(f.Value, value, StringComparison.OrdinalIgnoreCase));
-
-                if (!exists)
-                {
-                    normalizedFacts.Add(new CharacterFact(key, value, example));
                 }
             }
         }
@@ -375,7 +340,6 @@ public sealed class CharacterDossierService
             Gender = resolvedGender,
             AliasExamples = normalizedAliasExamples,
             Aliases = aliases,
-            Facts = normalizedFacts,
             Profile = CharacterProfile.MergeMissing(existing.Profile, profile)
         };
     }
@@ -383,7 +347,6 @@ public sealed class CharacterDossierService
     private static CharacterDossier NormalizeDossier(CharacterDossier dossier)
     {
         var aliasExamples = NormalizeAliasExamples(dossier.AliasExamples);
-        var facts = NormalizeFacts(dossier.Facts);
         var aliases = aliasExamples.Keys.OrderBy(a => a, StringComparer.OrdinalIgnoreCase).ToList();
 
         return dossier with
@@ -394,7 +357,6 @@ public sealed class CharacterDossierService
             Gender = NormalizeGender(dossier.Gender),
             AliasExamples = aliasExamples,
             Aliases = aliases,
-            Facts = facts,
             ImportanceLevel = CharacterImportance.NormalizeLevel(dossier.ImportanceLevel),
             Profile = CharacterProfile.Normalize(dossier.Profile)
         };
@@ -428,45 +390,6 @@ public sealed class CharacterDossierService
         }
 
         return normalized;
-    }
-
-    private static List<CharacterFact> NormalizeFacts(IReadOnlyCollection<CharacterFact>? facts)
-    {
-        if (facts is null)
-        {
-            return [];
-        }
-
-        var normalized = new List<CharacterFact>(facts.Count);
-        foreach (var fact in facts)
-        {
-            if (fact is null)
-            {
-                continue;
-            }
-
-            var key = (fact.Key ?? string.Empty).Trim();
-            var value = (fact.Value ?? string.Empty).Trim();
-            var example = (fact.Example ?? string.Empty).Trim();
-            if (key.Length == 0 || value.Length == 0 || example.Length == 0)
-            {
-                continue;
-            }
-
-            var exists = normalized.Any(f =>
-                string.Equals(f.Key, key, StringComparison.OrdinalIgnoreCase) &&
-                string.Equals(f.Value, value, StringComparison.OrdinalIgnoreCase));
-
-            if (!exists)
-            {
-                normalized.Add(new CharacterFact(key, value, example));
-            }
-        }
-
-        return normalized
-            .OrderBy(f => f.Key, StringComparer.OrdinalIgnoreCase)
-            .ThenBy(f => f.Value, StringComparer.OrdinalIgnoreCase)
-            .ToList();
     }
 
     private static string NormalizeGender(string? raw)
@@ -522,8 +445,6 @@ public sealed class CharacterDossierService
 
         public Dictionary<string, string>? AliasExamples { get; set; }
 
-        public List<CharacterFactYaml>? Facts { get; set; }
-
         public string? Gender { get; set; }
 
         public int? ImportanceLevel { get; set; }
@@ -538,7 +459,6 @@ public sealed class CharacterDossierService
                 Description ?? string.Empty,
                 Aliases ?? [],
                 AliasExamples ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
-                Facts?.Select(fact => fact.ToModel()).ToList() ?? [],
                 Gender ?? "unknown",
                 ImportanceLevel,
                 Profile?.ToModel());
@@ -585,25 +505,9 @@ public sealed class CharacterDossierService
         }
     }
 
-    private sealed class CharacterFactYaml
-    {
-        public string? Key { get; set; }
-
-        public string? Value { get; set; }
-
-        public string? Example { get; set; }
-
-        public CharacterFact ToModel()
-        {
-            return new CharacterFact(
-                Key ?? string.Empty,
-                Value ?? string.Empty,
-                Example ?? string.Empty);
-        }
     }
-}
 
-public sealed record ResolveAndUpsertResult(
+    public sealed record ResolveAndUpsertResult(
     string DossiersId,
     int Version,
     string Status,

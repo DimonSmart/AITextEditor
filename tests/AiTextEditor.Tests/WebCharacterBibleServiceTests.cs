@@ -59,7 +59,6 @@ public sealed class WebCharacterBibleServiceTests
                     {
                         ["Al"] = "Al opened the notebook."
                     },
-                    [new CharacterFact("role", "editor", "Alice revised the chapter.")],
                     "female",
                     Profile: FullProfile())
             ]);
@@ -77,15 +76,11 @@ public sealed class WebCharacterBibleServiceTests
         Assert.Contains("### Key role bonds", markdown, StringComparison.Ordinal);
         Assert.Contains("- Bob — trusted rival: Their contrast defines Alice's choices.", markdown, StringComparison.Ordinal);
         Assert.Contains("- Al: Al opened the notebook.", markdown, StringComparison.Ordinal);
-        Assert.Contains("### Additional facts", markdown, StringComparison.Ordinal);
-        Assert.Contains("- role: editor", markdown, StringComparison.Ordinal);
-        Assert.Contains("Evidence: Alice revised the chapter.", markdown, StringComparison.Ordinal);
         Assert.True(markdown.IndexOf("### Description", StringComparison.Ordinal) < markdown.IndexOf("### Appearance", StringComparison.Ordinal));
         Assert.True(markdown.IndexOf("### Appearance", StringComparison.Ordinal) < markdown.IndexOf("### Background, status and education", StringComparison.Ordinal));
         Assert.True(markdown.IndexOf("### Background, status and education", StringComparison.Ordinal) < markdown.IndexOf("### Psychological profile", StringComparison.Ordinal));
         Assert.True(markdown.IndexOf("### Psychological profile", StringComparison.Ordinal) < markdown.IndexOf("### Speech and communication", StringComparison.Ordinal));
         Assert.True(markdown.IndexOf("### Speech and communication", StringComparison.Ordinal) < markdown.IndexOf("### Key role bonds", StringComparison.Ordinal));
-        Assert.True(markdown.IndexOf("### Key role bonds", StringComparison.Ordinal) < markdown.IndexOf("### Additional facts", StringComparison.Ordinal));
     }
 
     [Theory]
@@ -151,7 +146,6 @@ public sealed class WebCharacterBibleServiceTests
             {
                 ["Al"] = "Al opened the notebook."
             },
-            [new CharacterFact("role", "editor", "Alice revised the chapter.")],
             "female"));
 
         await store.SaveAsync(characterBiblePath, source, CancellationToken.None);
@@ -166,10 +160,6 @@ public sealed class WebCharacterBibleServiceTests
         Assert.Equal("female", dossier.Gender);
         Assert.Equal(["Al"], dossier.Aliases);
         Assert.Equal("Al opened the notebook.", dossier.AliasExamples["Al"]);
-        var fact = Assert.Single(dossier.Facts);
-        Assert.Equal("role", fact.Key);
-        Assert.Equal("editor", fact.Value);
-        Assert.Equal("Alice revised the chapter.", fact.Example);
     }
 
     [Fact]
@@ -190,7 +180,6 @@ public sealed class WebCharacterBibleServiceTests
             {
                 ["Al"] = "Al opened the notebook."
             },
-            [new CharacterFact("role", "editor", "Alice revised the chapter.")],
             "female"));
 
         Directory.CreateDirectory(directory);
@@ -234,7 +223,6 @@ public sealed class WebCharacterBibleServiceTests
             "Keeps careful notes.",
             [],
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
-            [],
             "female"));
         await File.WriteAllTextAsync(characterBiblePath, characterDossiers.SaveToJson());
         var workspace = new EditorWorkspaceState();
@@ -265,7 +253,6 @@ public sealed class WebCharacterBibleServiceTests
             "Keeps careful notes.",
             [],
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
-            [],
             "female"));
 
         await workspace.SaveCharacterBibleAsync();
@@ -290,7 +277,6 @@ public sealed class WebCharacterBibleServiceTests
             string.Empty,
             [],
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
-            [],
             "female")));
     }
 
@@ -308,11 +294,6 @@ public sealed class WebCharacterBibleServiceTests
                 ["Al"] = "Al opened the notebook.",
                 ["alice"] = "alice checked the facts."
             },
-            [
-                new CharacterFact("role", "editor", "Alice revised the chapter."),
-                new CharacterFact("role", "Editor", "Duplicate by key and value should normalize away."),
-                new CharacterFact("empty", "", "ignored")
-            ],
             "Female",
             7,
             FullProfile()));
@@ -339,10 +320,6 @@ public sealed class WebCharacterBibleServiceTests
         Assert.Equal(["Al", "alice"], dossier.Aliases);
         Assert.Equal("Al opened the notebook.", dossier.AliasExamples["Al"]);
         Assert.Equal("alice checked the facts.", dossier.AliasExamples["alice"]);
-        var fact = Assert.Single(dossier.Facts);
-        Assert.Equal("role", fact.Key);
-        Assert.Equal("editor", fact.Value);
-        Assert.Equal("Alice revised the chapter.", fact.Example);
     }
 
     [Fact]
@@ -413,7 +390,6 @@ public sealed class WebCharacterBibleServiceTests
             "",
             [],
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
-            [],
             "unknown",
             Profile: new CharacterProfile(
                 "  silver hair  ",
@@ -480,7 +456,6 @@ public sealed class WebCharacterBibleServiceTests
             "",
             [],
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
-            [],
             "unknown",
             input));
 
@@ -491,8 +466,7 @@ public sealed class WebCharacterBibleServiceTests
     [Theory]
     [InlineData("alice")]
     [InlineData("NOTE KEEPER")]
-    [InlineData("EDITOR")]
-    public void CharacterDossierSearch_FiltersByNameAliasAndFactValueCaseInsensitively(string query)
+    public void CharacterDossierSearch_FiltersByNameAndAliasCaseInsensitively(string query)
     {
         var dossiers = new[]
         {
@@ -505,7 +479,6 @@ public sealed class WebCharacterBibleServiceTests
                 {
                     ["Note Keeper"] = "Al opened the notebook."
                 },
-                [new CharacterFact("role", "editor", "Alice revised the chapter.")],
                 "female"),
             new CharacterDossier(
                 "c2",
@@ -513,7 +486,6 @@ public sealed class WebCharacterBibleServiceTests
                 "Tracks deadlines.",
                 [],
                 new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
-                [new CharacterFact("role", "planner", "Bob updated the outline.")],
                 "male")
         };
 
@@ -539,7 +511,6 @@ public sealed class WebCharacterBibleServiceTests
                 "Keeps careful notes.",
                 [],
                 new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
-                [],
                 "female",
                 Profile: FullProfile()),
             new CharacterDossier(
@@ -548,7 +519,6 @@ public sealed class WebCharacterBibleServiceTests
                 "",
                 [],
                 new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
-                [],
                 "unknown")
         };
 
@@ -569,7 +539,6 @@ public sealed class WebCharacterBibleServiceTests
                 "Keeps careful notes.",
                 ["Al"],
                 new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
-                [new CharacterFact("role", "editor", "Alice revised the chapter.")],
                 "female"),
             new CharacterDossier(
                 "c2",
@@ -577,7 +546,6 @@ public sealed class WebCharacterBibleServiceTests
                 "",
                 [],
                 new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
-                [],
                 "male")
         };
 
@@ -892,7 +860,6 @@ public sealed class WebCharacterBibleServiceTests
                     {
                         ["Al"] = "Al opened the notebook."
                     },
-                    [],
                     "female")
             ]);
         return new CharacterBibleWorkflowOutput(dossiers, status, 0, 1, 0, 0, 0, []);
