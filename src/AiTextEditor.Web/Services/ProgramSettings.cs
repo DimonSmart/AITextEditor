@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using AiTextEditor.Agent;
+using AiTextEditor.Agent.CharacterBible;
 
 namespace AiTextEditor.Web.Services;
 
@@ -131,14 +132,14 @@ public sealed class CharacterBibleExtractionSettings
         };
     }
 
-    public CursorAgentLimits ToCursorAgentLimits()
+    public CharacterBibleExtractionLimits ToCharacterBibleExtractionLimits()
     {
-        return new CursorAgentLimits
+        return new CharacterBibleExtractionLimits
         {
-            MaxElements = MaxParagraphsPerBatch,
-            MaxBytes = MaxBatchBytes,
-            BatchOverlapElements = OverlapParagraphs,
-            FullScanMaxElements = FullScanMaxItems
+            MaxParagraphsPerBatch = MaxParagraphsPerBatch,
+            MaxBatchBytes = MaxBatchBytes,
+            OverlapParagraphs = OverlapParagraphs,
+            FullScanMaxItems = FullScanMaxItems
         };
     }
 }
@@ -339,7 +340,7 @@ public static class ProgramSettingsValidation
             server.IgnoreSslErrors,
             server.LogRequestBody,
             TimeSpan.FromMinutes(server.TimeoutMinutes),
-            settings.CharacterBibleExtraction.ToCursorAgentLimits());
+            settings.CharacterBibleExtraction.ToCharacterBibleExtractionLimits());
     }
 
     private static string DisplayServerName(AiServerSettings server)
@@ -368,4 +369,4 @@ public sealed record ValidatedAiConnectionSettings(
     bool IgnoreSslErrors,
     bool LogRequestBody,
     TimeSpan Timeout,
-    CursorAgentLimits CharacterBibleLimits);
+    CharacterBibleExtractionLimits CharacterBibleLimits);

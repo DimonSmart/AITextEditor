@@ -8,14 +8,19 @@
 
   <ItemGroup>
     <PackageReference Include="DimonSmart.AiUtils" Version="1.25624.1027" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.6" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.6" />
-    <PackageReference Include="Microsoft.Extensions.AI.OpenAI" Version="10.5.0" />
-    <PackageReference Include="Microsoft.Agents.AI.Workflows" Version="1.4.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.8" />
+    <PackageReference Include="Microsoft.Extensions.AI.OpenAI" Version="10.6.0" />
+    <PackageReference Include="Microsoft.Agents.AI.Workflows" Version="1.6.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\AiTextEditor.Core\AiTextEditor.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="CharacterBible\Extraction\Prompts\character-extraction.system.md"
+                      LogicalName="AiTextEditor.Agent.CharacterBible.Extraction.Prompts.character-extraction.system.md" />
   </ItemGroup>
 
   

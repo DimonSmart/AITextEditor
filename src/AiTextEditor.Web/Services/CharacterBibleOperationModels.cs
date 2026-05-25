@@ -1,4 +1,5 @@
 using AiTextEditor.Agent;
+using AiTextEditor.Agent.CharacterBible;
 
 namespace AiTextEditor.Web.Services;
 
@@ -57,3 +58,4 @@ public sealed record CharacterBibleCommandParseResult(
     public static CharacterBibleCommandParseResult Rejected(string error)
         => new(false, null, error);
 }
+

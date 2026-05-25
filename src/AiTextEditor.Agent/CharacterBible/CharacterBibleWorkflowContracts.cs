@@ -1,6 +1,6 @@
 using AiTextEditor.Core.Model;
 
-namespace AiTextEditor.Agent;
+namespace AiTextEditor.Agent.CharacterBible;
 
 public sealed record CharacterBibleWorkflowInput(
     IReadOnlyCollection<string>? ChangedPointers = null
@@ -21,21 +21,21 @@ public sealed record CharacterBibleWorkflowProgress(
     string Stage,
     string Message);
 
-public sealed record TextFragment(
+internal sealed record TextFragment(
     string Pointer,
     string Text);
 
-public sealed record CharacterBibleTraversalResult(
+internal sealed record CharacterBibleTraversalResult(
     CharacterBibleWorkflowInput Request,
     IReadOnlyList<TextFragment> Paragraphs);
 
-public sealed record CharacterBibleCharacterCandidate(
+internal sealed record CharacterBibleCharacterCandidate(
     string CanonicalName,
     string Gender,
     IReadOnlyDictionary<string, string> AliasExamples,
     CharacterProfile Profile);
 
-public sealed record CharacterBibleExtractionResult(
+internal sealed record CharacterBibleExtractionResult(
     CharacterBibleWorkflowInput Request,
     IReadOnlyList<TextFragment> Paragraphs,
     IReadOnlyList<CharacterBibleCharacterCandidate> Candidates,
@@ -56,7 +56,7 @@ public sealed record CharacterBibleResolverDecision(
     IReadOnlyList<string> CandidateIds,
     string Reason);
 
-public sealed record CharacterBibleCommitPlan(
+internal sealed record CharacterBibleCommitPlan(
     CharacterBibleWorkflowInput Request,
     CharacterDossiers ProjectedDossiers,
     bool Changed,

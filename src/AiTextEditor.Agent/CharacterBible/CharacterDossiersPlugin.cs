@@ -5,14 +5,14 @@ using AiTextEditor.Core.Interfaces;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace AiTextEditor.Agent;
+namespace AiTextEditor.Agent.CharacterBible;
 
 public sealed class CharacterDossiersPlugin
 {
     private readonly CharacterDossiersGenerator generator;
     private readonly ICursorStore cursorStore;
     private readonly CharacterDossierService dossierService;
-    private readonly CursorAgentLimits limits;
+    private readonly CharacterBibleExtractionLimits limits;
     private readonly ILogger<CharacterDossiersPlugin> logger;
     private readonly CharacterBibleWorkflowRunner workflowRunner;
 
@@ -20,7 +20,7 @@ public sealed class CharacterDossiersPlugin
         CharacterDossiersGenerator generator,
         ICursorStore cursorStore,
         CharacterDossierService dossierService,
-        CursorAgentLimits limits,
+        CharacterBibleExtractionLimits limits,
         ILogger<CharacterDossiersPlugin> logger,
         CharacterBibleWorkflowRunner? workflowRunner = null)
     {
@@ -126,7 +126,7 @@ public sealed class CharacterDossiersPlugin
             return new CharacterDossiersCommandResult(dossiers.DossiersId, dossiers.Version, Status: "updated");
         }
 
-        if (normalized.Count > limits.MaxElements)
+        if (normalized.Count > limits.MaxParagraphsPerBatch)
         {
             logger.LogInformation("RefreshCharacterDossiers: too many pointers ({Count}), running full generation.", normalized.Count);
             var result = await workflowRunner.RunAsync(cancellationToken: cancellationToken);

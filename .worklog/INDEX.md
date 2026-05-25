@@ -27,6 +27,7 @@ If this index conflicts with a numbered document, trust the numbered document.
 | 0017 | spec | Character importance level | Add a stable nullable Character Bible importance level derived from transient resolved-character activity during generation. | 0003, 0004, 0012, 0016 |
 | 0019 | spec | Simplified character dossier card | Remove generic description and role bonds from character dossiers, and rename the status field to `statusAndCompetence`. | 0012, 0013, 0016, 0017 |
 | 0020 | spec | Character card expanded readonly view | Add one-at-a-time expanded read-only character cards inside the Character Bible grid while keeping editing in the existing dialog. | 0012, 0013, 0019 |
+| 0021 | spec | Character Bible agent structure | Separate Character Bible workflow, extraction, prompt, and resolution code without changing current behavior. | 0002, 0003, 0006, 0011 |
 
 ## Archived documents
 

@@ -2,6 +2,8 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using AiTextEditor.Agent.CharacterBible;
+using AiTextEditor.Agent.CharacterBible.Extraction;
 using AiTextEditor.Core.Infrastructure;
 using AiTextEditor.Core.Model;
 using AiTextEditor.Core.Services;
@@ -52,7 +54,8 @@ public sealed class AgenticWorkflowEngine
         var dossierService = new CharacterDossierService(fixedDossiersId);
         var documentContext = new DocumentContext(document, dossierService);
         var cursorRegistry = new CursorRegistry();
-        var limits = new CursorAgentLimits();
+        var cursorLimits = new CursorAgentLimits();
+        var characterBibleLimits = new CharacterBibleExtractionLimits();
 
         var modelId = modelOverride ?? Environment.GetEnvironmentVariable("LLM_MODEL") ?? "gpt-oss:120b-cloud";
         var baseUrl = Environment.GetEnvironmentVariable("LLM_BASE_URL") ?? "http://localhost:11434";
@@ -77,16 +80,17 @@ public sealed class AgenticWorkflowEngine
         var generator = new CharacterDossiersGenerator(
             documentContext,
             dossierService,
-            limits,
+            characterBibleLimits,
             loggerFactory.CreateLogger<CharacterDossiersGenerator>(),
-            extractionClient);
+            extractionClient,
+            new CharacterExtractionPromptBuilder());
 
         var workflowRunner = new CharacterBibleWorkflowRunner(generator, loggerFactory);
         var dossiersPlugin = new CharacterDossiersPlugin(
             generator,
             cursorRegistry,
             dossierService,
-            limits,
+            characterBibleLimits,
             loggerFactory.CreateLogger<CharacterDossiersPlugin>(),
             workflowRunner);
 
@@ -101,21 +105,21 @@ public sealed class AgenticWorkflowEngine
         var cursorPlugin = new CursorPlugin(
             documentContext,
             cursorRegistry,
-            limits,
+            cursorLimits,
             loggerFactory.CreateLogger<CursorPlugin>());
 
         var cursorRuntime = new CursorAgentRuntime(
             cursorRegistry,
             new AgenticCursorAgentModelClient(modelClient),
-            new CursorAgentPromptBuilder(limits),
+            new CursorAgentPromptBuilder(cursorLimits),
             new CursorEvidenceCollector(),
-            limits,
+            cursorLimits,
             loggerFactory.CreateLogger<CursorAgentRuntime>());
 
         var cursorName = cursorPlugin.CreateFullScanCursor(includeHeadings: false);
         var result = await cursorRuntime.RunAsync(
             cursorName,
-            new CursorAgentRequest(userCommand, StartAfterPointer: null, Context: null, MaxEvidenceCount: limits.DefaultMaxFound),
+            new CursorAgentRequest(userCommand, StartAfterPointer: null, Context: null, MaxEvidenceCount: cursorLimits.DefaultMaxFound),
             cancellationToken);
 
         return Complete(context, FormatCursorAgentAnswer(result));

@@ -1,4 +1,6 @@
 using AiTextEditor.Agent;
+using AiTextEditor.Agent.CharacterBible;
+using AiTextEditor.Agent.CharacterBible.Extraction;
 using AiTextEditor.Core.Model;
 using AiTextEditor.Core.Services;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -237,13 +239,14 @@ public sealed class CharacterBibleWorkflowRunnerTests
         var document = repository.LoadFromMarkdown("John arrived.");
         var dossierService = new CharacterDossierService();
         var documentContext = new DocumentContext(document, dossierService);
-        var limits = new CursorAgentLimits { MaxElements = 256, MaxBytes = 1024 * 128 };
+        var limits = new CharacterBibleExtractionLimits { MaxParagraphsPerBatch = 256, MaxBatchBytes = 1024 * 128 };
         var generator = new CharacterDossiersGenerator(
             documentContext,
             dossierService,
             limits,
             NullLogger<CharacterDossiersGenerator>.Instance,
-            new FailingCharacterExtractionModelClient("character_extraction_response_contract_invalid"));
+            new FailingCharacterExtractionModelClient("character_extraction_response_contract_invalid"),
+            new CharacterExtractionPromptBuilder());
         var runner = new CharacterBibleWorkflowRunner(generator, NullLoggerFactory.Instance);
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => runner.RunAsync());
@@ -261,7 +264,7 @@ public sealed class CharacterBibleWorkflowRunnerTests
         var document = repository.LoadFromMarkdown(markdown);
         dossierService = new CharacterDossierService();
         var documentContext = new DocumentContext(document, dossierService);
-        var limits = new CursorAgentLimits { MaxElements = 256, MaxBytes = 1024 * 128 };
+        var limits = new CharacterBibleExtractionLimits { MaxParagraphsPerBatch = 256, MaxBatchBytes = 1024 * 128 };
         extractionModelClient = new ScriptedCharacterExtractionModelClient(response);
 
         var generator = new CharacterDossiersGenerator(
@@ -269,7 +272,8 @@ public sealed class CharacterBibleWorkflowRunnerTests
             dossierService,
             limits,
             NullLogger<CharacterDossiersGenerator>.Instance,
-            extractionModelClient);
+            extractionModelClient,
+            new CharacterExtractionPromptBuilder());
 
         return new CharacterBibleWorkflowRunner(generator, NullLoggerFactory.Instance);
     }
@@ -315,3 +319,5 @@ public sealed class CharacterBibleWorkflowRunnerTests
         }
     }
 }
+
+

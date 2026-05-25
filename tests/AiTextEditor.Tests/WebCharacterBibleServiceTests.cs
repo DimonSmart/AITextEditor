@@ -1,4 +1,5 @@
 using AiTextEditor.Agent;
+using AiTextEditor.Agent.CharacterBible;
 using AiTextEditor.Core.Model;
 using AiTextEditor.Core.Services;
 using AiTextEditor.Web.Services;
@@ -630,10 +631,10 @@ public sealed class WebCharacterBibleServiceTests
         Assert.Equal(new Uri("http://localhost:11434/v1"), validated.Endpoint);
         Assert.Equal("qwen3:latest", validated.ModelName);
         Assert.Equal(TimeSpan.FromMinutes(30), validated.Timeout);
-        Assert.Equal(20, validated.CharacterBibleLimits.MaxElements);
-        Assert.Equal(8000, validated.CharacterBibleLimits.MaxBytes);
-        Assert.Equal(1, validated.CharacterBibleLimits.BatchOverlapElements);
-        Assert.Equal(100, validated.CharacterBibleLimits.FullScanMaxElements);
+        Assert.Equal(20, validated.CharacterBibleLimits.MaxParagraphsPerBatch);
+        Assert.Equal(8000, validated.CharacterBibleLimits.MaxBatchBytes);
+        Assert.Equal(1, validated.CharacterBibleLimits.OverlapParagraphs);
+        Assert.Equal(100, validated.CharacterBibleLimits.FullScanMaxItems);
     }
 
     [Fact]
@@ -918,3 +919,4 @@ public sealed class WebCharacterBibleServiceTests
         }
     }
 }
+

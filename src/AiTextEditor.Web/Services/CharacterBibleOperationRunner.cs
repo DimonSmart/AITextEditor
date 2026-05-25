@@ -1,4 +1,5 @@
 using AiTextEditor.Agent;
+using AiTextEditor.Agent.CharacterBible;
 using System.Threading.Channels;
 
 namespace AiTextEditor.Web.Services;
@@ -175,3 +176,4 @@ public sealed class CharacterBibleOperationRunner : ICharacterBibleOperationRunn
         }
     }
 }
+

@@ -1,0 +1,10 @@
+{
+  "StatusCode": 200,
+  "Body": "{\"id\":\"chatcmpl-409\",\"object\":\"chat.completion\",\"created\":1779738343,\"model\":\"phi4:latest\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"characters\\\": []\\n}\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":913,\"completion_tokens\":8,\"total_tokens\":921}}\n",
+  "ContentType": "application/json",
+  "Headers": {
+    "Date": [
+      "Mon, 25 May 2026 19:45:43 GMT"
+    ]
+  }
+}

@@ -8,8 +8,6 @@ public sealed class CursorAgentLimits
 
     public int DefaultMaxFound { get; init; } = 20;
 
-    public int? CharacterDossiersMaxCharacters { get; init; }
-
     public int SnapshotEvidenceLimit { get; init; } = 5;
 
     public int MaxSummaryLength { get; init; } = 500;
@@ -19,8 +17,4 @@ public sealed class CursorAgentLimits
     public int MaxElements { get; init; } = 20;
 
     public int MaxBytes { get; init; } = 8000;
-
-    public int BatchOverlapElements { get; init; }
-
-    public int FullScanMaxElements { get; init; } = 100;
 }

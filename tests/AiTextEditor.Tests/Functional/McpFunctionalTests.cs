@@ -1,5 +1,7 @@
 using AiTextEditor.Tests.Infrastructure;
 using AiTextEditor.Agent;
+using AiTextEditor.Agent.CharacterBible;
+using AiTextEditor.Agent.CharacterBible.Extraction;
 using AiTextEditor.Core.Common;
 using AiTextEditor.Core.Services;
 using AiTextEditor.Core.Interfaces;
@@ -231,3 +233,4 @@ public class McpFunctionalTests
         }
     }
 }
+

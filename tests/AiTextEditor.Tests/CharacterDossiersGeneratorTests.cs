@@ -2,6 +2,8 @@ using System.Text;
 using System.Text.Json;
 using AiTextEditor.Core.Services;
 using AiTextEditor.Agent;
+using AiTextEditor.Agent.CharacterBible;
+using AiTextEditor.Agent.CharacterBible.Extraction;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
@@ -9,6 +11,32 @@ namespace AiTextEditor.Tests;
 
 public sealed class CharacterDossiersGeneratorTests
 {
+    [Fact]
+    public void CharacterExtractionPromptBuilder_LoadsPromptAndBuildsUserPromptJson()
+    {
+        var builder = new CharacterExtractionPromptBuilder();
+
+        var systemPrompt = builder.BuildSystemPrompt();
+        var userPrompt = builder.BuildUserPrompt(
+            [
+                ("p1", "Анна вошла."),
+                ("p2", "Борис ответил.")
+            ]);
+
+        Assert.Contains("Pronouns are NEVER aliases", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("name forms, nicknames, titles", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("Use empty string when there is no evidence", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("statusAndCompetence", systemPrompt, StringComparison.Ordinal);
+
+        using var json = JsonDocument.Parse(userPrompt);
+        Assert.Equal("extract_characters", json.RootElement.GetProperty("task").GetString());
+        var paragraphs = json.RootElement.GetProperty("paragraphs").EnumerateArray().ToArray();
+        Assert.Equal("p1", paragraphs[0].GetProperty("pointer").GetString());
+        Assert.Equal("Анна вошла.", paragraphs[0].GetProperty("text").GetString());
+        Assert.Equal("p2", paragraphs[1].GetProperty("pointer").GetString());
+        Assert.Equal("Борис ответил.", paragraphs[1].GetProperty("text").GetString());
+    }
+
     [Fact]
     public async Task GenerateDossiers_DoesNotTrimDossiersWhenLimitIsNotSet()
     {
@@ -41,11 +69,11 @@ public sealed class CharacterDossiersGeneratorTests
         var document = repository.LoadFromMarkdown(markdown);
         var dossierService = new CharacterDossierService();
         var documentContext = new DocumentContext(document, dossierService);
-        var limits = new CursorAgentLimits
+        var limits = new CharacterBibleExtractionLimits
         {
-            MaxElements = 256,
-            MaxBytes = 1024 * 128,
-            CharacterDossiersMaxCharacters = null
+            MaxParagraphsPerBatch = 256,
+            MaxBatchBytes = 1024 * 128,
+            MaxCharacters = null
         };
         var extractionModelClient = new CapturingCharacterExtractionModelClient();
 
@@ -54,7 +82,8 @@ public sealed class CharacterDossiersGeneratorTests
             dossierService,
             limits,
             NullLogger<CharacterDossiersGenerator>.Instance,
-            extractionModelClient);
+            extractionModelClient,
+            new CharacterExtractionPromptBuilder());
 
         var dossiers = await generator.GenerateAsync();
 
@@ -74,12 +103,12 @@ public sealed class CharacterDossiersGeneratorTests
         var document = repository.LoadFromMarkdown(BuildMarkdown(names));
         var dossierService = new CharacterDossierService();
         var documentContext = new DocumentContext(document, dossierService);
-        var limits = new CursorAgentLimits
+        var limits = new CharacterBibleExtractionLimits
         {
-            MaxElements = 2,
-            MaxBytes = 1024 * 128,
-            BatchOverlapElements = 1,
-            FullScanMaxElements = 20
+            MaxParagraphsPerBatch = 2,
+            MaxBatchBytes = 1024 * 128,
+            OverlapParagraphs = 1,
+            FullScanMaxItems = 20
         };
         var extractionModelClient = new CapturingCharacterExtractionModelClient();
         var generator = new CharacterDossiersGenerator(
@@ -87,7 +116,8 @@ public sealed class CharacterDossiersGeneratorTests
             dossierService,
             limits,
             NullLogger<CharacterDossiersGenerator>.Instance,
-            extractionModelClient);
+            extractionModelClient,
+            new CharacterExtractionPromptBuilder());
         var runner = new CharacterBibleWorkflowRunner(generator, NullLoggerFactory.Instance);
 
         await runner.RunAsync(new CharacterBibleWorkflowInput());
@@ -122,7 +152,7 @@ public sealed class CharacterDossiersGeneratorTests
         var repository = new MarkdownDocumentRepository();
         var document = repository.LoadFromMarkdown("John and Mary met Bob.");
         var documentContext = new DocumentContext(document, dossierService);
-        var limits = new CursorAgentLimits { MaxElements = 256, MaxBytes = 1024 * 128 };
+        var limits = new CharacterBibleExtractionLimits { MaxParagraphsPerBatch = 256, MaxBatchBytes = 1024 * 128 };
         var extractionModelClient = new ScriptedCharacterExtractionModelClient(
             Response(new CharacterExtractionCharacter(
                 "John",
@@ -139,7 +169,8 @@ public sealed class CharacterDossiersGeneratorTests
             dossierService,
             limits,
             NullLogger<CharacterDossiersGenerator>.Instance,
-            extractionModelClient);
+            extractionModelClient,
+            new CharacterExtractionPromptBuilder());
 
         var dossiers = await generator.GenerateAsync();
 
@@ -157,7 +188,7 @@ public sealed class CharacterDossiersGeneratorTests
         var repository = new MarkdownDocumentRepository();
         var document = repository.LoadFromMarkdown("Андерс оглянулся. Он услышал шум.");
         var documentContext = new DocumentContext(document, dossierService);
-        var limits = new CursorAgentLimits { MaxElements = 256, MaxBytes = 1024 * 128 };
+        var limits = new CharacterBibleExtractionLimits { MaxParagraphsPerBatch = 256, MaxBatchBytes = 1024 * 128 };
         var extractionModelClient = new CapturingCharacterExtractionModelClient();
 
         var generator = new CharacterDossiersGenerator(
@@ -165,7 +196,8 @@ public sealed class CharacterDossiersGeneratorTests
             dossierService,
             limits,
             NullLogger<CharacterDossiersGenerator>.Instance,
-            extractionModelClient);
+            extractionModelClient,
+            new CharacterExtractionPromptBuilder());
 
         await generator.GenerateAsync();
 
@@ -182,7 +214,7 @@ public sealed class CharacterDossiersGeneratorTests
         var repository = new MarkdownDocumentRepository();
         var document = repository.LoadFromMarkdown("Она стояла в толпе. У неё была родинка под левым глазом.");
         var documentContext = new DocumentContext(document, dossierService);
-        var limits = new CursorAgentLimits { MaxElements = 256, MaxBytes = 1024 * 128 };
+        var limits = new CharacterBibleExtractionLimits { MaxParagraphsPerBatch = 256, MaxBatchBytes = 1024 * 128 };
         var extractionModelClient = new CapturingCharacterExtractionModelClient();
 
         var generator = new CharacterDossiersGenerator(
@@ -190,7 +222,8 @@ public sealed class CharacterDossiersGeneratorTests
             dossierService,
             limits,
             NullLogger<CharacterDossiersGenerator>.Instance,
-            extractionModelClient);
+            extractionModelClient,
+            new CharacterExtractionPromptBuilder());
 
         await generator.GenerateAsync();
 
@@ -209,7 +242,7 @@ public sealed class CharacterDossiersGeneratorTests
         var repository = new MarkdownDocumentRepository();
         var document = repository.LoadFromMarkdown("Анна говорила коротко.");
         var documentContext = new DocumentContext(document, dossierService);
-        var limits = new CursorAgentLimits { MaxElements = 256, MaxBytes = 1024 * 128 };
+        var limits = new CharacterBibleExtractionLimits { MaxParagraphsPerBatch = 256, MaxBatchBytes = 1024 * 128 };
         var extractionModelClient = new CapturingCharacterExtractionModelClient();
 
         var generator = new CharacterDossiersGenerator(
@@ -217,7 +250,8 @@ public sealed class CharacterDossiersGeneratorTests
             dossierService,
             limits,
             NullLogger<CharacterDossiersGenerator>.Instance,
-            extractionModelClient);
+            extractionModelClient,
+            new CharacterExtractionPromptBuilder());
 
         await generator.GenerateAsync();
 
@@ -248,7 +282,7 @@ public sealed class CharacterDossiersGeneratorTests
         var repository = new MarkdownDocumentRepository();
         var document = repository.LoadFromMarkdown("Johnny laughed.");
         var documentContext = new DocumentContext(document, dossierService);
-        var limits = new CursorAgentLimits { MaxElements = 256, MaxBytes = 1024 * 128 };
+        var limits = new CharacterBibleExtractionLimits { MaxParagraphsPerBatch = 256, MaxBatchBytes = 1024 * 128 };
 
         var extractionModelClient = new ScriptedCharacterExtractionModelClient(
             Response(new CharacterExtractionCharacter(
@@ -262,7 +296,8 @@ public sealed class CharacterDossiersGeneratorTests
             dossierService,
             limits,
             NullLogger<CharacterDossiersGenerator>.Instance,
-            extractionModelClient);
+            extractionModelClient,
+            new CharacterExtractionPromptBuilder());
 
         var evidence = new[] { new AiTextEditor.Core.Model.EvidenceItem("1.p1", "Johnny laughed.", null) };
         await generator.UpdateFromEvidenceBatchAsync(evidence);
@@ -279,7 +314,7 @@ public sealed class CharacterDossiersGeneratorTests
         var repository = new MarkdownDocumentRepository();
         var document = repository.LoadFromMarkdown("John's hat was on the table.");
         var documentContext = new DocumentContext(document, dossierService);
-        var limits = new CursorAgentLimits { MaxElements = 256, MaxBytes = 1024 * 128 };
+        var limits = new CharacterBibleExtractionLimits { MaxParagraphsPerBatch = 256, MaxBatchBytes = 1024 * 128 };
 
         var extractionModelClient = new ScriptedCharacterExtractionModelClient(
             Response(new CharacterExtractionCharacter(
@@ -293,7 +328,8 @@ public sealed class CharacterDossiersGeneratorTests
             dossierService,
             limits,
             NullLogger<CharacterDossiersGenerator>.Instance,
-            extractionModelClient);
+            extractionModelClient,
+            new CharacterExtractionPromptBuilder());
 
         var evidence = new[] { new AiTextEditor.Core.Model.EvidenceItem("1.p1", "John's hat was on the table.", null) };
         var dossiers = await generator.UpdateFromEvidenceBatchAsync(evidence);
@@ -311,7 +347,7 @@ public sealed class CharacterDossiersGeneratorTests
         var document = repository.LoadFromMarkdown("John arrived.");
         var dossierService = new CharacterDossierService();
         var documentContext = new DocumentContext(document, dossierService);
-        var limits = new CursorAgentLimits { MaxElements = 256, MaxBytes = 1024 * 128 };
+        var limits = new CharacterBibleExtractionLimits { MaxParagraphsPerBatch = 256, MaxBatchBytes = 1024 * 128 };
         var extractionModelClient = new FailingCharacterExtractionModelClient("character_extraction_empty_response_content");
 
         var generator = new CharacterDossiersGenerator(
@@ -319,7 +355,8 @@ public sealed class CharacterDossiersGeneratorTests
             dossierService,
             limits,
             NullLogger<CharacterDossiersGenerator>.Instance,
-            extractionModelClient);
+            extractionModelClient,
+            new CharacterExtractionPromptBuilder());
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => generator.GenerateAsync());
         Assert.Equal("character_extraction_empty_response_content", exception.Message);
@@ -454,3 +491,5 @@ public sealed class CharacterDossiersGeneratorTests
             => throw new InvalidOperationException(message);
     }
 }
+
+

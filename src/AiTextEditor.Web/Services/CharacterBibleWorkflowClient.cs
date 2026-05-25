@@ -1,4 +1,6 @@
 using AiTextEditor.Agent;
+using AiTextEditor.Agent.CharacterBible;
+using AiTextEditor.Agent.CharacterBible.Extraction;
 using System.Net.Http.Headers;
 using System.Text;
 
@@ -45,7 +47,8 @@ public sealed class CharacterBibleWorkflowClient : ICharacterBibleWorkflowClient
             workspace.CharacterDossiers,
             modelSettings.CharacterBibleLimits,
             loggerFactory.CreateLogger<CharacterDossiersGenerator>(),
-            extractionClient);
+            extractionClient,
+            new CharacterExtractionPromptBuilder());
         var runner = new CharacterBibleWorkflowRunner(generator, loggerFactory);
 
         return await runner.RunAsync(request, progress, cancellationToken);

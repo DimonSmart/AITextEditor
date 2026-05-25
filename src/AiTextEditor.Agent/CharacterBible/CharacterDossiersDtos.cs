@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using AiTextEditor.Core.Model;
 
-namespace AiTextEditor.Agent;
+namespace AiTextEditor.Agent.CharacterBible;
 
 public sealed record CharacterDossiersCommandResult(
     [property: JsonPropertyName("dossiersId")] string DossiersId,

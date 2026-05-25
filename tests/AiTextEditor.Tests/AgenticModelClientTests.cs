@@ -1,4 +1,6 @@
 using AiTextEditor.Agent;
+using AiTextEditor.Agent.CharacterBible;
+using AiTextEditor.Agent.CharacterBible.Extraction;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -285,3 +287,4 @@ public sealed class AgenticModelClientTests
         }
     }
 }
+

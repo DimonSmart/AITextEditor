@@ -1,8 +1,9 @@
 using System.Text.Json.Serialization;
+using AiTextEditor.Agent;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
 
-namespace AiTextEditor.Agent;
+namespace AiTextEditor.Agent.CharacterBible.Extraction;
 
 public interface ICharacterExtractionModelClient
 {
