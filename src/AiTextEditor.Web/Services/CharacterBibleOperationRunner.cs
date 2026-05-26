@@ -172,7 +172,13 @@ public sealed class CharacterBibleOperationRunner : ICharacterBibleOperationRunn
         {
             ArgumentNullException.ThrowIfNull(value);
 
-            writer.TryWrite(CreateEvent(CharacterBibleOperationEventType.Progress, value.Message));
+            writer.TryWrite(new CharacterBibleOperationEvent(
+                CharacterBibleOperationEventType.Progress,
+                value.Message,
+                DateTimeOffset.UtcNow,
+                CopyText: value.CopyText,
+                CopyLabel: value.CopyLabel,
+                AlwaysVisible: value.AlwaysVisible));
         }
     }
 }

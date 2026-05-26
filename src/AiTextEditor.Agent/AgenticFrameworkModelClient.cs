@@ -18,7 +18,8 @@ public interface IAgenticModelClient
 
 public sealed record AgenticModelRequest(
     IReadOnlyList<ChatMessage> Messages,
-    string InvalidContractError);
+    string InvalidContractError,
+    IProgress<AgenticModelDiagnostic>? Diagnostics = null);
 
 public sealed class AgenticFrameworkModelClient : IAgenticModelClient
 {
@@ -93,134 +94,143 @@ public sealed class AgenticFrameworkModelClient : IAgenticModelClient
         for (var attempt = 1; attempt <= MaxStructuredResponseAttempts; attempt++)
         {
             var chatOptions = CreateChatOptions<TResponse>();
-            var runOptions = new ChatClientAgentRunOptions(chatOptions);
+            ChatResponse rawResponse;
             try
             {
-                var response = await agent.RunAsync<TResponse>(
+                rawResponse = await agent.ChatClient.GetResponseAsync(
                     messages,
-                    session: null,
-                    serializerOptions: ResponseSerializerOptions,
-                    runOptions,
+                    chatOptions,
                     cancellationToken).ConfigureAwait(false);
-
-                return response.Result ?? throw new InvalidOperationException(request.InvalidContractError);
             }
-            catch (JsonException ex)
+            catch (Exception ex) when (ex is not OperationCanceledException)
             {
-                if (await TryRecoverFromRawResponseAsync<TResponse>(
-                        messages,
-                        chatOptions,
-                        attempt,
-                        ex,
-                        cancellationToken).ConfigureAwait(false) is { } recoveredResponse)
-                {
-                    return recoveredResponse;
-                }
-
-                if (attempt >= MaxStructuredResponseAttempts)
-                {
-                    break;
-                }
-
-                logger.LogWarning(
-                    ex,
-                    "Typed model response was malformed for {ResponseType}. Retrying attempt {Attempt}/{MaxAttempts}. RecoveryAction={RecoveryAction}, RecoveryResult={RecoveryResult}, ModelId={ModelId}.",
-                    typeof(TResponse).Name,
-                    attempt + 1,
-                    MaxStructuredResponseAttempts,
-                    "retry",
-                    "failed",
-                    chatOptions.ModelId);
-                messages = BuildRetryMessages(request.Messages, typeof(TResponse).Name);
-            }
-            catch (InvalidOperationException ex) when (!string.Equals(ex.Message, request.InvalidContractError, StringComparison.Ordinal))
-            {
-                logger.LogError(ex, "Agentic Framework typed model call failed for {ResponseType}.", typeof(TResponse).Name);
+                logger.LogError(ex, "Agentic Framework raw model call failed for {ResponseType}.", typeof(TResponse).Name);
                 throw;
             }
-        }
 
-        throw new InvalidOperationException(request.InvalidContractError);
-    }
+            var rawText = rawResponse.Text ?? string.Empty;
+            if (StructuredJsonResponseRecovery.TryRecover<TResponse>(
+                    rawText,
+                    ResponseSerializerOptions,
+                    out var recoveredResponse,
+                    out var extractedJson,
+                    out var recoveryError))
+            {
+                var recoveredFromMalformedText = !string.Equals(rawText, extractedJson, StringComparison.Ordinal);
+                if (recoveredFromMalformedText)
+                {
+                    request.Diagnostics?.Report(new AgenticModelDiagnostic(
+                        AgenticModelDiagnosticKind.MalformedResponse,
+                        typeof(TResponse).Name,
+                        attempt,
+                        MaxStructuredResponseAttempts,
+                        "Model response parse error. Raw response is available for copying.",
+                        rawResponse.ModelId ?? chatOptions.ModelId,
+                        RecoveryAction: "raw_response",
+                        RecoveryResult: "captured",
+                        RawResponse: rawText));
+                    request.Diagnostics?.Report(new AgenticModelDiagnostic(
+                        AgenticModelDiagnosticKind.RecoverySucceeded,
+                        typeof(TResponse).Name,
+                        attempt,
+                        MaxStructuredResponseAttempts,
+                        "Model response JSON recovery succeeded via JsonExtractor.",
+                        rawResponse.ModelId ?? chatOptions.ModelId,
+                        RecoveryAction: "JsonExtractor",
+                        RecoveryResult: "recovered",
+                        RawResponse: rawText,
+                        ExtractedJson: extractedJson));
+                    logger.LogWarning(
+                        "Recovered malformed JSON response for {ResponseType} using JsonExtractor. Attempt={Attempt}, MaxAttempts={MaxAttempts}, ModelId={ModelId}, FinishReason={FinishReason}, RawLength={RawLength}, ExtractedLength={ExtractedLength}, RawPreview={RawPreview}, RecoveryAction={RecoveryAction}, RecoveryResult={RecoveryResult}.",
+                        typeof(TResponse).Name,
+                        attempt,
+                        MaxStructuredResponseAttempts,
+                        rawResponse.ModelId ?? chatOptions.ModelId,
+                        rawResponse.FinishReason,
+                        rawText.Length,
+                        extractedJson?.Length ?? 0,
+                        Truncate(rawText, MaxRawResponsePreviewLength),
+                        "JsonExtractor",
+                        "recovered");
+                }
 
-    private async Task<TResponse?> TryRecoverFromRawResponseAsync<TResponse>(
-        IReadOnlyList<ChatMessage> messages,
-        ChatOptions chatOptions,
-        int attempt,
-        JsonException typedException,
-        CancellationToken cancellationToken)
-        where TResponse : class
-    {
-        ChatResponse rawResponse;
-        try
-        {
-            rawResponse = await agent.ChatClient.GetResponseAsync(
-                messages,
-                chatOptions,
-                cancellationToken).ConfigureAwait(false);
-        }
-        catch (Exception ex) when (ex is not OperationCanceledException)
-        {
-            logger.LogError(
-                ex,
-                "Typed model response was malformed for {ResponseType}, but JSON recovery was skipped because raw response is unavailable. Attempt={Attempt}, MaxAttempts={MaxAttempts}, ModelId={ModelId}, RecoveryAction={RecoveryAction}, RecoveryResult={RecoveryResult}.",
+                if (attempt > 1)
+                {
+                    request.Diagnostics?.Report(new AgenticModelDiagnostic(
+                        AgenticModelDiagnosticKind.RetrySucceeded,
+                        typeof(TResponse).Name,
+                        attempt,
+                        MaxStructuredResponseAttempts,
+                        $"Model response retry succeeded on attempt {attempt}/{MaxStructuredResponseAttempts}.",
+                        rawResponse.ModelId ?? chatOptions.ModelId,
+                        RecoveryAction: "retry",
+                        RecoveryResult: "succeeded"));
+                }
+
+                return recoveredResponse ?? throw new InvalidOperationException(request.InvalidContractError);
+            }
+
+            request.Diagnostics?.Report(new AgenticModelDiagnostic(
+                AgenticModelDiagnosticKind.MalformedResponse,
                 typeof(TResponse).Name,
                 attempt,
                 MaxStructuredResponseAttempts,
-                chatOptions.ModelId,
-                "raw_response",
-                "unavailable");
-            return null;
-        }
-
-        var rawText = rawResponse.Text;
-        logger.LogWarning(
-            typedException,
-            "Typed model response was malformed for {ResponseType}. Attempting JSON recovery. Attempt={Attempt}, MaxAttempts={MaxAttempts}, ModelId={ModelId}, FinishReason={FinishReason}, RawLength={RawLength}, RawPreview={RawPreview}, RecoveryAction={RecoveryAction}.",
-            typeof(TResponse).Name,
-            attempt,
-            MaxStructuredResponseAttempts,
-            rawResponse.ModelId ?? chatOptions.ModelId,
-            rawResponse.FinishReason,
-            rawText.Length,
-            Truncate(rawText, MaxRawResponsePreviewLength),
-            "JsonExtractor");
-
-        if (StructuredJsonResponseRecovery.TryRecover<TResponse>(
-                rawText,
-                ResponseSerializerOptions,
-                out var recoveredResponse,
-                out var extractedJson,
-                out var recoveryError))
-        {
-            logger.LogWarning(
-                "Recovered malformed JSON response for {ResponseType} using JsonExtractor. Attempt={Attempt}, MaxAttempts={MaxAttempts}, ModelId={ModelId}, FinishReason={FinishReason}, RawLength={RawLength}, ExtractedLength={ExtractedLength}, RecoveryAction={RecoveryAction}, RecoveryResult={RecoveryResult}.",
+                "Model response parse error. Raw response is available for copying.",
+                rawResponse.ModelId ?? chatOptions.ModelId,
+                RecoveryAction: "raw_response",
+                RecoveryResult: "captured",
+                RawResponse: rawText));
+            request.Diagnostics?.Report(new AgenticModelDiagnostic(
+                AgenticModelDiagnosticKind.RecoveryFailed,
+                typeof(TResponse).Name,
+                attempt,
+                MaxStructuredResponseAttempts,
+                $"Model response JSON recovery failed via JsonExtractor: {recoveryError}",
+                rawResponse.ModelId ?? chatOptions.ModelId,
+                RecoveryAction: "JsonExtractor",
+                RecoveryResult: "failed",
+                RawResponse: rawText,
+                ExtractedJson: extractedJson,
+                Error: recoveryError));
+            logger.LogError(
+                "Failed to recover malformed JSON response for {ResponseType}. Attempt={Attempt}, MaxAttempts={MaxAttempts}, ModelId={ModelId}, FinishReason={FinishReason}, RawLength={RawLength}, RawPreview={RawPreview}, RecoveryAction={RecoveryAction}, RecoveryResult={RecoveryResult}, RecoveryError={RecoveryError}.",
                 typeof(TResponse).Name,
                 attempt,
                 MaxStructuredResponseAttempts,
                 rawResponse.ModelId ?? chatOptions.ModelId,
                 rawResponse.FinishReason,
                 rawText.Length,
-                extractedJson?.Length ?? 0,
+                Truncate(rawText, MaxRawResponsePreviewLength),
                 "JsonExtractor",
-                "recovered");
-            return recoveredResponse;
+                "failed",
+                recoveryError);
+
+            if (attempt >= MaxStructuredResponseAttempts)
+            {
+                break;
+            }
+
+            request.Diagnostics?.Report(new AgenticModelDiagnostic(
+                AgenticModelDiagnosticKind.Retry,
+                typeof(TResponse).Name,
+                attempt + 1,
+                MaxStructuredResponseAttempts,
+                $"Retrying model call after malformed response (attempt {attempt + 1}/{MaxStructuredResponseAttempts}).",
+                rawResponse.ModelId ?? chatOptions.ModelId,
+                RecoveryAction: "retry",
+                RecoveryResult: "started"));
+            logger.LogWarning(
+                "Model response was malformed for {ResponseType}. Retrying attempt {Attempt}/{MaxAttempts}. RecoveryAction={RecoveryAction}, RecoveryResult={RecoveryResult}, ModelId={ModelId}.",
+                typeof(TResponse).Name,
+                attempt + 1,
+                MaxStructuredResponseAttempts,
+                rawResponse.ModelId ?? chatOptions.ModelId,
+                "retry",
+                "started");
+            messages = BuildRetryMessages(request.Messages, typeof(TResponse).Name);
         }
 
-        logger.LogError(
-            typedException,
-            "Failed to recover malformed JSON response for {ResponseType}. Attempt={Attempt}, MaxAttempts={MaxAttempts}, ModelId={ModelId}, FinishReason={FinishReason}, RawLength={RawLength}, RawPreview={RawPreview}, RecoveryAction={RecoveryAction}, RecoveryResult={RecoveryResult}, RecoveryError={RecoveryError}.",
-            typeof(TResponse).Name,
-            attempt,
-            MaxStructuredResponseAttempts,
-            rawResponse.ModelId ?? chatOptions.ModelId,
-            rawResponse.FinishReason,
-            rawText.Length,
-            Truncate(rawText, MaxRawResponsePreviewLength),
-            "JsonExtractor",
-            "failed",
-            recoveryError);
-        return null;
+        throw new InvalidOperationException(request.InvalidContractError);
     }
 
     private static ChatOptions CreateChatOptions<TResponse>()

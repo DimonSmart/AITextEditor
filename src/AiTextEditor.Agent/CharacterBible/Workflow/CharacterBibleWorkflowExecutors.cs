@@ -69,10 +69,14 @@ internal sealed class ExtractCharacterBibleCandidatesExecutor : Executor<Charact
             progress?.Report(new CharacterBibleWorkflowProgress(
                 "extract",
                 $"Starting candidate extraction from {input.Paragraphs.Count} paragraphs."));
-            var candidates = await generator.ExtractCandidatesAsync(input.Paragraphs, progress, cancellationToken);
-            logger.LogInformation("character_bible_candidates_extracted: count={Count}", candidates.Count);
+            var extraction = await generator.ExtractCandidatesAsync(input.Paragraphs, progress, cancellationToken);
+            logger.LogInformation("character_bible_candidates_extracted: count={Count}", extraction.Candidates.Count);
 
-            return new CharacterBibleExtractionResult(input.Request, input.Paragraphs, candidates);
+            return new CharacterBibleExtractionResult(
+                input.Request,
+                input.Paragraphs,
+                extraction.Candidates,
+                extraction.ModelResponseErrors);
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
@@ -80,7 +84,12 @@ internal sealed class ExtractCharacterBibleCandidatesExecutor : Executor<Charact
             progress?.Report(new CharacterBibleWorkflowProgress(
                 "extract",
                 $"Candidate extraction failed: {ex.Message}"));
-            return new CharacterBibleExtractionResult(input.Request, input.Paragraphs, [], ex);
+            return new CharacterBibleExtractionResult(
+                input.Request,
+                input.Paragraphs,
+                [],
+                CharacterBibleModelResponseErrorStatistics.Empty,
+                ex);
         }
     }
 }
@@ -122,6 +131,7 @@ internal sealed class ResolveCharacterBibleCandidatesExecutor : Executor<Charact
                 input.Paragraphs.Count,
                 input.Candidates.Count,
                 [],
+                input.ModelResponseErrors,
                 input.Failure));
         }
 
@@ -129,6 +139,7 @@ internal sealed class ResolveCharacterBibleCandidatesExecutor : Executor<Charact
             "resolve",
             $"Resolving {input.Candidates.Count} character candidates."));
         var plan = generator.CreateCommitPlan(input.Request, input.Paragraphs.Count, input.Candidates, progress);
+        plan = plan with { ModelResponseErrors = input.ModelResponseErrors };
         logger.LogInformation(
             "character_bible_candidates_resolved: candidates={CandidateCount}, decisions={DecisionCount}, changed={Changed}",
             plan.CandidateCount,
@@ -182,6 +193,7 @@ internal sealed class CommitCharacterBibleDossiersExecutor : Executor<CharacterB
                 plan.Decisions.Count,
                 plan.Decisions.Count(decision => decision.Kind == CharacterBibleDecisionKind.Ambiguous),
                 plan.Decisions,
+                plan.ModelResponseErrors,
                 plan.Failure));
         }
 
@@ -211,7 +223,8 @@ internal sealed class CommitCharacterBibleDossiersExecutor : Executor<CharacterB
             plan.CandidateCount,
             plan.Decisions.Count,
             plan.Decisions.Count(decision => decision.Kind == CharacterBibleDecisionKind.Ambiguous),
-            plan.Decisions));
+            plan.Decisions,
+            plan.ModelResponseErrors));
     }
 
     private static IReadOnlyCollection<string> NormalizePointers(IReadOnlyCollection<string>? changedPointers)

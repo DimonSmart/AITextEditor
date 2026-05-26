@@ -748,6 +748,7 @@ public sealed class WebCharacterBibleServiceTests
                 [
                     new CharacterBibleWorkflowProgress("collect", "Collected 25 paragraphs for character bible processing."),
                     new CharacterBibleWorkflowProgress("extract", "Batch 1 produced 13 character candidates."),
+                    new CharacterBibleWorkflowProgress("extract", "Model response parse error.", "raw model response", "Copy response"),
                     new CharacterBibleWorkflowProgress("commit", "Character bible generated: 11 dossiers, version 2.")
                 ]));
 
@@ -763,6 +764,8 @@ public sealed class WebCharacterBibleServiceTests
         Assert.Contains(progressMessages, message => message.StartsWith("Current document loaded:", StringComparison.Ordinal));
         Assert.Contains("Collected 25 paragraphs for character bible processing.", progressMessages);
         Assert.Contains("Batch 1 produced 13 character candidates.", progressMessages);
+        var diagnosticEvent = Assert.Single(events, item => item.CopyText == "raw model response");
+        Assert.Equal("Copy response", diagnosticEvent.CopyLabel);
         Assert.Contains("Character bible generated: 11 dossiers, version 2.", progressMessages);
     }
 

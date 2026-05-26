@@ -30,6 +30,7 @@ If this index conflicts with a numbered document, trust the numbered document.
 | 0021 | spec | Character Bible agent structure | Separate Character Bible workflow, extraction, prompt, and resolution code without changing current behavior. | 0002, 0003, 0006, 0011 |
 | 0022 | spec | Malformed JSON response recovery | Recover valid JSON from malformed model responses and skip unrecoverable character extraction batches without failing the whole workflow. | 0003, 0006, 0011 |
 | 0023 | spec | Character bible overlap byte limit | Limit character bible extraction overlap by both paragraph count and optional byte size while keeping main batch sizing separate. | 0003, 0009, 0016 |
+| 0024 | spec | Model response diagnostics UI | Show malformed model response diagnostics in the operation log with copyable raw responses and summary statistics. | 0011, 0022 |
 
 ## Archived documents
 

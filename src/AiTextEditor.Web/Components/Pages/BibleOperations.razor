@@ -1,7 +1,9 @@
 @page "/bible-operations"
+@using AiTextEditor.Agent.CharacterBible
 @implements IDisposable
 @inject CharacterBibleCommandParser CommandParser
 @inject CharacterBibleOperationState OperationState
+@inject IJSRuntime JS
 @inject ISnackbar Snackbar
 
 <PageTitle>Bible Operations</PageTitle>
@@ -29,6 +31,12 @@
                     <time>@item.Timestamp.ToLocalTime().ToString("HH:mm:ss")</time>
                     <span>@item.Type</span>
                     <p>@item.Message</p>
+                    @if (!string.IsNullOrEmpty(item.CopyText))
+                    {
+                        <MudButton Variant="MudBlazor.Variant.Outlined" Color="MudBlazor.Color.Secondary" Size="MudBlazor.Size.Small" OnClick="@(() => CopyEventTextAsync(item))">
+                            @(item.CopyLabel ?? "Copy")
+                        </MudButton>
+                    }
                 </div>
             }
 
@@ -42,6 +50,12 @@
                             <time>@item.Timestamp.ToLocalTime().ToString("HH:mm:ss")</time>
                             <span>@item.Type</span>
                             <p>@item.Message</p>
+                            @if (!string.IsNullOrEmpty(item.CopyText))
+                            {
+                                <MudButton Variant="MudBlazor.Variant.Outlined" Color="MudBlazor.Color.Secondary" Size="MudBlazor.Size.Small" OnClick="@(() => CopyEventTextAsync(item))">
+                                    @(item.CopyLabel ?? "Copy")
+                                </MudButton>
+                            }
                         </div>
                     }
                 </details>
@@ -56,6 +70,7 @@
                     <div><span>Candidates</span><strong>@output.CandidateCount</strong></div>
                     <div><span>Decisions</span><strong>@output.DecisionCount</strong></div>
                     <div><span>Ambiguous</span><strong>@output.AmbiguousDecisionCount</strong></div>
+                    <div><span>Model errors</span><strong>@FormatModelErrors(output.ModelResponseErrors)</strong></div>
                     <div><span>Dossiers</span><strong>@output.Dossiers.Characters.Count</strong></div>
                 </div>
             }
@@ -107,6 +122,17 @@
         OperationState.CancelCurrentRun();
     }
 
+    private async Task CopyEventTextAsync(CharacterBibleOperationEvent operationEvent)
+    {
+        if (string.IsNullOrEmpty(operationEvent.CopyText))
+        {
+            return;
+        }
+
+        await JS.InvokeVoidAsync("navigator.clipboard.writeText", operationEvent.CopyText);
+        Snackbar.Add("Copied.", MudBlazor.Severity.Success);
+    }
+
     private static IEnumerable<CharacterBibleOperationEvent> VisibleEvents(CharacterBibleOperationRun run)
     {
         if (run.Status != CharacterBibleOperationStatus.Completed)
@@ -118,6 +144,7 @@
         return run.Events.Where(item =>
             item.Type != CharacterBibleOperationEventType.Progress
             || ReferenceEquals(item, lastEvent)
+            || item.AlwaysVisible
             || item.Type == CharacterBibleOperationEventType.Failed);
     }
 
@@ -135,6 +162,12 @@
             CharacterBibleOperationEventType.Completed => "completed",
             _ => string.Empty
         };
+    }
+
+    private static string FormatModelErrors(CharacterBibleModelResponseErrorStatistics? statistics)
+    {
+        statistics ??= CharacterBibleModelResponseErrorStatistics.Empty;
+        return $"{statistics.TotalErrorCount} total; parse {statistics.ParseErrorCount}, recovered {statistics.RecoveredCount}, failed {statistics.FailedRecoveryCount}, skipped {statistics.SkippedBatchCount}";
     }
 
     public void Dispose()

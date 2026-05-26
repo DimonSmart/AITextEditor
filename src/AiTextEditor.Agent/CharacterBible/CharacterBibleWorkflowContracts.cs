@@ -15,11 +15,29 @@ public sealed record CharacterBibleWorkflowOutput(
     int DecisionCount,
     int AmbiguousDecisionCount,
     IReadOnlyList<CharacterBibleResolverDecision> Decisions,
+    CharacterBibleModelResponseErrorStatistics? ModelResponseErrors = null,
     Exception? Failure = null);
 
 public sealed record CharacterBibleWorkflowProgress(
     string Stage,
-    string Message);
+    string Message,
+    string? CopyText = null,
+    string? CopyLabel = null,
+    bool AlwaysVisible = false);
+
+public sealed record CharacterBibleModelResponseErrorStatistics(
+    int ParseErrorCount = 0,
+    int RecoveredCount = 0,
+    int FailedRecoveryCount = 0,
+    int RetryCount = 0,
+    int RetrySucceededCount = 0,
+    int SkippedBatchCount = 0,
+    int SkippedParagraphCount = 0)
+{
+    public static CharacterBibleModelResponseErrorStatistics Empty { get; } = new();
+
+    public int TotalErrorCount => ParseErrorCount + FailedRecoveryCount + SkippedBatchCount;
+}
 
 internal sealed record TextFragment(
     string Pointer,
@@ -39,6 +57,7 @@ internal sealed record CharacterBibleExtractionResult(
     CharacterBibleWorkflowInput Request,
     IReadOnlyList<TextFragment> Paragraphs,
     IReadOnlyList<CharacterBibleCharacterCandidate> Candidates,
+    CharacterBibleModelResponseErrorStatistics ModelResponseErrors,
     Exception? Failure = null);
 
 public enum CharacterBibleDecisionKind
@@ -63,4 +82,9 @@ internal sealed record CharacterBibleCommitPlan(
     int ParagraphCount,
     int CandidateCount,
     IReadOnlyList<CharacterBibleResolverDecision> Decisions,
+    CharacterBibleModelResponseErrorStatistics ModelResponseErrors,
     Exception? Failure = null);
+
+internal sealed record CharacterBibleCandidateExtractionResult(
+    IReadOnlyList<CharacterBibleCharacterCandidate> Candidates,
+    CharacterBibleModelResponseErrorStatistics ModelResponseErrors);

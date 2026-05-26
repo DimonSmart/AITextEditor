@@ -12,7 +12,10 @@ public sealed record CharacterBibleOperationEvent(
     string Message,
     DateTimeOffset Timestamp,
     CharacterBibleWorkflowOutput? Output = null,
-    Exception? Error = null);
+    Exception? Error = null,
+    string? CopyText = null,
+    string? CopyLabel = null,
+    bool AlwaysVisible = false);
 
 public enum CharacterBibleOperationEventType
 {

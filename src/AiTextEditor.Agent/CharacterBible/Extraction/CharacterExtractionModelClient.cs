@@ -14,7 +14,8 @@ public interface ICharacterExtractionModelClient
 
 public sealed record CharacterExtractionModelRequest(
     string SystemPrompt,
-    string UserPrompt);
+    string UserPrompt,
+    IProgress<AgenticModelDiagnostic>? Diagnostics = null);
 
 public sealed class CharacterExtractionResponse
 {
@@ -79,7 +80,8 @@ public sealed class AgenticCharacterExtractionModelClient : ICharacterExtraction
                     new ChatMessage(ChatRole.System, request.SystemPrompt),
                     new ChatMessage(ChatRole.User, request.UserPrompt)
                 ],
-                InvalidContractError: "character_extraction_response_contract_invalid"),
+                InvalidContractError: "character_extraction_response_contract_invalid",
+                Diagnostics: request.Diagnostics),
             cancellationToken).ConfigureAwait(false);
 
         if (!IsValidResponseContract(extractionResponse, out var validationError))

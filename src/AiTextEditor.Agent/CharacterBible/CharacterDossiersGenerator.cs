@@ -49,7 +49,7 @@ public sealed class CharacterDossiersGenerator
         return textCollector.CollectParagraphs(changedPointers, progress);
     }
 
-    internal Task<IReadOnlyList<CharacterBibleCharacterCandidate>> ExtractCandidatesAsync(
+    internal Task<CharacterBibleCandidateExtractionResult> ExtractCandidatesAsync(
         IReadOnlyList<TextFragment> paragraphs,
         IProgress<CharacterBibleWorkflowProgress>? progress = null,
         CancellationToken cancellationToken = default)
@@ -85,8 +85,8 @@ public sealed class CharacterDossiersGenerator
         cancellationToken.ThrowIfCancellationRequested();
 
         var paragraphs = CollectParagraphs(null);
-        var candidates = await ExtractCandidatesAsync(paragraphs, cancellationToken: cancellationToken);
-        var plan = CreateCommitPlan(new CharacterBibleWorkflowInput(), paragraphs.Count, candidates);
+        var extraction = await ExtractCandidatesAsync(paragraphs, cancellationToken: cancellationToken);
+        var plan = CreateCommitPlan(new CharacterBibleWorkflowInput(), paragraphs.Count, extraction.Candidates);
         return CommitPlan(plan);
     }
 
@@ -107,8 +107,8 @@ public sealed class CharacterDossiersGenerator
             return dossierService.GetDossiers();
         }
 
-        var candidates = await ExtractCandidatesAsync(paragraphs, cancellationToken: cancellationToken);
-        var plan = CreateCommitPlan(new CharacterBibleWorkflowInput(changedPointers), paragraphs.Count, candidates);
+        var extraction = await ExtractCandidatesAsync(paragraphs, cancellationToken: cancellationToken);
+        var plan = CreateCommitPlan(new CharacterBibleWorkflowInput(changedPointers), paragraphs.Count, extraction.Candidates);
         return CommitPlan(plan);
     }
 
@@ -128,9 +128,9 @@ public sealed class CharacterDossiersGenerator
         var textFragments = paragraphs
             .Select(paragraph => new TextFragment(paragraph.Pointer, paragraph.Text))
             .ToArray();
-        var candidates = await ExtractCandidatesAsync(textFragments, cancellationToken: cancellationToken);
+        var extraction = await ExtractCandidatesAsync(textFragments, cancellationToken: cancellationToken);
         var changedPointers = paragraphs.Select(paragraph => paragraph.Pointer).ToArray();
-        var plan = CreateCommitPlan(new CharacterBibleWorkflowInput(changedPointers), paragraphs.Count, candidates);
+        var plan = CreateCommitPlan(new CharacterBibleWorkflowInput(changedPointers), paragraphs.Count, extraction.Candidates);
         return CommitPlan(plan);
     }
 }

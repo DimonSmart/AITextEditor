@@ -69,14 +69,19 @@ public sealed class AgenticModelClientTests
         var client = new AgenticFrameworkModelClient(
             agent,
             NullLogger<AgenticFrameworkModelClient>.Instance);
+        var diagnostics = new List<AgenticModelDiagnostic>();
 
         var result = await client.RunAsync<CharacterExtractionResponse>(
             new AgenticModelRequest(
                 [new ChatMessage(ChatRole.User, "extract")],
-                InvalidContractError: "invalid_contract"));
+                InvalidContractError: "invalid_contract",
+                Diagnostics: new ListProgress<AgenticModelDiagnostic>(diagnostics)));
 
         Assert.Empty(result.Characters);
-        Assert.Equal(2, chatClient.CallCount);
+        Assert.Equal(1, chatClient.CallCount);
+        var malformed = Assert.Single(diagnostics, item => item.Kind == AgenticModelDiagnosticKind.MalformedResponse);
+        Assert.Contains("```json", malformed.RawResponse, StringComparison.Ordinal);
+        Assert.Contains(diagnostics, item => item.Kind == AgenticModelDiagnosticKind.RecoverySucceeded);
     }
 
     [Fact]
@@ -103,14 +108,20 @@ public sealed class AgenticModelClientTests
         var client = new AgenticFrameworkModelClient(
             agent,
             NullLogger<AgenticFrameworkModelClient>.Instance);
+        var diagnostics = new List<AgenticModelDiagnostic>();
 
         var result = await client.RunAsync<CharacterExtractionResponse>(
             new AgenticModelRequest(
                 [new ChatMessage(ChatRole.User, "extract")],
-                InvalidContractError: "invalid_contract"));
+                InvalidContractError: "invalid_contract",
+                Diagnostics: new ListProgress<AgenticModelDiagnostic>(diagnostics)));
 
         Assert.Empty(result.Characters);
         Assert.Equal(3, chatClient.CallCount);
+        Assert.Contains(diagnostics, item => item.Kind == AgenticModelDiagnosticKind.MalformedResponse);
+        Assert.Contains(diagnostics, item => item.Kind == AgenticModelDiagnosticKind.RecoveryFailed);
+        Assert.Contains(diagnostics, item => item.Kind == AgenticModelDiagnosticKind.Retry);
+        Assert.Contains(diagnostics, item => item.Kind == AgenticModelDiagnosticKind.RetrySucceeded);
         Assert.Contains(
             chatClient.LastMessages,
             message => message.Role == ChatRole.System
@@ -317,6 +328,14 @@ public sealed class AgenticModelClientTests
             where TResponse : class
         {
             return Task.FromResult((TResponse)(object)response);
+        }
+    }
+
+    private sealed class ListProgress<T>(List<T> items) : IProgress<T>
+    {
+        public void Report(T value)
+        {
+            items.Add(value);
         }
     }
 }

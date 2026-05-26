@@ -41,7 +41,8 @@ internal sealed class CharacterBibleResolver
                 false,
                 paragraphCount,
                 0,
-                []);
+                [],
+                CharacterBibleModelResponseErrorStatistics.Empty);
         }
 
         var index = new DossierIndex(baseDossiers);
@@ -78,7 +79,8 @@ internal sealed class CharacterBibleResolver
             changed,
             paragraphCount,
             candidates.Count,
-            decisions);
+            decisions,
+            CharacterBibleModelResponseErrorStatistics.Empty);
     }
 
     private static bool ApplyHitToIndex(
