@@ -8,8 +8,9 @@ public sealed class CharacterBibleExtractionLimits
 
     public int OverlapParagraphs { get; init; }
 
+    public int OverlapMaxBytes { get; init; }
+
     public int FullScanMaxItems { get; init; } = 100;
 
     public int? MaxCharacters { get; init; }
 }
-

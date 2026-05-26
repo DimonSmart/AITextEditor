@@ -24,6 +24,7 @@ internal sealed class CharacterBibleParagraphBatcher
         var maxBytes = Math.Max(1, limits.MaxBatchBytes);
 
         var startIndex = 0;
+        var overlap = new List<(string Pointer, string Text)>();
         while (startIndex < paragraphs.Count)
         {
             var batch = new List<(string Pointer, string Text)>(Math.Min(maxElements, paragraphs.Count - startIndex));
@@ -58,15 +59,58 @@ internal sealed class CharacterBibleParagraphBatcher
                 nextIndex = startIndex + 1;
             }
 
-            yield return batch;
+            if (overlap.Count == 0)
+            {
+                yield return batch;
+            }
+            else
+            {
+                yield return [.. overlap, .. batch];
+            }
 
             if (nextIndex >= paragraphs.Count)
             {
                 yield break;
             }
 
-            var overlap = Math.Min(Math.Max(0, limits.OverlapParagraphs), Math.Max(0, batch.Count - 1));
-            startIndex = nextIndex - overlap;
+            overlap = SelectOverlap(batch);
+            startIndex = nextIndex;
         }
+    }
+
+    private List<(string Pointer, string Text)> SelectOverlap(IReadOnlyList<(string Pointer, string Text)> batch)
+    {
+        var maxOverlapParagraphs = Math.Min(Math.Max(0, limits.OverlapParagraphs), batch.Count);
+        if (maxOverlapParagraphs == 0)
+        {
+            return [];
+        }
+
+        if (limits.OverlapMaxBytes <= 0)
+        {
+            return batch.Skip(batch.Count - maxOverlapParagraphs).ToList();
+        }
+
+        var selectedCount = 0;
+        var selectedBytes = 0;
+        for (var index = batch.Count - 1; index >= 0 && selectedCount < maxOverlapParagraphs; index--)
+        {
+            var text = batch[index].Text ?? string.Empty;
+            var size = Encoding.UTF8.GetByteCount(text);
+            if (selectedCount > 0 && selectedBytes + size > limits.OverlapMaxBytes)
+            {
+                break;
+            }
+
+            selectedBytes += size;
+            selectedCount++;
+
+            if (selectedBytes >= limits.OverlapMaxBytes)
+            {
+                break;
+            }
+        }
+
+        return batch.Skip(batch.Count - selectedCount).ToList();
     }
 }

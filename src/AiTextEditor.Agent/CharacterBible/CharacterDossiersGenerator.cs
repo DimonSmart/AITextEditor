@@ -4,6 +4,7 @@ using AiTextEditor.Core.Model;
 using AiTextEditor.Core.Services;
 using AiTextEditor.Core.Interfaces;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace AiTextEditor.Agent.CharacterBible;
 
@@ -20,7 +21,8 @@ public sealed class CharacterDossiersGenerator
         CharacterBibleExtractionLimits limits,
         ILogger<CharacterDossiersGenerator> logger,
         ICharacterExtractionModelClient characterExtractionModelClient,
-        CharacterExtractionPromptBuilder promptBuilder)
+        CharacterExtractionPromptBuilder promptBuilder,
+        ILoggerFactory? loggerFactory = null)
     {
         ArgumentNullException.ThrowIfNull(documentContext);
         ArgumentNullException.ThrowIfNull(dossierService);
@@ -32,7 +34,11 @@ public sealed class CharacterDossiersGenerator
         this.dossierService = dossierService;
         var paragraphBatcher = new CharacterBibleParagraphBatcher(limits);
         textCollector = new CharacterBibleTextCollector(documentContext, limits, logger);
-        candidateExtractor = new CharacterBibleCandidateExtractor(characterExtractionModelClient, promptBuilder, paragraphBatcher);
+        candidateExtractor = new CharacterBibleCandidateExtractor(
+            characterExtractionModelClient,
+            promptBuilder,
+            paragraphBatcher,
+            loggerFactory?.CreateLogger<CharacterBibleCandidateExtractor>() ?? NullLogger<CharacterBibleCandidateExtractor>.Instance);
         resolver = new CharacterBibleResolver(dossierService, limits);
     }
 
@@ -128,4 +134,3 @@ public sealed class CharacterDossiersGenerator
         return CommitPlan(plan);
     }
 }
-

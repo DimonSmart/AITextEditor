@@ -48,7 +48,8 @@ public sealed class CharacterBibleWorkflowClient : ICharacterBibleWorkflowClient
             modelSettings.CharacterBibleLimits,
             loggerFactory.CreateLogger<CharacterDossiersGenerator>(),
             extractionClient,
-            new CharacterExtractionPromptBuilder());
+            new CharacterExtractionPromptBuilder(),
+            loggerFactory);
         var runner = new CharacterBibleWorkflowRunner(generator, loggerFactory);
 
         return await runner.RunAsync(request, progress, cancellationToken);

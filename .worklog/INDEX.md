@@ -28,6 +28,8 @@ If this index conflicts with a numbered document, trust the numbered document.
 | 0019 | spec | Simplified character dossier card | Remove generic description and role bonds from character dossiers, and rename the status field to `statusAndCompetence`. | 0012, 0013, 0016, 0017 |
 | 0020 | spec | Character card expanded readonly view | Add one-at-a-time expanded read-only character cards inside the Character Bible grid while keeping editing in the existing dialog. | 0012, 0013, 0019 |
 | 0021 | spec | Character Bible agent structure | Separate Character Bible workflow, extraction, prompt, and resolution code without changing current behavior. | 0002, 0003, 0006, 0011 |
+| 0022 | spec | Malformed JSON response recovery | Recover valid JSON from malformed model responses and skip unrecoverable character extraction batches without failing the whole workflow. | 0003, 0006, 0011 |
+| 0023 | spec | Character bible overlap byte limit | Limit character bible extraction overlap by both paragraph count and optional byte size while keeping main batch sizing separate. | 0003, 0009, 0016 |
 
 ## Archived documents
 

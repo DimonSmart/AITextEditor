@@ -122,13 +122,103 @@ public sealed class CharacterDossiersGeneratorTests
 
         await runner.RunAsync(new CharacterBibleWorkflowInput());
 
-        Assert.Equal(4, extractionModelClient.Requests.Count);
+        Assert.Equal(3, extractionModelClient.Requests.Count);
         Assert.Equal(
             [
                 ["p1", "p2"],
-                ["p2", "p3"],
-                ["p3", "p4"],
+                ["p2", "p3", "p4"],
                 ["p4", "p5"]
+            ],
+            extractionModelClient.Requests.Select(ReadPromptPointers).ToArray());
+    }
+
+    [Fact]
+    public async Task WorkflowExtraction_LimitsOverlapByUtf8Bytes()
+    {
+        var extractionModelClient = await RunWorkflowExtractionAsync(
+            BuildParagraphMarkdown(["aaaa", "bb", "cc", "dd", "ee"]),
+            new CharacterBibleExtractionLimits
+            {
+                MaxParagraphsPerBatch = 2,
+                MaxBatchBytes = 1024,
+                OverlapParagraphs = 2,
+                OverlapMaxBytes = 4,
+                FullScanMaxItems = 20
+            });
+
+        Assert.Equal(
+            [
+                ["p1", "p2"],
+                ["p2", "p3", "p4"],
+                ["p3", "p4", "p5"]
+            ],
+            extractionModelClient.Requests.Select(ReadPromptPointers).ToArray());
+    }
+
+    [Fact]
+    public async Task WorkflowExtraction_OverlapsOneParagraphWhenByteLimitIsSmallerThanLastParagraph()
+    {
+        var extractionModelClient = await RunWorkflowExtractionAsync(
+            BuildParagraphMarkdown(["a", "bbbb", "c", "d"]),
+            new CharacterBibleExtractionLimits
+            {
+                MaxParagraphsPerBatch = 2,
+                MaxBatchBytes = 1024,
+                OverlapParagraphs = 2,
+                OverlapMaxBytes = 1,
+                FullScanMaxItems = 20
+            });
+
+        Assert.Equal(
+            [
+                ["p1", "p2"],
+                ["p2", "p3", "p4"]
+            ],
+            extractionModelClient.Requests.Select(ReadPromptPointers).ToArray());
+    }
+
+    [Fact]
+    public async Task WorkflowExtraction_IgnoresOverlapByteLimitWhenItIsZero()
+    {
+        var extractionModelClient = await RunWorkflowExtractionAsync(
+            BuildParagraphMarkdown(["aaaa", "bbbb", "cccc", "dddd", "eeee"]),
+            new CharacterBibleExtractionLimits
+            {
+                MaxParagraphsPerBatch = 2,
+                MaxBatchBytes = 1024,
+                OverlapParagraphs = 2,
+                OverlapMaxBytes = 0,
+                FullScanMaxItems = 20
+            });
+
+        Assert.Equal(
+            [
+                ["p1", "p2"],
+                ["p1", "p2", "p3", "p4"],
+                ["p3", "p4", "p5"]
+            ],
+            extractionModelClient.Requests.Select(ReadPromptPointers).ToArray());
+    }
+
+    [Fact]
+    public async Task WorkflowExtraction_DoesNotOverlapWhenOverlapParagraphsIsZero()
+    {
+        var extractionModelClient = await RunWorkflowExtractionAsync(
+            BuildParagraphMarkdown(["a", "b", "c", "d", "e"]),
+            new CharacterBibleExtractionLimits
+            {
+                MaxParagraphsPerBatch = 2,
+                MaxBatchBytes = 1024,
+                OverlapParagraphs = 0,
+                OverlapMaxBytes = 1024,
+                FullScanMaxItems = 20
+            });
+
+        Assert.Equal(
+            [
+                ["p1", "p2"],
+                ["p3", "p4"],
+                ["p5"]
             ],
             extractionModelClient.Requests.Select(ReadPromptPointers).ToArray());
     }
@@ -372,6 +462,41 @@ public sealed class CharacterDossiersGeneratorTests
         }
 
         return builder.ToString();
+    }
+
+    private static string BuildParagraphMarkdown(IEnumerable<string> paragraphs)
+    {
+        var builder = new StringBuilder();
+        foreach (var paragraph in paragraphs)
+        {
+            builder.AppendLine(paragraph);
+            builder.AppendLine();
+        }
+
+        return builder.ToString();
+    }
+
+    private static async Task<CapturingCharacterExtractionModelClient> RunWorkflowExtractionAsync(
+        string markdown,
+        CharacterBibleExtractionLimits limits)
+    {
+        var repository = new MarkdownDocumentRepository();
+        var document = repository.LoadFromMarkdown(markdown);
+        var dossierService = new CharacterDossierService();
+        var documentContext = new DocumentContext(document, dossierService);
+        var extractionModelClient = new CapturingCharacterExtractionModelClient();
+        var generator = new CharacterDossiersGenerator(
+            documentContext,
+            dossierService,
+            limits,
+            NullLogger<CharacterDossiersGenerator>.Instance,
+            extractionModelClient,
+            new CharacterExtractionPromptBuilder());
+        var runner = new CharacterBibleWorkflowRunner(generator, NullLoggerFactory.Instance);
+
+        await runner.RunAsync(new CharacterBibleWorkflowInput());
+
+        return extractionModelClient;
     }
 
     private static CharacterExtractionResponse Response(params CharacterExtractionCharacter[] characters)

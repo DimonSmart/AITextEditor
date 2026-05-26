@@ -582,6 +582,7 @@ public sealed class WebCharacterBibleServiceTests
                 MaxParagraphsPerBatch = 12,
                 MaxBatchBytes = 4096,
                 OverlapParagraphs = 2,
+                OverlapMaxBytes = 2048,
                 FullScanMaxItems = 250
             }
         };
@@ -604,6 +605,7 @@ public sealed class WebCharacterBibleServiceTests
         Assert.Equal(12, loadedSettings.CharacterBibleExtraction.MaxParagraphsPerBatch);
         Assert.Equal(4096, loadedSettings.CharacterBibleExtraction.MaxBatchBytes);
         Assert.Equal(2, loadedSettings.CharacterBibleExtraction.OverlapParagraphs);
+        Assert.Equal(2048, loadedSettings.CharacterBibleExtraction.OverlapMaxBytes);
         Assert.Equal(250, loadedSettings.CharacterBibleExtraction.FullScanMaxItems);
     }
 
@@ -634,6 +636,7 @@ public sealed class WebCharacterBibleServiceTests
         Assert.Equal(20, validated.CharacterBibleLimits.MaxParagraphsPerBatch);
         Assert.Equal(8000, validated.CharacterBibleLimits.MaxBatchBytes);
         Assert.Equal(1, validated.CharacterBibleLimits.OverlapParagraphs);
+        Assert.Equal(0, validated.CharacterBibleLimits.OverlapMaxBytes);
         Assert.Equal(100, validated.CharacterBibleLimits.FullScanMaxItems);
     }
 
@@ -647,13 +650,14 @@ public sealed class WebCharacterBibleServiceTests
                 MaxParagraphsPerBatch = 2,
                 MaxBatchBytes = 8000,
                 OverlapParagraphs = 2,
+                OverlapMaxBytes = -1,
                 FullScanMaxItems = 100
             }
         };
 
         var errors = ProgramSettingsValidation.ValidateForSave(settings);
 
-        Assert.Contains("Character bible overlap paragraphs must be less than max paragraphs per batch.", errors);
+        Assert.Contains("Character bible overlap max bytes cannot be negative.", errors);
     }
 
     [Fact]

@@ -83,7 +83,8 @@ public sealed class AgenticWorkflowEngine
             characterBibleLimits,
             loggerFactory.CreateLogger<CharacterDossiersGenerator>(),
             extractionClient,
-            new CharacterExtractionPromptBuilder());
+            new CharacterExtractionPromptBuilder(),
+            loggerFactory);
 
         var workflowRunner = new CharacterBibleWorkflowRunner(generator, loggerFactory);
         var dossiersPlugin = new CharacterDossiersPlugin(

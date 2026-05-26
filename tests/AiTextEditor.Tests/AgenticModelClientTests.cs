@@ -44,7 +44,7 @@ public sealed class AgenticModelClientTests
     }
 
     [Fact]
-    public async Task AgenticFrameworkModelClient_RetriesMalformedStructuredOutput()
+    public async Task AgenticFrameworkModelClient_RecoversMalformedStructuredOutputFromRawFallback()
     {
         var chatClient = new CapturingChatClient(
             """
@@ -54,6 +54,39 @@ public sealed class AgenticModelClientTests
             }
             ```
             """,
+            """
+            Here is the JSON:
+            { "characters": [] }
+            """);
+        var agent = new ChatClientAgent(
+            chatClient,
+            new ChatClientAgentOptions
+            {
+                Name = "test_agent",
+                UseProvidedChatClientAsIs = true
+            },
+            NullLoggerFactory.Instance);
+        var client = new AgenticFrameworkModelClient(
+            agent,
+            NullLogger<AgenticFrameworkModelClient>.Instance);
+
+        var result = await client.RunAsync<CharacterExtractionResponse>(
+            new AgenticModelRequest(
+                [new ChatMessage(ChatRole.User, "extract")],
+                InvalidContractError: "invalid_contract"));
+
+        Assert.Empty(result.Characters);
+        Assert.Equal(2, chatClient.CallCount);
+    }
+
+    [Fact]
+    public async Task AgenticFrameworkModelClient_RetriesWhenMalformedRecoveryFails()
+    {
+        var chatClient = new CapturingChatClient(
+            """
+            { "characters": [
+            """,
+            "There is no valid JSON here.",
             """
             {
               "characters": []
@@ -77,7 +110,7 @@ public sealed class AgenticModelClientTests
                 InvalidContractError: "invalid_contract"));
 
         Assert.Empty(result.Characters);
-        Assert.Equal(2, chatClient.CallCount);
+        Assert.Equal(3, chatClient.CallCount);
         Assert.Contains(
             chatClient.LastMessages,
             message => message.Role == ChatRole.System

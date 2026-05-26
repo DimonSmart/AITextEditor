@@ -233,7 +233,43 @@ public sealed class CharacterBibleWorkflowRunnerTests
     }
 
     [Fact]
-    public async Task RunAsync_WhenExtractionFails_PropagatesOriginalError()
+    public async Task RunAsync_WhenOneExtractionBatchFails_SkipsBatchAndContinues()
+    {
+        var repository = new MarkdownDocumentRepository();
+        var document = repository.LoadFromMarkdown("John arrived.\n\nBroken batch.\n\nMary waved.");
+        var dossierService = new CharacterDossierService();
+        var documentContext = new DocumentContext(document, dossierService);
+        var limits = new CharacterBibleExtractionLimits { MaxParagraphsPerBatch = 1, MaxBatchBytes = 1024 * 128 };
+        var extractionModelClient = new SequencedCharacterExtractionModelClient(
+            Response(new CharacterExtractionCharacter("John", "unknown", [])),
+            new InvalidOperationException("character_extraction_response_contract_invalid"),
+            Response(new CharacterExtractionCharacter("Mary", "unknown", [])));
+        var generator = new CharacterDossiersGenerator(
+            documentContext,
+            dossierService,
+            limits,
+            NullLogger<CharacterDossiersGenerator>.Instance,
+            extractionModelClient,
+            new CharacterExtractionPromptBuilder());
+        var runner = new CharacterBibleWorkflowRunner(generator, NullLoggerFactory.Instance);
+        var progress = new List<CharacterBibleWorkflowProgress>();
+
+        var result = await runner.RunAsync(
+            new CharacterBibleWorkflowInput(),
+            new ListProgress(progress),
+            CancellationToken.None);
+
+        Assert.Equal("generated", result.Status);
+        Assert.Equal(3, result.ParagraphCount);
+        Assert.Equal(2, result.CandidateCount);
+        Assert.Equal(2, result.Dossiers.Characters.Count);
+        Assert.Equal(3, extractionModelClient.CallCount);
+        Assert.Contains(progress, item => item.Message.StartsWith("Batch 2 failed and was skipped", StringComparison.Ordinal));
+        Assert.Contains(progress, item => item.Message.StartsWith("Candidate extraction finished with warnings:", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public async Task RunAsync_WhenExtractionFailsWithNonrecoverableError_PropagatesOriginalError()
     {
         var repository = new MarkdownDocumentRepository();
         var document = repository.LoadFromMarkdown("John arrived.");
@@ -245,13 +281,13 @@ public sealed class CharacterBibleWorkflowRunnerTests
             dossierService,
             limits,
             NullLogger<CharacterDossiersGenerator>.Instance,
-            new FailingCharacterExtractionModelClient("character_extraction_response_contract_invalid"),
+            new FailingCharacterExtractionModelClient("character_extraction_empty_response_content"),
             new CharacterExtractionPromptBuilder());
         var runner = new CharacterBibleWorkflowRunner(generator, NullLoggerFactory.Instance);
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => runner.RunAsync());
 
-        Assert.Equal("character_extraction_response_contract_invalid", exception.Message);
+        Assert.Equal("character_extraction_empty_response_content", exception.Message);
     }
 
     private static CharacterBibleWorkflowRunner CreateRunner(
@@ -308,6 +344,27 @@ public sealed class CharacterBibleWorkflowRunnerTests
             CharacterExtractionModelRequest request,
             CancellationToken cancellationToken = default)
             => throw new InvalidOperationException(message);
+    }
+
+    private sealed class SequencedCharacterExtractionModelClient(params object[] results) : ICharacterExtractionModelClient
+    {
+        private readonly Queue<object> results = new(results);
+
+        public int CallCount { get; private set; }
+
+        public Task<CharacterExtractionResponse> ExtractCharactersAsync(
+            CharacterExtractionModelRequest request,
+            CancellationToken cancellationToken = default)
+        {
+            CallCount++;
+            var result = results.Count > 0 ? results.Dequeue() : Response();
+            if (result is Exception exception)
+            {
+                throw exception;
+            }
+
+            return Task.FromResult((CharacterExtractionResponse)result);
+        }
     }
 
     private sealed class ListProgress(List<CharacterBibleWorkflowProgress> items)

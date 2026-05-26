@@ -50,6 +50,11 @@ else
             </label>
 
             <label>
+                <span>Overlap max bytes</span>
+                <input class="form-control" type="number" min="0" @bind="EditableSettings.CharacterBibleExtraction.OverlapMaxBytes" @bind:event="oninput" />
+            </label>
+
+            <label>
                 <span>Full-scan item limit</span>
                 <input class="form-control" type="number" min="1" @bind="EditableSettings.CharacterBibleExtraction.FullScanMaxItems" @bind:event="oninput" />
             </label>

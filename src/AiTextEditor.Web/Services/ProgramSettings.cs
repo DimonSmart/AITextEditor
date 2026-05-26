@@ -119,6 +119,8 @@ public sealed class CharacterBibleExtractionSettings
 
     public int OverlapParagraphs { get; set; } = 1;
 
+    public int OverlapMaxBytes { get; set; }
+
     public int FullScanMaxItems { get; set; } = 100;
 
     public CharacterBibleExtractionSettings Clone()
@@ -128,6 +130,7 @@ public sealed class CharacterBibleExtractionSettings
             MaxParagraphsPerBatch = MaxParagraphsPerBatch,
             MaxBatchBytes = MaxBatchBytes,
             OverlapParagraphs = OverlapParagraphs,
+            OverlapMaxBytes = OverlapMaxBytes,
             FullScanMaxItems = FullScanMaxItems
         };
     }
@@ -139,6 +142,7 @@ public sealed class CharacterBibleExtractionSettings
             MaxParagraphsPerBatch = MaxParagraphsPerBatch,
             MaxBatchBytes = MaxBatchBytes,
             OverlapParagraphs = OverlapParagraphs,
+            OverlapMaxBytes = OverlapMaxBytes,
             FullScanMaxItems = FullScanMaxItems
         };
     }
@@ -274,9 +278,9 @@ public static class ProgramSettingsValidation
             errors.Add("Character bible overlap paragraphs cannot be negative.");
         }
 
-        if (extraction.OverlapParagraphs >= extraction.MaxParagraphsPerBatch)
+        if (extraction.OverlapMaxBytes < 0)
         {
-            errors.Add("Character bible overlap paragraphs must be less than max paragraphs per batch.");
+            errors.Add("Character bible overlap max bytes cannot be negative.");
         }
 
         if (extraction.FullScanMaxItems <= 0)
