@@ -29,6 +29,7 @@ public sealed record CharacterBibleWorkflowProgress(
 
 public sealed record CharacterBibleModelResponseErrorStatistics(
     int ParseErrorCount = 0,
+    int ContractErrorCount = 0,
     int RetryCount = 0,
     int RetrySucceededCount = 0,
     int SkippedBatchCount = 0,
@@ -36,7 +37,7 @@ public sealed record CharacterBibleModelResponseErrorStatistics(
 {
     public static CharacterBibleModelResponseErrorStatistics Empty { get; } = new();
 
-    public int TotalErrorCount => ParseErrorCount + SkippedBatchCount;
+    public int TotalErrorCount => ParseErrorCount + ContractErrorCount + SkippedBatchCount;
 }
 
 internal sealed record TextFragment(

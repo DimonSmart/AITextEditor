@@ -58,20 +58,16 @@ public sealed class AgenticCursorAgentModelClient(IAgenticModelClient modelClien
         CancellationToken cancellationToken)
     {
         var command = await modelClient.RunAsync<AgentCommand>(
-            new AgenticModelRequest(
+            new AgenticModelRequest<AgentCommand>(
                 [
                     new ChatMessage(ChatRole.System, request.AgentSystemPrompt),
                     new ChatMessage(ChatRole.User, request.TaskDefinitionPrompt),
                     new ChatMessage(ChatRole.User, request.EvidenceSnapshot),
                     new ChatMessage(ChatRole.User, request.BatchMessage)
                 ],
-                InvalidContractError: "cursor_agent_response_contract_invalid"),
+                InvalidContractError: "cursor_agent_response_contract_invalid",
+                ValidateResponse: ValidateCommand),
             cancellationToken).ConfigureAwait(false);
-
-        if (!IsValidCommand(command))
-        {
-            throw new InvalidOperationException("cursor_agent_response_contract_invalid");
-        }
 
         return command;
     }
@@ -90,41 +86,41 @@ public sealed class AgenticCursorAgentModelClient(IAgenticModelClient modelClien
         CancellationToken cancellationToken)
     {
         var response = await modelClient.RunAsync<FinalizerResponse>(
-            new AgenticModelRequest(
+            new AgenticModelRequest<FinalizerResponse>(
                 [
                     new ChatMessage(ChatRole.System, request.FinalizerSystemPrompt),
                     new ChatMessage(ChatRole.User, request.FinalizerUserMessage)
                 ],
-                InvalidContractError: "cursor_agent_finalizer_response_contract_invalid"),
+                InvalidContractError: "cursor_agent_finalizer_response_contract_invalid",
+                ValidateResponse: ValidateFinalizerResponse),
             cancellationToken).ConfigureAwait(false);
-
-        if (!IsValidFinalizerResponse(response))
-        {
-            throw new InvalidOperationException("cursor_agent_finalizer_response_contract_invalid");
-        }
 
         return response;
     }
 
-    private static bool IsValidCommand(AgentCommand command)
+    private static AgenticModelValidationResult ValidateCommand(AgentCommand command)
     {
         if (!string.Equals(command.Action, "continue", StringComparison.Ordinal)
             && !string.Equals(command.Action, "stop", StringComparison.Ordinal))
         {
-            return false;
+            return AgenticModelValidationResult.Invalid("action has unsupported value.");
         }
 
         if (command.NewEvidence is null)
         {
-            return false;
+            return AgenticModelValidationResult.Invalid("newEvidence is required.");
         }
 
-        return command.NewEvidence.All(evidence => !string.IsNullOrWhiteSpace(evidence.Pointer));
+        return command.NewEvidence.All(evidence => !string.IsNullOrWhiteSpace(evidence.Pointer))
+            ? AgenticModelValidationResult.Valid
+            : AgenticModelValidationResult.Invalid("newEvidence pointer is required.");
     }
 
-    private static bool IsValidFinalizerResponse(FinalizerResponse response)
+    private static AgenticModelValidationResult ValidateFinalizerResponse(FinalizerResponse response)
     {
         return string.Equals(response.Decision, "success", StringComparison.Ordinal)
-               || string.Equals(response.Decision, "not_found", StringComparison.Ordinal);
+               || string.Equals(response.Decision, "not_found", StringComparison.Ordinal)
+            ? AgenticModelValidationResult.Valid
+            : AgenticModelValidationResult.Invalid("decision has unsupported value.");
     }
 }

@@ -18,7 +18,7 @@ internal sealed class AgenticModelRetryStrategy
     }
 
     public async Task<TResponse> RunAsync<TResponse>(
-        AgenticModelRequest request,
+        AgenticModelRequest<TResponse> request,
         Func<IReadOnlyList<ChatMessage>, ChatOptions, CancellationToken, Task<ChatResponse>> sendRequestAsync,
         CancellationToken cancellationToken)
         where TResponse : class
@@ -72,6 +72,55 @@ internal sealed class AgenticModelRetryStrategy
                     out var response,
                     out var parseError))
             {
+                var validResponse = response ?? throw new InvalidOperationException(request.InvalidContractError);
+                var validation = request.ValidateResponse?.Invoke(validResponse) ?? AgenticModelValidationResult.Valid;
+                if (!validation.IsValid)
+                {
+                    request.Diagnostics?.Report(new AgenticModelDiagnostic(
+                        AgenticModelDiagnosticKind.InvalidContract,
+                        typeof(TResponse).Name,
+                        attempt,
+                        MaxStructuredResponseAttempts,
+                        "Model response contract error. Raw response is available for copying.",
+                        rawResponse.ModelId ?? chatOptions.ModelId,
+                        RawResponse: rawText,
+                        Error: validation.Error));
+                    logger.LogError(
+                        "Model response contract validation failed for {ResponseType}. Attempt={Attempt}, MaxAttempts={MaxAttempts}, ModelId={ModelId}, FinishReason={FinishReason}, RawLength={RawLength}, RawPreview={RawPreview}, ValidationError={ValidationError}.",
+                        typeof(TResponse).Name,
+                        attempt,
+                        MaxStructuredResponseAttempts,
+                        rawResponse.ModelId ?? chatOptions.ModelId,
+                        rawResponse.FinishReason,
+                        rawText.Length,
+                        Truncate(rawText, MaxRawResponsePreviewLength),
+                        validation.Error);
+
+                    if (attempt >= MaxStructuredResponseAttempts)
+                    {
+                        break;
+                    }
+
+                    var contractRetryAttempt = attempt + 1;
+                    request.Diagnostics?.Report(new AgenticModelDiagnostic(
+                        AgenticModelDiagnosticKind.Retry,
+                        typeof(TResponse).Name,
+                        contractRetryAttempt,
+                        MaxStructuredResponseAttempts,
+                        $"Retrying model call after contract error (attempt {contractRetryAttempt}/{MaxStructuredResponseAttempts}).",
+                        rawResponse.ModelId ?? chatOptions.ModelId,
+                        Error: validation.Error));
+                    logger.LogWarning(
+                        "Model response contract validation failed for {ResponseType}. Retrying attempt {Attempt}/{MaxAttempts}. ModelId={ModelId}. ValidationError={ValidationError}.",
+                        typeof(TResponse).Name,
+                        contractRetryAttempt,
+                        MaxStructuredResponseAttempts,
+                        rawResponse.ModelId ?? chatOptions.ModelId,
+                        validation.Error);
+                    messages = BuildRetryMessages(request.Messages, typeof(TResponse).Name, validation.Error);
+                    continue;
+                }
+
                 if (attempt > 1)
                 {
                     request.Diagnostics?.Report(new AgenticModelDiagnostic(
@@ -83,7 +132,7 @@ internal sealed class AgenticModelRetryStrategy
                         rawResponse.ModelId ?? chatOptions.ModelId));
                 }
 
-                return response ?? throw new InvalidOperationException(request.InvalidContractError);
+                return validResponse;
             }
 
             request.Diagnostics?.Report(new AgenticModelDiagnostic(
@@ -125,7 +174,7 @@ internal sealed class AgenticModelRetryStrategy
                 retryAttempt,
                 MaxStructuredResponseAttempts,
                 rawResponse.ModelId ?? chatOptions.ModelId);
-            messages = BuildRetryMessages(request.Messages, typeof(TResponse).Name);
+            messages = BuildRetryMessages(request.Messages, typeof(TResponse).Name, parseError);
         }
 
         throw new InvalidOperationException(request.InvalidContractError);
@@ -184,14 +233,18 @@ internal sealed class AgenticModelRetryStrategy
 
     private static IReadOnlyList<ChatMessage> BuildRetryMessages(
         IReadOnlyList<ChatMessage> originalMessages,
-        string responseTypeName)
+        string responseTypeName,
+        string? previousError)
     {
+        var errorText = string.IsNullOrWhiteSpace(previousError)
+            ? string.Empty
+            : $" Previous error: {previousError.Trim()}";
         return
         [
             .. originalMessages,
             new ChatMessage(
                 ChatRole.System,
-                $"The previous response was malformed for the {responseTypeName} schema. Return exactly one JSON object that matches the requested schema. Do not include markdown, code fences, comments, or prose outside the JSON object.")
+                $"The previous response was malformed for the {responseTypeName} schema.{errorText} Return exactly one JSON object that matches the requested schema. Do not include markdown, code fences, comments, or prose outside the JSON object.")
         ];
     }
 }

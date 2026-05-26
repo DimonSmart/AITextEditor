@@ -16,7 +16,8 @@ public interface IDossierConsistencyReviewerModelClient
 
 public sealed record DossierReviewModelRequest(
     string SystemPrompt,
-    string UserPrompt);
+    string UserPrompt,
+    IProgress<AgenticModelDiagnostic>? Diagnostics = null);
 
 public sealed class DossierReviewResult
 {
@@ -116,21 +117,24 @@ public sealed class AgenticDossierConsistencyReviewerModelClient : IDossierConsi
         ArgumentNullException.ThrowIfNull(request);
 
         var result = await modelClient.RunAsync<DossierReviewResult>(
-            new AgenticModelRequest(
+            new AgenticModelRequest<DossierReviewResult>(
                 [
                     new ChatMessage(ChatRole.System, request.SystemPrompt),
                     new ChatMessage(ChatRole.User, request.UserPrompt)
                 ],
-                InvalidContractError: "dossier_review_result_contract_invalid"),
+                InvalidContractError: "dossier_review_result_contract_invalid",
+                ValidateResponse: Validate,
+                Diagnostics: request.Diagnostics),
             cancellationToken).ConfigureAwait(false);
 
-        if (!IsValid(result, out var error))
-        {
-            logger.LogError("Dossier review result contract validation failed: {ValidationError}", error);
-            throw new InvalidOperationException("dossier_review_result_contract_invalid");
-        }
-
         return result;
+    }
+
+    private static AgenticModelValidationResult Validate(DossierReviewResult result)
+    {
+        return IsValid(result, out var error)
+            ? AgenticModelValidationResult.Valid
+            : AgenticModelValidationResult.Invalid(error);
     }
 
     private static bool IsValid(DossierReviewResult result, out string error)

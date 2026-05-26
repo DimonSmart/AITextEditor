@@ -83,7 +83,11 @@ internal sealed class CharacterBibleResolver
             var response = await suspectArchiveResolverModelClient.ResolveAsync(
                 new SuspectArchiveResolverModelRequest(
                     suspectArchiveResolverPromptBuilder.BuildSystemPrompt(),
-                    suspectArchiveResolverPromptBuilder.BuildUserPrompt(candidate, archiveHits)),
+                    suspectArchiveResolverPromptBuilder.BuildUserPrompt(candidate, archiveHits),
+                    new CharacterBibleAgentDiagnosticProgress(
+                        progress,
+                        "resolve",
+                        $"Identity resolver for {candidate.CanonicalName}")),
                 cancellationToken).ConfigureAwait(false);
 
             var decision = ToIdentityDecision(response, archiveHits);
@@ -129,7 +133,11 @@ internal sealed class CharacterBibleResolver
             var proposal = await splitCandidateModelClient.ProposeSplitAsync(
                 new SplitCandidateModelRequest(
                     splitCandidatePromptBuilder.BuildSystemPrompt(),
-                    splitCandidatePromptBuilder.BuildUserPrompt(candidate, decision, archiveHits)),
+                    splitCandidatePromptBuilder.BuildUserPrompt(candidate, decision, archiveHits),
+                    new CharacterBibleAgentDiagnosticProgress(
+                        progress,
+                        "split",
+                        $"Split proposal for {candidate.CanonicalName}")),
                 cancellationToken).ConfigureAwait(false);
             progress?.Report(new CharacterBibleWorkflowProgress(
                 "split",

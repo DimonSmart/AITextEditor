@@ -146,13 +146,14 @@ internal sealed class CharacterBibleCandidateExtractor
                 value.RawResponse,
                 value.RawResponse is null ? null : "Copy raw response",
                 AlwaysVisible: true,
-                IsError: value.Kind == AgenticModelDiagnosticKind.MalformedResponse));
+                IsError: value.Kind is AgenticModelDiagnosticKind.MalformedResponse or AgenticModelDiagnosticKind.InvalidContract));
         }
     }
 
     private sealed class ModelResponseErrorStatisticsBuilder
     {
         private int parseErrorCount;
+        private int contractErrorCount;
         private int retryCount;
         private int retrySucceededCount;
         private int skippedBatchCount;
@@ -164,6 +165,9 @@ internal sealed class CharacterBibleCandidateExtractor
             {
                 case AgenticModelDiagnosticKind.MalformedResponse:
                     parseErrorCount++;
+                    break;
+                case AgenticModelDiagnosticKind.InvalidContract:
+                    contractErrorCount++;
                     break;
                 case AgenticModelDiagnosticKind.Retry:
                     retryCount++;
@@ -184,6 +188,7 @@ internal sealed class CharacterBibleCandidateExtractor
         {
             return new CharacterBibleModelResponseErrorStatistics(
                 parseErrorCount,
+                contractErrorCount,
                 retryCount,
                 retrySucceededCount,
                 skippedBatchCount,

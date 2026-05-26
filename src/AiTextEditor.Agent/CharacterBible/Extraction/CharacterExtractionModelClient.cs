@@ -68,22 +68,24 @@ public sealed class AgenticCharacterExtractionModelClient : ICharacterExtraction
         ArgumentException.ThrowIfNullOrWhiteSpace(request.UserPrompt);
 
         var extractionResponse = await modelClient.RunAsync<CharacterExtractionResponse>(
-            new AgenticModelRequest(
+            new AgenticModelRequest<CharacterExtractionResponse>(
                 [
                     new ChatMessage(ChatRole.System, request.SystemPrompt),
                     new ChatMessage(ChatRole.User, request.UserPrompt)
                 ],
                 InvalidContractError: "character_extraction_response_contract_invalid",
+                ValidateResponse: ValidateResponseContract,
                 Diagnostics: request.Diagnostics),
             cancellationToken).ConfigureAwait(false);
 
-        if (!IsValidResponseContract(extractionResponse, out var validationError))
-        {
-            logger.LogError("Character extraction response contract validation failed: {ValidationError}", validationError);
-            throw new InvalidOperationException("character_extraction_response_contract_invalid");
-        }
-
         return extractionResponse;
+    }
+
+    private static AgenticModelValidationResult ValidateResponseContract(CharacterExtractionResponse response)
+    {
+        return IsValidResponseContract(response, out var error)
+            ? AgenticModelValidationResult.Valid
+            : AgenticModelValidationResult.Invalid(error);
     }
 
     private static bool IsValidResponseContract(CharacterExtractionResponse response, out string error)

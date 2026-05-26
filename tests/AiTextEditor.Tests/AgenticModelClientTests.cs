@@ -32,7 +32,7 @@ public sealed class AgenticModelClientTests
             NullLogger<AgenticFrameworkModelClient>.Instance);
 
         var result = await client.RunAsync<CharacterExtractionResponse>(
-            new AgenticModelRequest(
+            new AgenticModelRequest<CharacterExtractionResponse>(
                 [new ChatMessage(ChatRole.User, "extract")],
                 InvalidContractError: "invalid_contract"));
 
@@ -71,7 +71,7 @@ public sealed class AgenticModelClientTests
         var diagnostics = new List<AgenticModelDiagnostic>();
 
         var result = await client.RunAsync<CharacterExtractionResponse>(
-            new AgenticModelRequest(
+            new AgenticModelRequest<CharacterExtractionResponse>(
                 [new ChatMessage(ChatRole.User, "extract")],
                 InvalidContractError: "invalid_contract",
                 Diagnostics: new ListProgress<AgenticModelDiagnostic>(diagnostics)));
@@ -111,7 +111,7 @@ public sealed class AgenticModelClientTests
         var diagnostics = new List<AgenticModelDiagnostic>();
 
         var result = await client.RunAsync<CharacterExtractionResponse>(
-            new AgenticModelRequest(
+            new AgenticModelRequest<CharacterExtractionResponse>(
                 [new ChatMessage(ChatRole.User, "extract")],
                 InvalidContractError: "invalid_contract",
                 Diagnostics: new ListProgress<AgenticModelDiagnostic>(diagnostics)));
@@ -149,7 +149,7 @@ public sealed class AgenticModelClientTests
         var diagnostics = new List<AgenticModelDiagnostic>();
 
         var result = await client.RunAsync<CharacterExtractionResponse>(
-            new AgenticModelRequest(
+            new AgenticModelRequest<CharacterExtractionResponse>(
                 [new ChatMessage(ChatRole.User, "extract")],
                 InvalidContractError: "invalid_contract",
                 Diagnostics: new ListProgress<AgenticModelDiagnostic>(diagnostics)));
@@ -158,6 +158,81 @@ public sealed class AgenticModelClientTests
         Assert.Equal(2, chatClient.CallCount);
         Assert.Contains(diagnostics, item => item.Kind == AgenticModelDiagnosticKind.Retry);
         Assert.Contains(diagnostics, item => item.Kind == AgenticModelDiagnosticKind.RetrySucceeded);
+    }
+
+    [Fact]
+    public async Task AgenticFrameworkModelClient_RetriesWhenResponseContractIsInvalid()
+    {
+        var chatClient = new CapturingChatClient(
+            """
+            { "characters": null }
+            """,
+            """
+            { "characters": [] }
+            """);
+        var agent = new ChatClientAgent(
+            chatClient,
+            new ChatClientAgentOptions
+            {
+                Name = "test_agent",
+                UseProvidedChatClientAsIs = true
+            },
+            NullLoggerFactory.Instance);
+        var client = new AgenticFrameworkModelClient(
+            agent,
+            NullLogger<AgenticFrameworkModelClient>.Instance);
+        var diagnostics = new List<AgenticModelDiagnostic>();
+
+        var result = await client.RunAsync<CharacterExtractionResponse>(
+            new AgenticModelRequest<CharacterExtractionResponse>(
+                [new ChatMessage(ChatRole.User, "extract")],
+                InvalidContractError: "invalid_contract",
+                ValidateResponse: response => response.Characters is null
+                    ? AgenticModelValidationResult.Invalid("characters is required.")
+                    : AgenticModelValidationResult.Valid,
+                Diagnostics: new ListProgress<AgenticModelDiagnostic>(diagnostics)));
+
+        Assert.Empty(result.Characters);
+        Assert.Equal(2, chatClient.CallCount);
+        Assert.Contains(diagnostics, item => item.Kind == AgenticModelDiagnosticKind.InvalidContract);
+        Assert.Contains(diagnostics, item => item.Kind == AgenticModelDiagnosticKind.Retry);
+        Assert.Contains(diagnostics, item => item.Kind == AgenticModelDiagnosticKind.RetrySucceeded);
+    }
+
+    [Fact]
+    public async Task AgenticFrameworkModelClient_WhenResponseContractStaysInvalid_ThrowsContractError()
+    {
+        var chatClient = new CapturingChatClient(
+            """
+            { "characters": null }
+            """,
+            """
+            { "characters": null }
+            """,
+            """
+            { "characters": null }
+            """);
+        var agent = new ChatClientAgent(
+            chatClient,
+            new ChatClientAgentOptions
+            {
+                Name = "test_agent",
+                UseProvidedChatClientAsIs = true
+            },
+            NullLoggerFactory.Instance);
+        var client = new AgenticFrameworkModelClient(
+            agent,
+            NullLogger<AgenticFrameworkModelClient>.Instance);
+
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(
+            () => client.RunAsync<CharacterExtractionResponse>(
+                new AgenticModelRequest<CharacterExtractionResponse>(
+                    [new ChatMessage(ChatRole.User, "extract")],
+                    InvalidContractError: "invalid_contract",
+                    ValidateResponse: _ => AgenticModelValidationResult.Invalid("characters is required."))));
+
+        Assert.Equal("invalid_contract", exception.Message);
+        Assert.Equal(3, chatClient.CallCount);
     }
 
     [Fact]
@@ -202,7 +277,7 @@ public sealed class AgenticModelClientTests
             NullLogger<AgenticFrameworkModelClient>.Instance);
 
         var result = await client.RunAsync<CharacterExtractionResponse>(
-            new AgenticModelRequest(
+            new AgenticModelRequest<CharacterExtractionResponse>(
                 [new ChatMessage(ChatRole.User, "extract")],
                 InvalidContractError: "invalid_contract"));
 
@@ -212,6 +287,7 @@ public sealed class AgenticModelClientTests
         Assert.Equal("p1", evidence.Pointer);
         Assert.Equal("Johnny entered.", evidence.Excerpt);
     }
+
 
     [Fact]
     public async Task CharacterExtractionClient_WhenAliasEvidenceExcerptIsMissing_FailsContractValidation()
@@ -361,7 +437,7 @@ public sealed class AgenticModelClientTests
     private sealed class StubAgenticModelClient(CharacterExtractionResponse response) : IAgenticModelClient
     {
         public Task<TResponse> RunAsync<TResponse>(
-            AgenticModelRequest request,
+            AgenticModelRequest<TResponse> request,
             CancellationToken cancellationToken = default)
             where TResponse : class
         {

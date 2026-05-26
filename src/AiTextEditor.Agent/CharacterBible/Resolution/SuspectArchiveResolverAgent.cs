@@ -15,7 +15,8 @@ public interface ISuspectArchiveResolverModelClient
 
 public sealed record SuspectArchiveResolverModelRequest(
     string SystemPrompt,
-    string UserPrompt);
+    string UserPrompt,
+    IProgress<AgenticModelDiagnostic>? Diagnostics = null);
 
 public sealed class SuspectArchiveResolverResponse
 {
@@ -107,21 +108,24 @@ public sealed class AgenticSuspectArchiveResolverModelClient : ISuspectArchiveRe
         ArgumentNullException.ThrowIfNull(request);
 
         var response = await modelClient.RunAsync<SuspectArchiveResolverResponse>(
-            new AgenticModelRequest(
+            new AgenticModelRequest<SuspectArchiveResolverResponse>(
                 [
                     new ChatMessage(ChatRole.System, request.SystemPrompt),
                     new ChatMessage(ChatRole.User, request.UserPrompt)
                 ],
-                InvalidContractError: "suspect_archive_resolver_contract_invalid"),
+                InvalidContractError: "suspect_archive_resolver_contract_invalid",
+                ValidateResponse: Validate,
+                Diagnostics: request.Diagnostics),
             cancellationToken).ConfigureAwait(false);
 
-        if (!IsValid(response, out var error))
-        {
-            logger.LogError("Suspect archive resolver contract validation failed: {ValidationError}", error);
-            throw new InvalidOperationException("suspect_archive_resolver_contract_invalid");
-        }
-
         return response;
+    }
+
+    private static AgenticModelValidationResult Validate(SuspectArchiveResolverResponse response)
+    {
+        return IsValid(response, out var error)
+            ? AgenticModelValidationResult.Valid
+            : AgenticModelValidationResult.Invalid(error);
     }
 
     private static bool IsValid(SuspectArchiveResolverResponse response, out string error)

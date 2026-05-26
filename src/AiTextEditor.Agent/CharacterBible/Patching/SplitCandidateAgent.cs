@@ -17,7 +17,8 @@ public interface ISplitCandidateModelClient
 
 public sealed record SplitCandidateModelRequest(
     string SystemPrompt,
-    string UserPrompt);
+    string UserPrompt,
+    IProgress<AgenticModelDiagnostic>? Diagnostics = null);
 
 public sealed class SplitCandidatePromptBuilder
 {
@@ -113,21 +114,24 @@ public sealed class AgenticSplitCandidateModelClient : ISplitCandidateModelClien
         CancellationToken cancellationToken = default)
     {
         var proposal = await modelClient.RunAsync<SplitProposal>(
-            new AgenticModelRequest(
+            new AgenticModelRequest<SplitProposal>(
                 [
                     new ChatMessage(ChatRole.System, request.SystemPrompt),
                     new ChatMessage(ChatRole.User, request.UserPrompt)
                 ],
-                InvalidContractError: "split_proposal_contract_invalid"),
+                InvalidContractError: "split_proposal_contract_invalid",
+                ValidateResponse: Validate,
+                Diagnostics: request.Diagnostics),
             cancellationToken).ConfigureAwait(false);
 
-        if (!IsValid(proposal, out var error))
-        {
-            logger.LogError("Split proposal contract validation failed: {ValidationError}", error);
-            throw new InvalidOperationException("split_proposal_contract_invalid");
-        }
-
         return proposal;
+    }
+
+    private static AgenticModelValidationResult Validate(SplitProposal proposal)
+    {
+        return IsValid(proposal, out var error)
+            ? AgenticModelValidationResult.Valid
+            : AgenticModelValidationResult.Invalid(error);
     }
 
     private static bool IsValid(SplitProposal proposal, out string error)

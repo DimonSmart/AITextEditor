@@ -72,7 +72,11 @@ internal sealed class CharacterBibleDossierPatcher
                 proposal = await modelClient.ProposePatchAsync(
                     new DossierPatchProposalModelRequest(
                         promptBuilder.BuildSystemPrompt(),
-                        promptBuilder.BuildUserPrompt(patchGroup.Candidates, patchGroup.Decision, dossier)),
+                        promptBuilder.BuildUserPrompt(patchGroup.Candidates, patchGroup.Decision, dossier),
+                        new CharacterBibleAgentDiagnosticProgress(
+                            progress,
+                            "patch",
+                            $"Patch proposal for {dossier.Name}")),
                     cancellationToken).ConfigureAwait(false);
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
@@ -93,7 +97,7 @@ internal sealed class CharacterBibleDossierPatcher
                 continue;
             }
 
-            var review = await ReviewPatchAsync(dossier, patchGroup.Candidates, proposal, cancellationToken);
+            var review = await ReviewPatchAsync(dossier, patchGroup.Candidates, proposal, progress, cancellationToken);
             if (!string.Equals(review.Verdict, "approved", StringComparison.Ordinal))
             {
                 progress?.Report(new CharacterBibleWorkflowProgress(
@@ -143,6 +147,7 @@ internal sealed class CharacterBibleDossierPatcher
         CharacterDossier dossier,
         IReadOnlyList<CharacterBibleDossierPatchCandidate> candidates,
         DossierPatchProposal proposal,
+        IProgress<CharacterBibleWorkflowProgress>? progress,
         CancellationToken cancellationToken)
     {
         var evidenceContexts = candidates
@@ -155,7 +160,11 @@ internal sealed class CharacterBibleDossierPatcher
             return await reviewerModelClient.ReviewAsync(
                 new DossierReviewModelRequest(
                     reviewerPromptBuilder.BuildSystemPrompt(),
-                    reviewerPromptBuilder.BuildUserPrompt(dossier, proposal, evidenceContexts)),
+                    reviewerPromptBuilder.BuildUserPrompt(dossier, proposal, evidenceContexts),
+                    new CharacterBibleAgentDiagnosticProgress(
+                        progress,
+                        "patch",
+                        $"Patch review for {dossier.Name}")),
                 cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex) when (ex is not OperationCanceledException)

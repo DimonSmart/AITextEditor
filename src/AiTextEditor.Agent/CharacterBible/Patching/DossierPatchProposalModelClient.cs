@@ -14,7 +14,8 @@ public interface IDossierPatchProposalModelClient
 
 public sealed record DossierPatchProposalModelRequest(
     string SystemPrompt,
-    string UserPrompt);
+    string UserPrompt,
+    IProgress<AgenticModelDiagnostic>? Diagnostics = null);
 
 public sealed class DossierPatchProposal
 {
@@ -75,21 +76,24 @@ public sealed class AgenticDossierPatchProposalModelClient : IDossierPatchPropos
         ArgumentException.ThrowIfNullOrWhiteSpace(request.UserPrompt);
 
         var proposal = await modelClient.RunAsync<DossierPatchProposal>(
-            new AgenticModelRequest(
+            new AgenticModelRequest<DossierPatchProposal>(
                 [
                     new ChatMessage(ChatRole.System, request.SystemPrompt),
                     new ChatMessage(ChatRole.User, request.UserPrompt)
                 ],
-                InvalidContractError: "dossier_patch_proposal_contract_invalid"),
+                InvalidContractError: "dossier_patch_proposal_contract_invalid",
+                ValidateResponse: ValidateResponseContract,
+                Diagnostics: request.Diagnostics),
             cancellationToken).ConfigureAwait(false);
 
-        if (!IsValidResponseContract(proposal, out var validationError))
-        {
-            logger.LogError("Dossier patch proposal contract validation failed: {ValidationError}", validationError);
-            throw new InvalidOperationException("dossier_patch_proposal_contract_invalid");
-        }
-
         return proposal;
+    }
+
+    private static AgenticModelValidationResult ValidateResponseContract(DossierPatchProposal proposal)
+    {
+        return IsValidResponseContract(proposal, out var error)
+            ? AgenticModelValidationResult.Valid
+            : AgenticModelValidationResult.Invalid(error);
     }
 
     private static bool IsValidResponseContract(DossierPatchProposal proposal, out string error)

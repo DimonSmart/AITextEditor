@@ -10,15 +10,28 @@ namespace AiTextEditor.Agent;
 public interface IAgenticModelClient
 {
     Task<TResponse> RunAsync<TResponse>(
-        AgenticModelRequest request,
+        AgenticModelRequest<TResponse> request,
         CancellationToken cancellationToken = default)
         where TResponse : class;
 }
 
-public sealed record AgenticModelRequest(
+public sealed record AgenticModelRequest<TResponse>(
     IReadOnlyList<ChatMessage> Messages,
     string InvalidContractError,
-    IProgress<AgenticModelDiagnostic>? Diagnostics = null);
+    Func<TResponse, AgenticModelValidationResult>? ValidateResponse = null,
+    IProgress<AgenticModelDiagnostic>? Diagnostics = null)
+    where TResponse : class;
+
+public sealed record AgenticModelValidationResult(bool IsValid, string Error)
+{
+    public static AgenticModelValidationResult Valid { get; } = new(true, string.Empty);
+
+    public static AgenticModelValidationResult Invalid(string error)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(error);
+        return new AgenticModelValidationResult(false, error);
+    }
+}
 
 public sealed class AgenticFrameworkModelClient : IAgenticModelClient
 {
@@ -82,7 +95,7 @@ public sealed class AgenticFrameworkModelClient : IAgenticModelClient
     }
 
     public async Task<TResponse> RunAsync<TResponse>(
-        AgenticModelRequest request,
+        AgenticModelRequest<TResponse> request,
         CancellationToken cancellationToken = default)
         where TResponse : class
     {
