@@ -178,7 +178,8 @@ public sealed class CharacterBibleOperationRunner : ICharacterBibleOperationRunn
                 DateTimeOffset.UtcNow,
                 CopyText: value.CopyText,
                 CopyLabel: value.CopyLabel,
-                AlwaysVisible: value.AlwaysVisible));
+                AlwaysVisible: value.AlwaysVisible,
+                IsError: value.IsError));
         }
     }
 }

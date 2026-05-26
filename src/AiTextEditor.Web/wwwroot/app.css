@@ -229,7 +229,7 @@ a, .btn-link {
 
 .operation-event {
     display: grid;
-    grid-template-columns: 4.5rem 6rem 1fr;
+    grid-template-columns: 4.5rem 6rem minmax(0, 1fr) auto;
     gap: 0.5rem;
     align-items: baseline;
     border-left: 3px solid #8aa3bd;
@@ -252,11 +252,42 @@ a, .btn-link {
 
 .operation-event.failed {
     border-left-color: #dc3545;
+    background: #fff5f5;
+}
+
+.operation-event.error {
+    border-left-color: #dc3545;
+    background: #fff5f5;
+}
+
+.operation-event.failed p,
+.operation-event.failed span,
+.operation-event.failed time,
+.operation-event.error p,
+.operation-event.error span,
+.operation-event.error time {
+    color: #b42318;
 }
 
 .operation-event.cancelled,
 .operation-event.muted {
     border-left-color: #6c757d;
+}
+
+.operation-event.muted.error {
+    border-left-color: #dc3545;
+}
+
+.operation-copy-link {
+    justify-self: start;
+    min-width: 0;
+    padding: 0;
+    text-transform: none;
+}
+
+.operation-copy-link .mud-button-label {
+    font-size: 0.8rem;
+    text-decoration: underline;
 }
 
 .command-bar {

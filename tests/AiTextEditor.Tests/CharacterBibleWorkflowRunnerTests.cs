@@ -273,7 +273,7 @@ public sealed class CharacterBibleWorkflowRunnerTests
         Assert.Equal(1, result.ModelResponseErrors.SkippedBatchCount);
         Assert.Equal(1, result.ModelResponseErrors.SkippedParagraphCount);
         Assert.Equal(3, extractionModelClient.CallCount);
-        Assert.Contains(progress, item => item.Message.StartsWith("Batch 2 failed and was skipped", StringComparison.Ordinal));
+        Assert.Contains(progress, item => item.IsError && item.Message.StartsWith("Batch 2 failed and was skipped", StringComparison.Ordinal));
         Assert.Contains(progress, item => item.Message.StartsWith("Candidate extraction finished with warnings:", StringComparison.Ordinal));
     }
 

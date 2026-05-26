@@ -24,7 +24,8 @@ public sealed record CharacterBibleWorkflowProgress(
     string Message,
     string? CopyText = null,
     string? CopyLabel = null,
-    bool AlwaysVisible = false);
+    bool AlwaysVisible = false,
+    bool IsError = false);
 
 public sealed record CharacterBibleModelResponseErrorStatistics(
     int ParseErrorCount = 0,

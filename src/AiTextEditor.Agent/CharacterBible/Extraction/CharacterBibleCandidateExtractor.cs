@@ -81,7 +81,8 @@ internal sealed class CharacterBibleCandidateExtractor
                     batch[^1].Pointer);
                 progress?.Report(new CharacterBibleWorkflowProgress(
                     "extract",
-                    $"Batch {batchNumber} failed and was skipped ({batch[0].Pointer}..{batch[^1].Pointer})."));
+                    $"Batch {batchNumber} failed and was skipped ({batch[0].Pointer}..{batch[^1].Pointer}).",
+                    IsError: true));
             }
         }
 
@@ -143,8 +144,9 @@ internal sealed class CharacterBibleCandidateExtractor
                 "extract",
                 $"Batch {batchNumber}: {value.Message}",
                 value.RawResponse,
-                value.RawResponse is null ? null : "Copy response",
-                AlwaysVisible: true));
+                value.RawResponse is null ? null : "Copy raw response",
+                AlwaysVisible: true,
+                IsError: value.Kind == AgenticModelDiagnosticKind.MalformedResponse));
         }
     }
 

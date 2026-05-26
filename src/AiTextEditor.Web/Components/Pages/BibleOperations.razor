@@ -27,13 +27,13 @@
 
             @foreach (var item in VisibleEvents(run))
             {
-                <div class="operation-event @CssFor(item.Type)">
+                <div class="operation-event @CssFor(item)">
                     <time>@item.Timestamp.ToLocalTime().ToString("HH:mm:ss")</time>
                     <span>@item.Type</span>
                     <p>@item.Message</p>
                     @if (!string.IsNullOrEmpty(item.CopyText))
                     {
-                        <MudButton Variant="MudBlazor.Variant.Outlined" Color="MudBlazor.Color.Secondary" Size="MudBlazor.Size.Small" OnClick="@(() => CopyEventTextAsync(item))">
+                        <MudButton Class="operation-copy-link" Variant="MudBlazor.Variant.Text" Color="MudBlazor.Color.Secondary" Size="MudBlazor.Size.Small" OnClick="@(() => CopyEventTextAsync(item))">
                             @(item.CopyLabel ?? "Copy")
                         </MudButton>
                     }
@@ -46,13 +46,13 @@
                     <summary>Progress events</summary>
                     @foreach (var item in run.Events.Where(e => e.Type == CharacterBibleOperationEventType.Progress))
                     {
-                        <div class="operation-event muted">
+                        <div class="operation-event muted @CssFor(item)">
                             <time>@item.Timestamp.ToLocalTime().ToString("HH:mm:ss")</time>
                             <span>@item.Type</span>
                             <p>@item.Message</p>
                             @if (!string.IsNullOrEmpty(item.CopyText))
                             {
-                                <MudButton Variant="MudBlazor.Variant.Outlined" Color="MudBlazor.Color.Secondary" Size="MudBlazor.Size.Small" OnClick="@(() => CopyEventTextAsync(item))">
+                                <MudButton Class="operation-copy-link" Variant="MudBlazor.Variant.Text" Color="MudBlazor.Color.Secondary" Size="MudBlazor.Size.Small" OnClick="@(() => CopyEventTextAsync(item))">
                                     @(item.CopyLabel ?? "Copy")
                                 </MudButton>
                             }
@@ -151,6 +151,14 @@
     private void OnOperationStateChanged()
     {
         _ = InvokeAsync(StateHasChanged);
+    }
+
+    private static string CssFor(CharacterBibleOperationEvent operationEvent)
+    {
+        var typeClass = CssFor(operationEvent.Type);
+        return operationEvent.IsError
+            ? string.IsNullOrEmpty(typeClass) ? "error" : $"{typeClass} error"
+            : typeClass;
     }
 
     private static string CssFor(CharacterBibleOperationEventType eventType)

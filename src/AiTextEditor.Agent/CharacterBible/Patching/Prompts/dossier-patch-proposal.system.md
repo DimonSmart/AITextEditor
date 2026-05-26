@@ -46,13 +46,3 @@ Profile patch rules:
 - profilePatch.evidence: array of pointer/excerpt evidence items used for the patch. Use [] when status is "ready" but no single excerpt cleanly supports a field.
 - For "no_useful_changes" and "identity_conflict", use aliasesToAdd [] and profilePatch null.
 
-JSON Output Rules:
-- Return raw JSON only.
-- Do not wrap the response in Markdown.
-- Do not use code fences.
-- Do not add explanations before or after JSON.
-- The first character of the response must be {.
-- Never return a top-level array.
-- JSON syntax requires double quotes around property names and string values.
-- Inside string values, do not include unescaped double quote characters.
-- Avoid double quote characters inside string content by paraphrasing instead of quoting source text.

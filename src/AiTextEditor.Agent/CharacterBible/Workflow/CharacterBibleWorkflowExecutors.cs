@@ -83,7 +83,8 @@ internal sealed class ExtractCharacterBibleCandidatesExecutor : Executor<Charact
             logger.LogError(ex, "character_bible_candidates_extraction_failed");
             progress?.Report(new CharacterBibleWorkflowProgress(
                 "extract",
-                $"Candidate extraction failed: {ex.Message}"));
+                $"Candidate extraction failed: {ex.Message}",
+                IsError: true));
             return new CharacterBibleExtractionResult(
                 input.Request,
                 input.Paragraphs,
@@ -123,7 +124,8 @@ internal sealed class ResolveCharacterBibleCandidatesExecutor : Executor<Charact
         {
             progress?.Report(new CharacterBibleWorkflowProgress(
                 "resolve",
-                "Skipping candidate resolution because extraction failed."));
+                "Skipping candidate resolution because extraction failed.",
+                IsError: true));
             return new CharacterBibleCommitPlan(
                 input.Request,
                 generator.GetCurrentDossiers(),
@@ -189,7 +191,8 @@ internal sealed class PatchCharacterBibleDossiersExecutor : Executor<CharacterBi
         {
             progress?.Report(new CharacterBibleWorkflowProgress(
                 "patch",
-                "Skipping dossier patching because the workflow failed."));
+                "Skipping dossier patching because the workflow failed.",
+                IsError: true));
             return plan;
         }
 
@@ -235,7 +238,8 @@ internal sealed class CommitCharacterBibleDossiersExecutor : Executor<CharacterB
             var failedPointerCount = NormalizePointers(plan.Request.ChangedPointers).Count;
             progress?.Report(new CharacterBibleWorkflowProgress(
                 "commit",
-                "Bible update skipped because the workflow failed."));
+                "Bible update skipped because the workflow failed.",
+                IsError: true));
             return ValueTask.FromResult(new CharacterBibleWorkflowOutput(
                 plan.ProjectedDossiers,
                 "failed",

@@ -18,8 +18,3 @@ Output contract:
 - verdict: "approved", "revise_patch", "reject_patch", or "identity_conflict".
 - issues: array of short issue strings. Use [] when approved.
 
-JSON Output Rules:
-- Return raw JSON only.
-- Do not wrap the response in Markdown.
-- Do not use code fences.
-- Do not add explanations before or after JSON.

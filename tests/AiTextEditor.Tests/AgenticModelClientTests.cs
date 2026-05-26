@@ -128,6 +128,39 @@ public sealed class AgenticModelClientTests
     }
 
     [Fact]
+    public async Task AgenticFrameworkModelClient_RetriesWhenRawModelRequestFails()
+    {
+        var chatClient = new CapturingChatClient(
+            new InvalidOperationException("temporary model error"),
+            """
+            { "characters": [] }
+            """);
+        var agent = new ChatClientAgent(
+            chatClient,
+            new ChatClientAgentOptions
+            {
+                Name = "test_agent",
+                UseProvidedChatClientAsIs = true
+            },
+            NullLoggerFactory.Instance);
+        var client = new AgenticFrameworkModelClient(
+            agent,
+            NullLogger<AgenticFrameworkModelClient>.Instance);
+        var diagnostics = new List<AgenticModelDiagnostic>();
+
+        var result = await client.RunAsync<CharacterExtractionResponse>(
+            new AgenticModelRequest(
+                [new ChatMessage(ChatRole.User, "extract")],
+                InvalidContractError: "invalid_contract",
+                Diagnostics: new ListProgress<AgenticModelDiagnostic>(diagnostics)));
+
+        Assert.Empty(result.Characters);
+        Assert.Equal(2, chatClient.CallCount);
+        Assert.Contains(diagnostics, item => item.Kind == AgenticModelDiagnosticKind.Retry);
+        Assert.Contains(diagnostics, item => item.Kind == AgenticModelDiagnosticKind.RetrySucceeded);
+    }
+
+    [Fact]
     public async Task AgenticFrameworkModelClient_DeserializesCharacterExtractionEvidence()
     {
         var chatClient = new CapturingChatClient(
@@ -277,9 +310,9 @@ public sealed class AgenticModelClientTests
         Assert.Equal("character_extraction_response_contract_invalid", exception.Message);
     }
 
-    private sealed class CapturingChatClient(params string[] responseTexts) : IChatClient
+    private sealed class CapturingChatClient(params object[] responseScripts) : IChatClient
     {
-        private readonly Queue<string> responses = new(responseTexts);
+        private readonly Queue<object> responses = new(responseScripts);
 
         public int CallCount { get; private set; }
 
@@ -295,9 +328,15 @@ public sealed class AgenticModelClientTests
             CallCount++;
             LastMessages = messages.ToArray();
             LastOptions = options;
-            var responseText = responses.Count > 0
+            var responseScript = responses.Count > 0
                 ? responses.Dequeue()
                 : throw new InvalidOperationException("No scripted chat response is available.");
+            if (responseScript is Exception exception)
+            {
+                throw exception;
+            }
+
+            var responseText = Assert.IsType<string>(responseScript);
             return Task.FromResult(new ChatResponse(new ChatMessage(ChatRole.Assistant, responseText)));
         }
 

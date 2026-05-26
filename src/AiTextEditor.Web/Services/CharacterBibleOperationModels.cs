@@ -15,7 +15,8 @@ public sealed record CharacterBibleOperationEvent(
     Exception? Error = null,
     string? CopyText = null,
     string? CopyLabel = null,
-    bool AlwaysVisible = false);
+    bool AlwaysVisible = false,
+    bool IsError = false);
 
 public enum CharacterBibleOperationEventType
 {

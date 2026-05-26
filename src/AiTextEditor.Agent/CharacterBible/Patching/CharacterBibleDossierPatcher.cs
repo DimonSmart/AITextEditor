@@ -80,7 +80,8 @@ internal sealed class CharacterBibleDossierPatcher
                 logger.LogError(ex, "Dossier patch proposal failed for character {CharacterId}. Profile unchanged.", dossier.CharacterId);
                 progress?.Report(new CharacterBibleWorkflowProgress(
                     "patch",
-                    $"Patch proposal failed for {dossier.Name}; profile unchanged."));
+                    $"Patch proposal failed for {dossier.Name}; profile unchanged.",
+                    IsError: true));
                 continue;
             }
 

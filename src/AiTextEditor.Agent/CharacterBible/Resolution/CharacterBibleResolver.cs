@@ -103,7 +103,8 @@ internal sealed class CharacterBibleResolver
                 candidate.CanonicalName);
             progress?.Report(new CharacterBibleWorkflowProgress(
                 "resolve",
-                $"Identity resolver agent failed for {candidate.CanonicalName}; using deterministic fallback."));
+                $"Identity resolver agent failed for {candidate.CanonicalName}; using deterministic fallback.",
+                IsError: true));
             return identityResolution.Resolve(archiveHits);
         }
     }
@@ -143,7 +144,8 @@ internal sealed class CharacterBibleResolver
                 candidate.CanonicalName);
             progress?.Report(new CharacterBibleWorkflowProgress(
                 "split",
-                $"Split candidate agent failed for {candidate.CanonicalName}; conflict recorded without split proposal."));
+                $"Split candidate agent failed for {candidate.CanonicalName}; conflict recorded without split proposal.",
+                IsError: true));
             return decision;
         }
     }

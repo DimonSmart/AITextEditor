@@ -35,6 +35,7 @@ If this index conflicts with a numbered document, trust the numbered document.
 | 0028 | spec | Character Bible full agent pipeline | Complete the remaining multi-agent pipeline contracts, post-processing, operation commit, and support collections. | 0025, 0026, 0027 |
 | 0029 | spec | Character dossier evidence context | Expand pointer-backed candidate evidence into nearby document context before dossier patch synthesis. | 0025, 0026, 0027, 0028 |
 | 0030 | spec | Malformed model response retry | Treat malformed model responses as parse errors with copyable diagnostics and rely on retries instead of JSON fragment recovery. | 0003, 0006, 0011 |
+| 0031 | spec | LLM retry and log errors | Make operation-log errors visually explicit and keep all production LLM agent calls behind one shared retry mechanism. | 0006, 0011, 0030 |
 
 ## Archived documents
 
