@@ -1,4 +1,4 @@
-using System.Text.Json;
+﻿using System.Text.Json;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
 
@@ -7,14 +7,16 @@ namespace AiTextEditor.Agent;
 internal sealed class AgenticModelRetryStrategy
 {
     private static readonly JsonSerializerOptions ResponseSerializerOptions = JsonSerializerOptions.Web;
-    private const int MaxStructuredResponseAttempts = 3;
     private const int MaxRawResponsePreviewLength = 4000;
 
     private readonly ILogger logger;
+    private readonly int maxAttempts;
 
-    public AgenticModelRetryStrategy(ILogger logger)
+    public AgenticModelRetryStrategy(ILogger logger, int maxAttempts = 5)
     {
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        if (maxAttempts <= 0) throw new ArgumentOutOfRangeException(nameof(maxAttempts));
+        this.maxAttempts = maxAttempts;
     }
 
     public async Task<TResponse> RunAsync<TResponse>(
@@ -27,7 +29,7 @@ internal sealed class AgenticModelRetryStrategy
         ArgumentNullException.ThrowIfNull(sendRequestAsync);
 
         var messages = request.Messages;
-        for (var attempt = 1; attempt <= MaxStructuredResponseAttempts; attempt++)
+        for (var attempt = 1; attempt <= maxAttempts; attempt++)
         {
             var chatOptions = CreateChatOptions<TResponse>();
             ChatResponse rawResponse;
@@ -37,14 +39,14 @@ internal sealed class AgenticModelRetryStrategy
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
-                if (attempt >= MaxStructuredResponseAttempts)
+                if (attempt >= maxAttempts)
                 {
                     logger.LogError(
                         ex,
                         "Agentic Framework raw model call failed for {ResponseType}. Attempt={Attempt}, MaxAttempts={MaxAttempts}.",
                         typeof(TResponse).Name,
                         attempt,
-                        MaxStructuredResponseAttempts);
+                        maxAttempts);
                     throw;
                 }
 
@@ -53,8 +55,8 @@ internal sealed class AgenticModelRetryStrategy
                     AgenticModelDiagnosticKind.Retry,
                     typeof(TResponse).Name,
                     nextAttempt,
-                    MaxStructuredResponseAttempts,
-                    $"Retrying model call after request error (attempt {nextAttempt}/{MaxStructuredResponseAttempts}).",
+                    maxAttempts,
+                    $"Retrying model call after request error (attempt {nextAttempt}/{maxAttempts}).",
                     chatOptions.ModelId,
                     Error: ex.Message));
                 logger.LogWarning(
@@ -62,7 +64,7 @@ internal sealed class AgenticModelRetryStrategy
                     "Agentic Framework raw model call failed for {ResponseType}. Retrying attempt {Attempt}/{MaxAttempts}.",
                     typeof(TResponse).Name,
                     nextAttempt,
-                    MaxStructuredResponseAttempts);
+                    maxAttempts);
                 continue;
             }
 
@@ -80,7 +82,7 @@ internal sealed class AgenticModelRetryStrategy
                         AgenticModelDiagnosticKind.InvalidContract,
                         typeof(TResponse).Name,
                         attempt,
-                        MaxStructuredResponseAttempts,
+                        maxAttempts,
                         "Model response contract error. Raw response is available for copying.",
                         rawResponse.ModelId ?? chatOptions.ModelId,
                         RawResponse: rawText,
@@ -89,14 +91,14 @@ internal sealed class AgenticModelRetryStrategy
                         "Model response contract validation failed for {ResponseType}. Attempt={Attempt}, MaxAttempts={MaxAttempts}, ModelId={ModelId}, FinishReason={FinishReason}, RawLength={RawLength}, RawPreview={RawPreview}, ValidationError={ValidationError}.",
                         typeof(TResponse).Name,
                         attempt,
-                        MaxStructuredResponseAttempts,
+                        maxAttempts,
                         rawResponse.ModelId ?? chatOptions.ModelId,
                         rawResponse.FinishReason,
                         rawText.Length,
                         Truncate(rawText, MaxRawResponsePreviewLength),
                         validation.Error);
 
-                    if (attempt >= MaxStructuredResponseAttempts)
+                    if (attempt >= maxAttempts)
                     {
                         break;
                     }
@@ -106,15 +108,15 @@ internal sealed class AgenticModelRetryStrategy
                         AgenticModelDiagnosticKind.Retry,
                         typeof(TResponse).Name,
                         contractRetryAttempt,
-                        MaxStructuredResponseAttempts,
-                        $"Retrying model call after contract error (attempt {contractRetryAttempt}/{MaxStructuredResponseAttempts}).",
+                        maxAttempts,
+                        $"Retrying model call after contract error (attempt {contractRetryAttempt}/{maxAttempts}).",
                         rawResponse.ModelId ?? chatOptions.ModelId,
                         Error: validation.Error));
                     logger.LogWarning(
                         "Model response contract validation failed for {ResponseType}. Retrying attempt {Attempt}/{MaxAttempts}. ModelId={ModelId}. ValidationError={ValidationError}.",
                         typeof(TResponse).Name,
                         contractRetryAttempt,
-                        MaxStructuredResponseAttempts,
+                        maxAttempts,
                         rawResponse.ModelId ?? chatOptions.ModelId,
                         validation.Error);
                     messages = BuildRetryMessages(request.Messages, typeof(TResponse).Name, validation.Error);
@@ -127,8 +129,8 @@ internal sealed class AgenticModelRetryStrategy
                         AgenticModelDiagnosticKind.RetrySucceeded,
                         typeof(TResponse).Name,
                         attempt,
-                        MaxStructuredResponseAttempts,
-                        $"Model response retry succeeded on attempt {attempt}/{MaxStructuredResponseAttempts}.",
+                        maxAttempts,
+                        $"Model response retry succeeded on attempt {attempt}/{maxAttempts}.",
                         rawResponse.ModelId ?? chatOptions.ModelId));
                 }
 
@@ -139,7 +141,7 @@ internal sealed class AgenticModelRetryStrategy
                 AgenticModelDiagnosticKind.MalformedResponse,
                 typeof(TResponse).Name,
                 attempt,
-                MaxStructuredResponseAttempts,
+                maxAttempts,
                 "Model response parse error. Raw response is available for copying.",
                 rawResponse.ModelId ?? chatOptions.ModelId,
                 RawResponse: rawText,
@@ -148,14 +150,14 @@ internal sealed class AgenticModelRetryStrategy
                 "Failed to parse model response for {ResponseType}. Attempt={Attempt}, MaxAttempts={MaxAttempts}, ModelId={ModelId}, FinishReason={FinishReason}, RawLength={RawLength}, RawPreview={RawPreview}, ParseError={ParseError}.",
                 typeof(TResponse).Name,
                 attempt,
-                MaxStructuredResponseAttempts,
+                maxAttempts,
                 rawResponse.ModelId ?? chatOptions.ModelId,
                 rawResponse.FinishReason,
                 rawText.Length,
                 Truncate(rawText, MaxRawResponsePreviewLength),
                 parseError);
 
-            if (attempt >= MaxStructuredResponseAttempts)
+            if (attempt >= maxAttempts)
             {
                 break;
             }
@@ -165,14 +167,14 @@ internal sealed class AgenticModelRetryStrategy
                 AgenticModelDiagnosticKind.Retry,
                 typeof(TResponse).Name,
                 retryAttempt,
-                MaxStructuredResponseAttempts,
-                $"Retrying model call after malformed response (attempt {retryAttempt}/{MaxStructuredResponseAttempts}).",
+                maxAttempts,
+                $"Retrying model call after malformed response (attempt {retryAttempt}/{maxAttempts}).",
                 rawResponse.ModelId ?? chatOptions.ModelId));
             logger.LogWarning(
                 "Model response was malformed for {ResponseType}. Retrying attempt {Attempt}/{MaxAttempts}. ModelId={ModelId}.",
                 typeof(TResponse).Name,
                 retryAttempt,
-                MaxStructuredResponseAttempts,
+                maxAttempts,
                 rawResponse.ModelId ?? chatOptions.ModelId);
             messages = BuildRetryMessages(request.Messages, typeof(TResponse).Name, parseError);
         }

@@ -38,7 +38,8 @@ public sealed class CharacterBibleWorkflowClient : ICharacterBibleWorkflowClient
             modelSettings.ModelName,
             modelSettings.Endpoint,
             modelSettings.ApiKey,
-            loggerFactory);
+            loggerFactory,
+            modelSettings.LlmRetryCount);
 
         var extractionClient = new AgenticCharacterExtractionModelClient(
             modelClient,

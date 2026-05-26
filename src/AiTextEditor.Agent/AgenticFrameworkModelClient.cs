@@ -60,7 +60,8 @@ public sealed class AgenticFrameworkModelClient : IAgenticModelClient
         string modelId,
         Uri endpoint,
         string apiKey,
-        ILoggerFactory loggerFactory)
+        ILoggerFactory loggerFactory,
+        int retryCount = 5)
     {
         ArgumentNullException.ThrowIfNull(httpClient);
         ArgumentException.ThrowIfNullOrWhiteSpace(modelId);
@@ -91,7 +92,7 @@ public sealed class AgenticFrameworkModelClient : IAgenticModelClient
         var agent = new ChatClientAgent(chatClient, agentOptions, loggerFactory);
         return new AgenticFrameworkModelClient(
             agent,
-            new AgenticModelRetryStrategy(loggerFactory.CreateLogger<AgenticModelRetryStrategy>()));
+            new AgenticModelRetryStrategy(loggerFactory.CreateLogger<AgenticModelRetryStrategy>(), retryCount));
     }
 
     public async Task<TResponse> RunAsync<TResponse>(

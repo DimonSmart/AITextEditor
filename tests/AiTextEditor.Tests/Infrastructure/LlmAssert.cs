@@ -44,7 +44,7 @@ internal static class LlmAssert
             NullLoggerFactory.Instance);
 
         var response = await client.RunAsync<LlmAssertResponse>(
-            new AgenticModelRequest(
+            new AgenticModelRequest<LlmAssertResponse>(
                 [
                     new ChatMessage(ChatRole.System, SystemPrompt),
                     new ChatMessage(ChatRole.User, $"TEXT:\n{text}\n\nCHECK:\n{criteria}")

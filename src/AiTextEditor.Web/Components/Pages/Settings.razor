@@ -29,6 +29,11 @@ else
                 <span>Model</span>
                 <input class="form-control" @bind="EditableSettings.SelectedAiModelName" @bind:event="oninput" />
             </label>
+
+            <label>
+                <span>LLM retry count</span>
+                <input class="form-control" type="number" min="1" @bind="EditableSettings.LlmRetryCount" @bind:event="oninput" />
+            </label>
         </section>
 
         <section class="settings-section">

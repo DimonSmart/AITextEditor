@@ -17,6 +17,8 @@ public sealed class ProgramSettings
 
     public CharacterBibleExtractionSettings CharacterBibleExtraction { get; set; } = new();
 
+    public int LlmRetryCount { get; set; } = 5;
+
     public ProgramSettings Clone()
     {
         return new ProgramSettings
@@ -25,7 +27,8 @@ public sealed class ProgramSettings
             LastBookPath = LastBookPath ?? string.Empty,
             SelectedAiServerName = SelectedAiServerName,
             SelectedAiModelName = SelectedAiModelName,
-            CharacterBibleExtraction = CharacterBibleExtraction.Clone()
+            CharacterBibleExtraction = CharacterBibleExtraction.Clone(),
+            LlmRetryCount = LlmRetryCount
         };
     }
 
@@ -288,6 +291,11 @@ public static class ProgramSettingsValidation
             errors.Add("Character bible full-scan item limit must be greater than zero.");
         }
 
+        if (settings.LlmRetryCount <= 0)
+        {
+            errors.Add("LLM retry count must be greater than zero.");
+        }
+
         if (!string.IsNullOrWhiteSpace(settings.SelectedAiServerName) &&
             !settings.AiServers.Any(server => string.Equals(
                 server.Name.Trim(),
@@ -344,7 +352,8 @@ public static class ProgramSettingsValidation
             server.IgnoreSslErrors,
             server.LogRequestBody,
             TimeSpan.FromMinutes(server.TimeoutMinutes),
-            settings.CharacterBibleExtraction.ToCharacterBibleExtractionLimits());
+            settings.CharacterBibleExtraction.ToCharacterBibleExtractionLimits(),
+            settings.LlmRetryCount);
     }
 
     private static string DisplayServerName(AiServerSettings server)
@@ -373,4 +382,5 @@ public sealed record ValidatedAiConnectionSettings(
     bool IgnoreSslErrors,
     bool LogRequestBody,
     TimeSpan Timeout,
-    CharacterBibleExtractionLimits CharacterBibleLimits);
+    CharacterBibleExtractionLimits CharacterBibleLimits,
+    int LlmRetryCount);
