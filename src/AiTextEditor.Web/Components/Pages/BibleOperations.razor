@@ -167,7 +167,7 @@
     private static string FormatModelErrors(CharacterBibleModelResponseErrorStatistics? statistics)
     {
         statistics ??= CharacterBibleModelResponseErrorStatistics.Empty;
-        return $"{statistics.TotalErrorCount} total; parse {statistics.ParseErrorCount}, recovered {statistics.RecoveredCount}, failed {statistics.FailedRecoveryCount}, skipped {statistics.SkippedBatchCount}";
+        return $"{statistics.TotalErrorCount} total; parse {statistics.ParseErrorCount}, retries {statistics.RetryCount}, retry ok {statistics.RetrySucceededCount}, skipped {statistics.SkippedBatchCount}";
     }
 
     public void Dispose()

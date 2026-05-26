@@ -12,6 +12,7 @@ internal sealed class CharacterBibleCandidateExtractor
     private readonly ICharacterExtractionModelClient characterExtractionModelClient;
     private readonly CharacterExtractionPromptBuilder promptBuilder;
     private readonly CharacterBibleParagraphBatcher paragraphBatcher;
+    private readonly CandidatePostProcessor postProcessor;
     private readonly ILogger<CharacterBibleCandidateExtractor> logger;
 
     public CharacterBibleCandidateExtractor(
@@ -23,6 +24,7 @@ internal sealed class CharacterBibleCandidateExtractor
         this.characterExtractionModelClient = characterExtractionModelClient ?? throw new ArgumentNullException(nameof(characterExtractionModelClient));
         this.promptBuilder = promptBuilder ?? throw new ArgumentNullException(nameof(promptBuilder));
         this.paragraphBatcher = paragraphBatcher ?? throw new ArgumentNullException(nameof(paragraphBatcher));
+        postProcessor = new CandidatePostProcessor();
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -43,6 +45,7 @@ internal sealed class CharacterBibleCandidateExtractor
         }
 
         var candidates = new List<CharacterBibleCharacterCandidate>();
+        var seenCandidateIds = new HashSet<string>(StringComparer.Ordinal);
         var modelResponseErrors = new ModelResponseErrorStatisticsBuilder();
         var batchNumber = 0;
         foreach (var batch in paragraphBatcher.SplitParagraphs(paragraphs.Select(p => (p.Pointer, p.Text)).ToList()))
@@ -57,8 +60,8 @@ internal sealed class CharacterBibleCandidateExtractor
                     batch,
                     new CharacterBibleModelDiagnosticProgress(progress, modelResponseErrors, batchNumber),
                     cancellationToken);
-                var batchCandidates = hits.Select(CharacterBibleExtractionMapper.ToCandidate).ToList();
-                candidates.AddRange(batchCandidates);
+                var batchCandidates = postProcessor.Process(hits).ToList();
+                candidates.AddRange(batchCandidates.Where(candidate => seenCandidateIds.Add(candidate.CandidateId)));
                 var batchNames = batchCandidates.Count > 0
                     ? ": " + string.Join(", ", batchCandidates.Select(c => c.CanonicalName))
                     : string.Empty;
@@ -116,10 +119,7 @@ internal sealed class CharacterBibleCandidateExtractor
                 diagnostics),
             cancellationToken);
 
-        return extractionResponse.Characters
-            .Select(CharacterBibleExtractionMapper.NormalizeHit)
-            .Where(hit => !string.IsNullOrWhiteSpace(hit.CanonicalName))
-            .ToList();
+        return extractionResponse.Characters;
     }
 
     private static bool IsRecoverableBatchExtractionError(Exception ex)
@@ -151,8 +151,6 @@ internal sealed class CharacterBibleCandidateExtractor
     private sealed class ModelResponseErrorStatisticsBuilder
     {
         private int parseErrorCount;
-        private int recoveredCount;
-        private int failedRecoveryCount;
         private int retryCount;
         private int retrySucceededCount;
         private int skippedBatchCount;
@@ -164,12 +162,6 @@ internal sealed class CharacterBibleCandidateExtractor
             {
                 case AgenticModelDiagnosticKind.MalformedResponse:
                     parseErrorCount++;
-                    break;
-                case AgenticModelDiagnosticKind.RecoverySucceeded:
-                    recoveredCount++;
-                    break;
-                case AgenticModelDiagnosticKind.RecoveryFailed:
-                    failedRecoveryCount++;
                     break;
                 case AgenticModelDiagnosticKind.Retry:
                     retryCount++;
@@ -190,8 +182,6 @@ internal sealed class CharacterBibleCandidateExtractor
         {
             return new CharacterBibleModelResponseErrorStatistics(
                 parseErrorCount,
-                recoveredCount,
-                failedRecoveryCount,
                 retryCount,
                 retrySucceededCount,
                 skippedBatchCount,

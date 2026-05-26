@@ -111,7 +111,7 @@ internal sealed class ResolveCharacterBibleCandidatesExecutor : Executor<Charact
         this.progress = progress;
     }
 
-    public override ValueTask<CharacterBibleCommitPlan> HandleAsync(
+    public override async ValueTask<CharacterBibleCommitPlan> HandleAsync(
         CharacterBibleExtractionResult input,
         IWorkflowContext context,
         CancellationToken cancellationToken)
@@ -124,21 +124,28 @@ internal sealed class ResolveCharacterBibleCandidatesExecutor : Executor<Charact
             progress?.Report(new CharacterBibleWorkflowProgress(
                 "resolve",
                 "Skipping candidate resolution because extraction failed."));
-            return ValueTask.FromResult(new CharacterBibleCommitPlan(
+            return new CharacterBibleCommitPlan(
                 input.Request,
                 generator.GetCurrentDossiers(),
                 false,
                 input.Paragraphs.Count,
                 input.Candidates.Count,
+                input.Candidates,
+                [],
                 [],
                 input.ModelResponseErrors,
-                input.Failure));
+                input.Failure);
         }
 
         progress?.Report(new CharacterBibleWorkflowProgress(
             "resolve",
             $"Resolving {input.Candidates.Count} character candidates."));
-        var plan = generator.CreateCommitPlan(input.Request, input.Paragraphs.Count, input.Candidates, progress);
+        var plan = await generator.CreateCommitPlanAsync(
+            input.Request,
+            input.Paragraphs.Count,
+            input.Candidates,
+            progress,
+            cancellationToken);
         plan = plan with { ModelResponseErrors = input.ModelResponseErrors };
         logger.LogInformation(
             "character_bible_candidates_resolved: candidates={CandidateCount}, decisions={DecisionCount}, changed={Changed}",
@@ -149,7 +156,52 @@ internal sealed class ResolveCharacterBibleCandidatesExecutor : Executor<Charact
             "resolve",
             $"Resolved {plan.Decisions.Count} decisions; ambiguous: {plan.Decisions.Count(decision => decision.Kind == CharacterBibleDecisionKind.Ambiguous)}."));
 
-        return ValueTask.FromResult(plan);
+        return plan;
+    }
+}
+
+internal sealed class PatchCharacterBibleDossiersExecutor : Executor<CharacterBibleCommitPlan, CharacterBibleCommitPlan>
+{
+    private readonly CharacterDossiersGenerator generator;
+    private readonly ILogger<PatchCharacterBibleDossiersExecutor> logger;
+    private readonly IProgress<CharacterBibleWorkflowProgress>? progress;
+
+    public PatchCharacterBibleDossiersExecutor(
+        CharacterDossiersGenerator generator,
+        ILogger<PatchCharacterBibleDossiersExecutor> logger,
+        IProgress<CharacterBibleWorkflowProgress>? progress)
+        : base("patch_character_bible_dossiers", ExecutorOptions.Default, declareCrossRunShareable: false)
+    {
+        this.generator = generator ?? throw new ArgumentNullException(nameof(generator));
+        this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        this.progress = progress;
+    }
+
+    public override async ValueTask<CharacterBibleCommitPlan> HandleAsync(
+        CharacterBibleCommitPlan plan,
+        IWorkflowContext context,
+        CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(plan);
+        cancellationToken.ThrowIfCancellationRequested();
+
+        if (plan.Failure is not null)
+        {
+            progress?.Report(new CharacterBibleWorkflowProgress(
+                "patch",
+                "Skipping dossier patching because the workflow failed."));
+            return plan;
+        }
+
+        progress?.Report(new CharacterBibleWorkflowProgress(
+            "patch",
+            $"Patching dossiers for {plan.Decisions.Count} resolved decisions."));
+        var patchedPlan = await generator.ApplyDossierPatchesAsync(plan, progress, cancellationToken);
+        logger.LogInformation(
+            "character_bible_dossiers_patched: changed={Changed}, decisions={DecisionCount}",
+            patchedPlan.Changed,
+            patchedPlan.Decisions.Count);
+        return patchedPlan;
     }
 }
 

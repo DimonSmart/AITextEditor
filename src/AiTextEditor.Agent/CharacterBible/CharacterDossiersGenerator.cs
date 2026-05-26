@@ -1,4 +1,6 @@
 using AiTextEditor.Agent.CharacterBible.Extraction;
+using AiTextEditor.Agent.CharacterBible.Commit;
+using AiTextEditor.Agent.CharacterBible.Patching;
 using AiTextEditor.Agent.CharacterBible.Resolution;
 using AiTextEditor.Core.Model;
 using AiTextEditor.Core.Services;
@@ -14,6 +16,8 @@ public sealed class CharacterDossiersGenerator
     private readonly CharacterBibleTextCollector textCollector;
     private readonly CharacterBibleCandidateExtractor candidateExtractor;
     private readonly CharacterBibleResolver resolver;
+    private readonly CharacterBibleDossierPatcher dossierPatcher;
+    private readonly CharacterBibleCommitter committer;
 
     public CharacterDossiersGenerator(
         IDocumentContext documentContext,
@@ -22,7 +26,15 @@ public sealed class CharacterDossiersGenerator
         ILogger<CharacterDossiersGenerator> logger,
         ICharacterExtractionModelClient characterExtractionModelClient,
         CharacterExtractionPromptBuilder promptBuilder,
-        ILoggerFactory? loggerFactory = null)
+        IDossierPatchProposalModelClient dossierPatchProposalModelClient,
+        DossierPatchPromptBuilder dossierPatchPromptBuilder,
+        IDossierConsistencyReviewerModelClient dossierConsistencyReviewerModelClient,
+        DossierConsistencyReviewerPromptBuilder dossierConsistencyReviewerPromptBuilder,
+        ILoggerFactory? loggerFactory = null,
+        ISuspectArchiveResolverModelClient? suspectArchiveResolverModelClient = null,
+        SuspectArchiveResolverPromptBuilder? suspectArchiveResolverPromptBuilder = null,
+        ISplitCandidateModelClient? splitCandidateModelClient = null,
+        SplitCandidatePromptBuilder? splitCandidatePromptBuilder = null)
     {
         ArgumentNullException.ThrowIfNull(documentContext);
         ArgumentNullException.ThrowIfNull(dossierService);
@@ -30,6 +42,10 @@ public sealed class CharacterDossiersGenerator
         ArgumentNullException.ThrowIfNull(logger);
         ArgumentNullException.ThrowIfNull(characterExtractionModelClient);
         ArgumentNullException.ThrowIfNull(promptBuilder);
+        ArgumentNullException.ThrowIfNull(dossierPatchProposalModelClient);
+        ArgumentNullException.ThrowIfNull(dossierPatchPromptBuilder);
+        ArgumentNullException.ThrowIfNull(dossierConsistencyReviewerModelClient);
+        ArgumentNullException.ThrowIfNull(dossierConsistencyReviewerPromptBuilder);
 
         this.dossierService = dossierService;
         var paragraphBatcher = new CharacterBibleParagraphBatcher(limits);
@@ -39,7 +55,23 @@ public sealed class CharacterDossiersGenerator
             promptBuilder,
             paragraphBatcher,
             loggerFactory?.CreateLogger<CharacterBibleCandidateExtractor>() ?? NullLogger<CharacterBibleCandidateExtractor>.Instance);
-        resolver = new CharacterBibleResolver(dossierService, limits);
+        resolver = new CharacterBibleResolver(
+            dossierService,
+            limits,
+            suspectArchiveResolverModelClient,
+            suspectArchiveResolverPromptBuilder,
+            splitCandidateModelClient,
+            splitCandidatePromptBuilder,
+            loggerFactory?.CreateLogger<CharacterBibleResolver>() ?? NullLogger<CharacterBibleResolver>.Instance);
+        committer = new CharacterBibleCommitter(dossierService);
+        dossierPatcher = new CharacterBibleDossierPatcher(
+            dossierPatchProposalModelClient,
+            dossierPatchPromptBuilder,
+            dossierConsistencyReviewerModelClient,
+            dossierConsistencyReviewerPromptBuilder,
+            new CharacterBibleEvidenceContextExpander(documentContext),
+            null,
+            loggerFactory?.CreateLogger<CharacterBibleDossierPatcher>() ?? NullLogger<CharacterBibleDossierPatcher>.Instance);
     }
 
     internal IReadOnlyList<TextFragment> CollectParagraphs(
@@ -57,25 +89,29 @@ public sealed class CharacterDossiersGenerator
         return candidateExtractor.ExtractCandidatesAsync(paragraphs, progress, cancellationToken);
     }
 
-    internal CharacterBibleCommitPlan CreateCommitPlan(
+    internal Task<CharacterBibleCommitPlan> CreateCommitPlanAsync(
         CharacterBibleWorkflowInput request,
         int paragraphCount,
         IReadOnlyList<CharacterBibleCharacterCandidate> candidates,
-        IProgress<CharacterBibleWorkflowProgress>? progress = null)
+        IProgress<CharacterBibleWorkflowProgress>? progress = null,
+        CancellationToken cancellationToken = default)
     {
-        return resolver.CreateCommitPlan(request, paragraphCount, candidates, progress);
+        return resolver.CreateCommitPlanAsync(request, paragraphCount, candidates, progress, cancellationToken);
+    }
+
+    internal Task<CharacterBibleCommitPlan> ApplyDossierPatchesAsync(
+        CharacterBibleCommitPlan plan,
+        IProgress<CharacterBibleWorkflowProgress>? progress = null,
+        CancellationToken cancellationToken = default)
+    {
+        return dossierPatcher.ApplyDossierPatchesAsync(plan, progress, cancellationToken);
     }
 
     internal CharacterDossiers CommitPlan(CharacterBibleCommitPlan plan)
     {
         ArgumentNullException.ThrowIfNull(plan);
 
-        if (plan.Changed)
-        {
-            dossierService.ReplaceDossiers(plan.ProjectedDossiers.Characters);
-        }
-
-        return dossierService.GetDossiers();
+        return committer.Commit(plan);
     }
 
     internal CharacterDossiers GetCurrentDossiers() => dossierService.GetDossiers();
@@ -86,7 +122,8 @@ public sealed class CharacterDossiersGenerator
 
         var paragraphs = CollectParagraphs(null);
         var extraction = await ExtractCandidatesAsync(paragraphs, cancellationToken: cancellationToken);
-        var plan = CreateCommitPlan(new CharacterBibleWorkflowInput(), paragraphs.Count, extraction.Candidates);
+        var plan = await CreateCommitPlanAsync(new CharacterBibleWorkflowInput(), paragraphs.Count, extraction.Candidates, cancellationToken: cancellationToken);
+        plan = await ApplyDossierPatchesAsync(plan, cancellationToken: cancellationToken);
         return CommitPlan(plan);
     }
 
@@ -108,7 +145,8 @@ public sealed class CharacterDossiersGenerator
         }
 
         var extraction = await ExtractCandidatesAsync(paragraphs, cancellationToken: cancellationToken);
-        var plan = CreateCommitPlan(new CharacterBibleWorkflowInput(changedPointers), paragraphs.Count, extraction.Candidates);
+        var plan = await CreateCommitPlanAsync(new CharacterBibleWorkflowInput(changedPointers), paragraphs.Count, extraction.Candidates, cancellationToken: cancellationToken);
+        plan = await ApplyDossierPatchesAsync(plan, cancellationToken: cancellationToken);
         return CommitPlan(plan);
     }
 
@@ -130,7 +168,8 @@ public sealed class CharacterDossiersGenerator
             .ToArray();
         var extraction = await ExtractCandidatesAsync(textFragments, cancellationToken: cancellationToken);
         var changedPointers = paragraphs.Select(paragraph => paragraph.Pointer).ToArray();
-        var plan = CreateCommitPlan(new CharacterBibleWorkflowInput(changedPointers), paragraphs.Count, extraction.Candidates);
+        var plan = await CreateCommitPlanAsync(new CharacterBibleWorkflowInput(changedPointers), paragraphs.Count, extraction.Candidates, cancellationToken: cancellationToken);
+        plan = await ApplyDossierPatchesAsync(plan, cancellationToken: cancellationToken);
         return CommitPlan(plan);
     }
 }

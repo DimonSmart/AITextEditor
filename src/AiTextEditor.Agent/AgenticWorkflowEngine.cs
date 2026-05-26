@@ -4,6 +4,8 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using AiTextEditor.Agent.CharacterBible;
 using AiTextEditor.Agent.CharacterBible.Extraction;
+using AiTextEditor.Agent.CharacterBible.Patching;
+using AiTextEditor.Agent.CharacterBible.Resolution;
 using AiTextEditor.Core.Infrastructure;
 using AiTextEditor.Core.Model;
 using AiTextEditor.Core.Services;
@@ -76,6 +78,18 @@ public sealed class AgenticWorkflowEngine
         var extractionClient = new AgenticCharacterExtractionModelClient(
             modelClient,
             loggerFactory.CreateLogger<AgenticCharacterExtractionModelClient>());
+        var patchClient = new AgenticDossierPatchProposalModelClient(
+            modelClient,
+            loggerFactory.CreateLogger<AgenticDossierPatchProposalModelClient>());
+        var reviewerClient = new AgenticDossierConsistencyReviewerModelClient(
+            modelClient,
+            loggerFactory.CreateLogger<AgenticDossierConsistencyReviewerModelClient>());
+        var identityResolverClient = new AgenticSuspectArchiveResolverModelClient(
+            modelClient,
+            loggerFactory.CreateLogger<AgenticSuspectArchiveResolverModelClient>());
+        var splitCandidateClient = new AgenticSplitCandidateModelClient(
+            modelClient,
+            loggerFactory.CreateLogger<AgenticSplitCandidateModelClient>());
 
         var generator = new CharacterDossiersGenerator(
             documentContext,
@@ -84,7 +98,15 @@ public sealed class AgenticWorkflowEngine
             loggerFactory.CreateLogger<CharacterDossiersGenerator>(),
             extractionClient,
             new CharacterExtractionPromptBuilder(),
-            loggerFactory);
+            patchClient,
+            new DossierPatchPromptBuilder(),
+            reviewerClient,
+            new DossierConsistencyReviewerPromptBuilder(),
+            loggerFactory,
+            identityResolverClient,
+            new SuspectArchiveResolverPromptBuilder(),
+            splitCandidateClient,
+            new SplitCandidatePromptBuilder());
 
         var workflowRunner = new CharacterBibleWorkflowRunner(generator, loggerFactory);
         var dossiersPlugin = new CharacterDossiersPlugin(

@@ -1,4 +1,5 @@
 using AiTextEditor.Core.Model;
+using AiTextEditor.Agent.CharacterBible.Patching;
 
 namespace AiTextEditor.Agent.CharacterBible;
 
@@ -27,8 +28,6 @@ public sealed record CharacterBibleWorkflowProgress(
 
 public sealed record CharacterBibleModelResponseErrorStatistics(
     int ParseErrorCount = 0,
-    int RecoveredCount = 0,
-    int FailedRecoveryCount = 0,
     int RetryCount = 0,
     int RetrySucceededCount = 0,
     int SkippedBatchCount = 0,
@@ -36,7 +35,7 @@ public sealed record CharacterBibleModelResponseErrorStatistics(
 {
     public static CharacterBibleModelResponseErrorStatistics Empty { get; } = new();
 
-    public int TotalErrorCount => ParseErrorCount + FailedRecoveryCount + SkippedBatchCount;
+    public int TotalErrorCount => ParseErrorCount + SkippedBatchCount;
 }
 
 internal sealed record TextFragment(
@@ -51,7 +50,17 @@ internal sealed record CharacterBibleCharacterCandidate(
     string CanonicalName,
     string Gender,
     IReadOnlyDictionary<string, string> AliasExamples,
-    CharacterProfile Profile);
+    IReadOnlyList<CharacterBibleCandidateEvidence> Evidence)
+{
+    public string CandidateId { get; init; } = string.Empty;
+
+    public IReadOnlyDictionary<string, CharacterBibleCandidateEvidence> AliasEvidence { get; init; }
+        = new Dictionary<string, CharacterBibleCandidateEvidence>(StringComparer.OrdinalIgnoreCase);
+}
+
+internal sealed record CharacterBibleCandidateEvidence(
+    string Pointer,
+    string Excerpt);
 
 internal sealed record CharacterBibleExtractionResult(
     CharacterBibleWorkflowInput Request,
@@ -65,7 +74,8 @@ public enum CharacterBibleDecisionKind
     Existing,
     New,
     Ambiguous,
-    Defer
+    Defer,
+    IdentityConflict
 }
 
 public sealed record CharacterBibleResolverDecision(
@@ -73,7 +83,10 @@ public sealed record CharacterBibleResolverDecision(
     CharacterBibleDecisionKind Kind,
     string? CharacterId,
     IReadOnlyList<string> CandidateIds,
-    string Reason);
+    string Reason)
+{
+    public SplitProposal? SplitProposal { get; init; }
+}
 
 internal sealed record CharacterBibleCommitPlan(
     CharacterBibleWorkflowInput Request,
@@ -81,9 +94,29 @@ internal sealed record CharacterBibleCommitPlan(
     bool Changed,
     int ParagraphCount,
     int CandidateCount,
+    IReadOnlyList<CharacterBibleCharacterCandidate> Candidates,
     IReadOnlyList<CharacterBibleResolverDecision> Decisions,
+    IReadOnlyList<CharacterBibleCommitOperation> Operations,
     CharacterBibleModelResponseErrorStatistics ModelResponseErrors,
     Exception? Failure = null);
+
+internal enum CharacterBibleCommitOperationKind
+{
+    ReplaceDossiers,
+    AddSuspectArchiveEntry,
+    AddIdentityConflict,
+    AddDeferredCandidate,
+    AddEvidenceIndexEntries,
+    AddAuditTrailEntry
+}
+
+internal sealed record CharacterBibleCommitOperation(
+    CharacterBibleCommitOperationKind Kind,
+    Core.Model.CharacterDossiers? ReplacementDossiers = null,
+    Core.Model.SuspectArchiveEntry? SuspectArchiveEntry = null,
+    Core.Model.IdentityConflictRecord? IdentityConflict = null,
+    IReadOnlyList<Core.Model.CharacterEvidenceIndexEntry>? EvidenceIndexEntries = null,
+    Core.Model.CharacterBibleAuditEntry? AuditTrailEntry = null);
 
 internal sealed record CharacterBibleCandidateExtractionResult(
     IReadOnlyList<CharacterBibleCharacterCandidate> Candidates,

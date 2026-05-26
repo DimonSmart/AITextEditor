@@ -1,6 +1,7 @@
 using AiTextEditor.Agent;
 using AiTextEditor.Agent.CharacterBible;
 using AiTextEditor.Agent.CharacterBible.Extraction;
+using AiTextEditor.Agent.CharacterBible.Patching;
 using AiTextEditor.Core.Model;
 using AiTextEditor.Core.Services;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -16,8 +17,8 @@ public sealed class CharacterBibleWorkflowRunnerTests
         var runner = CreateRunner(
             "John smiled.\n\nMary waved.",
             Response(
-                new CharacterExtractionCharacter("John", "unknown", []),
-                new CharacterExtractionCharacter("Mary", "unknown", [])),
+                Character("John"),
+                Character("Mary")),
             out var dossierService,
             out var extractionModelClient);
 
@@ -38,10 +39,9 @@ public sealed class CharacterBibleWorkflowRunnerTests
     {
         var runner = CreateRunner(
             "John arrived.\n\nJohnny smiled.",
-            Response(new CharacterExtractionCharacter(
+            Response(Character(
                 "John",
-                "unknown",
-                [new CharacterExtractionAlias("Johnny", "Johnny smiled.")])),
+                Alias("Johnny", "Johnny smiled."))),
             out var dossierService,
             out _);
 
@@ -73,7 +73,7 @@ public sealed class CharacterBibleWorkflowRunnerTests
     {
         var runner = CreateRunner(
             "John arrived.",
-            Response(new CharacterExtractionCharacter("John", "unknown", [])),
+            Response(Character("John")),
             out var dossierService,
             out _);
 
@@ -96,7 +96,7 @@ public sealed class CharacterBibleWorkflowRunnerTests
     {
         var runner = CreateRunner(
             "John arrived.",
-            Response(new CharacterExtractionCharacter("John", "unknown", [])),
+            Response(Character("John")),
             out var dossierService,
             out _);
 
@@ -120,7 +120,7 @@ public sealed class CharacterBibleWorkflowRunnerTests
     {
         var runner = CreateRunner(
             "John arrived.",
-            Response(new CharacterExtractionCharacter("John", "unknown", [])),
+            Response(Character("John")),
             out var dossierService,
             out _);
 
@@ -144,7 +144,7 @@ public sealed class CharacterBibleWorkflowRunnerTests
     {
         var repeatedNewCharacter = Enumerable
             .Range(0, 12)
-            .Select(_ => new CharacterExtractionCharacter("Newcomer", "unknown", []))
+            .Select(_ => Character("Newcomer"))
             .ToArray();
         var runner = CreateRunner(
             "Newcomer arrived.",
@@ -162,14 +162,15 @@ public sealed class CharacterBibleWorkflowRunnerTests
     [Fact]
     public async Task RunAsync_AmbiguousCandidate_DoesNotCreateNewDossier()
     {
+        var patchClient = new CountingDossierPatchProposalModelClient();
         var runner = CreateRunner(
             "Alex Prime arrived.",
-            Response(new CharacterExtractionCharacter(
+            Response(Character(
                 "Alex Prime",
-                "unknown",
-                [new CharacterExtractionAlias("Alex Prime", "Alex Prime arrived.")])),
+                Alias("Alex Prime", "Alex Prime arrived."))),
             out var dossierService,
-            out _);
+            out _,
+            patchModelClient: patchClient);
 
         dossierService.UpsertDossier(new CharacterDossier(
             CharacterId: "c1",
@@ -205,6 +206,7 @@ public sealed class CharacterBibleWorkflowRunnerTests
         Assert.Equal(2, dossierService.GetDossiers().Characters.Count);
         Assert.DoesNotContain(dossierService.FindByNameOrAlias("Alex Prime"), dossier => dossier.Name == "Alex Prime");
         Assert.All(dossierService.GetDossiers().Characters, dossier => Assert.Null(dossier.ImportanceLevel));
+        Assert.Equal(0, patchClient.CallCount);
     }
 
     [Fact]
@@ -213,8 +215,8 @@ public sealed class CharacterBibleWorkflowRunnerTests
         var runner = CreateRunner(
             "John smiled.\n\nMary waved.",
             Response(
-                new CharacterExtractionCharacter("John", "unknown", []),
-                new CharacterExtractionCharacter("Mary", "unknown", [])),
+                Character("John"),
+                Character("Mary")),
             out _,
             out _);
         var progress = new List<CharacterBibleWorkflowProgress>();
@@ -241,16 +243,20 @@ public sealed class CharacterBibleWorkflowRunnerTests
         var documentContext = new DocumentContext(document, dossierService);
         var limits = new CharacterBibleExtractionLimits { MaxParagraphsPerBatch = 1, MaxBatchBytes = 1024 * 128 };
         var extractionModelClient = new SequencedCharacterExtractionModelClient(
-            Response(new CharacterExtractionCharacter("John", "unknown", [])),
+            Response(Character("John")),
             new InvalidOperationException("character_extraction_response_contract_invalid"),
-            Response(new CharacterExtractionCharacter("Mary", "unknown", [])));
+            Response(Character("Mary")));
         var generator = new CharacterDossiersGenerator(
             documentContext,
             dossierService,
             limits,
             NullLogger<CharacterDossiersGenerator>.Instance,
             extractionModelClient,
-            new CharacterExtractionPromptBuilder());
+            new CharacterExtractionPromptBuilder(),
+            NoopPatchClient(),
+            new DossierPatchPromptBuilder(),
+            ApprovingReviewerClient(),
+            new DossierConsistencyReviewerPromptBuilder());
         var runner = new CharacterBibleWorkflowRunner(generator, NullLoggerFactory.Instance);
         var progress = new List<CharacterBibleWorkflowProgress>();
 
@@ -285,7 +291,11 @@ public sealed class CharacterBibleWorkflowRunnerTests
             limits,
             NullLogger<CharacterDossiersGenerator>.Instance,
             new FailingCharacterExtractionModelClient("character_extraction_empty_response_content"),
-            new CharacterExtractionPromptBuilder());
+            new CharacterExtractionPromptBuilder(),
+            NoopPatchClient(),
+            new DossierPatchPromptBuilder(),
+            ApprovingReviewerClient(),
+            new DossierConsistencyReviewerPromptBuilder());
         var runner = new CharacterBibleWorkflowRunner(generator, NullLoggerFactory.Instance);
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => runner.RunAsync());
@@ -297,7 +307,8 @@ public sealed class CharacterBibleWorkflowRunnerTests
         string markdown,
         CharacterExtractionResponse response,
         out CharacterDossierService dossierService,
-        out ScriptedCharacterExtractionModelClient extractionModelClient)
+        out ScriptedCharacterExtractionModelClient extractionModelClient,
+        IDossierPatchProposalModelClient? patchModelClient = null)
     {
         var repository = new MarkdownDocumentRepository();
         var document = repository.LoadFromMarkdown(markdown);
@@ -312,13 +323,33 @@ public sealed class CharacterBibleWorkflowRunnerTests
             limits,
             NullLogger<CharacterDossiersGenerator>.Instance,
             extractionModelClient,
-            new CharacterExtractionPromptBuilder());
+            new CharacterExtractionPromptBuilder(),
+            patchModelClient ?? NoopPatchClient(),
+            new DossierPatchPromptBuilder(),
+            ApprovingReviewerClient(),
+            new DossierConsistencyReviewerPromptBuilder());
 
         return new CharacterBibleWorkflowRunner(generator, NullLoggerFactory.Instance);
     }
 
     private static CharacterExtractionResponse Response(params CharacterExtractionCharacter[] characters)
         => new() { Characters = characters.ToList() };
+
+    private static CharacterExtractionCharacter Character(
+        string canonicalName,
+        params CharacterExtractionAlias[] aliases)
+        => new(
+            canonicalName,
+            "unknown",
+            aliases.ToList(),
+            [new CharacterExtractionEvidence("p1", $"{canonicalName} appeared.")]);
+
+    private static CharacterExtractionAlias Alias(string form, string excerpt)
+        => new(form, new CharacterExtractionEvidence("p1", excerpt));
+
+    private static IDossierPatchProposalModelClient NoopPatchClient() => new NoopDossierPatchProposalModelClient();
+
+    private static IDossierConsistencyReviewerModelClient ApprovingReviewerClient() => new ApprovingDossierConsistencyReviewerModelClient();
 
     private sealed class ScriptedCharacterExtractionModelClient : ICharacterExtractionModelClient
     {
@@ -376,6 +407,55 @@ public sealed class CharacterBibleWorkflowRunnerTests
         public void Report(CharacterBibleWorkflowProgress value)
         {
             items.Add(value);
+        }
+    }
+
+    private sealed class NoopDossierPatchProposalModelClient : IDossierPatchProposalModelClient
+    {
+        public Task<DossierPatchProposal> ProposePatchAsync(
+            DossierPatchProposalModelRequest request,
+            CancellationToken cancellationToken = default)
+        {
+            return Task.FromResult(new DossierPatchProposal
+            {
+                Status = "no_useful_changes",
+                AliasesToAdd = [],
+                ProfilePatch = null,
+                Reason = "No test patch."
+            });
+        }
+    }
+
+    private sealed class CountingDossierPatchProposalModelClient : IDossierPatchProposalModelClient
+    {
+        public int CallCount { get; private set; }
+
+        public Task<DossierPatchProposal> ProposePatchAsync(
+            DossierPatchProposalModelRequest request,
+            CancellationToken cancellationToken = default)
+        {
+            CallCount++;
+            return Task.FromResult(new DossierPatchProposal
+            {
+                Status = "no_useful_changes",
+                AliasesToAdd = [],
+                ProfilePatch = null,
+                Reason = "No test patch."
+            });
+        }
+    }
+
+    private sealed class ApprovingDossierConsistencyReviewerModelClient : IDossierConsistencyReviewerModelClient
+    {
+        public Task<DossierReviewResult> ReviewAsync(
+            DossierReviewModelRequest request,
+            CancellationToken cancellationToken = default)
+        {
+            return Task.FromResult(new DossierReviewResult
+            {
+                Verdict = "approved",
+                Issues = []
+            });
         }
     }
 }

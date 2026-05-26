@@ -109,51 +109,11 @@ public sealed class AgenticFrameworkModelClient : IAgenticModelClient
             }
 
             var rawText = rawResponse.Text ?? string.Empty;
-            if (StructuredJsonResponseRecovery.TryRecover<TResponse>(
+            if (TryDeserializeResponse<TResponse>(
                     rawText,
-                    ResponseSerializerOptions,
-                    out var recoveredResponse,
-                    out var extractedJson,
-                    out var recoveryError))
+                    out var response,
+                    out var parseError))
             {
-                var recoveredFromMalformedText = !string.Equals(rawText, extractedJson, StringComparison.Ordinal);
-                if (recoveredFromMalformedText)
-                {
-                    request.Diagnostics?.Report(new AgenticModelDiagnostic(
-                        AgenticModelDiagnosticKind.MalformedResponse,
-                        typeof(TResponse).Name,
-                        attempt,
-                        MaxStructuredResponseAttempts,
-                        "Model response parse error. Raw response is available for copying.",
-                        rawResponse.ModelId ?? chatOptions.ModelId,
-                        RecoveryAction: "raw_response",
-                        RecoveryResult: "captured",
-                        RawResponse: rawText));
-                    request.Diagnostics?.Report(new AgenticModelDiagnostic(
-                        AgenticModelDiagnosticKind.RecoverySucceeded,
-                        typeof(TResponse).Name,
-                        attempt,
-                        MaxStructuredResponseAttempts,
-                        "Model response JSON recovery succeeded via JsonExtractor.",
-                        rawResponse.ModelId ?? chatOptions.ModelId,
-                        RecoveryAction: "JsonExtractor",
-                        RecoveryResult: "recovered",
-                        RawResponse: rawText,
-                        ExtractedJson: extractedJson));
-                    logger.LogWarning(
-                        "Recovered malformed JSON response for {ResponseType} using JsonExtractor. Attempt={Attempt}, MaxAttempts={MaxAttempts}, ModelId={ModelId}, FinishReason={FinishReason}, RawLength={RawLength}, ExtractedLength={ExtractedLength}, RawPreview={RawPreview}, RecoveryAction={RecoveryAction}, RecoveryResult={RecoveryResult}.",
-                        typeof(TResponse).Name,
-                        attempt,
-                        MaxStructuredResponseAttempts,
-                        rawResponse.ModelId ?? chatOptions.ModelId,
-                        rawResponse.FinishReason,
-                        rawText.Length,
-                        extractedJson?.Length ?? 0,
-                        Truncate(rawText, MaxRawResponsePreviewLength),
-                        "JsonExtractor",
-                        "recovered");
-                }
-
                 if (attempt > 1)
                 {
                     request.Diagnostics?.Report(new AgenticModelDiagnostic(
@@ -162,12 +122,10 @@ public sealed class AgenticFrameworkModelClient : IAgenticModelClient
                         attempt,
                         MaxStructuredResponseAttempts,
                         $"Model response retry succeeded on attempt {attempt}/{MaxStructuredResponseAttempts}.",
-                        rawResponse.ModelId ?? chatOptions.ModelId,
-                        RecoveryAction: "retry",
-                        RecoveryResult: "succeeded"));
+                        rawResponse.ModelId ?? chatOptions.ModelId));
                 }
 
-                return recoveredResponse ?? throw new InvalidOperationException(request.InvalidContractError);
+                return response ?? throw new InvalidOperationException(request.InvalidContractError);
             }
 
             request.Diagnostics?.Report(new AgenticModelDiagnostic(
@@ -177,23 +135,10 @@ public sealed class AgenticFrameworkModelClient : IAgenticModelClient
                 MaxStructuredResponseAttempts,
                 "Model response parse error. Raw response is available for copying.",
                 rawResponse.ModelId ?? chatOptions.ModelId,
-                RecoveryAction: "raw_response",
-                RecoveryResult: "captured",
-                RawResponse: rawText));
-            request.Diagnostics?.Report(new AgenticModelDiagnostic(
-                AgenticModelDiagnosticKind.RecoveryFailed,
-                typeof(TResponse).Name,
-                attempt,
-                MaxStructuredResponseAttempts,
-                $"Model response JSON recovery failed via JsonExtractor: {recoveryError}",
-                rawResponse.ModelId ?? chatOptions.ModelId,
-                RecoveryAction: "JsonExtractor",
-                RecoveryResult: "failed",
                 RawResponse: rawText,
-                ExtractedJson: extractedJson,
-                Error: recoveryError));
+                Error: parseError));
             logger.LogError(
-                "Failed to recover malformed JSON response for {ResponseType}. Attempt={Attempt}, MaxAttempts={MaxAttempts}, ModelId={ModelId}, FinishReason={FinishReason}, RawLength={RawLength}, RawPreview={RawPreview}, RecoveryAction={RecoveryAction}, RecoveryResult={RecoveryResult}, RecoveryError={RecoveryError}.",
+                "Failed to parse model response for {ResponseType}. Attempt={Attempt}, MaxAttempts={MaxAttempts}, ModelId={ModelId}, FinishReason={FinishReason}, RawLength={RawLength}, RawPreview={RawPreview}, ParseError={ParseError}.",
                 typeof(TResponse).Name,
                 attempt,
                 MaxStructuredResponseAttempts,
@@ -201,9 +146,7 @@ public sealed class AgenticFrameworkModelClient : IAgenticModelClient
                 rawResponse.FinishReason,
                 rawText.Length,
                 Truncate(rawText, MaxRawResponsePreviewLength),
-                "JsonExtractor",
-                "failed",
-                recoveryError);
+                parseError);
 
             if (attempt >= MaxStructuredResponseAttempts)
             {
@@ -216,17 +159,13 @@ public sealed class AgenticFrameworkModelClient : IAgenticModelClient
                 attempt + 1,
                 MaxStructuredResponseAttempts,
                 $"Retrying model call after malformed response (attempt {attempt + 1}/{MaxStructuredResponseAttempts}).",
-                rawResponse.ModelId ?? chatOptions.ModelId,
-                RecoveryAction: "retry",
-                RecoveryResult: "started"));
+                rawResponse.ModelId ?? chatOptions.ModelId));
             logger.LogWarning(
-                "Model response was malformed for {ResponseType}. Retrying attempt {Attempt}/{MaxAttempts}. RecoveryAction={RecoveryAction}, RecoveryResult={RecoveryResult}, ModelId={ModelId}.",
+                "Model response was malformed for {ResponseType}. Retrying attempt {Attempt}/{MaxAttempts}. ModelId={ModelId}.",
                 typeof(TResponse).Name,
                 attempt + 1,
                 MaxStructuredResponseAttempts,
-                rawResponse.ModelId ?? chatOptions.ModelId,
-                "retry",
-                "started");
+                rawResponse.ModelId ?? chatOptions.ModelId);
             messages = BuildRetryMessages(request.Messages, typeof(TResponse).Name);
         }
 
@@ -244,6 +183,39 @@ public sealed class AgenticFrameworkModelClient : IAgenticModelClient
                 schemaName: typeof(TResponse).Name,
                 schemaDescription: $"Structured {typeof(TResponse).Name} response.")
         };
+    }
+
+    private static bool TryDeserializeResponse<TResponse>(
+        string rawText,
+        out TResponse? response,
+        out string? error)
+        where TResponse : class
+    {
+        response = null;
+
+        if (string.IsNullOrWhiteSpace(rawText))
+        {
+            error = "Raw response text is empty.";
+            return false;
+        }
+
+        try
+        {
+            response = JsonSerializer.Deserialize<TResponse>(rawText, ResponseSerializerOptions);
+            if (response is null)
+            {
+                error = "JSON deserialized to null.";
+                return false;
+            }
+
+            error = null;
+            return true;
+        }
+        catch (JsonException ex)
+        {
+            error = ex.Message;
+            return false;
+        }
     }
 
     private static string Truncate(string value, int maxLength)

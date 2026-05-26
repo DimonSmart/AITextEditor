@@ -44,7 +44,7 @@ public sealed class AgenticModelClientTests
     }
 
     [Fact]
-    public async Task AgenticFrameworkModelClient_RecoversMalformedStructuredOutputFromRawFallback()
+    public async Task AgenticFrameworkModelClient_RetriesWhenStructuredOutputIsWrappedInMarkdown()
     {
         var chatClient = new CapturingChatClient(
             """
@@ -55,7 +55,6 @@ public sealed class AgenticModelClientTests
             ```
             """,
             """
-            Here is the JSON:
             { "characters": [] }
             """);
         var agent = new ChatClientAgent(
@@ -78,10 +77,11 @@ public sealed class AgenticModelClientTests
                 Diagnostics: new ListProgress<AgenticModelDiagnostic>(diagnostics)));
 
         Assert.Empty(result.Characters);
-        Assert.Equal(1, chatClient.CallCount);
+        Assert.Equal(2, chatClient.CallCount);
         var malformed = Assert.Single(diagnostics, item => item.Kind == AgenticModelDiagnosticKind.MalformedResponse);
         Assert.Contains("```json", malformed.RawResponse, StringComparison.Ordinal);
-        Assert.Contains(diagnostics, item => item.Kind == AgenticModelDiagnosticKind.RecoverySucceeded);
+        Assert.Contains(diagnostics, item => item.Kind == AgenticModelDiagnosticKind.Retry);
+        Assert.Contains(diagnostics, item => item.Kind == AgenticModelDiagnosticKind.RetrySucceeded);
     }
 
     [Fact]
@@ -119,7 +119,6 @@ public sealed class AgenticModelClientTests
         Assert.Empty(result.Characters);
         Assert.Equal(3, chatClient.CallCount);
         Assert.Contains(diagnostics, item => item.Kind == AgenticModelDiagnosticKind.MalformedResponse);
-        Assert.Contains(diagnostics, item => item.Kind == AgenticModelDiagnosticKind.RecoveryFailed);
         Assert.Contains(diagnostics, item => item.Kind == AgenticModelDiagnosticKind.Retry);
         Assert.Contains(diagnostics, item => item.Kind == AgenticModelDiagnosticKind.RetrySucceeded);
         Assert.Contains(
@@ -129,7 +128,7 @@ public sealed class AgenticModelClientTests
     }
 
     [Fact]
-    public async Task AgenticFrameworkModelClient_DeserializesCharacterExtractionProfile()
+    public async Task AgenticFrameworkModelClient_DeserializesCharacterExtractionEvidence()
     {
         var chatClient = new CapturingChatClient(
             """
@@ -141,15 +140,18 @@ public sealed class AgenticModelClientTests
                   "aliases": [
                     {
                       "form": "Johnny",
-                      "example": "Johnny entered."
+                      "evidence": {
+                        "pointer": "p1",
+                        "excerpt": "Johnny entered."
+                      }
                     }
                   ],
-                  "profile": {
-                    "appearance": "Tall and still.",
-                    "statusAndCompetence": "Former student.",
-                    "psychologicalProfile": "Careful under pressure.",
-                    "speechAndCommunication": "Short answers."
-                  }
+                  "evidence": [
+                    {
+                      "pointer": "p1",
+                      "excerpt": "Johnny entered."
+                    }
+                  ]
                 }
               ]
             }
@@ -173,13 +175,13 @@ public sealed class AgenticModelClientTests
 
         var character = Assert.Single(result.Characters);
         Assert.Equal("John", character.CanonicalName);
-        Assert.NotNull(character.Profile);
-        Assert.Equal("Tall and still.", character.Profile.Appearance);
-        Assert.Equal("Former student.", character.Profile.StatusAndCompetence);
+        var evidence = Assert.Single(character.Evidence!);
+        Assert.Equal("p1", evidence.Pointer);
+        Assert.Equal("Johnny entered.", evidence.Excerpt);
     }
 
     [Fact]
-    public async Task CharacterExtractionClient_WhenAliasExampleIsMissing_FailsContractValidation()
+    public async Task CharacterExtractionClient_WhenAliasEvidenceExcerptIsMissing_FailsContractValidation()
     {
         var response = new CharacterExtractionResponse
         {
@@ -188,7 +190,8 @@ public sealed class AgenticModelClientTests
                 new CharacterExtractionCharacter(
                     "John",
                     "unknown",
-                    [new CharacterExtractionAlias("Johnny", "")])
+                    [new CharacterExtractionAlias("Johnny", new CharacterExtractionEvidence("p1", ""))],
+                    [new CharacterExtractionEvidence("p1", "Johnny entered.")])
             ]
         };
         var client = new AgenticCharacterExtractionModelClient(
@@ -202,7 +205,7 @@ public sealed class AgenticModelClientTests
     }
 
     [Fact]
-    public async Task CharacterExtractionClient_WhenProfileIsValid_PassesContractValidation()
+    public async Task CharacterExtractionClient_WhenEvidenceIsValid_PassesContractValidation()
     {
         var response = new CharacterExtractionResponse
         {
@@ -211,12 +214,8 @@ public sealed class AgenticModelClientTests
                 new CharacterExtractionCharacter(
                     "John",
                     "unknown",
-                    [new CharacterExtractionAlias("Johnny", "Johnny entered.")],
-                    new CharacterExtractionProfile(
-                        "",
-                        "",
-                        "",
-                        ""))
+                    [new CharacterExtractionAlias("Johnny", new CharacterExtractionEvidence("p1", "Johnny entered."))],
+                    [new CharacterExtractionEvidence("p1", "Johnny entered.")])
             ]
         };
         var client = new AgenticCharacterExtractionModelClient(
@@ -226,12 +225,12 @@ public sealed class AgenticModelClientTests
         var result = await client.ExtractCharactersAsync(new CharacterExtractionModelRequest("system", "user"));
 
         var character = Assert.Single(result.Characters);
-        Assert.NotNull(character.Profile);
-        Assert.Equal(string.Empty, character.Profile.StatusAndCompetence);
+        Assert.NotNull(character.Evidence);
+        Assert.Equal("p1", Assert.Single(character.Evidence).Pointer);
     }
 
     [Fact]
-    public async Task CharacterExtractionClient_WhenProfileIsMissing_FailsContractValidation()
+    public async Task CharacterExtractionClient_WhenEvidenceIsMissing_FailsContractValidation()
     {
         var response = new CharacterExtractionResponse
         {
@@ -255,7 +254,7 @@ public sealed class AgenticModelClientTests
     }
 
     [Fact]
-    public async Task CharacterExtractionClient_WhenStatusAndCompetenceIsNull_FailsContractValidation()
+    public async Task CharacterExtractionClient_WhenEvidencePointerIsNull_FailsContractValidation()
     {
         var response = new CharacterExtractionResponse
         {
@@ -265,7 +264,7 @@ public sealed class AgenticModelClientTests
                     "John",
                     "unknown",
                     [],
-                    new CharacterExtractionProfile("", null, "", ""))
+                    [new CharacterExtractionEvidence(null, "John entered.")])
             ]
         };
         var client = new AgenticCharacterExtractionModelClient(

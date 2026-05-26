@@ -28,9 +28,13 @@ If this index conflicts with a numbered document, trust the numbered document.
 | 0019 | spec | Simplified character dossier card | Remove generic description and role bonds from character dossiers, and rename the status field to `statusAndCompetence`. | 0012, 0013, 0016, 0017 |
 | 0020 | spec | Character card expanded readonly view | Add one-at-a-time expanded read-only character cards inside the Character Bible grid while keeping editing in the existing dialog. | 0012, 0013, 0019 |
 | 0021 | spec | Character Bible agent structure | Separate Character Bible workflow, extraction, prompt, and resolution code without changing current behavior. | 0002, 0003, 0006, 0011 |
-| 0022 | spec | Malformed JSON response recovery | Recover valid JSON from malformed model responses and skip unrecoverable character extraction batches without failing the whole workflow. | 0003, 0006, 0011 |
 | 0023 | spec | Character bible overlap byte limit | Limit character bible extraction overlap by both paragraph count and optional byte size while keeping main batch sizing separate. | 0003, 0009, 0016 |
-| 0024 | spec | Model response diagnostics UI | Show malformed model response diagnostics in the operation log with copyable raw responses and summary statistics. | 0011, 0022 |
+| 0025 | spec | Character candidate extraction contract | Narrow Character Bible extraction to pointer-backed local candidates and move profile authoring out of the extractor. | 0003, 0004, 0021 |
+| 0026 | spec | Character dossier patch agent | Restore profile generation through a post-resolution dossier patch proposal agent. | 0003, 0021, 0025 |
+| 0027 | spec | Character Bible resolver split | Split deterministic resolver responsibilities into archive search, identity resolution, and commit plan building. | 0003, 0004, 0021, 0025, 0026 |
+| 0028 | spec | Character Bible full agent pipeline | Complete the remaining multi-agent pipeline contracts, post-processing, operation commit, and support collections. | 0025, 0026, 0027 |
+| 0029 | spec | Character dossier evidence context | Expand pointer-backed candidate evidence into nearby document context before dossier patch synthesis. | 0025, 0026, 0027, 0028 |
+| 0030 | spec | Malformed model response retry | Treat malformed model responses as parse errors with copyable diagnostics and rely on retries instead of JSON fragment recovery. | 0003, 0006, 0011 |
 
 ## Archived documents
 
@@ -42,6 +46,8 @@ Read archived documents only when a current document references them through `Re
 |---|---|---|---|---|
 | 0005 | spec | Remove Semantic Kernel from agent path | Move model calls from Semantic Kernel to typed Microsoft Agent Framework/OpenAI-compatible contracts. | 0006 |
 | 0018 | spec | Character dossier structured profile | Added the earlier five-section profile shape that is superseded by the simplified four-field profile. | 0019 |
+| 0022 | spec | Malformed JSON response recovery | Earlier JsonExtractor-based recovery requirement for malformed structured responses. | 0030 |
+| 0024 | spec | Model response diagnostics UI | Earlier diagnostics UI requirement that included JsonExtractor recovery outcomes. | 0030 |
 
 ## Maintenance
 

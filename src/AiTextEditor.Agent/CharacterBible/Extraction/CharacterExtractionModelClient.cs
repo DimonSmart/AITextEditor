@@ -32,26 +32,19 @@ public sealed record CharacterExtractionCharacter(
     [property: JsonRequired]
     [property: JsonPropertyName("aliases")] List<CharacterExtractionAlias>? Aliases,
     [property: JsonRequired]
-    [property: JsonPropertyName("profile")] CharacterExtractionProfile? Profile = null);
+    [property: JsonPropertyName("evidence")] List<CharacterExtractionEvidence>? Evidence = null);
 
 public sealed record CharacterExtractionAlias(
     [property: JsonRequired]
     [property: JsonPropertyName("form")] string Form,
     [property: JsonRequired]
-    [property: JsonPropertyName("example")] string Example);
+    [property: JsonPropertyName("evidence")] CharacterExtractionEvidence? Evidence);
 
-public sealed record CharacterExtractionProfile(
+public sealed record CharacterExtractionEvidence(
     [property: JsonRequired]
-    [property: JsonPropertyName("appearance")] string? Appearance,
+    [property: JsonPropertyName("pointer")] string? Pointer,
     [property: JsonRequired]
-    [property: JsonPropertyName("statusAndCompetence")] string? StatusAndCompetence,
-    [property: JsonRequired]
-    [property: JsonPropertyName("psychologicalProfile")] string? PsychologicalProfile,
-    [property: JsonRequired]
-    [property: JsonPropertyName("speechAndCommunication")] string? SpeechAndCommunication)
-{
-    public static CharacterExtractionProfile Empty { get; } = new("", "", "", "");
-}
+    [property: JsonPropertyName("excerpt")] string? Excerpt);
 
 public sealed class AgenticCharacterExtractionModelClient : ICharacterExtractionModelClient
 {
@@ -124,7 +117,7 @@ public sealed class AgenticCharacterExtractionModelClient : ICharacterExtraction
                 return false;
             }
 
-            if (!IsValidProfile(character.Profile, characterIndex, out error))
+            if (!IsValidEvidenceList(character.Evidence, $"characters[{characterIndex}].evidence", requireAny: true, out error))
             {
                 return false;
             }
@@ -138,9 +131,8 @@ public sealed class AgenticCharacterExtractionModelClient : ICharacterExtraction
                     return false;
                 }
 
-                if (string.IsNullOrWhiteSpace(alias.Example))
+                if (!IsValidEvidence(alias.Evidence, $"characters[{characterIndex}].aliases[{aliasIndex}].evidence", out error))
                 {
-                    error = $"characters[{characterIndex}].aliases[{aliasIndex}].example is required.";
                     return false;
                 }
             }
@@ -150,35 +142,53 @@ public sealed class AgenticCharacterExtractionModelClient : ICharacterExtraction
         return true;
     }
 
-    private static bool IsValidProfile(CharacterExtractionProfile? profile, int characterIndex, out string error)
+    private static bool IsValidEvidenceList(
+        IReadOnlyList<CharacterExtractionEvidence>? evidence,
+        string path,
+        bool requireAny,
+        out string error)
     {
-        if (profile is null)
+        if (evidence is null)
         {
-            error = $"characters[{characterIndex}].profile is required.";
+            error = $"{path} is required.";
             return false;
         }
 
-        if (profile.Appearance is null)
+        if (requireAny && evidence.Count == 0)
         {
-            error = $"characters[{characterIndex}].profile.appearance is required.";
+            error = $"{path} must contain at least one item.";
             return false;
         }
 
-        if (profile.StatusAndCompetence is null)
+        for (var evidenceIndex = 0; evidenceIndex < evidence.Count; evidenceIndex++)
         {
-            error = $"characters[{characterIndex}].profile.statusAndCompetence is required.";
+            if (!IsValidEvidence(evidence[evidenceIndex], $"{path}[{evidenceIndex}]", out error))
+            {
+                return false;
+            }
+        }
+
+        error = string.Empty;
+        return true;
+    }
+
+    private static bool IsValidEvidence(CharacterExtractionEvidence? evidence, string path, out string error)
+    {
+        if (evidence is null)
+        {
+            error = $"{path} is required.";
             return false;
         }
 
-        if (profile.PsychologicalProfile is null)
+        if (string.IsNullOrWhiteSpace(evidence.Pointer))
         {
-            error = $"characters[{characterIndex}].profile.psychologicalProfile is required.";
+            error = $"{path}.pointer is required.";
             return false;
         }
 
-        if (profile.SpeechAndCommunication is null)
+        if (string.IsNullOrWhiteSpace(evidence.Excerpt))
         {
-            error = $"characters[{characterIndex}].profile.speechAndCommunication is required.";
+            error = $"{path}.excerpt is required.";
             return false;
         }
 

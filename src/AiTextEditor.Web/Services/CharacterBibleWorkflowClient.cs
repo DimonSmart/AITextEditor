@@ -1,6 +1,8 @@
 using AiTextEditor.Agent;
 using AiTextEditor.Agent.CharacterBible;
 using AiTextEditor.Agent.CharacterBible.Extraction;
+using AiTextEditor.Agent.CharacterBible.Patching;
+using AiTextEditor.Agent.CharacterBible.Resolution;
 using System.Net.Http.Headers;
 using System.Text;
 
@@ -41,6 +43,18 @@ public sealed class CharacterBibleWorkflowClient : ICharacterBibleWorkflowClient
         var extractionClient = new AgenticCharacterExtractionModelClient(
             modelClient,
             loggerFactory.CreateLogger<AgenticCharacterExtractionModelClient>());
+        var patchClient = new AgenticDossierPatchProposalModelClient(
+            modelClient,
+            loggerFactory.CreateLogger<AgenticDossierPatchProposalModelClient>());
+        var reviewerClient = new AgenticDossierConsistencyReviewerModelClient(
+            modelClient,
+            loggerFactory.CreateLogger<AgenticDossierConsistencyReviewerModelClient>());
+        var identityResolverClient = new AgenticSuspectArchiveResolverModelClient(
+            modelClient,
+            loggerFactory.CreateLogger<AgenticSuspectArchiveResolverModelClient>());
+        var splitCandidateClient = new AgenticSplitCandidateModelClient(
+            modelClient,
+            loggerFactory.CreateLogger<AgenticSplitCandidateModelClient>());
         var documentContext = new DocumentContext(workspace.CurrentDocument, workspace.CharacterDossiers);
         var generator = new CharacterDossiersGenerator(
             documentContext,
@@ -49,7 +63,15 @@ public sealed class CharacterBibleWorkflowClient : ICharacterBibleWorkflowClient
             loggerFactory.CreateLogger<CharacterDossiersGenerator>(),
             extractionClient,
             new CharacterExtractionPromptBuilder(),
-            loggerFactory);
+            patchClient,
+            new DossierPatchPromptBuilder(),
+            reviewerClient,
+            new DossierConsistencyReviewerPromptBuilder(),
+            loggerFactory,
+            identityResolverClient,
+            new SuspectArchiveResolverPromptBuilder(),
+            splitCandidateClient,
+            new SplitCandidatePromptBuilder());
         var runner = new CharacterBibleWorkflowRunner(generator, loggerFactory);
 
         return await runner.RunAsync(request, progress, cancellationToken);

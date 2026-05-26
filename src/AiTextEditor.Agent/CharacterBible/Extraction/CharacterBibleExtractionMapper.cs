@@ -8,11 +8,12 @@ internal static class CharacterBibleExtractionMapper
     public static CharacterExtractionCharacter NormalizeHit(CharacterExtractionCharacter hit)
     {
         var canonical = (hit.CanonicalName ?? string.Empty).Trim();
-        var profile = ToExtractionProfile(ToCharacterProfile(hit.Profile));
+        var evidence = NormalizeEvidence(hit.Evidence);
 
         var normalizedAliases = (hit.Aliases ?? [])
-            .Where(alias => alias is not null && !string.IsNullOrWhiteSpace(alias.Form) && !string.IsNullOrWhiteSpace(alias.Example))
-            .Select(alias => new CharacterExtractionAlias(alias.Form.Trim(), alias.Example.Trim()))
+            .Where(alias => alias is not null && !string.IsNullOrWhiteSpace(alias.Form))
+            .Select(alias => new CharacterExtractionAlias(alias.Form.Trim(), NormalizeEvidence(alias.Evidence)))
+            .Where(alias => alias.Evidence is not null)
             .DistinctBy(alias => alias.Form, StringComparer.OrdinalIgnoreCase)
             .OrderBy(alias => alias.Form, StringComparer.OrdinalIgnoreCase)
             .ToList();
@@ -24,24 +25,37 @@ internal static class CharacterBibleExtractionMapper
             CanonicalName = canonical,
             Aliases = normalizedAliases,
             Gender = CharacterNameNormalizer.NormalizeGender(hit.Gender),
-            Profile = profile
+            Evidence = evidence
         };
     }
 
     public static CharacterBibleCharacterCandidate ToCandidate(CharacterExtractionCharacter hit)
     {
         var aliasExamples = (hit.Aliases ?? [])
-            .Where(alias => !string.IsNullOrWhiteSpace(alias.Form) && !string.IsNullOrWhiteSpace(alias.Example))
+            .Where(alias => !string.IsNullOrWhiteSpace(alias.Form) && !string.IsNullOrWhiteSpace(alias.Evidence?.Excerpt))
             .ToDictionary(
                 alias => alias.Form.Trim(),
-                alias => alias.Example.Trim(),
+                alias => alias.Evidence!.Excerpt!.Trim(),
+                StringComparer.OrdinalIgnoreCase);
+        var aliasEvidence = (hit.Aliases ?? [])
+            .Where(alias => !string.IsNullOrWhiteSpace(alias.Form)
+                            && !string.IsNullOrWhiteSpace(alias.Evidence?.Pointer)
+                            && !string.IsNullOrWhiteSpace(alias.Evidence?.Excerpt))
+            .ToDictionary(
+                alias => alias.Form.Trim(),
+                alias => new CharacterBibleCandidateEvidence(alias.Evidence!.Pointer!.Trim(), alias.Evidence.Excerpt!.Trim()),
                 StringComparer.OrdinalIgnoreCase);
 
         return new CharacterBibleCharacterCandidate(
             hit.CanonicalName?.Trim() ?? string.Empty,
             CharacterNameNormalizer.NormalizeGender(hit.Gender),
             aliasExamples,
-            ToCharacterProfile(hit.Profile));
+            NormalizeEvidence(hit.Evidence)
+                .Select(evidence => new CharacterBibleCandidateEvidence(evidence.Pointer!, evidence.Excerpt!))
+                .ToList())
+        {
+            AliasEvidence = aliasEvidence
+        };
     }
 
     public static CharacterExtractionCharacter ToCharacterExtractionCharacter(CharacterBibleCharacterCandidate candidate)
@@ -49,38 +63,49 @@ internal static class CharacterBibleExtractionMapper
         ArgumentNullException.ThrowIfNull(candidate);
 
         var aliases = candidate.AliasExamples
-            .Select(alias => new CharacterExtractionAlias(alias.Key, alias.Value))
+            .Select(alias => new CharacterExtractionAlias(alias.Key, ToExtractionEvidence(candidate, alias.Key, alias.Value)))
             .ToList();
 
         return NormalizeHit(new CharacterExtractionCharacter(
             candidate.CanonicalName,
             candidate.Gender,
             aliases,
-            ToExtractionProfile(candidate.Profile)));
+            candidate.Evidence
+                .Select(evidence => new CharacterExtractionEvidence(evidence.Pointer, evidence.Excerpt))
+                .ToList()));
     }
 
-    public static CharacterProfile ToCharacterProfile(CharacterExtractionProfile? profile)
+    private static CharacterExtractionEvidence? NormalizeEvidence(CharacterExtractionEvidence? evidence)
     {
-        if (profile is null)
+        if (evidence is null
+            || string.IsNullOrWhiteSpace(evidence.Pointer)
+            || string.IsNullOrWhiteSpace(evidence.Excerpt))
         {
-            return CharacterProfile.Empty;
+            return null;
         }
 
-        return CharacterProfile.Normalize(new CharacterProfile(
-            profile.Appearance ?? string.Empty,
-            profile.StatusAndCompetence ?? string.Empty,
-            profile.PsychologicalProfile ?? string.Empty,
-            profile.SpeechAndCommunication ?? string.Empty));
+        return new CharacterExtractionEvidence(evidence.Pointer.Trim(), evidence.Excerpt.Trim());
     }
 
-    private static CharacterExtractionProfile ToExtractionProfile(CharacterProfile? profile)
+    private static List<CharacterExtractionEvidence> NormalizeEvidence(IEnumerable<CharacterExtractionEvidence>? evidence)
     {
-        var normalized = CharacterProfile.Normalize(profile);
-        return new CharacterExtractionProfile(
-            normalized.Appearance,
-            normalized.StatusAndCompetence,
-            normalized.PsychologicalProfile,
-            normalized.SpeechAndCommunication);
+        return (evidence ?? [])
+            .Select(NormalizeEvidence)
+            .Where(item => item is not null)
+            .Select(item => item!)
+            .DistinctBy(item => $"{item.Pointer}\u001f{item.Excerpt}", StringComparer.Ordinal)
+            .ToList();
+    }
+
+    private static CharacterExtractionEvidence ToExtractionEvidence(
+        CharacterBibleCharacterCandidate candidate,
+        string alias,
+        string excerpt)
+    {
+        var pointer = candidate.AliasEvidence.TryGetValue(alias, out var aliasEvidence)
+            ? aliasEvidence.Pointer
+            : candidate.Evidence.FirstOrDefault()?.Pointer ?? string.Empty;
+        return new CharacterExtractionEvidence(pointer, excerpt);
     }
 
     private static List<CharacterExtractionAlias> AddPossessiveBaseAliases(List<CharacterExtractionAlias> aliases)
@@ -102,7 +127,7 @@ internal static class CharacterBibleExtractionMapper
 
             if (seen.Add(baseForm))
             {
-                expanded.Add(new CharacterExtractionAlias(baseForm, alias.Example));
+                expanded.Add(new CharacterExtractionAlias(baseForm, alias.Evidence));
             }
         }
 

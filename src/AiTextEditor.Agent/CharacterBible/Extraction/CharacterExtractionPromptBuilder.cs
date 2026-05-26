@@ -26,7 +26,7 @@ public sealed class CharacterExtractionPromptBuilder
 
         var payload = new
         {
-            task = "extract_characters",
+            task = "extract_character_candidates",
             paragraphs = paragraphs.Select(paragraph => new { pointer = paragraph.Pointer, text = paragraph.Text })
         };
 
@@ -52,4 +52,3 @@ public sealed class CharacterExtractionPromptBuilder
         return prompt.Trim();
     }
 }
-

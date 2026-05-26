@@ -211,6 +211,9 @@ public class McpFunctionalTests
                     }
 
                     var text = textElement.GetString() ?? string.Empty;
+                    var pointer = paragraph.TryGetProperty("pointer", out var pointerElement)
+                        ? pointerElement.GetString() ?? string.Empty
+                        : string.Empty;
                     var tokens = text.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
                     foreach (var token in tokens)
                     {
@@ -220,7 +223,11 @@ public class McpFunctionalTests
                             continue;
                         }
 
-                        characters.Add(new CharacterExtractionCharacter(name, "unknown", []));
+                        characters.Add(new CharacterExtractionCharacter(
+                            name,
+                            "unknown",
+                            [],
+                            [new CharacterExtractionEvidence(pointer, text)]));
                     }
                 }
 

@@ -1,9 +1,11 @@
 using System.Text;
 using System.Text.Json;
 using AiTextEditor.Core.Services;
+using AiTextEditor.Core.Model;
 using AiTextEditor.Agent;
 using AiTextEditor.Agent.CharacterBible;
 using AiTextEditor.Agent.CharacterBible.Extraction;
+using AiTextEditor.Agent.CharacterBible.Patching;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
@@ -25,16 +27,77 @@ public sealed class CharacterDossiersGeneratorTests
 
         Assert.Contains("Pronouns are NEVER aliases", systemPrompt, StringComparison.Ordinal);
         Assert.Contains("name forms, nicknames, titles", systemPrompt, StringComparison.Ordinal);
-        Assert.Contains("Use empty string when there is no evidence", systemPrompt, StringComparison.Ordinal);
-        Assert.Contains("statusAndCompetence", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("character.evidence", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("alias.evidence", systemPrompt, StringComparison.Ordinal);
+        Assert.DoesNotContain("character.profile", systemPrompt, StringComparison.Ordinal);
 
         using var json = JsonDocument.Parse(userPrompt);
-        Assert.Equal("extract_characters", json.RootElement.GetProperty("task").GetString());
+        Assert.Equal("extract_character_candidates", json.RootElement.GetProperty("task").GetString());
         var paragraphs = json.RootElement.GetProperty("paragraphs").EnumerateArray().ToArray();
         Assert.Equal("p1", paragraphs[0].GetProperty("pointer").GetString());
         Assert.Equal("Анна вошла.", paragraphs[0].GetProperty("text").GetString());
         Assert.Equal("p2", paragraphs[1].GetProperty("pointer").GetString());
         Assert.Equal("Борис ответил.", paragraphs[1].GetProperty("text").GetString());
+    }
+
+    [Fact]
+    public void DossierPatchPromptBuilder_LoadsPromptAndBuildsUserPromptJson()
+    {
+        var builder = new DossierPatchPromptBuilder();
+        var candidate = new CharacterBibleCharacterCandidate(
+            "John",
+            "unknown",
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["Johnny"] = "Johnny entered."
+            },
+            [new CharacterBibleCandidateEvidence("p1", "Johnny entered.")]);
+        var decision = new CharacterBibleResolverDecision(
+            "John",
+            CharacterBibleDecisionKind.New,
+            "c1",
+            [],
+            "No existing name or alias match was found.");
+        var dossier = new AiTextEditor.Core.Model.CharacterDossier(
+            "c1",
+            "John",
+            ["Johnny"],
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["Johnny"] = "Johnny entered."
+            },
+            "unknown");
+
+        var systemPrompt = builder.BuildSystemPrompt();
+        var patchCandidate = new CharacterBibleDossierPatchCandidate(
+            candidate,
+            [
+                new CharacterBibleEvidenceContext(
+                    "p1",
+                    "Johnny entered.",
+                    "Johnny entered and answered briefly.",
+                    "Johnny entered and answered briefly.",
+                    [new CharacterBibleNearbyParagraph("p2", "Mary watched.", "next")])
+            ]);
+        var userPrompt = builder.BuildUserPrompt([patchCandidate], decision, dossier);
+
+        Assert.Contains("DossierPatchProposalAgent", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("aliasesToAdd", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("Use null for a field that has no new additive information", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("Profile field values are additive patches", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("Do not use an empty string as a delete", systemPrompt, StringComparison.Ordinal);
+
+        using var json = JsonDocument.Parse(userPrompt);
+        Assert.Equal("propose_dossier_patch", json.RootElement.GetProperty("task").GetString());
+        var promptCandidate = json.RootElement.GetProperty("candidates").EnumerateArray().Single();
+        Assert.Equal("John", promptCandidate.GetProperty("canonicalName").GetString());
+        var context = promptCandidate.GetProperty("evidenceContexts").EnumerateArray().Single();
+        Assert.Equal("Johnny entered.", context.GetProperty("anchorExcerpt").GetString());
+        Assert.Equal("Johnny entered and answered briefly.", context.GetProperty("currentParagraph").GetString());
+        var nearby = context.GetProperty("nearbyParagraphs").EnumerateArray().Single();
+        Assert.Equal("p2", nearby.GetProperty("pointer").GetString());
+        Assert.Equal("c1", json.RootElement.GetProperty("identityDecision").GetProperty("targetEntryId").GetString());
+        Assert.Equal("John", json.RootElement.GetProperty("dossier").GetProperty("name").GetString());
     }
 
     [Fact]
@@ -83,7 +146,11 @@ public sealed class CharacterDossiersGeneratorTests
             limits,
             NullLogger<CharacterDossiersGenerator>.Instance,
             extractionModelClient,
-            new CharacterExtractionPromptBuilder());
+            new CharacterExtractionPromptBuilder(),
+            NoopPatchClient(),
+            new DossierPatchPromptBuilder(),
+            ApprovingReviewerClient(),
+            new DossierConsistencyReviewerPromptBuilder());
 
         var dossiers = await generator.GenerateAsync();
 
@@ -117,7 +184,11 @@ public sealed class CharacterDossiersGeneratorTests
             limits,
             NullLogger<CharacterDossiersGenerator>.Instance,
             extractionModelClient,
-            new CharacterExtractionPromptBuilder());
+            new CharacterExtractionPromptBuilder(),
+            NoopPatchClient(),
+            new DossierPatchPromptBuilder(),
+            ApprovingReviewerClient(),
+            new DossierConsistencyReviewerPromptBuilder());
         var runner = new CharacterBibleWorkflowRunner(generator, NullLoggerFactory.Instance);
 
         await runner.RunAsync(new CharacterBibleWorkflowInput());
@@ -224,7 +295,7 @@ public sealed class CharacterDossiersGeneratorTests
     }
 
     [Fact]
-    public async Task GenerateDossiers_MergesProfileWithoutOverwritingManualSections()
+    public async Task GenerateDossiers_DoesNotWriteProfileFromExtraction()
     {
         var dossierService = new CharacterDossierService();
         dossierService.UpsertDossier(new AiTextEditor.Core.Model.CharacterDossier(
@@ -244,15 +315,9 @@ public sealed class CharacterDossiersGeneratorTests
         var documentContext = new DocumentContext(document, dossierService);
         var limits = new CharacterBibleExtractionLimits { MaxParagraphsPerBatch = 256, MaxBatchBytes = 1024 * 128 };
         var extractionModelClient = new ScriptedCharacterExtractionModelClient(
-            Response(new CharacterExtractionCharacter(
+            Response(Character(
                 "John",
-                "unknown",
-                [new CharacterExtractionAlias("John", "John and Mary met Bob.")],
-                ExtractionProfile(
-                    appearance: "Tall and still.",
-                    background: "Former student.",
-                    psychology: "Generated profile should not overwrite manual text.",
-                    speech: "Short answers."))));
+                Alias("John", "John and Mary met Bob."))));
 
         var generator = new CharacterDossiersGenerator(
             documentContext,
@@ -260,15 +325,307 @@ public sealed class CharacterDossiersGeneratorTests
             limits,
             NullLogger<CharacterDossiersGenerator>.Instance,
             extractionModelClient,
-            new CharacterExtractionPromptBuilder());
+            new CharacterExtractionPromptBuilder(),
+            NoopPatchClient(),
+            new DossierPatchPromptBuilder(),
+            ApprovingReviewerClient(),
+            new DossierConsistencyReviewerPromptBuilder());
 
         var dossiers = await generator.GenerateAsync();
 
         var dossier = Assert.Single(dossiers.Characters);
-        Assert.Equal("Tall and still.", dossier.Profile!.Appearance);
-        Assert.Equal("Former student.", dossier.Profile.StatusAndCompetence);
+        Assert.Equal(string.Empty, dossier.Profile!.Appearance);
+        Assert.Equal(string.Empty, dossier.Profile.StatusAndCompetence);
         Assert.Equal("Manual psychological profile.", dossier.Profile.PsychologicalProfile);
-        Assert.Equal("Short answers.", dossier.Profile.SpeechAndCommunication);
+        Assert.Equal(string.Empty, dossier.Profile.SpeechAndCommunication);
+        Assert.Equal("John arrived.", dossier.AliasExamples["John"]);
+    }
+
+    [Fact]
+    public async Task GenerateDossiers_AppliesProfilePatchWithoutOverwritingManualSections()
+    {
+        var dossierService = new CharacterDossierService();
+        dossierService.UpsertDossier(new AiTextEditor.Core.Model.CharacterDossier(
+            CharacterId: "c1",
+            Name: "John",
+            Aliases: ["John"],
+            AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["John"] = "John arrived."
+            },
+            Gender: "unknown",
+            Profile: new AiTextEditor.Core.Model.CharacterProfile(
+                PsychologicalProfile: "Manual psychological profile.")));
+
+        var repository = new MarkdownDocumentRepository();
+        var document = repository.LoadFromMarkdown("John stood tall and answered briefly.");
+        var documentContext = new DocumentContext(document, dossierService);
+        var limits = new CharacterBibleExtractionLimits { MaxParagraphsPerBatch = 256, MaxBatchBytes = 1024 * 128 };
+        var extractionModelClient = new ScriptedCharacterExtractionModelClient(
+            Response(Character(
+                "John",
+                Alias("John", "John stood tall and answered briefly."))));
+        var patchClient = new ScriptedDossierPatchProposalModelClient(
+            ReadyPatch(
+                appearance: "Высокая спокойная фигура.",
+                statusAndCompetence: "Держится уверенно.",
+                psychologicalProfile: null,
+                speechAndCommunication: "Отвечает кратко."));
+
+        var generator = new CharacterDossiersGenerator(
+            documentContext,
+            dossierService,
+            limits,
+            NullLogger<CharacterDossiersGenerator>.Instance,
+            extractionModelClient,
+            new CharacterExtractionPromptBuilder(),
+            patchClient,
+            new DossierPatchPromptBuilder(),
+            ApprovingReviewerClient(),
+            new DossierConsistencyReviewerPromptBuilder());
+
+        var dossiers = await generator.GenerateAsync();
+
+        var dossier = Assert.Single(dossiers.Characters);
+        Assert.Equal("Высокая спокойная фигура.", dossier.Profile!.Appearance);
+        Assert.Equal("Держится уверенно.", dossier.Profile.StatusAndCompetence);
+        Assert.Equal("Manual psychological profile.", dossier.Profile.PsychologicalProfile);
+        Assert.Equal("Отвечает кратко.", dossier.Profile.SpeechAndCommunication);
+        Assert.Equal(1, patchClient.CallCount);
+    }
+
+    [Fact]
+    public async Task GenerateDossiers_AppendsProfilePatchToExistingSections()
+    {
+        var dossierService = new CharacterDossierService();
+        dossierService.UpsertDossier(new AiTextEditor.Core.Model.CharacterDossier(
+            CharacterId: "c1",
+            Name: "John",
+            Aliases: ["John"],
+            AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["John"] = "John arrived."
+            },
+            Gender: "unknown",
+            Profile: new AiTextEditor.Core.Model.CharacterProfile(
+                PsychologicalProfile: "Manual psychological profile.")));
+
+        var repository = new MarkdownDocumentRepository();
+        var document = repository.LoadFromMarkdown("John calmly helped the group.");
+        var documentContext = new DocumentContext(document, dossierService);
+        var limits = new CharacterBibleExtractionLimits { MaxParagraphsPerBatch = 256, MaxBatchBytes = 1024 * 128 };
+        var extractionModelClient = new ScriptedCharacterExtractionModelClient(
+            Response(Character(
+                "John",
+                Alias("John", "John calmly helped the group."))));
+        var patchClient = new ScriptedDossierPatchProposalModelClient(
+            ReadyPatch(psychologicalProfile: "Помогает группе спокойно."));
+
+        var generator = new CharacterDossiersGenerator(
+            documentContext,
+            dossierService,
+            limits,
+            NullLogger<CharacterDossiersGenerator>.Instance,
+            extractionModelClient,
+            new CharacterExtractionPromptBuilder(),
+            patchClient,
+            new DossierPatchPromptBuilder(),
+            ApprovingReviewerClient(),
+            new DossierConsistencyReviewerPromptBuilder());
+
+        var dossiers = await generator.GenerateAsync();
+
+        var dossier = Assert.Single(dossiers.Characters);
+        Assert.Equal(
+            "Manual psychological profile. Помогает группе спокойно.",
+            dossier.Profile!.PsychologicalProfile);
+    }
+
+    [Fact]
+    public async Task GenerateDossiers_PatchPromptExpandsAnchorPointerToNearbyDialogue()
+    {
+        var dossierService = new CharacterDossierService();
+        var repository = new MarkdownDocumentRepository();
+        var document = repository.LoadFromMarkdown("А Незнайка сказал:\n\n– Мы будем сегодня завтракать?");
+        var documentContext = new DocumentContext(document, dossierService);
+        var limits = new CharacterBibleExtractionLimits { MaxParagraphsPerBatch = 256, MaxBatchBytes = 1024 * 128 };
+        var extractionModelClient = new ScriptedCharacterExtractionModelClient(
+            Response(new CharacterExtractionCharacter(
+                "Незнайка",
+                "male",
+                [new CharacterExtractionAlias("Незнайка", new CharacterExtractionEvidence("p1", "А Незнайка сказал:"))],
+                [new CharacterExtractionEvidence("p1", "А Незнайка сказал:")])));
+        var patchClient = new ScriptedDossierPatchProposalModelClient();
+
+        var generator = new CharacterDossiersGenerator(
+            documentContext,
+            dossierService,
+            limits,
+            NullLogger<CharacterDossiersGenerator>.Instance,
+            extractionModelClient,
+            new CharacterExtractionPromptBuilder(),
+            patchClient,
+            new DossierPatchPromptBuilder(),
+            ApprovingReviewerClient(),
+            new DossierConsistencyReviewerPromptBuilder());
+
+        await generator.GenerateAsync();
+
+        var request = Assert.Single(patchClient.Requests);
+        using var json = JsonDocument.Parse(request.UserPrompt);
+        var promptCandidate = json.RootElement.GetProperty("candidates").EnumerateArray().Single();
+        var context = promptCandidate.GetProperty("evidenceContexts").EnumerateArray().Single();
+        Assert.Equal("p1", context.GetProperty("pointer").GetString());
+        Assert.Equal("А Незнайка сказал:", context.GetProperty("anchorExcerpt").GetString());
+        Assert.Equal("А Незнайка сказал:", context.GetProperty("currentParagraph").GetString());
+
+        var nearbyParagraphs = context.GetProperty("nearbyParagraphs").EnumerateArray().ToArray();
+        Assert.Contains(nearbyParagraphs, paragraph =>
+            paragraph.GetProperty("position").GetString() == "next"
+            && paragraph.GetProperty("text").GetString() == "– Мы будем сегодня завтракать?");
+    }
+
+    [Fact]
+    public async Task GenerateDossiers_PatchPromptGroupsResolvedCandidatesByDossier()
+    {
+        var dossierService = new CharacterDossierService();
+        var repository = new MarkdownDocumentRepository();
+        var document = repository.LoadFromMarkdown("John stopped.\n\nJohn answered calmly.");
+        var documentContext = new DocumentContext(document, dossierService);
+        var limits = new CharacterBibleExtractionLimits { MaxParagraphsPerBatch = 256, MaxBatchBytes = 1024 * 128 };
+        var extractionModelClient = new ScriptedCharacterExtractionModelClient(
+            Response(
+                new CharacterExtractionCharacter(
+                    "John",
+                    "male",
+                    [new CharacterExtractionAlias("John", new CharacterExtractionEvidence("p1", "John stopped."))],
+                    [new CharacterExtractionEvidence("p1", "John stopped.")]),
+                new CharacterExtractionCharacter(
+                    "John",
+                    "male",
+                    [new CharacterExtractionAlias("John", new CharacterExtractionEvidence("p2", "John answered calmly."))],
+                    [new CharacterExtractionEvidence("p2", "John answered calmly.")])
+            ));
+        var patchClient = new ScriptedDossierPatchProposalModelClient();
+
+        var generator = new CharacterDossiersGenerator(
+            documentContext,
+            dossierService,
+            limits,
+            NullLogger<CharacterDossiersGenerator>.Instance,
+            extractionModelClient,
+            new CharacterExtractionPromptBuilder(),
+            patchClient,
+            new DossierPatchPromptBuilder(),
+            ApprovingReviewerClient(),
+            new DossierConsistencyReviewerPromptBuilder());
+
+        await generator.GenerateAsync();
+
+        var request = Assert.Single(patchClient.Requests);
+        using var json = JsonDocument.Parse(request.UserPrompt);
+        var candidates = json.RootElement.GetProperty("candidates").EnumerateArray().ToArray();
+        Assert.Equal(2, candidates.Length);
+
+        var contextPointers = candidates
+            .SelectMany(candidate => candidate.GetProperty("evidenceContexts").EnumerateArray())
+            .Select(context => context.GetProperty("pointer").GetString() ?? string.Empty)
+            .OrderBy(pointer => pointer, StringComparer.Ordinal)
+            .ToArray();
+        Assert.Equal(["p1", "p2"], contextPointers);
+        Assert.Equal(1, patchClient.CallCount);
+    }
+
+    [Fact]
+    public async Task GenerateDossiers_PatchPromptSplitsLargeGroupedEvidenceBatches()
+    {
+        var dossierService = new CharacterDossierService();
+        var repository = new MarkdownDocumentRepository();
+        var firstParagraph = "John " + new string('a', 7_000);
+        var secondParagraph = "John " + new string('b', 7_000);
+        var document = repository.LoadFromMarkdown($"{firstParagraph}\n\n{secondParagraph}");
+        var documentContext = new DocumentContext(document, dossierService);
+        var limits = new CharacterBibleExtractionLimits { MaxParagraphsPerBatch = 256, MaxBatchBytes = 1024 * 128 };
+        var extractionModelClient = new ScriptedCharacterExtractionModelClient(
+            Response(
+                new CharacterExtractionCharacter(
+                    "John",
+                    "male",
+                    [new CharacterExtractionAlias("John", new CharacterExtractionEvidence("p1", "John"))],
+                    [new CharacterExtractionEvidence("p1", "John")]),
+                new CharacterExtractionCharacter(
+                    "John",
+                    "male",
+                    [new CharacterExtractionAlias("John", new CharacterExtractionEvidence("p2", "John"))],
+                    [new CharacterExtractionEvidence("p2", "John")])
+            ));
+        var patchClient = new ScriptedDossierPatchProposalModelClient();
+
+        var generator = new CharacterDossiersGenerator(
+            documentContext,
+            dossierService,
+            limits,
+            NullLogger<CharacterDossiersGenerator>.Instance,
+            extractionModelClient,
+            new CharacterExtractionPromptBuilder(),
+            patchClient,
+            new DossierPatchPromptBuilder(),
+            ApprovingReviewerClient(),
+            new DossierConsistencyReviewerPromptBuilder());
+
+        await generator.GenerateAsync();
+
+        Assert.Equal(2, patchClient.CallCount);
+        Assert.All(patchClient.Requests, request =>
+        {
+            using var json = JsonDocument.Parse(request.UserPrompt);
+            Assert.Single(json.RootElement.GetProperty("candidates").EnumerateArray());
+        });
+    }
+
+    [Fact]
+    public async Task GenerateDossiers_AppliesAliasPatchFromCandidateEvidence()
+    {
+        var dossierService = new CharacterDossierService();
+        dossierService.UpsertDossier(new AiTextEditor.Core.Model.CharacterDossier(
+            CharacterId: "c1",
+            Name: "John",
+            Aliases: ["John"],
+            AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["John"] = "John arrived."
+            },
+            Gender: "unknown"));
+
+        var repository = new MarkdownDocumentRepository();
+        var document = repository.LoadFromMarkdown("Johnny stood tall.");
+        var documentContext = new DocumentContext(document, dossierService);
+        var limits = new CharacterBibleExtractionLimits { MaxParagraphsPerBatch = 256, MaxBatchBytes = 1024 * 128 };
+        var extractionModelClient = new ScriptedCharacterExtractionModelClient(
+            Response(Character(
+                "John",
+                Alias("Johnny", "Johnny stood tall."))));
+        var patchClient = new ScriptedDossierPatchProposalModelClient(
+            ReadyPatch(aliasesToAdd: ["Johnny"]));
+
+        var generator = new CharacterDossiersGenerator(
+            documentContext,
+            dossierService,
+            limits,
+            NullLogger<CharacterDossiersGenerator>.Instance,
+            extractionModelClient,
+            new CharacterExtractionPromptBuilder(),
+            patchClient,
+            new DossierPatchPromptBuilder(),
+            ApprovingReviewerClient(),
+            new DossierConsistencyReviewerPromptBuilder());
+
+        var dossiers = await generator.GenerateAsync();
+
+        var dossier = Assert.Single(dossiers.Characters);
+        Assert.Contains("Johnny", dossier.Aliases, StringComparer.OrdinalIgnoreCase);
+        Assert.Equal("Johnny stood tall.", dossier.AliasExamples["Johnny"]);
+        Assert.Equal(1, patchClient.CallCount);
     }
 
     [Fact]
@@ -287,7 +644,11 @@ public sealed class CharacterDossiersGeneratorTests
             limits,
             NullLogger<CharacterDossiersGenerator>.Instance,
             extractionModelClient,
-            new CharacterExtractionPromptBuilder());
+            new CharacterExtractionPromptBuilder(),
+            NoopPatchClient(),
+            new DossierPatchPromptBuilder(),
+            ApprovingReviewerClient(),
+            new DossierConsistencyReviewerPromptBuilder());
 
         await generator.GenerateAsync();
 
@@ -298,7 +659,7 @@ public sealed class CharacterDossiersGeneratorTests
     }
 
     [Fact]
-    public async Task GenerateDossiers_PromptRequiresEmptyProfileFieldsWhenEvidenceIsAbsent()
+    public async Task GenerateDossiers_PromptRequiresPointerBackedEvidence()
     {
         var dossierService = new CharacterDossierService();
         var repository = new MarkdownDocumentRepository();
@@ -313,20 +674,24 @@ public sealed class CharacterDossiersGeneratorTests
             limits,
             NullLogger<CharacterDossiersGenerator>.Instance,
             extractionModelClient,
-            new CharacterExtractionPromptBuilder());
+            new CharacterExtractionPromptBuilder(),
+            NoopPatchClient(),
+            new DossierPatchPromptBuilder(),
+            ApprovingReviewerClient(),
+            new DossierConsistencyReviewerPromptBuilder());
 
         await generator.GenerateAsync();
 
         Assert.NotNull(extractionModelClient.LastRequest);
         var systemPrompt = extractionModelClient.LastRequest!.SystemPrompt;
-        Assert.Contains("Use empty string when there is no evidence", systemPrompt, StringComparison.Ordinal);
-        Assert.Contains("Do not retell scenes", systemPrompt, StringComparison.Ordinal);
-        Assert.Contains("statusAndCompetence", systemPrompt, StringComparison.Ordinal);
-        Assert.DoesNotContain("description field", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("Every character candidate must have character.evidence", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("Every alias must have alias.evidence", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("Preserve pointers exactly as provided", systemPrompt, StringComparison.Ordinal);
+        Assert.DoesNotContain("statusAndCompetence", systemPrompt, StringComparison.Ordinal);
     }
 
     [Fact]
-    public async Task GenerateDossiers_PromptRequiresStructuredRussianProfile()
+    public async Task GenerateDossiers_PromptForbidsProfileWriting()
     {
         var dossierService = new CharacterDossierService();
         var repository = new MarkdownDocumentRepository();
@@ -341,17 +706,21 @@ public sealed class CharacterDossiersGeneratorTests
             limits,
             NullLogger<CharacterDossiersGenerator>.Instance,
             extractionModelClient,
-            new CharacterExtractionPromptBuilder());
+            new CharacterExtractionPromptBuilder(),
+            NoopPatchClient(),
+            new DossierPatchPromptBuilder(),
+            ApprovingReviewerClient(),
+            new DossierConsistencyReviewerPromptBuilder());
 
         await generator.GenerateAsync();
 
         Assert.NotNull(extractionModelClient.LastRequest);
         var systemPrompt = extractionModelClient.LastRequest!.SystemPrompt;
-        Assert.Contains("character.profile", systemPrompt, StringComparison.Ordinal);
-        Assert.Contains("Profile Rules", systemPrompt, StringComparison.Ordinal);
-        Assert.Contains("Language: RUSSIAN", systemPrompt, StringComparison.Ordinal);
-        Assert.Contains("statusAndCompetence", systemPrompt, StringComparison.Ordinal);
-        Assert.Contains("Do NOT add relationship lists", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("Do not write character profiles", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("Do not decide whether a candidate is new or already exists", systemPrompt, StringComparison.Ordinal);
+        Assert.DoesNotContain("Profile Rules", systemPrompt, StringComparison.Ordinal);
+        Assert.DoesNotContain("Language: RUSSIAN", systemPrompt, StringComparison.Ordinal);
+        Assert.DoesNotContain("statusAndCompetence", systemPrompt, StringComparison.Ordinal);
         Assert.DoesNotContain("keyRoleBonds", systemPrompt, StringComparison.Ordinal);
     }
 
@@ -375,11 +744,9 @@ public sealed class CharacterDossiersGeneratorTests
         var limits = new CharacterBibleExtractionLimits { MaxParagraphsPerBatch = 256, MaxBatchBytes = 1024 * 128 };
 
         var extractionModelClient = new ScriptedCharacterExtractionModelClient(
-            Response(new CharacterExtractionCharacter(
+            Response(Character(
                 "John",
-                "unknown",
-                [new CharacterExtractionAlias("Johnny", "Johnny laughed.")],
-                null)));
+                Alias("Johnny", "Johnny laughed."))));
 
         var generator = new CharacterDossiersGenerator(
             documentContext,
@@ -387,7 +754,11 @@ public sealed class CharacterDossiersGeneratorTests
             limits,
             NullLogger<CharacterDossiersGenerator>.Instance,
             extractionModelClient,
-            new CharacterExtractionPromptBuilder());
+            new CharacterExtractionPromptBuilder(),
+            NoopPatchClient(),
+            new DossierPatchPromptBuilder(),
+            ApprovingReviewerClient(),
+            new DossierConsistencyReviewerPromptBuilder());
 
         var evidence = new[] { new AiTextEditor.Core.Model.EvidenceItem("1.p1", "Johnny laughed.", null) };
         await generator.UpdateFromEvidenceBatchAsync(evidence);
@@ -407,11 +778,9 @@ public sealed class CharacterDossiersGeneratorTests
         var limits = new CharacterBibleExtractionLimits { MaxParagraphsPerBatch = 256, MaxBatchBytes = 1024 * 128 };
 
         var extractionModelClient = new ScriptedCharacterExtractionModelClient(
-            Response(new CharacterExtractionCharacter(
+            Response(Character(
                 "John",
-                "unknown",
-                [new CharacterExtractionAlias("John's", "John's hat was on the table.")],
-                null)));
+                Alias("John's", "John's hat was on the table."))));
 
         var generator = new CharacterDossiersGenerator(
             documentContext,
@@ -419,7 +788,11 @@ public sealed class CharacterDossiersGeneratorTests
             limits,
             NullLogger<CharacterDossiersGenerator>.Instance,
             extractionModelClient,
-            new CharacterExtractionPromptBuilder());
+            new CharacterExtractionPromptBuilder(),
+            NoopPatchClient(),
+            new DossierPatchPromptBuilder(),
+            ApprovingReviewerClient(),
+            new DossierConsistencyReviewerPromptBuilder());
 
         var evidence = new[] { new AiTextEditor.Core.Model.EvidenceItem("1.p1", "John's hat was on the table.", null) };
         var dossiers = await generator.UpdateFromEvidenceBatchAsync(evidence);
@@ -446,7 +819,11 @@ public sealed class CharacterDossiersGeneratorTests
             limits,
             NullLogger<CharacterDossiersGenerator>.Instance,
             extractionModelClient,
-            new CharacterExtractionPromptBuilder());
+            new CharacterExtractionPromptBuilder(),
+            NoopPatchClient(),
+            new DossierPatchPromptBuilder(),
+            ApprovingReviewerClient(),
+            new DossierConsistencyReviewerPromptBuilder());
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => generator.GenerateAsync());
         Assert.Equal("character_extraction_empty_response_content", exception.Message);
@@ -491,7 +868,11 @@ public sealed class CharacterDossiersGeneratorTests
             limits,
             NullLogger<CharacterDossiersGenerator>.Instance,
             extractionModelClient,
-            new CharacterExtractionPromptBuilder());
+            new CharacterExtractionPromptBuilder(),
+            NoopPatchClient(),
+            new DossierPatchPromptBuilder(),
+            ApprovingReviewerClient(),
+            new DossierConsistencyReviewerPromptBuilder());
         var runner = new CharacterBibleWorkflowRunner(generator, NullLoggerFactory.Instance);
 
         await runner.RunAsync(new CharacterBibleWorkflowInput());
@@ -502,17 +883,41 @@ public sealed class CharacterDossiersGeneratorTests
     private static CharacterExtractionResponse Response(params CharacterExtractionCharacter[] characters)
         => new() { Characters = characters.ToList() };
 
-    private static CharacterExtractionProfile ExtractionProfile(
-        string appearance = "",
-        string background = "",
-        string psychology = "",
-        string speech = "")
+    private static CharacterExtractionCharacter Character(
+        string canonicalName,
+        params CharacterExtractionAlias[] aliases)
+        => new(
+            canonicalName,
+            "unknown",
+            aliases.ToList(),
+            [new CharacterExtractionEvidence("p1", $"{canonicalName} appeared.")]);
+
+    private static CharacterExtractionAlias Alias(string form, string excerpt)
+        => new(form, new CharacterExtractionEvidence("p1", excerpt));
+
+    private static IDossierPatchProposalModelClient NoopPatchClient() => new NoopDossierPatchProposalModelClient();
+
+    private static IDossierConsistencyReviewerModelClient ApprovingReviewerClient() => new ApprovingDossierConsistencyReviewerModelClient();
+
+    private static DossierPatchProposal ReadyPatch(
+        IReadOnlyList<string>? aliasesToAdd = null,
+        string? appearance = null,
+        string? statusAndCompetence = null,
+        string? psychologicalProfile = null,
+        string? speechAndCommunication = null)
     {
-        return new CharacterExtractionProfile(
-            appearance,
-            background,
-            psychology,
-            speech);
+        return new DossierPatchProposal
+        {
+            Status = "ready",
+            AliasesToAdd = aliasesToAdd?.ToList() ?? [],
+            ProfilePatch = new DossierProfilePatch(
+                appearance,
+                statusAndCompetence,
+                psychologicalProfile,
+                speechAndCommunication,
+                [new DossierPatchEvidence("p1", "John stood tall and answered briefly.")]),
+            Reason = "Profile evidence found."
+        };
     }
 
     private sealed class CapturingCharacterExtractionModelClient : ICharacterExtractionModelClient
@@ -555,6 +960,9 @@ public sealed class CharacterDossiersGeneratorTests
                     }
 
                     var text = textElement.GetString() ?? string.Empty;
+                    var pointer = paragraph.TryGetProperty("pointer", out var pointerElement)
+                        ? pointerElement.GetString() ?? string.Empty
+                        : string.Empty;
                     var name = text.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
                                    .FirstOrDefault();
                     if (string.IsNullOrWhiteSpace(name))
@@ -565,7 +973,8 @@ public sealed class CharacterDossiersGeneratorTests
                     characters.Add(new CharacterExtractionCharacter(
                         name,
                         "unknown",
-                        []));
+                        [],
+                        [new CharacterExtractionEvidence(pointer, text)]));
                 }
 
                 return Response(characters.ToArray());
@@ -614,6 +1023,63 @@ public sealed class CharacterDossiersGeneratorTests
             CharacterExtractionModelRequest request,
             CancellationToken cancellationToken = default)
             => throw new InvalidOperationException(message);
+    }
+
+    private sealed class NoopDossierPatchProposalModelClient : IDossierPatchProposalModelClient
+    {
+        public Task<DossierPatchProposal> ProposePatchAsync(
+            DossierPatchProposalModelRequest request,
+            CancellationToken cancellationToken = default)
+        {
+            return Task.FromResult(new DossierPatchProposal
+            {
+                Status = "no_useful_changes",
+                AliasesToAdd = [],
+                ProfilePatch = null,
+                Reason = "No test patch."
+            });
+        }
+    }
+
+    private sealed class ScriptedDossierPatchProposalModelClient(params DossierPatchProposal[] proposals)
+        : IDossierPatchProposalModelClient
+    {
+        private readonly Queue<DossierPatchProposal> proposals = new(proposals);
+
+        public int CallCount { get; private set; }
+
+        public List<DossierPatchProposalModelRequest> Requests { get; } = [];
+
+        public Task<DossierPatchProposal> ProposePatchAsync(
+            DossierPatchProposalModelRequest request,
+            CancellationToken cancellationToken = default)
+        {
+            CallCount++;
+            Requests.Add(request);
+            return Task.FromResult(proposals.Count > 0
+                ? proposals.Dequeue()
+                : new DossierPatchProposal
+                {
+                    Status = "no_useful_changes",
+                    AliasesToAdd = [],
+                    ProfilePatch = null,
+                    Reason = "No scripted patch."
+                });
+        }
+    }
+
+    private sealed class ApprovingDossierConsistencyReviewerModelClient : IDossierConsistencyReviewerModelClient
+    {
+        public Task<DossierReviewResult> ReviewAsync(
+            DossierReviewModelRequest request,
+            CancellationToken cancellationToken = default)
+        {
+            return Task.FromResult(new DossierReviewResult
+            {
+                Verdict = "approved",
+                Issues = []
+            });
+        }
     }
 }
 

@@ -5,4 +5,37 @@ namespace AiTextEditor.Core.Model;
 public sealed record CharacterDossiers(
     string DossiersId,
     int Version,
-    IReadOnlyList<CharacterDossier> Characters);
+    IReadOnlyList<CharacterDossier> Characters,
+    IReadOnlyList<SuspectArchiveEntry>? SuspectArchive = null,
+    IReadOnlyList<CharacterEvidenceIndexEntry>? EvidenceIndex = null,
+    IReadOnlyList<IdentityConflictRecord>? IdentityConflicts = null,
+    IReadOnlyList<CharacterBibleAuditEntry>? AuditTrail = null);
+
+public sealed record SuspectArchiveEntry(
+    string CandidateId,
+    string CanonicalName,
+    string Gender,
+    IReadOnlyList<string> Aliases,
+    IReadOnlyList<CharacterEvidenceIndexEntry> Evidence,
+    string Reason);
+
+public sealed record CharacterEvidenceIndexEntry(
+    string Pointer,
+    string Excerpt,
+    string? CharacterId = null,
+    string? CandidateId = null);
+
+public sealed record IdentityConflictRecord(
+    string CandidateId,
+    string CanonicalName,
+    IReadOnlyList<string> AlternativeEntryIds,
+    string Reason,
+    string? SplitProposalKind = null,
+    IReadOnlyList<string>? SplitShardNames = null,
+    string? SplitProposalReason = null);
+
+public sealed record CharacterBibleAuditEntry(
+    DateTimeOffset Timestamp,
+    string Operation,
+    string TargetId,
+    string Reason);

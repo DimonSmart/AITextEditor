@@ -28,6 +28,7 @@ public sealed class CharacterDossierService
 
         yamlDeserializer = new DeserializerBuilder()
             .WithNamingConvention(CamelCaseNamingConvention.Instance)
+            .IgnoreUnmatchedProperties()
             .Build();
 
         dossiers = CreateEmpty(initialDossiersId);
@@ -52,7 +53,11 @@ public sealed class CharacterDossierService
             var characters = dossiers.Characters.ToDictionary(c => c.CharacterId, StringComparer.Ordinal);
             characters[dossier.CharacterId] = NormalizeDossier(dossier);
 
-            dossiers = new CharacterDossiers(dossiers.DossiersId, dossiers.Version + 1, characters.Values.ToList());
+            dossiers = dossiers with
+            {
+                Version = dossiers.Version + 1,
+                Characters = characters.Values.ToList()
+            };
             return characters[dossier.CharacterId];
         }
     }
@@ -184,7 +189,11 @@ public sealed class CharacterDossierService
             }
 
             var updated = dossiers.Characters.Where(c => !string.Equals(c.CharacterId, characterId, StringComparison.Ordinal)).ToList();
-            dossiers = new CharacterDossiers(dossiers.DossiersId, dossiers.Version + 1, updated);
+            dossiers = dossiers with
+            {
+                Version = dossiers.Version + 1,
+                Characters = updated
+            };
             return true;
         }
     }
@@ -196,7 +205,29 @@ public sealed class CharacterDossierService
         lock (syncRoot)
         {
             var normalized = characters.Select(NormalizeDossier).ToList();
-            dossiers = new CharacterDossiers(dossiers.DossiersId, dossiers.Version + 1, normalized);
+            dossiers = dossiers with
+            {
+                Version = dossiers.Version + 1,
+                Characters = normalized
+            };
+        }
+    }
+
+    public void ReplaceDossiers(CharacterDossiers replacement)
+    {
+        ArgumentNullException.ThrowIfNull(replacement);
+
+        lock (syncRoot)
+        {
+            var normalized = replacement.Characters.Select(NormalizeDossier).ToList();
+            dossiers = NormalizeDossiers(replacement with
+            {
+                DossiersId = string.IsNullOrWhiteSpace(replacement.DossiersId)
+                    ? dossiers.DossiersId
+                    : replacement.DossiersId,
+                Version = dossiers.Version + 1,
+                Characters = normalized
+            });
         }
     }
 
@@ -253,11 +284,39 @@ public sealed class CharacterDossierService
 
         lock (syncRoot)
         {
-            dossiers = new CharacterDossiers(
-                loaded.DossiersId,
-                loaded.Version > 0 ? loaded.Version : 1,
-                normalizedCharacters);
+            dossiers = NormalizeDossiers(loaded with
+            {
+                Version = loaded.Version > 0 ? loaded.Version : 1,
+                Characters = normalizedCharacters
+            });
         }
+    }
+
+    private static CharacterDossiers NormalizeDossiers(CharacterDossiers source)
+    {
+        return source with
+        {
+            Characters = source.Characters.Select(NormalizeDossier).ToList(),
+            SuspectArchive = source.SuspectArchive ?? [],
+            EvidenceIndex = NormalizeEvidenceIndex(source.EvidenceIndex),
+            IdentityConflicts = source.IdentityConflicts ?? [],
+            AuditTrail = source.AuditTrail ?? []
+        };
+    }
+
+    private static IReadOnlyList<CharacterEvidenceIndexEntry> NormalizeEvidenceIndex(
+        IReadOnlyList<CharacterEvidenceIndexEntry>? entries)
+    {
+        return (entries ?? [])
+            .Where(entry => !string.IsNullOrWhiteSpace(entry.Pointer) && !string.IsNullOrWhiteSpace(entry.Excerpt))
+            .Select(entry => entry with
+            {
+                Pointer = entry.Pointer.Trim(),
+                Excerpt = entry.Excerpt.Trim(),
+                CharacterId = string.IsNullOrWhiteSpace(entry.CharacterId) ? null : entry.CharacterId.Trim(),
+                CandidateId = string.IsNullOrWhiteSpace(entry.CandidateId) ? null : entry.CandidateId.Trim()
+            })
+            .ToList();
     }
 
     private static CharacterDossier CreateNew(
