@@ -3,6 +3,22 @@ using AiTextEditor.Agent.CharacterBible.Patching;
 
 namespace AiTextEditor.Agent.CharacterBible.Resolution;
 
+public interface ICharacterArchiveSearchTool
+{
+    Task<IReadOnlyList<CharacterArchiveSearchHit>> SearchCharactersAsync(
+        string query,
+        int limit,
+        CancellationToken cancellationToken);
+}
+
+public sealed record CharacterArchiveSearchHit(
+    string EntryId,
+    string Name,
+    string Gender,
+    IReadOnlyList<string> Aliases,
+    string Identity,
+    double Score);
+
 internal enum CharacterArchiveEntryKind
 {
     Character,
@@ -112,7 +128,6 @@ internal sealed record IdentityResolutionDecision(
 
     public static IdentityResolutionDecision Existing(
         string targetEntryId,
-        CharacterArchiveHit hit,
         string reason)
     {
         return new IdentityResolutionDecision(
@@ -120,7 +135,7 @@ internal sealed record IdentityResolutionDecision(
             targetEntryId,
             [],
             reason,
-            hit.MatchReasons.Contains(CharacterArchiveSearchService.ExactNameMatchReason, StringComparer.Ordinal));
+            ExactNameMatch: true);
     }
 
     public static IdentityResolutionDecision New(string reason)

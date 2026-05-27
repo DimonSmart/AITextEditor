@@ -6,6 +6,7 @@ using AiTextEditor.Agent;
 using AiTextEditor.Agent.CharacterBible;
 using AiTextEditor.Agent.CharacterBible.Extraction;
 using AiTextEditor.Agent.CharacterBible.Patching;
+using AiTextEditor.Agent.CharacterBible.Resolution;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
@@ -26,9 +27,10 @@ public sealed class CharacterDossiersGeneratorTests
             ]);
 
         Assert.Contains("Pronouns are NEVER aliases", systemPrompt, StringComparison.Ordinal);
-        Assert.Contains("name forms, nicknames, titles", systemPrompt, StringComparison.Ordinal);
-        Assert.Contains("character.evidence", systemPrompt, StringComparison.Ordinal);
-        Assert.Contains("alias.evidence", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("exact observed name forms", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("Do not return excerpts", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("Do not return alias-level evidence", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("Do not return character-level evidence", systemPrompt, StringComparison.Ordinal);
         Assert.DoesNotContain("character.profile", systemPrompt, StringComparison.Ordinal);
 
         using var json = JsonDocument.Parse(userPrompt);
@@ -150,7 +152,8 @@ public sealed class CharacterDossiersGeneratorTests
             NoopPatchClient(),
             new DossierPatchPromptBuilder(),
             ApprovingReviewerClient(),
-            new DossierConsistencyReviewerPromptBuilder());
+            new DossierConsistencyReviewerPromptBuilder(),
+            NewIdentityResolverClient());
 
         var dossiers = await generator.GenerateAsync();
 
@@ -188,7 +191,8 @@ public sealed class CharacterDossiersGeneratorTests
             NoopPatchClient(),
             new DossierPatchPromptBuilder(),
             ApprovingReviewerClient(),
-            new DossierConsistencyReviewerPromptBuilder());
+            new DossierConsistencyReviewerPromptBuilder(),
+            NewIdentityResolverClient());
         var runner = new CharacterBibleWorkflowRunner(generator, NullLoggerFactory.Instance);
 
         await runner.RunAsync(new CharacterBibleWorkflowInput());
@@ -329,7 +333,8 @@ public sealed class CharacterDossiersGeneratorTests
             NoopPatchClient(),
             new DossierPatchPromptBuilder(),
             ApprovingReviewerClient(),
-            new DossierConsistencyReviewerPromptBuilder());
+            new DossierConsistencyReviewerPromptBuilder(),
+            NewIdentityResolverClient());
 
         var dossiers = await generator.GenerateAsync();
 
@@ -382,7 +387,8 @@ public sealed class CharacterDossiersGeneratorTests
             patchClient,
             new DossierPatchPromptBuilder(),
             ApprovingReviewerClient(),
-            new DossierConsistencyReviewerPromptBuilder());
+            new DossierConsistencyReviewerPromptBuilder(),
+            NewIdentityResolverClient());
 
         var dossiers = await generator.GenerateAsync();
 
@@ -431,7 +437,8 @@ public sealed class CharacterDossiersGeneratorTests
             patchClient,
             new DossierPatchPromptBuilder(),
             ApprovingReviewerClient(),
-            new DossierConsistencyReviewerPromptBuilder());
+            new DossierConsistencyReviewerPromptBuilder(),
+            NewIdentityResolverClient());
 
         var dossiers = await generator.GenerateAsync();
 
@@ -450,11 +457,11 @@ public sealed class CharacterDossiersGeneratorTests
         var documentContext = new DocumentContext(document, dossierService);
         var limits = new CharacterBibleExtractionLimits { MaxParagraphsPerBatch = 256, MaxBatchBytes = 1024 * 128 };
         var extractionModelClient = new ScriptedCharacterExtractionModelClient(
-            Response(new CharacterExtractionCharacter(
+            Response(new ExtractedLocalCharacter(
                 "Незнайка",
                 "male",
-                [new CharacterExtractionAlias("Незнайка", new CharacterExtractionEvidence("p1", "А Незнайка сказал:"))],
-                [new CharacterExtractionEvidence("p1", "А Незнайка сказал:")])));
+                ["Незнайка"],
+                ["p1"])));
         var patchClient = new ScriptedDossierPatchProposalModelClient();
 
         var generator = new CharacterDossiersGenerator(
@@ -467,7 +474,8 @@ public sealed class CharacterDossiersGeneratorTests
             patchClient,
             new DossierPatchPromptBuilder(),
             ApprovingReviewerClient(),
-            new DossierConsistencyReviewerPromptBuilder());
+            new DossierConsistencyReviewerPromptBuilder(),
+            NewIdentityResolverClient());
 
         await generator.GenerateAsync();
 
@@ -495,16 +503,16 @@ public sealed class CharacterDossiersGeneratorTests
         var limits = new CharacterBibleExtractionLimits { MaxParagraphsPerBatch = 256, MaxBatchBytes = 1024 * 128 };
         var extractionModelClient = new ScriptedCharacterExtractionModelClient(
             Response(
-                new CharacterExtractionCharacter(
+                new ExtractedLocalCharacter(
                     "John",
                     "male",
-                    [new CharacterExtractionAlias("John", new CharacterExtractionEvidence("p1", "John stopped."))],
-                    [new CharacterExtractionEvidence("p1", "John stopped.")]),
-                new CharacterExtractionCharacter(
+                    ["John"],
+                    ["p1"]),
+                new ExtractedLocalCharacter(
                     "John",
                     "male",
-                    [new CharacterExtractionAlias("John", new CharacterExtractionEvidence("p2", "John answered calmly."))],
-                    [new CharacterExtractionEvidence("p2", "John answered calmly.")])
+                    ["John"],
+                    ["p2"])
             ));
         var patchClient = new ScriptedDossierPatchProposalModelClient();
 
@@ -518,7 +526,8 @@ public sealed class CharacterDossiersGeneratorTests
             patchClient,
             new DossierPatchPromptBuilder(),
             ApprovingReviewerClient(),
-            new DossierConsistencyReviewerPromptBuilder());
+            new DossierConsistencyReviewerPromptBuilder(),
+            NewIdentityResolverClient());
 
         await generator.GenerateAsync();
 
@@ -548,16 +557,16 @@ public sealed class CharacterDossiersGeneratorTests
         var limits = new CharacterBibleExtractionLimits { MaxParagraphsPerBatch = 256, MaxBatchBytes = 1024 * 128 };
         var extractionModelClient = new ScriptedCharacterExtractionModelClient(
             Response(
-                new CharacterExtractionCharacter(
+                new ExtractedLocalCharacter(
                     "John",
                     "male",
-                    [new CharacterExtractionAlias("John", new CharacterExtractionEvidence("p1", "John"))],
-                    [new CharacterExtractionEvidence("p1", "John")]),
-                new CharacterExtractionCharacter(
+                    ["John"],
+                    ["p1"]),
+                new ExtractedLocalCharacter(
                     "John",
                     "male",
-                    [new CharacterExtractionAlias("John", new CharacterExtractionEvidence("p2", "John"))],
-                    [new CharacterExtractionEvidence("p2", "John")])
+                    ["John"],
+                    ["p2"])
             ));
         var patchClient = new ScriptedDossierPatchProposalModelClient();
 
@@ -571,7 +580,8 @@ public sealed class CharacterDossiersGeneratorTests
             patchClient,
             new DossierPatchPromptBuilder(),
             ApprovingReviewerClient(),
-            new DossierConsistencyReviewerPromptBuilder());
+            new DossierConsistencyReviewerPromptBuilder(),
+            NewIdentityResolverClient());
 
         await generator.GenerateAsync();
 
@@ -618,7 +628,8 @@ public sealed class CharacterDossiersGeneratorTests
             patchClient,
             new DossierPatchPromptBuilder(),
             ApprovingReviewerClient(),
-            new DossierConsistencyReviewerPromptBuilder());
+            new DossierConsistencyReviewerPromptBuilder(),
+            NewIdentityResolverClient());
 
         var dossiers = await generator.GenerateAsync();
 
@@ -648,7 +659,8 @@ public sealed class CharacterDossiersGeneratorTests
             NoopPatchClient(),
             new DossierPatchPromptBuilder(),
             ApprovingReviewerClient(),
-            new DossierConsistencyReviewerPromptBuilder());
+            new DossierConsistencyReviewerPromptBuilder(),
+            NewIdentityResolverClient());
 
         await generator.GenerateAsync();
 
@@ -678,14 +690,14 @@ public sealed class CharacterDossiersGeneratorTests
             NoopPatchClient(),
             new DossierPatchPromptBuilder(),
             ApprovingReviewerClient(),
-            new DossierConsistencyReviewerPromptBuilder());
+            new DossierConsistencyReviewerPromptBuilder(),
+            NewIdentityResolverClient());
 
         await generator.GenerateAsync();
 
         Assert.NotNull(extractionModelClient.LastRequest);
         var systemPrompt = extractionModelClient.LastRequest!.SystemPrompt;
-        Assert.Contains("Every character candidate must have character.evidence", systemPrompt, StringComparison.Ordinal);
-        Assert.Contains("Every alias must have alias.evidence", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("Every character candidate must have pointers", systemPrompt, StringComparison.Ordinal);
         Assert.Contains("Preserve pointers exactly as provided", systemPrompt, StringComparison.Ordinal);
         Assert.DoesNotContain("statusAndCompetence", systemPrompt, StringComparison.Ordinal);
     }
@@ -710,14 +722,15 @@ public sealed class CharacterDossiersGeneratorTests
             NoopPatchClient(),
             new DossierPatchPromptBuilder(),
             ApprovingReviewerClient(),
-            new DossierConsistencyReviewerPromptBuilder());
+            new DossierConsistencyReviewerPromptBuilder(),
+            NewIdentityResolverClient());
 
         await generator.GenerateAsync();
 
         Assert.NotNull(extractionModelClient.LastRequest);
         var systemPrompt = extractionModelClient.LastRequest!.SystemPrompt;
         Assert.Contains("Do not write character profiles", systemPrompt, StringComparison.Ordinal);
-        Assert.Contains("Do not decide whether a candidate is new or already exists", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("Do not decide whether a character is existing or new", systemPrompt, StringComparison.Ordinal);
         Assert.DoesNotContain("Profile Rules", systemPrompt, StringComparison.Ordinal);
         Assert.DoesNotContain("Language: RUSSIAN", systemPrompt, StringComparison.Ordinal);
         Assert.DoesNotContain("statusAndCompetence", systemPrompt, StringComparison.Ordinal);
@@ -758,7 +771,8 @@ public sealed class CharacterDossiersGeneratorTests
             NoopPatchClient(),
             new DossierPatchPromptBuilder(),
             ApprovingReviewerClient(),
-            new DossierConsistencyReviewerPromptBuilder());
+            new DossierConsistencyReviewerPromptBuilder(),
+            NewIdentityResolverClient());
 
         var evidence = new[] { new AiTextEditor.Core.Model.EvidenceItem("1.p1", "Johnny laughed.", null) };
         await generator.UpdateFromEvidenceBatchAsync(evidence);
@@ -769,7 +783,7 @@ public sealed class CharacterDossiersGeneratorTests
     }
 
     [Fact]
-    public async Task PossessiveNormalization_AddsBaseFormForJohns()
+    public async Task PossessiveAlias_KeepsOnlyObservedForm()
     {
         var dossierService = new CharacterDossierService();
         var repository = new MarkdownDocumentRepository();
@@ -792,15 +806,16 @@ public sealed class CharacterDossiersGeneratorTests
             NoopPatchClient(),
             new DossierPatchPromptBuilder(),
             ApprovingReviewerClient(),
-            new DossierConsistencyReviewerPromptBuilder());
+            new DossierConsistencyReviewerPromptBuilder(),
+            NewIdentityResolverClient());
 
-        var evidence = new[] { new AiTextEditor.Core.Model.EvidenceItem("1.p1", "John's hat was on the table.", null) };
+        var evidence = new[] { new AiTextEditor.Core.Model.EvidenceItem("p1", "John's hat was on the table.", null) };
         var dossiers = await generator.UpdateFromEvidenceBatchAsync(evidence);
 
         Assert.Single(dossiers.Characters);
         var character = dossiers.Characters[0];
         Assert.Contains("John's", character.AliasExamples.Keys, StringComparer.OrdinalIgnoreCase);
-        Assert.Contains("John", character.AliasExamples.Keys, StringComparer.OrdinalIgnoreCase);
+        Assert.DoesNotContain("John", character.AliasExamples.Keys, StringComparer.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -823,7 +838,8 @@ public sealed class CharacterDossiersGeneratorTests
             NoopPatchClient(),
             new DossierPatchPromptBuilder(),
             ApprovingReviewerClient(),
-            new DossierConsistencyReviewerPromptBuilder());
+            new DossierConsistencyReviewerPromptBuilder(),
+            NewIdentityResolverClient());
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => generator.GenerateAsync());
         Assert.Equal("character_extraction_empty_response_content", exception.Message);
@@ -872,7 +888,8 @@ public sealed class CharacterDossiersGeneratorTests
             NoopPatchClient(),
             new DossierPatchPromptBuilder(),
             ApprovingReviewerClient(),
-            new DossierConsistencyReviewerPromptBuilder());
+            new DossierConsistencyReviewerPromptBuilder(),
+            NewIdentityResolverClient());
         var runner = new CharacterBibleWorkflowRunner(generator, NullLoggerFactory.Instance);
 
         await runner.RunAsync(new CharacterBibleWorkflowInput());
@@ -880,24 +897,26 @@ public sealed class CharacterDossiersGeneratorTests
         return extractionModelClient;
     }
 
-    private static CharacterExtractionResponse Response(params CharacterExtractionCharacter[] characters)
-        => new() { Characters = characters.ToList() };
+    private static CharacterExtractionResponse Response(params ExtractedLocalCharacter[] characters)
+        => new(characters);
 
-    private static CharacterExtractionCharacter Character(
+    private static ExtractedLocalCharacter Character(
         string canonicalName,
-        params CharacterExtractionAlias[] aliases)
+        params string[] aliases)
         => new(
             canonicalName,
             "unknown",
-            aliases.ToList(),
-            [new CharacterExtractionEvidence("p1", $"{canonicalName} appeared.")]);
+            aliases,
+            ["p1"]);
 
-    private static CharacterExtractionAlias Alias(string form, string excerpt)
-        => new(form, new CharacterExtractionEvidence("p1", excerpt));
+    private static string Alias(string form, string excerpt) => form;
 
     private static IDossierPatchProposalModelClient NoopPatchClient() => new NoopDossierPatchProposalModelClient();
 
     private static IDossierConsistencyReviewerModelClient ApprovingReviewerClient() => new ApprovingDossierConsistencyReviewerModelClient();
+
+    private static ICharacterIdentityResolutionModelClient NewIdentityResolverClient()
+        => new SearchBackedIdentityResolutionModelClient();
 
     private static DossierPatchProposal ReadyPatch(
         IReadOnlyList<string>? aliasesToAdd = null,
@@ -951,7 +970,7 @@ public sealed class CharacterDossiersGeneratorTests
                     return Response();
                 }
 
-                var characters = new List<CharacterExtractionCharacter>();
+                var characters = new List<ExtractedLocalCharacter>();
                 foreach (var paragraph in paragraphs.EnumerateArray())
                 {
                     if (!paragraph.TryGetProperty("text", out var textElement) || textElement.ValueKind != JsonValueKind.String)
@@ -970,11 +989,11 @@ public sealed class CharacterDossiersGeneratorTests
                         continue;
                     }
 
-                    characters.Add(new CharacterExtractionCharacter(
+                    characters.Add(new ExtractedLocalCharacter(
                         name,
                         "unknown",
                         [],
-                        [new CharacterExtractionEvidence(pointer, text)]));
+                        [pointer]));
                 }
 
                 return Response(characters.ToArray());
@@ -1013,7 +1032,27 @@ public sealed class CharacterDossiersGeneratorTests
         {
             CallCount++;
             var response = responses.Count > 0 ? responses.Dequeue() : Response();
-            return Task.FromResult(response);
+            return Task.FromResult(AlignPointers(response, request));
+        }
+
+        private static CharacterExtractionResponse AlignPointers(
+            CharacterExtractionResponse response,
+            CharacterExtractionModelRequest request)
+        {
+            var promptPointers = ReadPromptPointers(request);
+            if (promptPointers.Length == 0)
+            {
+                return response;
+            }
+
+            var promptPointer = promptPointers[0];
+            var promptPointerSet = promptPointers.ToHashSet(StringComparer.Ordinal);
+            return new CharacterExtractionResponse(
+                response.Characters
+                    .Select(character => character.Pointers?.Any(pointer => promptPointerSet.Contains(pointer)) == true
+                        ? character
+                        : character with { Pointers = [promptPointer] })
+                    .ToArray());
         }
     }
 
@@ -1079,6 +1118,33 @@ public sealed class CharacterDossiersGeneratorTests
                 Verdict = "approved",
                 Issues = []
             });
+        }
+    }
+
+    private sealed class SearchBackedIdentityResolutionModelClient : ICharacterIdentityResolutionModelClient
+    {
+        public async Task<CharacterIdentityResolutionResponse> ResolveAsync(
+            CharacterIdentityResolutionModelRequest request,
+            CancellationToken cancellationToken = default)
+        {
+            using var json = JsonDocument.Parse(request.UserPrompt);
+            var candidate = json.RootElement.GetProperty("candidate");
+            var name = candidate.GetProperty("name").GetString() ?? string.Empty;
+            var aliases = candidate.GetProperty("aliases")
+                .EnumerateArray()
+                .Select(alias => alias.GetString())
+                .Where(alias => !string.IsNullOrWhiteSpace(alias));
+            var query = string.Join(' ', new[] { name }.Concat(aliases!));
+            var hits = await request.SearchTool.SearchCharactersAsync(query, 5, cancellationToken);
+            return hits.Count switch
+            {
+                0 => new CharacterIdentityResolutionResponse(CharacterIdentityDecision.New, Reason: "No test search hit."),
+                1 => new CharacterIdentityResolutionResponse(CharacterIdentityDecision.Existing, hits[0].EntryId, Reason: "Matched by test search."),
+                _ => new CharacterIdentityResolutionResponse(
+                    CharacterIdentityDecision.Ambiguous,
+                    EntryIds: hits.Select(hit => hit.EntryId).ToArray(),
+                    Reason: "Multiple test search hits.")
+            };
         }
     }
 }

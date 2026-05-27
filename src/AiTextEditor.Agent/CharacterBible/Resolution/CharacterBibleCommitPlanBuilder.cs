@@ -1,4 +1,3 @@
-using AiTextEditor.Agent.CharacterBible.Extraction;
 using AiTextEditor.Core.Model;
 
 namespace AiTextEditor.Agent.CharacterBible.Resolution;
@@ -57,11 +56,10 @@ internal sealed class CharacterBibleCommitPlanBuilder
             var candidate = candidates[index];
             var currentArchive = projectionIndex.ToDossiers(baseDossiers, maxCharacters: null);
             var identityDecision = await resolveIdentity(currentArchive, candidate, cancellationToken).ConfigureAwait(false);
-            var hit = CharacterBibleExtractionMapper.ToCharacterExtractionCharacter(candidate);
 
             changed |= ApplyDecision(
                 projectionIndex,
-                hit,
+                candidate,
                 identityDecision,
                 importanceAccumulator,
                 createdCharacterIds,
@@ -203,13 +201,13 @@ internal sealed class CharacterBibleCommitPlanBuilder
 
     private static bool ApplyDecision(
         CharacterBibleDossierProjectionIndex projectionIndex,
-        CharacterExtractionCharacter hit,
+        CharacterBibleCharacterCandidate candidate,
         IdentityResolutionDecision identityDecision,
         CharacterImportanceAccumulator importanceAccumulator,
         ISet<string> createdCharacterIds,
         out CharacterBibleResolverDecision resolverDecision)
     {
-        var canonicalName = hit.CanonicalName?.Trim() ?? string.Empty;
+        var canonicalName = candidate.CanonicalName.Trim();
 
         if (identityDecision.Kind == IdentityResolutionKind.Ambiguous)
         {
@@ -249,7 +247,7 @@ internal sealed class CharacterBibleCommitPlanBuilder
 
         var created = identityDecision.Kind == IdentityResolutionKind.New;
         var projection = created
-            ? projectionIndex.AddCandidate(hit)
+            ? projectionIndex.AddCandidate(candidate)
             : projectionIndex.GetRequired(identityDecision.TargetEntryId
                 ?? throw new InvalidOperationException("Existing identity decision is missing target entry id."));
 
@@ -261,13 +259,13 @@ internal sealed class CharacterBibleCommitPlanBuilder
             createdCharacterIds.Add(projection.CharacterId);
         }
 
-        var nameChanged = projection.RefineCanonicalName(hit, identityDecision.ExactNameMatch);
+        var nameChanged = projection.RefineCanonicalName(candidate, identityDecision.ExactNameMatch);
         changed |= nameChanged;
 
-        var anyAliasChanged = projection.MergeAliases(hit, identityDecision.ExactNameMatch);
+        var anyAliasChanged = projection.MergeAliases(candidate, identityDecision.ExactNameMatch);
         changed |= anyAliasChanged;
 
-        changed |= projection.SetGenderIfUnknown(hit.Gender);
+        changed |= projection.SetGenderIfUnknown(candidate.Gender);
 
         resolverDecision = new CharacterBibleResolverDecision(
             canonicalName,

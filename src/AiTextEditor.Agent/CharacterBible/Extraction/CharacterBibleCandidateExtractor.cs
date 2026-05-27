@@ -60,7 +60,10 @@ internal sealed class CharacterBibleCandidateExtractor
                     batch,
                     new CharacterBibleModelDiagnosticProgress(progress, modelResponseErrors, batchNumber),
                     cancellationToken);
-                var batchCandidates = postProcessor.Process(hits).ToList();
+                var batchFragments = batch
+                    .Select(paragraph => new TextFragment(paragraph.Pointer, paragraph.Text))
+                    .ToArray();
+                var batchCandidates = postProcessor.Process(hits, batchFragments, progress).ToList();
                 candidates.AddRange(batchCandidates.Where(candidate => seenCandidateIds.Add(candidate.CandidateId)));
                 var batchNames = batchCandidates.Count > 0
                     ? ": " + string.Join(", ", batchCandidates.Select(c => c.CanonicalName))
@@ -103,7 +106,7 @@ internal sealed class CharacterBibleCandidateExtractor
         return new CharacterBibleCandidateExtractionResult(candidates, statistics);
     }
 
-    private async Task<List<CharacterExtractionCharacter>> ExtractCharactersWithModelAsync(
+    private async Task<IReadOnlyList<ExtractedLocalCharacter>> ExtractCharactersWithModelAsync(
         IReadOnlyList<(string Pointer, string Text)> paragraphs,
         IProgress<AgenticModelDiagnostic> diagnostics,
         CancellationToken cancellationToken)

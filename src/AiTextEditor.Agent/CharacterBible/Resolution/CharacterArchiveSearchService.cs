@@ -41,6 +41,32 @@ internal sealed class CharacterArchiveSearchService
         return Limit(FindNormalizedKeyMatches(entries, request), request.MaxResults);
     }
 
+    public IReadOnlyList<CharacterArchiveSearchHit> SearchCharacters(
+        CharacterDossiers dossiers,
+        string query,
+        int limit)
+    {
+        ArgumentNullException.ThrowIfNull(dossiers);
+
+        var normalizedQuery = NormalizeSearchText(query);
+        if (string.IsNullOrWhiteSpace(normalizedQuery) || limit <= 0)
+        {
+            return [];
+        }
+
+        return dossiers.Characters
+            .Select(ArchiveEntry.FromDossier)
+            .Concat((dossiers.SuspectArchive ?? []).Select(ArchiveEntry.FromSuspect))
+            .Select(entry => (Entry: entry, Score: ScoreEntry(entry, normalizedQuery)))
+            .Where(item => item.Score > 0)
+            .OrderByDescending(item => item.Score)
+            .ThenBy(item => item.Entry.Name, StringComparer.OrdinalIgnoreCase)
+            .ThenBy(item => item.Entry.EntryId, StringComparer.Ordinal)
+            .Take(limit)
+            .Select(item => item.Entry.ToSearchHit(item.Score))
+            .ToArray();
+    }
+
     public static CharacterArchiveSearchRequest CreateRequest(
         CharacterBibleCharacterCandidate candidate,
         int maxResults)
@@ -246,6 +272,75 @@ internal sealed class CharacterArchiveSearchService
 
     private sealed record KeyVariant(string Key, int Weight);
 
+    private static double ScoreEntry(ArchiveEntry entry, string normalizedQuery)
+    {
+        var score = ScoreName(entry.Name, normalizedQuery, exact: 0.95, contains: 0.9);
+        foreach (var alias in entry.Aliases)
+        {
+            score = Math.Max(score, ScoreName(alias, normalizedQuery, exact: 0.9, contains: 0.85));
+        }
+
+        if (!string.IsNullOrWhiteSpace(entry.ProfileSnippet))
+        {
+            var normalizedIdentity = NormalizeSearchText(entry.ProfileSnippet);
+            var queryTerms = normalizedQuery.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            var identityMatches = queryTerms.Count(term => normalizedIdentity.Contains(term, StringComparison.Ordinal));
+            if (identityMatches > 0)
+            {
+                score = Math.Max(score, Math.Min(0.7, 0.25 + identityMatches * 0.1));
+            }
+        }
+
+        return score;
+    }
+
+    private static double ScoreName(string value, string normalizedQuery, double exact, double contains)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return 0;
+        }
+
+        var normalizedValue = NormalizeSearchText(value);
+        if (string.Equals(normalizedValue, normalizedQuery, StringComparison.Ordinal))
+        {
+            return exact;
+        }
+
+        if (normalizedQuery.Contains(normalizedValue, StringComparison.Ordinal))
+        {
+            return contains;
+        }
+
+        var normalizedKey = CharacterNameNormalizer.NormalizeKey(value);
+        if (!string.IsNullOrWhiteSpace(normalizedKey)
+            && normalizedQuery.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Any(term => string.Equals(term, normalizedKey, StringComparison.OrdinalIgnoreCase)))
+        {
+            return 0.8;
+        }
+
+        return 0;
+    }
+
+    private static string NormalizeSearchText(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return string.Empty;
+        }
+
+        var builder = new System.Text.StringBuilder(value.Length);
+        foreach (var character in value.Trim())
+        {
+            builder.Append(char.IsLetterOrDigit(character) ? char.ToLowerInvariant(character) : ' ');
+        }
+
+        return string.Join(' ', builder.ToString().Split(
+            ' ',
+            StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
+    }
+
     private sealed record ArchiveEntry(
         string EntryId,
         CharacterArchiveEntryKind EntryKind,
@@ -290,6 +385,17 @@ internal sealed class CharacterArchiveSearchService
                 ProfileSnippet,
                 matchReasons,
                 Score);
+        }
+
+        public CharacterArchiveSearchHit ToSearchHit(double score)
+        {
+            return new CharacterArchiveSearchHit(
+                EntryId,
+                Name,
+                Gender,
+                Aliases,
+                ProfileSnippet,
+                Math.Round(score, 4));
         }
 
         private static string BuildProfileSnippet(CharacterProfile profile)

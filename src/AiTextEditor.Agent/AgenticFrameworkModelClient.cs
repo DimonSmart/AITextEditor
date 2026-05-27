@@ -21,6 +21,7 @@ public interface IAgenticModelClient
             new AgenticModelRequest<TResponse>(
                 request.Messages,
                 request.InvalidContractError,
+                Tools: request.Tools,
                 Diagnostics: request.Diagnostics),
             cancellationToken);
     }
@@ -34,12 +35,14 @@ public interface IAgenticModelClient
 public sealed record AgenticModelRequest(
     IReadOnlyList<ChatMessage> Messages,
     string InvalidContractError,
+    IReadOnlyList<AITool>? Tools = null,
     IProgress<AgenticModelDiagnostic>? Diagnostics = null);
 
 public sealed record AgenticModelRequest<TResponse>(
     IReadOnlyList<ChatMessage> Messages,
     string InvalidContractError,
     Func<TResponse, AgenticModelValidationResult>? ValidateResponse = null,
+    IReadOnlyList<AITool>? Tools = null,
     IProgress<AgenticModelDiagnostic>? Diagnostics = null)
     where TResponse : class;
 
@@ -127,6 +130,7 @@ public sealed class AgenticFrameworkModelClient : IAgenticModelClient
             new AgenticModelRequest<TResponse>(
                 request.Messages,
                 request.InvalidContractError,
+                Tools: request.Tools,
                 Diagnostics: request.Diagnostics),
             cancellationToken).ConfigureAwait(false);
     }
@@ -150,8 +154,22 @@ public sealed class AgenticFrameworkModelClient : IAgenticModelClient
                 messages,
                 null,
                 JsonSerializerOptions.Web,
-                null,
+                BuildRunOptions(request.Tools),
                 token).ConfigureAwait(false),
             cancellationToken).ConfigureAwait(false);
+    }
+
+    private static ChatClientAgentRunOptions? BuildRunOptions(IReadOnlyList<AITool>? tools)
+    {
+        if (tools is null || tools.Count == 0)
+        {
+            return null;
+        }
+
+        return new ChatClientAgentRunOptions(new ChatOptions
+        {
+            Tools = tools.ToList(),
+            ToolMode = ChatToolMode.Auto
+        });
     }
 }

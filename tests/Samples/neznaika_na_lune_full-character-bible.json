@@ -1,21 +1,45 @@
 {
   "dossiersId": "b0a1621958b3409f815686718501d6f3",
-  "version": 3,
+  "version": 5,
   "characters": [
     {
       "characterId": "546723556a0506d4ebfe383b3296c943",
       "name": "Вертибутылкина",
       "aliases": [
-        "архитектор Вертибутылкина"
+        "архитектор Вертибутылкина",
+        "архитектора Вертибутылкина"
       ],
       "aliasExamples": {
-        "архитектор Вертибутылкина": "«по проекту архитектора Вертибутылкина»"
+        "архитектор Вертибутылкина": "«по проекту архитектора Вертибутылкина»",
+        "архитектора Вертибутылкина": "архитектора Вертибутылкина"
       },
       "gender": "unknown",
       "importanceLevel": 7,
       "profile": {
         "appearance": "",
         "statusAndCompetence": "архитектор, задумывал и проектировал вращающиеся здания (пятиэтажное башенное с спиральным спуском и бассейном; шестиэтажное с качающимися балконами, парашютной вышкой и колёсом) на улице Колокольчиков",
+        "psychologicalProfile": "",
+        "speechAndCommunication": ""
+      }
+    },
+    {
+      "characterId": "6622650b2c7bb79095c9e5d0af69c8b9",
+      "name": "Звездочкин",
+      "aliases": [
+        "Звездочкин",
+        "Звездочкина",
+        "профессор Звездочкин"
+      ],
+      "aliasExamples": {
+        "профессор Звездочкин": "профессор Звездочкин",
+        "Звездочкин": "Звездочкин",
+        "Звездочкина": "Звездочкина"
+      },
+      "gender": "male",
+      "importanceLevel": 10,
+      "profile": {
+        "appearance": "",
+        "statusAndCompetence": "",
         "psychologicalProfile": "",
         "speechAndCommunication": ""
       }
@@ -31,11 +55,11 @@
         "Знайка": "Знайка",
         "Знайкиной": "Знайкиной"
       },
-      "gender": "unknown",
+      "gender": "male",
       "importanceLevel": 7,
       "profile": {
         "appearance": "",
-        "statusAndCompetence": "создал собственную теорию происхождения лунных кратеров",
+        "statusAndCompetence": "создал собственную теорию происхождения лунных кратеров; написал книгу о происхождении лунных кратеров",
         "psychologicalProfile": "",
         "speechAndCommunication": ""
       }
@@ -53,7 +77,7 @@
       "importanceLevel": 7,
       "profile": {
         "appearance": "",
-        "statusAndCompetence": "",
+        "statusAndCompetence": "Участвовал в путешествии в Солнечный город; после возвращения проявил желание улучшить город.",
         "psychologicalProfile": "",
         "speechAndCommunication": ""
       }
@@ -67,7 +91,7 @@
       "aliasExamples": {
         "Незнайка": "«Незнайка совершил путешествие»"
       },
-      "gender": "unknown",
+      "gender": "male",
       "importanceLevel": 7,
       "profile": {
         "appearance": "",
@@ -107,7 +131,7 @@
         "Пончика": "Пончика моментально",
         "Пончику": "Пончику приходилось"
       },
-      "gender": "unknown",
+      "gender": "male",
       "importanceLevel": 10,
       "profile": {
         "appearance": "Носит многочисленные старые костюмы, вышедшие из моды.",
@@ -117,19 +141,39 @@
       }
     },
     {
-      "characterId": "3a7569bce0c109dd29695d1f3113a73f",
-      "name": "Селёдочка",
+      "characterId": "822b21d128e7c6a0d104d225e06510c0",
+      "name": "профессор",
       "aliases": [
-        "Селёдочка"
+        "профессор"
       ],
       "aliasExamples": {
-        "Селёдочка": "Селёдочкой"
+        "профессор": "профессор"
       },
       "gender": "unknown",
       "importanceLevel": 7,
       "profile": {
         "appearance": "",
         "statusAndCompetence": "",
+        "psychologicalProfile": "",
+        "speechAndCommunication": "выражает мысли сердито"
+      }
+    },
+    {
+      "characterId": "3a7569bce0c109dd29695d1f3113a73f",
+      "name": "Селёдочка",
+      "aliases": [
+        "Селёдочка",
+        "Селёдочкой"
+      ],
+      "aliasExamples": {
+        "Селёдочка": "Селёдочкой",
+        "Селёдочкой": "учёными малышками Фуксией и Селёдочкой"
+      },
+      "gender": "female",
+      "importanceLevel": 7,
+      "profile": {
+        "appearance": "",
+        "statusAndCompetence": "учёная, работавшая над строительством космической ракеты, участвовала во внепланетных исследованиях Луны",
         "psychologicalProfile": "",
         "speechAndCommunication": ""
       }
@@ -140,18 +184,22 @@
       "aliases": [
         "астронома Стекляшкина",
         "со Стекляшкиным",
-        "Стекляшкин"
+        "Стекляшкин",
+        "Стекляшкина",
+        "Стекляшкиным"
       ],
       "aliasExamples": {
         "астронома Стекляшкина": "астронома Стекляшкина",
         "со Стекляшкиным": "со Стекляшкиным",
-        "Стекляшкин": "В свой телескоп Стекляшкин"
+        "Стекляшкин": "В свой телескоп Стекляшкин",
+        "Стекляшкина": "астронома Стекляшкина",
+        "Стекляшкиным": "со Стекляшкиным наблюдал"
       },
-      "gender": "unknown",
+      "gender": "male",
       "importanceLevel": 7,
       "profile": {
         "appearance": "",
-        "statusAndCompetence": "Астроном",
+        "statusAndCompetence": "Астроном; изучает лунные кратеры",
         "psychologicalProfile": "",
         "speechAndCommunication": ""
       }
@@ -174,12 +222,14 @@
       "characterId": "5bcf35582833ca121190c87130e6071b",
       "name": "Фуксия",
       "aliases": [
+        "Фуксией",
         "Фуксия"
       ],
       "aliasExamples": {
-        "Фуксия": "Фуксией"
+        "Фуксия": "Фуксией",
+        "Фуксией": "учёными малышками Фуксией"
       },
-      "gender": "unknown",
+      "gender": "female",
       "importanceLevel": 7,
       "profile": {
         "appearance": "",
@@ -223,6 +273,74 @@
         }
       ],
       "reason": "Single ambiguous excerpt, no archive hits"
+    },
+    {
+      "candidateId": "0b094563a9087810",
+      "canonicalName": "Клёпки",
+      "gender": "male",
+      "aliases": [
+        "инженера Клёпки"
+      ],
+      "evidence": [
+        {
+          "pointer": "1.1.1.p2",
+          "excerpt": "инженера Клёпки",
+          "characterId": null,
+          "candidateId": "0b094563a9087810"
+        }
+      ],
+      "reason": "Identity resolver targeted a non-character or missing archive entry."
+    },
+    {
+      "candidateId": "dfc717b4db55c314",
+      "canonicalName": "Знайка",
+      "gender": "male",
+      "aliases": [
+        "Знайка"
+      ],
+      "evidence": [
+        {
+          "pointer": "1.1.1.p5",
+          "excerpt": "Там он познакомился с учёными малышками Фуксией и Селёдочкой, которые в то время",
+          "characterId": null,
+          "candidateId": "dfc717b4db55c314"
+        }
+      ],
+      "reason": "Multiple archive entries match name \"Знайка\" with no distinguishing evidence"
+    },
+    {
+      "candidateId": "00396fb39728a3cb",
+      "canonicalName": "Знайка",
+      "gender": "unknown",
+      "aliases": [
+        "Знайкина"
+      ],
+      "evidence": [
+        {
+          "pointer": "1.1.1.p22",
+          "excerpt": "Знайка приехал",
+          "characterId": null,
+          "candidateId": "00396fb39728a3cb"
+        }
+      ],
+      "reason": "Multiple exact-name hits with differing gender/alias data; evidence is insufficient to select a single match."
+    },
+    {
+      "candidateId": "a3334f77e86d34d1",
+      "canonicalName": "Знайка",
+      "gender": "male",
+      "aliases": [
+        "Знайка"
+      ],
+      "evidence": [
+        {
+          "pointer": "1.1.1.p35",
+          "excerpt": "Знайка",
+          "characterId": null,
+          "candidateId": "a3334f77e86d34d1"
+        }
+      ],
+      "reason": "Multiple identical-name archive hits with insufficient evidence to disambiguate"
     }
   ],
   "evidenceIndex": [
@@ -303,15 +421,166 @@
       "excerpt": "Стекляшкиным",
       "characterId": "9d0d9483cc1a90930d87ca10d0b23003",
       "candidateId": "0906162a1e5e976f"
+    },
+    {
+      "pointer": "1.1.1.p1",
+      "excerpt": "Незнайка совершил",
+      "characterId": "9a36d23aadd561a4f9f8d95e9e8e3b4c",
+      "candidateId": "0fe36ca227a5ce3c"
+    },
+    {
+      "pointer": "1.1.1.p1",
+      "excerpt": "Кнопочки",
+      "characterId": "b24ce18c81a92d74ed8fee4d085c5a2e",
+      "candidateId": "d7d94b4d9cc6bc0b"
+    },
+    {
+      "pointer": "1.1.1.p1",
+      "excerpt": "Пачкули Пёстренького",
+      "characterId": "45fe4522da94703171832beae61773d1",
+      "candidateId": "bfbe4e988708ad52"
+    },
+    {
+      "pointer": "1.1.1.p1",
+      "excerpt": "архитектора Вертибутылкина",
+      "characterId": "546723556a0506d4ebfe383b3296c943",
+      "candidateId": "907929a600651842"
+    },
+    {
+      "pointer": "1.1.1.p2",
+      "excerpt": "инженера Клёпки",
+      "characterId": null,
+      "candidateId": "0b094563a9087810"
+    },
+    {
+      "pointer": "1.1.1.p3",
+      "excerpt": "Пончик",
+      "characterId": "67e36893e80d3506ae9e0a676b12d735",
+      "candidateId": "d0c57d36ba1c1947"
+    },
+    {
+      "pointer": "1.1.1.p4",
+      "excerpt": "Пончику приходилось ежедневно травить её",
+      "characterId": "67e36893e80d3506ae9e0a676b12d735",
+      "candidateId": "b2915ada81b7a048"
+    },
+    {
+      "pointer": "1.1.1.p5",
+      "excerpt": "Там он познакомился с учёными малышками Фуксией и Селёдочкой, которые в то время",
+      "characterId": null,
+      "candidateId": "dfc717b4db55c314"
+    },
+    {
+      "pointer": "1.1.1.p5",
+      "excerpt": "Там он познакомился с учёными малышками Фуксией",
+      "characterId": "5bcf35582833ca121190c87130e6071b",
+      "candidateId": "4d1afe37a9cd5ba7"
+    },
+    {
+      "pointer": "1.1.1.p5",
+      "excerpt": "Там он познакомился с учёными малышками Фуксией и Селёдочкой",
+      "characterId": "3a7569bce0c109dd29695d1f3113a73f",
+      "candidateId": "26b74ce1a2a0efac"
+    },
+    {
+      "pointer": "1.1.1.p6",
+      "excerpt": "Вернувшись в Цветочный город, Знайка много рассказывал… и особенно астронома Стекляшкина",
+      "characterId": "e7856123ab5e01b9aac4ed043744e550",
+      "candidateId": "2dc35eac9b841a2d"
+    },
+    {
+      "pointer": "1.1.1.p8",
+      "excerpt": "Знайка, однако ж, не был согласен",
+      "characterId": "224ff90a6305d585a7edeaf921f0411f",
+      "candidateId": "4195b9005a85cc8f"
+    },
+    {
+      "pointer": "1.1.1.p8",
+      "excerpt": "со Стекляшкиным наблюдал",
+      "characterId": "e7856123ab5e01b9aac4ed043744e550",
+      "candidateId": "2a8c68d37b5cf654"
+    },
+    {
+      "pointer": "1.1.1.p22",
+      "excerpt": "Знайка приехал",
+      "characterId": null,
+      "candidateId": "00396fb39728a3cb"
+    },
+    {
+      "pointer": "1.1.1.p21",
+      "excerpt": "профессор Звездочкин",
+      "characterId": "6622650b2c7bb79095c9e5d0af69c8b9",
+      "candidateId": "7fc7143617eae1c1"
+    },
+    {
+      "pointer": "1.1.1.p35",
+      "excerpt": "Знайка",
+      "characterId": null,
+      "candidateId": "a3334f77e86d34d1"
+    },
+    {
+      "pointer": "1.1.1.p39",
+      "excerpt": "Звездочкин",
+      "characterId": "6622650b2c7bb79095c9e5d0af69c8b9",
+      "candidateId": "3c50dab150e2c51d"
+    },
+    {
+      "pointer": "1.1.1.p41",
+      "excerpt": "профессор",
+      "characterId": "822b21d128e7c6a0d104d225e06510c0",
+      "candidateId": "1d46cd1603c78281"
     }
   ],
-  "identityConflicts": [],
+  "identityConflicts": [
+    {
+      "candidateId": "dfc717b4db55c314",
+      "canonicalName": "Знайка",
+      "alternativeEntryIds": [
+        "224ff90a6305d585a7edeaf921f0411f",
+        "7c00708efceb3af5"
+      ],
+      "reason": "Multiple archive entries match name \"Знайка\" with no distinguishing evidence",
+      "splitProposalKind": null,
+      "splitShardNames": null,
+      "splitProposalReason": null
+    },
+    {
+      "candidateId": "00396fb39728a3cb",
+      "canonicalName": "Знайка",
+      "alternativeEntryIds": [
+        "224ff90a6305d585a7edeaf921f0411f",
+        "7c00708efceb3af5"
+      ],
+      "reason": "Multiple exact-name hits with differing gender/alias data; evidence is insufficient to select a single match.",
+      "splitProposalKind": null,
+      "splitShardNames": null,
+      "splitProposalReason": null
+    },
+    {
+      "candidateId": "a3334f77e86d34d1",
+      "canonicalName": "Знайка",
+      "alternativeEntryIds": [
+        "224ff90a6305d585a7edeaf921f0411f",
+        "7c00708efceb3af5"
+      ],
+      "reason": "Multiple identical-name archive hits with insufficient evidence to disambiguate",
+      "splitProposalKind": null,
+      "splitShardNames": null,
+      "splitProposalReason": null
+    }
+  ],
   "auditTrail": [
     {
       "timestamp": "2026-05-27T15:16:52.4383498+00:00",
       "operation": "character_bible_commit_plan",
       "targetId": "b0a1621958b3409f815686718501d6f3",
       "reason": "Candidates: 13; decisions: 13; changed: True."
+    },
+    {
+      "timestamp": "2026-05-27T16:09:33.7095963+00:00",
+      "operation": "character_bible_commit_plan",
+      "targetId": "b0a1621958b3409f815686718501d6f3",
+      "reason": "Candidates: 18; decisions: 18; changed: True."
     }
   ]
 }

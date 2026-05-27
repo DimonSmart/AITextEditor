@@ -17,34 +17,19 @@ public sealed record CharacterExtractionModelRequest(
     string UserPrompt,
     IProgress<AgenticModelDiagnostic>? Diagnostics = null);
 
-public sealed class CharacterExtractionResponse
-{
-    [JsonRequired]
-    [JsonPropertyName("characters")]
-    public List<CharacterExtractionCharacter> Characters { get; init; } = [];
-}
-
-public sealed record CharacterExtractionCharacter(
+public sealed record CharacterExtractionResponse(
     [property: JsonRequired]
-    [property: JsonPropertyName("canonicalName")] string? CanonicalName,
+    [property: JsonPropertyName("characters")] IReadOnlyList<ExtractedLocalCharacter> Characters);
+
+public sealed record ExtractedLocalCharacter(
+    [property: JsonRequired]
+    [property: JsonPropertyName("name")] string? Name,
     [property: JsonRequired]
     [property: JsonPropertyName("gender")] string? Gender,
     [property: JsonRequired]
-    [property: JsonPropertyName("aliases")] List<CharacterExtractionAlias>? Aliases,
+    [property: JsonPropertyName("aliases")] IReadOnlyList<string>? Aliases,
     [property: JsonRequired]
-    [property: JsonPropertyName("evidence")] List<CharacterExtractionEvidence>? Evidence = null);
-
-public sealed record CharacterExtractionAlias(
-    [property: JsonRequired]
-    [property: JsonPropertyName("form")] string Form,
-    [property: JsonRequired]
-    [property: JsonPropertyName("evidence")] CharacterExtractionEvidence? Evidence);
-
-public sealed record CharacterExtractionEvidence(
-    [property: JsonRequired]
-    [property: JsonPropertyName("pointer")] string? Pointer,
-    [property: JsonRequired]
-    [property: JsonPropertyName("excerpt")] string? Excerpt);
+    [property: JsonPropertyName("pointers")] IReadOnlyList<string>? Pointers);
 
 public sealed class AgenticCharacterExtractionModelClient : ICharacterExtractionModelClient
 {
@@ -93,9 +78,9 @@ public sealed class AgenticCharacterExtractionModelClient : ICharacterExtraction
         for (var characterIndex = 0; characterIndex < response.Characters.Count; characterIndex++)
         {
             var character = response.Characters[characterIndex];
-            if (string.IsNullOrWhiteSpace(character.CanonicalName))
+            if (string.IsNullOrWhiteSpace(character.Name))
             {
-                error = $"characters[{characterIndex}].canonicalName is required.";
+                error = $"characters[{characterIndex}].name is required.";
                 return false;
             }
 
@@ -119,79 +104,26 @@ public sealed class AgenticCharacterExtractionModelClient : ICharacterExtraction
                 return false;
             }
 
-            if (!IsValidEvidenceList(character.Evidence, $"characters[{characterIndex}].evidence", requireAny: true, out error))
+            if (character.Pointers is null)
             {
+                error = $"characters[{characterIndex}].pointers is required.";
                 return false;
             }
 
-            for (var aliasIndex = 0; aliasIndex < character.Aliases.Count; aliasIndex++)
+            if (character.Pointers.Count == 0)
             {
-                var alias = character.Aliases[aliasIndex];
-                if (string.IsNullOrWhiteSpace(alias.Form))
-                {
-                    error = $"characters[{characterIndex}].aliases[{aliasIndex}].form is required.";
-                    return false;
-                }
-
-                if (!IsValidEvidence(alias.Evidence, $"characters[{characterIndex}].aliases[{aliasIndex}].evidence", out error))
-                {
-                    return false;
-                }
-            }
-        }
-
-        error = string.Empty;
-        return true;
-    }
-
-    private static bool IsValidEvidenceList(
-        IReadOnlyList<CharacterExtractionEvidence>? evidence,
-        string path,
-        bool requireAny,
-        out string error)
-    {
-        if (evidence is null)
-        {
-            error = $"{path} is required.";
-            return false;
-        }
-
-        if (requireAny && evidence.Count == 0)
-        {
-            error = $"{path} must contain at least one item.";
-            return false;
-        }
-
-        for (var evidenceIndex = 0; evidenceIndex < evidence.Count; evidenceIndex++)
-        {
-            if (!IsValidEvidence(evidence[evidenceIndex], $"{path}[{evidenceIndex}]", out error))
-            {
+                error = $"characters[{characterIndex}].pointers must contain at least one item.";
                 return false;
             }
-        }
 
-        error = string.Empty;
-        return true;
-    }
-
-    private static bool IsValidEvidence(CharacterExtractionEvidence? evidence, string path, out string error)
-    {
-        if (evidence is null)
-        {
-            error = $"{path} is required.";
-            return false;
-        }
-
-        if (string.IsNullOrWhiteSpace(evidence.Pointer))
-        {
-            error = $"{path}.pointer is required.";
-            return false;
-        }
-
-        if (string.IsNullOrWhiteSpace(evidence.Excerpt))
-        {
-            error = $"{path}.excerpt is required.";
-            return false;
+            for (var pointerIndex = 0; pointerIndex < character.Pointers.Count; pointerIndex++)
+            {
+                if (string.IsNullOrWhiteSpace(character.Pointers[pointerIndex]))
+                {
+                    error = $"characters[{characterIndex}].pointers[{pointerIndex}] is required.";
+                    return false;
+                }
+            }
         }
 
         error = string.Empty;

@@ -24,8 +24,8 @@
                       LogicalName="AiTextEditor.Agent.CharacterBible.Patching.Prompts.dossier-patch-proposal.system.md" />
     <EmbeddedResource Include="CharacterBible\Patching\Prompts\dossier-consistency-reviewer.system.md"
                       LogicalName="AiTextEditor.Agent.CharacterBible.Patching.Prompts.dossier-consistency-reviewer.system.md" />
-    <EmbeddedResource Include="CharacterBible\Resolution\Prompts\suspect-archive-resolver.system.md"
-                      LogicalName="AiTextEditor.Agent.CharacterBible.Resolution.Prompts.suspect-archive-resolver.system.md" />
+    <EmbeddedResource Include="CharacterBible\Resolution\Prompts\character-identity-resolution.system.md"
+                      LogicalName="AiTextEditor.Agent.CharacterBible.Resolution.Prompts.character-identity-resolution.system.md" />
     <EmbeddedResource Include="CharacterBible\Patching\Prompts\split-candidate.system.md"
                       LogicalName="AiTextEditor.Agent.CharacterBible.Patching.Prompts.split-candidate.system.md" />
   </ItemGroup>

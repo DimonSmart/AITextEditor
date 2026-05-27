@@ -30,9 +30,9 @@ public sealed class CharacterDossiersGenerator
         DossierPatchPromptBuilder dossierPatchPromptBuilder,
         IDossierConsistencyReviewerModelClient dossierConsistencyReviewerModelClient,
         DossierConsistencyReviewerPromptBuilder dossierConsistencyReviewerPromptBuilder,
+        ICharacterIdentityResolutionModelClient identityResolutionModelClient,
         ILoggerFactory? loggerFactory = null,
-        ISuspectArchiveResolverModelClient? suspectArchiveResolverModelClient = null,
-        SuspectArchiveResolverPromptBuilder? suspectArchiveResolverPromptBuilder = null,
+        CharacterIdentityResolutionPromptBuilder? identityResolutionPromptBuilder = null,
         ISplitCandidateModelClient? splitCandidateModelClient = null,
         SplitCandidatePromptBuilder? splitCandidatePromptBuilder = null)
     {
@@ -46,6 +46,7 @@ public sealed class CharacterDossiersGenerator
         ArgumentNullException.ThrowIfNull(dossierPatchPromptBuilder);
         ArgumentNullException.ThrowIfNull(dossierConsistencyReviewerModelClient);
         ArgumentNullException.ThrowIfNull(dossierConsistencyReviewerPromptBuilder);
+        ArgumentNullException.ThrowIfNull(identityResolutionModelClient);
 
         this.dossierService = dossierService;
         var paragraphBatcher = new CharacterBibleParagraphBatcher(limits);
@@ -58,8 +59,8 @@ public sealed class CharacterDossiersGenerator
         resolver = new CharacterBibleResolver(
             dossierService,
             limits,
-            suspectArchiveResolverModelClient,
-            suspectArchiveResolverPromptBuilder,
+            identityResolutionModelClient,
+            identityResolutionPromptBuilder,
             splitCandidateModelClient,
             splitCandidatePromptBuilder,
             loggerFactory?.CreateLogger<CharacterBibleResolver>() ?? NullLogger<CharacterBibleResolver>.Instance);

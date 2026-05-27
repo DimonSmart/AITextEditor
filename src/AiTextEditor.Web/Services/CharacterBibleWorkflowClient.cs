@@ -50,9 +50,9 @@ public sealed class CharacterBibleWorkflowClient : ICharacterBibleWorkflowClient
         var reviewerClient = new AgenticDossierConsistencyReviewerModelClient(
             modelClient,
             loggerFactory.CreateLogger<AgenticDossierConsistencyReviewerModelClient>());
-        var identityResolverClient = new AgenticSuspectArchiveResolverModelClient(
+        var identityResolverClient = new AgenticCharacterIdentityResolutionModelClient(
             modelClient,
-            loggerFactory.CreateLogger<AgenticSuspectArchiveResolverModelClient>());
+            loggerFactory.CreateLogger<AgenticCharacterIdentityResolutionModelClient>());
         var splitCandidateClient = new AgenticSplitCandidateModelClient(
             modelClient,
             loggerFactory.CreateLogger<AgenticSplitCandidateModelClient>());
@@ -68,9 +68,9 @@ public sealed class CharacterBibleWorkflowClient : ICharacterBibleWorkflowClient
             new DossierPatchPromptBuilder(),
             reviewerClient,
             new DossierConsistencyReviewerPromptBuilder(),
-            loggerFactory,
             identityResolverClient,
-            new SuspectArchiveResolverPromptBuilder(),
+            loggerFactory,
+            new CharacterIdentityResolutionPromptBuilder(),
             splitCandidateClient,
             new SplitCandidatePromptBuilder());
         var runner = new CharacterBibleWorkflowRunner(generator, loggerFactory);

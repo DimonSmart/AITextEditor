@@ -191,7 +191,7 @@ public class McpFunctionalTests
         {
             if (string.IsNullOrWhiteSpace(prompt))
             {
-                return new CharacterExtractionResponse();
+                return new CharacterExtractionResponse([]);
             }
 
             try
@@ -199,10 +199,10 @@ public class McpFunctionalTests
                 using var json = JsonDocument.Parse(prompt);
                 if (!json.RootElement.TryGetProperty("paragraphs", out var paragraphs) || paragraphs.ValueKind != JsonValueKind.Array)
                 {
-                    return new CharacterExtractionResponse();
+                    return new CharacterExtractionResponse([]);
                 }
 
-                var characters = new List<CharacterExtractionCharacter>();
+                var characters = new List<ExtractedLocalCharacter>();
                 foreach (var paragraph in paragraphs.EnumerateArray())
                 {
                     if (!paragraph.TryGetProperty("text", out var textElement) || textElement.ValueKind != JsonValueKind.String)
@@ -223,19 +223,19 @@ public class McpFunctionalTests
                             continue;
                         }
 
-                        characters.Add(new CharacterExtractionCharacter(
+                        characters.Add(new ExtractedLocalCharacter(
                             name,
                             "unknown",
                             [],
-                            [new CharacterExtractionEvidence(pointer, text)]));
+                            [pointer]));
                     }
                 }
 
-                return new CharacterExtractionResponse { Characters = characters };
+                return new CharacterExtractionResponse(characters);
             }
             catch (JsonException)
             {
-                return new CharacterExtractionResponse();
+                return new CharacterExtractionResponse([]);
             }
         }
     }

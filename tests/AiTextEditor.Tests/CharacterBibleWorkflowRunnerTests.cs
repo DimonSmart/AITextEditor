@@ -1,7 +1,9 @@
 using AiTextEditor.Agent;
+using System.Text.Json;
 using AiTextEditor.Agent.CharacterBible;
 using AiTextEditor.Agent.CharacterBible.Extraction;
 using AiTextEditor.Agent.CharacterBible.Patching;
+using AiTextEditor.Agent.CharacterBible.Resolution;
 using AiTextEditor.Core.Model;
 using AiTextEditor.Core.Services;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -256,7 +258,8 @@ public sealed class CharacterBibleWorkflowRunnerTests
             NoopPatchClient(),
             new DossierPatchPromptBuilder(),
             ApprovingReviewerClient(),
-            new DossierConsistencyReviewerPromptBuilder());
+            new DossierConsistencyReviewerPromptBuilder(),
+            NewIdentityResolverClient());
         var runner = new CharacterBibleWorkflowRunner(generator, NullLoggerFactory.Instance);
         var progress = new List<CharacterBibleWorkflowProgress>();
 
@@ -267,8 +270,8 @@ public sealed class CharacterBibleWorkflowRunnerTests
 
         Assert.Equal("generated", result.Status);
         Assert.Equal(3, result.ParagraphCount);
-        Assert.Equal(2, result.CandidateCount);
-        Assert.Equal(2, result.Dossiers.Characters.Count);
+        Assert.Equal(1, result.CandidateCount);
+        Assert.Equal(1, result.Dossiers.Characters.Count);
         Assert.NotNull(result.ModelResponseErrors);
         Assert.Equal(1, result.ModelResponseErrors.SkippedBatchCount);
         Assert.Equal(1, result.ModelResponseErrors.SkippedParagraphCount);
@@ -295,7 +298,8 @@ public sealed class CharacterBibleWorkflowRunnerTests
             NoopPatchClient(),
             new DossierPatchPromptBuilder(),
             ApprovingReviewerClient(),
-            new DossierConsistencyReviewerPromptBuilder());
+            new DossierConsistencyReviewerPromptBuilder(),
+            NewIdentityResolverClient());
         var runner = new CharacterBibleWorkflowRunner(generator, NullLoggerFactory.Instance);
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => runner.RunAsync());
@@ -327,29 +331,42 @@ public sealed class CharacterBibleWorkflowRunnerTests
             patchModelClient ?? NoopPatchClient(),
             new DossierPatchPromptBuilder(),
             ApprovingReviewerClient(),
-            new DossierConsistencyReviewerPromptBuilder());
+            new DossierConsistencyReviewerPromptBuilder(),
+            NewIdentityResolverClient());
 
         return new CharacterBibleWorkflowRunner(generator, NullLoggerFactory.Instance);
     }
 
-    private static CharacterExtractionResponse Response(params CharacterExtractionCharacter[] characters)
-        => new() { Characters = characters.ToList() };
+    private static CharacterExtractionResponse Response(params ExtractedLocalCharacter[] characters)
+        => new(characters);
 
-    private static CharacterExtractionCharacter Character(
+    private static ExtractedLocalCharacter Character(
         string canonicalName,
-        params CharacterExtractionAlias[] aliases)
+        params string[] aliases)
         => new(
             canonicalName,
             "unknown",
-            aliases.ToList(),
-            [new CharacterExtractionEvidence("p1", $"{canonicalName} appeared.")]);
+            aliases,
+            ["p1"]);
 
-    private static CharacterExtractionAlias Alias(string form, string excerpt)
-        => new(form, new CharacterExtractionEvidence("p1", excerpt));
+    private static string Alias(string form, string excerpt) => form;
+
+    private static string[] ReadPromptPointers(CharacterExtractionModelRequest request)
+    {
+        using var json = JsonDocument.Parse(request.UserPrompt);
+        return json.RootElement
+            .GetProperty("paragraphs")
+            .EnumerateArray()
+            .Select(paragraph => paragraph.GetProperty("pointer").GetString() ?? string.Empty)
+            .ToArray();
+    }
 
     private static IDossierPatchProposalModelClient NoopPatchClient() => new NoopDossierPatchProposalModelClient();
 
     private static IDossierConsistencyReviewerModelClient ApprovingReviewerClient() => new ApprovingDossierConsistencyReviewerModelClient();
+
+    private static ICharacterIdentityResolutionModelClient NewIdentityResolverClient()
+        => new SearchBackedIdentityResolutionModelClient();
 
     private sealed class ScriptedCharacterExtractionModelClient : ICharacterExtractionModelClient
     {
@@ -368,7 +385,27 @@ public sealed class CharacterBibleWorkflowRunnerTests
         {
             CallCount++;
             var response = responses.Count > 0 ? responses.Dequeue() : Response();
-            return Task.FromResult(response);
+            return Task.FromResult(AlignPointers(response, request));
+        }
+
+        private static CharacterExtractionResponse AlignPointers(
+            CharacterExtractionResponse response,
+            CharacterExtractionModelRequest request)
+        {
+            var promptPointers = ReadPromptPointers(request);
+            if (promptPointers.Length == 0)
+            {
+                return response;
+            }
+
+            var promptPointer = promptPointers[0];
+            var promptPointerSet = promptPointers.ToHashSet(StringComparer.Ordinal);
+            return new CharacterExtractionResponse(
+                response.Characters
+                    .Select(character => character.Pointers?.Any(pointer => promptPointerSet.Contains(pointer)) == true
+                        ? character
+                        : character with { Pointers = [promptPointer] })
+                    .ToArray());
         }
     }
 
@@ -456,6 +493,33 @@ public sealed class CharacterBibleWorkflowRunnerTests
                 Verdict = "approved",
                 Issues = []
             });
+        }
+    }
+
+    private sealed class SearchBackedIdentityResolutionModelClient : ICharacterIdentityResolutionModelClient
+    {
+        public async Task<CharacterIdentityResolutionResponse> ResolveAsync(
+            CharacterIdentityResolutionModelRequest request,
+            CancellationToken cancellationToken = default)
+        {
+            using var json = JsonDocument.Parse(request.UserPrompt);
+            var candidate = json.RootElement.GetProperty("candidate");
+            var name = candidate.GetProperty("name").GetString() ?? string.Empty;
+            var aliases = candidate.GetProperty("aliases")
+                .EnumerateArray()
+                .Select(alias => alias.GetString())
+                .Where(alias => !string.IsNullOrWhiteSpace(alias));
+            var query = string.Join(' ', new[] { name }.Concat(aliases!));
+            var hits = await request.SearchTool.SearchCharactersAsync(query, 5, cancellationToken);
+            return hits.Count switch
+            {
+                0 => new CharacterIdentityResolutionResponse(CharacterIdentityDecision.New, Reason: "No test search hit."),
+                1 => new CharacterIdentityResolutionResponse(CharacterIdentityDecision.Existing, hits[0].EntryId, Reason: "Matched by test search."),
+                _ => new CharacterIdentityResolutionResponse(
+                    CharacterIdentityDecision.Ambiguous,
+                    EntryIds: hits.Select(hit => hit.EntryId).ToArray(),
+                    Reason: "Multiple test search hits.")
+            };
         }
     }
 }

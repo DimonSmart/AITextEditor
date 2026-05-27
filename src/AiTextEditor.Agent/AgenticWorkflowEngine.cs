@@ -84,9 +84,9 @@ public sealed class AgenticWorkflowEngine
         var reviewerClient = new AgenticDossierConsistencyReviewerModelClient(
             modelClient,
             loggerFactory.CreateLogger<AgenticDossierConsistencyReviewerModelClient>());
-        var identityResolverClient = new AgenticSuspectArchiveResolverModelClient(
+        var identityResolverClient = new AgenticCharacterIdentityResolutionModelClient(
             modelClient,
-            loggerFactory.CreateLogger<AgenticSuspectArchiveResolverModelClient>());
+            loggerFactory.CreateLogger<AgenticCharacterIdentityResolutionModelClient>());
         var splitCandidateClient = new AgenticSplitCandidateModelClient(
             modelClient,
             loggerFactory.CreateLogger<AgenticSplitCandidateModelClient>());
@@ -102,9 +102,9 @@ public sealed class AgenticWorkflowEngine
             new DossierPatchPromptBuilder(),
             reviewerClient,
             new DossierConsistencyReviewerPromptBuilder(),
-            loggerFactory,
             identityResolverClient,
-            new SuspectArchiveResolverPromptBuilder(),
+            loggerFactory,
+            new CharacterIdentityResolutionPromptBuilder(),
             splitCandidateClient,
             new SplitCandidatePromptBuilder());
 

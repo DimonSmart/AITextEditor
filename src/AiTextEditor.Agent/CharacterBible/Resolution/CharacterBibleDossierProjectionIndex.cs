@@ -18,7 +18,7 @@ internal sealed class CharacterBibleDossierProjectionIndex
         }
     }
 
-    public DossierProjection AddCandidate(CharacterExtractionCharacter candidate)
+    public DossierProjection AddCandidate(CharacterBibleCharacterCandidate candidate)
     {
         var projection = DossierProjection.FromCandidate(candidate);
         projections[projection.CharacterId] = projection;
@@ -91,38 +91,35 @@ internal sealed class CharacterBibleDossierProjectionIndex
             MergeAliasExamples(dossier.AliasExamples);
         }
 
-        public static DossierProjection FromCandidate(CharacterExtractionCharacter candidate)
+        public static DossierProjection FromCandidate(CharacterBibleCharacterCandidate candidate)
         {
-            var name = candidate.CanonicalName?.Trim() ?? string.Empty;
+            var name = candidate.CanonicalName.Trim();
             using var md5 = System.Security.Cryptography.MD5.Create();
             var hash = md5.ComputeHash(System.Text.Encoding.UTF8.GetBytes(name));
 
             var projection = new DossierProjection(
                 new Guid(hash).ToString("N"),
                 name,
-                candidate.Gender ?? "unknown",
+                candidate.Gender,
                 importanceLevel: null,
                 CharacterProfile.Empty);
 
-            if (candidate.Aliases is not null)
+            foreach (var (alias, example) in candidate.AliasExamples)
             {
-                foreach (var alias in candidate.Aliases)
-                {
-                    projection.AddAliasExample(alias.Form, alias.Evidence?.Excerpt);
-                }
+                projection.AddAliasExample(alias, example);
             }
 
             return projection;
         }
 
-        public bool RefineCanonicalName(CharacterExtractionCharacter candidate, bool exactNameMatch)
+        public bool RefineCanonicalName(CharacterBibleCharacterCandidate candidate, bool exactNameMatch)
         {
             if (exactNameMatch)
             {
                 return false;
             }
 
-            var canonicalName = candidate.CanonicalName?.Trim();
+            var canonicalName = candidate.CanonicalName.Trim();
             if (string.IsNullOrWhiteSpace(canonicalName))
             {
                 return false;
@@ -138,7 +135,7 @@ internal sealed class CharacterBibleDossierProjectionIndex
                 return false;
             }
 
-            if (!TryFindExampleFor(Name, candidate.Aliases, out var currentNameExample))
+            if (!TryFindExampleFor(Name, candidate.AliasExamples, out var currentNameExample))
             {
                 return false;
             }
@@ -169,23 +166,20 @@ internal sealed class CharacterBibleDossierProjectionIndex
             return true;
         }
 
-        public bool MergeAliases(CharacterExtractionCharacter candidate, bool exactNameMatch)
+        public bool MergeAliases(CharacterBibleCharacterCandidate candidate, bool exactNameMatch)
         {
             var changed = false;
 
-            if (candidate.Aliases is { Count: > 0 })
+            foreach (var (alias, example) in candidate.AliasExamples)
             {
-                foreach (var alias in candidate.Aliases)
-                {
-                    changed |= AddAliasExample(alias.Form, alias.Evidence?.Excerpt);
-                }
+                changed |= AddAliasExample(alias, example);
             }
 
             if (exactNameMatch && !string.IsNullOrWhiteSpace(candidate.CanonicalName))
             {
-                if (TryFindExampleFor(candidate.CanonicalName!, candidate.Aliases, out var example))
+                if (TryFindExampleFor(candidate.CanonicalName, candidate.AliasExamples, out var example))
                 {
-                    changed |= AddAliasExample(candidate.CanonicalName!, example);
+                    changed |= AddAliasExample(candidate.CanonicalName, example);
                 }
             }
 
@@ -267,22 +261,22 @@ internal sealed class CharacterBibleDossierProjectionIndex
 
         private static bool TryFindExampleFor(
             string name,
-            IReadOnlyList<CharacterExtractionAlias>? aliases,
+            IReadOnlyDictionary<string, string> aliases,
             out string example)
         {
             example = string.Empty;
-            if (aliases is null)
+            if (aliases.Count == 0)
             {
                 return false;
             }
 
-            var match = aliases.FirstOrDefault(alias => string.Equals(alias.Form, name, StringComparison.OrdinalIgnoreCase));
-            if (match is null || string.IsNullOrWhiteSpace(match.Evidence?.Excerpt))
+            var match = aliases.FirstOrDefault(alias => string.Equals(alias.Key, name, StringComparison.OrdinalIgnoreCase));
+            if (string.IsNullOrWhiteSpace(match.Value))
             {
                 return false;
             }
 
-            example = match.Evidence.Excerpt;
+            example = match.Value;
             return true;
         }
 
