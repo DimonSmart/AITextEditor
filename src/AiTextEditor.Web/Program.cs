@@ -1,4 +1,5 @@
 using AiTextEditor.Web.Components;
+using AiTextEditor.Agent.CharacterBible.VectorSearch;
 using AiTextEditor.Web.Services;
 using MatBlazor;
 using Microsoft.AspNetCore.SignalR;
@@ -23,6 +24,7 @@ builder.Services.AddScoped<ICharacterBibleMarkdownRenderer, CharacterBibleMarkdo
 builder.Services.AddScoped<ICharacterBibleOperationRunner, CharacterBibleOperationRunner>();
 builder.Services.AddScoped<CharacterBibleOperationState>();
 builder.Services.AddScoped<ICharacterBibleWorkflowClient, CharacterBibleWorkflowClient>();
+builder.Services.AddScoped<ICharacterVectorSearchTool, ConfiguredCharacterVectorSearchTool>();
 builder.Services.AddSingleton<CharacterBibleCommandParser>();
 
 var app = builder.Build();

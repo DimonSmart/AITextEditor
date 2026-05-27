@@ -1,5 +1,6 @@
 using System.ClientModel;
 using System.ClientModel.Primitives;
+using System.Text.Json;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
@@ -10,10 +11,30 @@ namespace AiTextEditor.Agent;
 public interface IAgenticModelClient
 {
     Task<TResponse> RunAsync<TResponse>(
+        AgenticModelRequest request,
+        CancellationToken cancellationToken = default)
+        where TResponse : class
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        return RunAsync<TResponse>(
+            new AgenticModelRequest<TResponse>(
+                request.Messages,
+                request.InvalidContractError,
+                Diagnostics: request.Diagnostics),
+            cancellationToken);
+    }
+
+    Task<TResponse> RunAsync<TResponse>(
         AgenticModelRequest<TResponse> request,
         CancellationToken cancellationToken = default)
         where TResponse : class;
 }
+
+public sealed record AgenticModelRequest(
+    IReadOnlyList<ChatMessage> Messages,
+    string InvalidContractError,
+    IProgress<AgenticModelDiagnostic>? Diagnostics = null);
 
 public sealed record AgenticModelRequest<TResponse>(
     IReadOnlyList<ChatMessage> Messages,
@@ -92,7 +113,22 @@ public sealed class AgenticFrameworkModelClient : IAgenticModelClient
         var agent = new ChatClientAgent(chatClient, agentOptions, loggerFactory);
         return new AgenticFrameworkModelClient(
             agent,
-            new AgenticModelRetryStrategy(loggerFactory.CreateLogger<AgenticModelRetryStrategy>(), retryCount));
+            new AgenticModelRetryStrategy(loggerFactory.CreateLogger<AgenticModelRetryStrategy>()));
+    }
+
+    public async Task<TResponse> RunAsync<TResponse>(
+        AgenticModelRequest request,
+        CancellationToken cancellationToken = default)
+        where TResponse : class
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        return await RunAsync<TResponse>(
+            new AgenticModelRequest<TResponse>(
+                request.Messages,
+                request.InvalidContractError,
+                Diagnostics: request.Diagnostics),
+            cancellationToken).ConfigureAwait(false);
     }
 
     public async Task<TResponse> RunAsync<TResponse>(
@@ -110,7 +146,12 @@ public sealed class AgenticFrameworkModelClient : IAgenticModelClient
 
         return await retryStrategy.RunAsync<TResponse>(
             request,
-            (messages, chatOptions, token) => agent.ChatClient.GetResponseAsync(messages, chatOptions, token),
+            async (messages, token) => await agent.RunAsync<TResponse>(
+                messages,
+                null,
+                JsonSerializerOptions.Web,
+                null,
+                token).ConfigureAwait(false),
             cancellationToken).ConfigureAwait(false);
     }
 }

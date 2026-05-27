@@ -346,8 +346,25 @@ a, .btn-link {
     min-width: 14rem;
 }
 
+.character-bible-filters > :nth-child(3) {
+    flex: 1 1 16rem;
+    min-width: 14rem;
+}
+
 .character-bible-filters .mud-select {
     flex: 0 0 10rem;
+}
+
+.character-semantic-search {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-width: 16rem;
+}
+
+.character-semantic-search .mud-input-control {
+    flex: 1 1 auto;
+    min-width: 0;
 }
 
 .character-bible-actions {
@@ -847,8 +864,13 @@ a, .btn-link {
     }
 
     .character-bible-filters > :nth-child(2),
+    .character-bible-filters > :nth-child(3),
     .character-bible-filters .mud-select {
         flex: 1 1 100%;
+    }
+
+    .character-semantic-search {
+        min-width: 100%;
     }
 
     .character-bible-actions {

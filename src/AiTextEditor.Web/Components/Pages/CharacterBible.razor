@@ -1,9 +1,11 @@
 @page "/character-bible"
 @implements IDisposable
+@using AiTextEditor.Agent.CharacterBible.VectorSearch
 @using AiTextEditor.Core.Model
 @using AiTextEditor.Web.Components.Dialogs
 @using AiTextEditor.Web.Services
 @inject EditorWorkspaceState Workspace
+@inject ICharacterVectorSearchTool VectorSearchTool
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
 
@@ -15,6 +17,32 @@
             <MudText Typo="Typo.body2" Class="character-count character-bible-toolbar-count">
                 @FilteredCharacters.Count of @characters.Count characters
             </MudText>
+            <div class="character-semantic-search">
+                <MudTextField @bind-Value="semanticQuery"
+                              Placeholder="Describe character..."
+                              Variant="MudBlazor.Variant.Outlined"
+                              Margin="MudBlazor.Margin.Dense"
+                              Immediate="true"
+                              Disabled="@isSemanticSearching"
+                              Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Filled.Psychology" />
+                <MudButton Variant="MudBlazor.Variant.Filled"
+                           Color="MudBlazor.Color.Secondary"
+                           Size="MudBlazor.Size.Small"
+                           StartIcon="@Icons.Material.Filled.AutoAwesome"
+                           Disabled="@(!CanRunSemanticSearch)"
+                           OnClick="RunSemanticSearchAsync">
+                    Sense
+                </MudButton>
+                @if (semanticResultIds is not null)
+                {
+                    <MudIconButton Icon="@Icons.Material.Filled.Close"
+                                   Size="MudBlazor.Size.Small"
+                                   Color="MudBlazor.Color.Default"
+                                   Disabled="@isSemanticSearching"
+                                   OnClick="ClearSemanticSearch" />
+                }
+            </div>
             <MudTextField @bind-Value="searchQuery"
                           Placeholder="Search characters..."
                           Variant="MudBlazor.Variant.Outlined"
@@ -123,23 +151,66 @@
     };
 
     private List<CharacterDossier> characters = [];
+    private string semanticQuery = string.Empty;
+    private IReadOnlyList<string>? semanticResultIds;
     private string searchQuery = string.Empty;
     private string genderFilter = AllGenders;
     private ImportanceFilterOption importanceFilter = ImportanceFilterOption.Any;
     private bool onlyIncomplete;
+    private bool isSemanticSearching;
     private bool isSaving;
     private bool hasUnsavedChanges;
     private bool hasSavedSuccessfully;
     private string? ExpandedCharacterId;
 
     private IReadOnlyList<CharacterDossier> FilteredCharacters =>
-        CharacterDossierSearch.Filter(characters, searchQuery, genderFilter, onlyIncomplete, importanceFilter.Matches);
+        CharacterDossierSearch.Filter(SemanticOrderedCharacters, searchQuery, genderFilter, onlyIncomplete, importanceFilter.Matches);
+
+    private IReadOnlyList<CharacterDossier> SemanticOrderedCharacters =>
+        semanticResultIds is null ? characters : BuildSemanticOrderedCharacters();
+
+    private bool CanRunSemanticSearch =>
+        !isSemanticSearching && !string.IsNullOrWhiteSpace(semanticQuery) && characters.Count > 0;
 
     private string SaveButtonText =>
         isSaving ? "Saving..." :
         hasUnsavedChanges ? "Unsaved changes" :
         hasSavedSuccessfully ? "Saved" :
         "Save";
+
+    private async Task RunSemanticSearchAsync()
+    {
+        if (!CanRunSemanticSearch)
+        {
+            return;
+        }
+
+        isSemanticSearching = true;
+        try
+        {
+            var hits = await VectorSearchTool.SearchAsync(
+                semanticQuery,
+                characters.Count,
+                CancellationToken.None);
+
+            semanticResultIds = hits
+                .Select(hit => hit.Card.EntryId)
+                .ToList();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, MudBlazor.Severity.Error);
+        }
+        finally
+        {
+            isSemanticSearching = false;
+        }
+    }
+
+    private void ClearSemanticSearch()
+    {
+        semanticResultIds = null;
+    }
 
     protected override void OnInitialized()
     {
@@ -265,10 +336,30 @@
             .OrderBy(dossier => dossier.Name, StringComparer.OrdinalIgnoreCase)
             .ToList();
 
+        if (semanticResultIds is not null)
+        {
+            var knownIds = characters
+                .Select(dossier => dossier.CharacterId)
+                .ToHashSet(StringComparer.Ordinal);
+            semanticResultIds = semanticResultIds
+                .Where(knownIds.Contains)
+                .ToList();
+        }
+
         if (ExpandedCharacterId is not null && characters.All(dossier => dossier.CharacterId != ExpandedCharacterId))
         {
             ExpandedCharacterId = null;
         }
+    }
+
+    private IReadOnlyList<CharacterDossier> BuildSemanticOrderedCharacters()
+    {
+        var byId = characters.ToDictionary(dossier => dossier.CharacterId, StringComparer.Ordinal);
+        return semanticResultIds!
+            .Select(id => byId.TryGetValue(id, out var dossier) ? dossier : null)
+            .Where(dossier => dossier is not null)
+            .Cast<CharacterDossier>()
+            .ToList();
     }
 
     private void ToggleExpanded(CharacterDossier dossier)

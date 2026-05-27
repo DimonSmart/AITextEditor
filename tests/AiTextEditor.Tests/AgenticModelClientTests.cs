@@ -79,7 +79,7 @@ public sealed class AgenticModelClientTests
         Assert.Empty(result.Characters);
         Assert.Equal(2, chatClient.CallCount);
         var malformed = Assert.Single(diagnostics, item => item.Kind == AgenticModelDiagnosticKind.MalformedResponse);
-        Assert.Contains("```json", malformed.RawResponse, StringComparison.Ordinal);
+        Assert.Equal("Agent Framework could not produce the typed response. Raw response is available for copying.", malformed.Message);
         Assert.Contains(diagnostics, item => item.Kind == AgenticModelDiagnosticKind.Retry);
         Assert.Contains(diagnostics, item => item.Kind == AgenticModelDiagnosticKind.RetrySucceeded);
     }
@@ -124,7 +124,7 @@ public sealed class AgenticModelClientTests
         Assert.Contains(
             chatClient.LastMessages,
             message => message.Role == ChatRole.System
-                       && message.Text?.Contains("previous response was malformed", StringComparison.OrdinalIgnoreCase) == true);
+                       && message.Text?.Contains("previous response was invalid", StringComparison.OrdinalIgnoreCase) == true);
     }
 
     [Fact]
@@ -441,7 +441,14 @@ public sealed class AgenticModelClientTests
             CancellationToken cancellationToken = default)
             where TResponse : class
         {
-            return Task.FromResult((TResponse)(object)response);
+            var typedResponse = (TResponse)(object)response;
+            var validation = request.ValidateResponse?.Invoke(typedResponse) ?? AgenticModelValidationResult.Valid;
+            if (!validation.IsValid)
+            {
+                throw new InvalidOperationException(request.InvalidContractError);
+            }
+
+            return Task.FromResult(typedResponse);
         }
     }
 

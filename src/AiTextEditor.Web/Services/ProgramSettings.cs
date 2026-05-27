@@ -7,6 +7,8 @@ namespace AiTextEditor.Web.Services;
 
 public sealed class ProgramSettings
 {
+    public const string DefaultEmbeddingModelName = "bge-m3:latest";
+
     public List<AiServerSettings> AiServers { get; set; } = [];
 
     public string LastBookPath { get; set; } = string.Empty;
@@ -14,6 +16,8 @@ public sealed class ProgramSettings
     public string SelectedAiServerName { get; set; } = string.Empty;
 
     public string SelectedAiModelName { get; set; } = string.Empty;
+
+    public string SelectedEmbeddingModelName { get; set; } = DefaultEmbeddingModelName;
 
     public CharacterBibleExtractionSettings CharacterBibleExtraction { get; set; } = new();
 
@@ -27,6 +31,9 @@ public sealed class ProgramSettings
             LastBookPath = LastBookPath ?? string.Empty,
             SelectedAiServerName = SelectedAiServerName,
             SelectedAiModelName = SelectedAiModelName,
+            SelectedEmbeddingModelName = string.IsNullOrWhiteSpace(SelectedEmbeddingModelName)
+                ? DefaultEmbeddingModelName
+                : SelectedEmbeddingModelName,
             CharacterBibleExtraction = CharacterBibleExtraction.Clone(),
             LlmRetryCount = LlmRetryCount
         };
@@ -52,7 +59,8 @@ public sealed class ProgramSettings
         {
             AiServers = HasServerConfiguration(defaultServer) ? [defaultServer] : [],
             SelectedAiServerName = HasServerConfiguration(defaultServer) ? defaultServer.Name : string.Empty,
-            SelectedAiModelName = configuration["LLM_MODEL"] ?? string.Empty
+            SelectedAiModelName = configuration["LLM_MODEL"] ?? string.Empty,
+            SelectedEmbeddingModelName = ResolveEmbeddingModelName(configuration["EMBEDDING_MODEL"])
         };
     }
 
@@ -77,6 +85,13 @@ public sealed class ProgramSettings
         }
 
         return defaultValue;
+    }
+
+    private static string ResolveEmbeddingModelName(string? value)
+    {
+        return string.IsNullOrWhiteSpace(value)
+            ? DefaultEmbeddingModelName
+            : value.Trim();
     }
 }
 
@@ -356,6 +371,43 @@ public static class ProgramSettingsValidation
             settings.LlmRetryCount);
     }
 
+    public static ValidatedCharacterVectorEmbeddingSettings ValidateForCharacterVectorSearch(ProgramSettings settings)
+    {
+        ArgumentNullException.ThrowIfNull(settings);
+
+        if (string.IsNullOrWhiteSpace(settings.SelectedAiServerName))
+        {
+            throw new InvalidOperationException("Missing AI configuration: selected AI server.");
+        }
+
+        var server = settings.AiServers.FirstOrDefault(server => string.Equals(
+            server.Name.Trim(),
+            settings.SelectedAiServerName.Trim(),
+            StringComparison.OrdinalIgnoreCase));
+        if (server is null)
+        {
+            throw new InvalidOperationException($"Selected AI server '{settings.SelectedAiServerName.Trim()}' does not exist.");
+        }
+
+        var saveErrors = ValidateForSave(settings);
+        if (saveErrors.Count > 0)
+        {
+            throw new InvalidOperationException(string.Join(" ", saveErrors));
+        }
+
+        return new ValidatedCharacterVectorEmbeddingSettings(
+            NormalizeOllamaEndpoint(server.BaseUrl),
+            server.ApiKey.Trim(),
+            string.IsNullOrWhiteSpace(settings.SelectedEmbeddingModelName)
+                ? ProgramSettings.DefaultEmbeddingModelName
+                : settings.SelectedEmbeddingModelName.Trim(),
+            server.Username.Trim(),
+            server.Password,
+            server.IgnoreSslErrors,
+            server.LogRequestBody,
+            TimeSpan.FromMinutes(server.TimeoutMinutes));
+    }
+
     private static string DisplayServerName(AiServerSettings server)
     {
         return string.IsNullOrWhiteSpace(server.Name) ? "<unnamed>" : server.Name.Trim();
@@ -367,6 +419,17 @@ public static class ProgramSettingsValidation
         if (!endpoint.EndsWith("/v1", StringComparison.OrdinalIgnoreCase))
         {
             endpoint += "/v1";
+        }
+
+        return new Uri(endpoint, UriKind.Absolute);
+    }
+
+    private static Uri NormalizeOllamaEndpoint(string baseUrl)
+    {
+        var endpoint = baseUrl.Trim().TrimEnd('/');
+        if (endpoint.EndsWith("/v1", StringComparison.OrdinalIgnoreCase))
+        {
+            endpoint = endpoint[..^3].TrimEnd('/');
         }
 
         return new Uri(endpoint, UriKind.Absolute);
@@ -384,3 +447,13 @@ public sealed record ValidatedAiConnectionSettings(
     TimeSpan Timeout,
     CharacterBibleExtractionLimits CharacterBibleLimits,
     int LlmRetryCount);
+
+public sealed record ValidatedCharacterVectorEmbeddingSettings(
+    Uri Endpoint,
+    string ApiKey,
+    string EmbeddingModelName,
+    string Username,
+    string Password,
+    bool IgnoreSslErrors,
+    bool LogRequestBody,
+    TimeSpan Timeout);
