@@ -102,7 +102,12 @@ public sealed class AgenticFrameworkModelClient : IAgenticModelClient
         };
 
         var openAiClient = new OpenAIClient(new ApiKeyCredential(apiKey), clientOptions);
-        var chatClient = openAiClient.GetChatClient(trimmedModelId).AsIChatClient();
+        var chatClient = openAiClient
+            .GetChatClient(trimmedModelId)
+            .AsIChatClient()
+            .AsBuilder()
+            .UseFunctionInvocation(loggerFactory)
+            .Build(null);
         var agentOptions = new ChatClientAgentOptions
         {
             Name = "ai_text_editor_model",
