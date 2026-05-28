@@ -1,6 +1,6 @@
 using AiTextEditor.Agent.CharacterBible.Patching;
+using AiTextEditor.Agent.CharacterBible.VectorSearch;
 using AiTextEditor.Core.Model;
-using AiTextEditor.Core.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
@@ -8,51 +8,49 @@ namespace AiTextEditor.Agent.CharacterBible.Resolution;
 
 internal sealed class CharacterBibleResolver
 {
-    private readonly CharacterDossierService dossierService;
-    private readonly CharacterArchiveSearchService archiveSearchService;
-    private readonly CharacterBibleCommitPlanBuilder commitPlanBuilder;
+    private readonly CharacterBibleCandidateResolutionApplier candidateResolutionApplier;
     private readonly ICharacterIdentityResolutionModelClient identityResolutionModelClient;
+    private readonly ICharacterVectorSearchTool characterVectorSearchTool;
     private readonly CharacterIdentityResolutionPromptBuilder identityResolutionPromptBuilder;
     private readonly ISplitCandidateModelClient? splitCandidateModelClient;
     private readonly SplitCandidatePromptBuilder splitCandidatePromptBuilder;
     private readonly ILogger<CharacterBibleResolver> logger;
 
     public CharacterBibleResolver(
-        CharacterDossierService dossierService,
         CharacterBibleExtractionLimits limits,
         ICharacterIdentityResolutionModelClient identityResolutionModelClient,
+        ICharacterVectorSearchTool characterVectorSearchTool,
         CharacterIdentityResolutionPromptBuilder? identityResolutionPromptBuilder = null,
         ISplitCandidateModelClient? splitCandidateModelClient = null,
         SplitCandidatePromptBuilder? splitCandidatePromptBuilder = null,
         ILogger<CharacterBibleResolver>? logger = null)
     {
-        this.dossierService = dossierService ?? throw new ArgumentNullException(nameof(dossierService));
         ArgumentNullException.ThrowIfNull(limits);
         this.identityResolutionModelClient = identityResolutionModelClient ?? throw new ArgumentNullException(nameof(identityResolutionModelClient));
+        this.characterVectorSearchTool = characterVectorSearchTool ?? throw new ArgumentNullException(nameof(characterVectorSearchTool));
 
-        archiveSearchService = new CharacterArchiveSearchService();
-        commitPlanBuilder = new CharacterBibleCommitPlanBuilder(limits);
+        candidateResolutionApplier = new CharacterBibleCandidateResolutionApplier(limits);
         this.identityResolutionPromptBuilder = identityResolutionPromptBuilder ?? new CharacterIdentityResolutionPromptBuilder();
         this.splitCandidateModelClient = splitCandidateModelClient;
         this.splitCandidatePromptBuilder = splitCandidatePromptBuilder ?? new SplitCandidatePromptBuilder();
         this.logger = logger ?? NullLogger<CharacterBibleResolver>.Instance;
     }
 
-    public Task<CharacterBibleCommitPlan> CreateCommitPlanAsync(
+    public Task<CharacterBibleRunState> ResolveAndUpdateCatalogAsync(
         CharacterBibleWorkflowInput request,
+        CharacterDossierEditSession session,
         int paragraphCount,
         IReadOnlyList<CharacterBibleCharacterCandidate> candidates,
         IProgress<CharacterBibleWorkflowProgress>? progress = null,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
+        ArgumentNullException.ThrowIfNull(session);
         ArgumentNullException.ThrowIfNull(candidates);
 
-        var baseDossiers = dossierService.GetDossiers();
-
-        return commitPlanBuilder.BuildAsync(
+        return candidateResolutionApplier.ResolveAndUpdateCatalogAsync(
             request,
-            baseDossiers,
+            session,
             paragraphCount,
             candidates,
             (currentArchive, candidate, token) => ResolveIdentityAsync(currentArchive, candidate, progress, token),
@@ -66,7 +64,7 @@ internal sealed class CharacterBibleResolver
         IProgress<CharacterBibleWorkflowProgress>? progress,
         CancellationToken cancellationToken)
     {
-        var searchTool = new CharacterArchiveSearchToolAdapter(currentArchive, archiveSearchService);
+        var searchTool = new CharacterArchiveSearchToolAdapter(currentArchive, characterVectorSearchTool);
         var response = await identityResolutionModelClient.ResolveAsync(
             new CharacterIdentityResolutionModelRequest(
                 identityResolutionPromptBuilder.BuildSystemPrompt(),
@@ -100,17 +98,18 @@ internal sealed class CharacterBibleResolver
             return decision;
         }
 
+        var archiveHits = await new CharacterArchiveSearchToolAdapter(currentArchive, characterVectorSearchTool)
+            .SearchCharactersAsync(
+                string.Join(' ', candidate.CanonicalName, string.Join(' ', candidate.AliasExamples.Keys)),
+                limit: 10,
+                cancellationToken)
+            .ConfigureAwait(false);
+
         try
         {
             progress?.Report(new CharacterBibleWorkflowProgress(
                 "split",
                 $"Proposing split for identity conflict: {candidate.CanonicalName}."));
-            var archiveHits = archiveSearchService.SearchCharacters(
-                    currentArchive,
-                    string.Join(' ', candidate.CanonicalName, string.Join(' ', candidate.AliasExamples.Keys)),
-                    limit: 10)
-                .Select(ToArchiveHit)
-                .ToArray();
             var proposal = await splitCandidateModelClient.ProposeSplitAsync(
                 new SplitCandidateModelRequest(
                     splitCandidatePromptBuilder.BuildSystemPrompt(),
@@ -203,16 +202,4 @@ internal sealed class CharacterBibleResolver
             .ToArray() ?? [];
     }
 
-    private static CharacterArchiveHit ToArchiveHit(CharacterArchiveSearchHit hit)
-    {
-        return new CharacterArchiveHit(
-            hit.EntryId,
-            CharacterArchiveEntryKind.Character,
-            hit.Name,
-            hit.Aliases,
-            hit.Gender,
-            hit.Identity,
-            [],
-            (int)Math.Round(hit.Score * 100));
-    }
 }

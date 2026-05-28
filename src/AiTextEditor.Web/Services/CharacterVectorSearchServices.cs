@@ -4,12 +4,12 @@ using System.Text;
 using System.Text.Json;
 using AiTextEditor.Agent;
 using AiTextEditor.Agent.CharacterBible.VectorSearch;
+using AiTextEditor.Core.Model;
 
 namespace AiTextEditor.Web.Services;
 
 internal sealed class ConfiguredCharacterVectorSearchTool : ICharacterVectorSearchTool, IDisposable
 {
-    private readonly EditorWorkspaceState workspace;
     private readonly IProgramSettingsStore settingsStore;
     private readonly ILoggerFactory loggerFactory;
     private readonly SemaphoreSlim configurationLock = new(1, 1);
@@ -19,27 +19,27 @@ internal sealed class ConfiguredCharacterVectorSearchTool : ICharacterVectorSear
     private bool disposed;
 
     public ConfiguredCharacterVectorSearchTool(
-        EditorWorkspaceState workspace,
         IProgramSettingsStore settingsStore,
         ILoggerFactory loggerFactory)
     {
-        this.workspace = workspace ?? throw new ArgumentNullException(nameof(workspace));
         this.settingsStore = settingsStore ?? throw new ArgumentNullException(nameof(settingsStore));
         this.loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
     }
 
     public async Task<IReadOnlyList<CharacterVectorSearchHit>> SearchAsync(
+        CharacterDossiers dossiers,
         string query,
         int limit,
         CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(dossiers);
         if (string.IsNullOrWhiteSpace(query) || limit <= 0)
         {
             return [];
         }
 
         var tool = await GetCurrentToolAsync(cancellationToken).ConfigureAwait(false);
-        return await tool.SearchAsync(query, limit, cancellationToken).ConfigureAwait(false);
+        return await tool.SearchAsync(dossiers, query, limit, cancellationToken).ConfigureAwait(false);
     }
 
     public void Dispose()
@@ -85,7 +85,6 @@ internal sealed class ConfiguredCharacterVectorSearchTool : ICharacterVectorSear
                 loggerFactory.CreateLogger<LlmRequestLoggingHandler>());
 
             var nextTool = new CharacterVectorSearchTool(
-                workspace.CharacterDossiers,
                 embeddingClient,
                 CharacterVectorSearchOptions.CreateDefault(embeddingSettings.EmbeddingModelName));
 

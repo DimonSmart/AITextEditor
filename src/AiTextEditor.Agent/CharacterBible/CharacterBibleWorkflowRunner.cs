@@ -49,24 +49,24 @@ public sealed class CharacterBibleWorkflowRunner
             generator,
             loggerFactory.CreateLogger<PatchCharacterBibleDossiersExecutor>(),
             progress);
-        var commitExecutor = new CommitCharacterBibleDossiersExecutor(
+        var finishExecutor = new FinishCharacterBibleWorkflowExecutor(
             generator,
-            loggerFactory.CreateLogger<CommitCharacterBibleDossiersExecutor>(),
+            loggerFactory.CreateLogger<FinishCharacterBibleWorkflowExecutor>(),
             progress);
 
         ExecutorBinding traversalBinding = traversalExecutor;
         ExecutorBinding extractionBinding = extractionExecutor;
         ExecutorBinding resolutionBinding = resolutionExecutor;
         ExecutorBinding patchBinding = patchExecutor;
-        ExecutorBinding commitBinding = commitExecutor;
+        ExecutorBinding finishBinding = finishExecutor;
 
         var workflow = new WorkflowBuilder(traversalBinding)
             .WithName("CharacterBibleWorkflow")
             .AddEdge(traversalBinding, extractionBinding)
             .AddEdge(extractionBinding, resolutionBinding)
             .AddEdge(resolutionBinding, patchBinding)
-            .AddEdge(patchBinding, commitBinding)
-            .WithOutputFrom(commitBinding)
+            .AddEdge(patchBinding, finishBinding)
+            .WithOutputFrom(finishBinding)
             .Build();
 
         var run = await InProcessExecution.RunAsync(

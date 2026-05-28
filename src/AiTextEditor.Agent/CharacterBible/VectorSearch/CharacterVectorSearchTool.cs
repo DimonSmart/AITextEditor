@@ -2,13 +2,13 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using AiTextEditor.Core.Model;
-using AiTextEditor.Core.Services;
 
 namespace AiTextEditor.Agent.CharacterBible.VectorSearch;
 
 public interface ICharacterVectorSearchTool
 {
     Task<IReadOnlyList<CharacterVectorSearchHit>> SearchAsync(
+        CharacterDossiers dossiers,
         string query,
         int limit,
         CancellationToken cancellationToken);
@@ -49,33 +49,32 @@ internal sealed record CharacterVectorSearchOptions(
 
 public sealed partial class CharacterVectorSearchTool : ICharacterVectorSearchTool
 {
-    private readonly CharacterDossierService dossierService;
     private readonly ICharacterVectorEmbeddingClient embeddingClient;
     private readonly CharacterVectorSearchOptions options;
     private readonly SemaphoreSlim indexSyncLock = new(1, 1);
     private CharacterVectorIndexSnapshot indexSnapshot = CharacterVectorIndexSnapshot.Empty;
 
     internal CharacterVectorSearchTool(
-        CharacterDossierService dossierService,
         ICharacterVectorEmbeddingClient embeddingClient,
         CharacterVectorSearchOptions options)
     {
-        this.dossierService = dossierService ?? throw new ArgumentNullException(nameof(dossierService));
         this.embeddingClient = embeddingClient ?? throw new ArgumentNullException(nameof(embeddingClient));
         this.options = NormalizeOptions(options);
     }
 
     public async Task<IReadOnlyList<CharacterVectorSearchHit>> SearchAsync(
+        CharacterDossiers dossiers,
         string query,
         int limit,
         CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(dossiers);
         if (string.IsNullOrWhiteSpace(query) || limit <= 0)
         {
             return [];
         }
 
-        await EnsureIndexIsCurrentAsync(cancellationToken).ConfigureAwait(false);
+        await EnsureIndexIsCurrentAsync(dossiers, cancellationToken).ConfigureAwait(false);
         var snapshot = indexSnapshot;
         if (snapshot.Entries.Count == 0)
         {
@@ -97,12 +96,14 @@ public sealed partial class CharacterVectorSearchTool : ICharacterVectorSearchTo
             .ToList();
     }
 
-    private async Task EnsureIndexIsCurrentAsync(CancellationToken cancellationToken)
+    private async Task EnsureIndexIsCurrentAsync(
+        CharacterDossiers dossiers,
+        CancellationToken cancellationToken)
     {
         await indexSyncLock.WaitAsync(cancellationToken).ConfigureAwait(false);
         try
         {
-            var documents = dossierService.GetDossiers().Characters
+            var documents = dossiers.Characters
                 .Select(BuildIndexDocument)
                 .ToList();
 

@@ -38,7 +38,7 @@ public sealed class SplitCandidatePromptBuilder
     internal string BuildUserPrompt(
         CharacterBibleCharacterCandidate candidate,
         IdentityResolutionDecision identityDecision,
-        IReadOnlyList<CharacterArchiveHit> archiveHits)
+        IReadOnlyList<CharacterArchiveSearchHit> archiveHits)
     {
         ArgumentNullException.ThrowIfNull(candidate);
         ArgumentNullException.ThrowIfNull(identityDecision);

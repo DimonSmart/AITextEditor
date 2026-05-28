@@ -90,35 +90,13 @@ public sealed record CharacterBibleResolverDecision(
     public SplitProposal? SplitProposal { get; init; }
 }
 
-internal sealed record CharacterBibleCommitPlan(
+internal sealed record CharacterBibleRunState(
     CharacterBibleWorkflowInput Request,
-    CharacterDossiers ProjectedDossiers,
-    bool Changed,
+    CharacterDossierEditSession Catalog,
     int ParagraphCount,
-    int CandidateCount,
     IReadOnlyList<CharacterBibleCharacterCandidate> Candidates,
-    IReadOnlyList<CharacterBibleResolverDecision> Decisions,
-    IReadOnlyList<CharacterBibleCommitOperation> Operations,
     CharacterBibleModelResponseErrorStatistics ModelResponseErrors,
     Exception? Failure = null);
-
-internal enum CharacterBibleCommitOperationKind
-{
-    ReplaceDossiers,
-    AddSuspectArchiveEntry,
-    AddIdentityConflict,
-    AddDeferredCandidate,
-    AddEvidenceIndexEntries,
-    AddAuditTrailEntry
-}
-
-internal sealed record CharacterBibleCommitOperation(
-    CharacterBibleCommitOperationKind Kind,
-    Core.Model.CharacterDossiers? ReplacementDossiers = null,
-    Core.Model.SuspectArchiveEntry? SuspectArchiveEntry = null,
-    Core.Model.IdentityConflictRecord? IdentityConflict = null,
-    IReadOnlyList<Core.Model.CharacterEvidenceIndexEntry>? EvidenceIndexEntries = null,
-    Core.Model.CharacterBibleAuditEntry? AuditTrailEntry = null);
 
 internal sealed record CharacterBibleCandidateExtractionResult(
     IReadOnlyList<CharacterBibleCharacterCandidate> Candidates,

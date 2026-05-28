@@ -37,6 +37,8 @@ If this index conflicts with a numbered document, trust the numbered document.
 | 0030 | spec | Malformed model response retry | Treat malformed model responses as parse errors with copyable diagnostics and rely on retries instead of JSON fragment recovery. | 0003, 0006, 0011 |
 | 0031 | spec | LLM retry and log errors | Make operation-log errors visually explicit and keep all production LLM agent calls behind one shared retry mechanism. | 0006, 0011, 0030 |
 | 0032 | spec | Character vector search | Add a pure semantic vector search tool over current Character Bible dossiers using an automatically synchronized in-memory index. | 0012, 0019, 0027, 0028, 0029 |
+| 0033 | spec | Compact character extraction and tool resolution | Simplify extraction to compact local candidates and route identity resolution through a one-candidate tool-based resolver. | 0003, 0004, 0026, 0029, 0032 |
+| 0034 | spec | Character Bible edit session vector resolution | Make Character Bible generation mutate one in-memory catalog session and resolve identities through snapshot-based vector search. | 0026, 0029, 0032, 0033 |
 
 ## Archived documents
 

@@ -20,6 +20,7 @@ General Rules:
 
 Output contract:
 - Return an object with status, aliasesToAdd, profilePatch, and reason.
+- Return only the JSON object. Do not wrap it in Markdown fences or explanatory text.
 - status: "ready", "no_useful_changes", or "identity_conflict".
 - aliasesToAdd: required array of alias strings. Use [] when no aliases should be added.
 - profilePatch: required. Use an object for "ready" when profile fields should be changed; use null when profile should not change.
@@ -43,6 +44,24 @@ Profile patch rules:
 - Use null for a field that has no new additive information.
 - Do not use an empty string as a delete or no-change command.
 - Profile field values are additive patches. When dossier.profile already has a non-empty field, output only the new detail that should be added, not a rewrite of the whole field and not a repeat of existing wording.
-- profilePatch.evidence: array of pointer/excerpt evidence items used for the patch. Use [] when status is "ready" but no single excerpt cleanly supports a field.
+- profilePatch.evidence: required array of evidence objects used for the patch. Every item must be exactly { "pointer": "...", "excerpt": "..." }. Never return pointer strings such as "1.1.1.p8" inside this array. Use [] when status is "ready" but no single excerpt cleanly supports a field.
 - For "no_useful_changes" and "identity_conflict", use aliasesToAdd [] and profilePatch null.
 
+Example ready response shape:
+{
+  "status": "ready",
+  "aliasesToAdd": [],
+  "profilePatch": {
+    "appearance": null,
+    "statusAndCompetence": "краткое новое подтвержденное дополнение",
+    "psychologicalProfile": null,
+    "speechAndCommunication": null,
+    "evidence": [
+      {
+        "pointer": "1.1.1.p8",
+        "excerpt": "short exact supporting excerpt"
+      }
+    ]
+  },
+  "reason": "why the patch is useful"
+}

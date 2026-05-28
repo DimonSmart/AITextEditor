@@ -1,4 +1,3 @@
-using AiTextEditor.Core.Model;
 using AiTextEditor.Agent.CharacterBible.Patching;
 
 namespace AiTextEditor.Agent.CharacterBible.Resolution;
@@ -19,29 +18,6 @@ public sealed record CharacterArchiveSearchHit(
     string Identity,
     double Score);
 
-internal enum CharacterArchiveEntryKind
-{
-    Character,
-    Suspect
-}
-
-internal sealed record CharacterArchiveSearchRequest(
-    string CandidateName,
-    IReadOnlyList<string> Aliases,
-    string Gender,
-    IReadOnlyList<CharacterBibleCandidateEvidence> Evidence,
-    int MaxResults);
-
-internal sealed record CharacterArchiveHit(
-    string EntryId,
-    CharacterArchiveEntryKind EntryKind,
-    string Name,
-    IReadOnlyList<string> Aliases,
-    string Gender,
-    string ProfileSnippet,
-    IReadOnlyList<string> MatchReasons,
-    int Score);
-
 internal enum IdentityResolutionKind
 {
     Existing,
@@ -59,36 +35,6 @@ internal sealed record IdentityResolutionDecision(
     bool ExactNameMatch)
 {
     public SplitProposal? SplitProposal { get; init; }
-
-    public static IdentityResolutionDecision Existing(CharacterArchiveHit hit)
-    {
-        return new IdentityResolutionDecision(
-            IdentityResolutionKind.Existing,
-            hit.EntryId,
-            [],
-            "Matched by existing name or alias key.",
-            hit.MatchReasons.Contains(CharacterArchiveSearchService.ExactNameMatchReason, StringComparer.Ordinal));
-    }
-
-    public static IdentityResolutionDecision New()
-    {
-        return new IdentityResolutionDecision(
-            IdentityResolutionKind.New,
-            null,
-            [],
-            "No existing name or alias match was found.",
-            ExactNameMatch: true);
-    }
-
-    public static IdentityResolutionDecision Ambiguous(IReadOnlyList<CharacterArchiveHit> hits)
-    {
-        return new IdentityResolutionDecision(
-            IdentityResolutionKind.Ambiguous,
-            null,
-            hits.Select(hit => hit.EntryId).ToArray(),
-            "Multiple existing dossiers matched the same name or alias key.",
-            ExactNameMatch: false);
-    }
 
     public static IdentityResolutionDecision Ambiguous(
         IReadOnlyList<string> alternativeEntryIds,

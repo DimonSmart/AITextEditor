@@ -4,6 +4,7 @@ using AiTextEditor.Agent.CharacterBible;
 using AiTextEditor.Agent.CharacterBible.Extraction;
 using AiTextEditor.Agent.CharacterBible.Patching;
 using AiTextEditor.Agent.CharacterBible.Resolution;
+using AiTextEditor.Agent.CharacterBible.VectorSearch;
 using AiTextEditor.Core.Model;
 using AiTextEditor.Core.Services;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -32,7 +33,7 @@ public sealed class CharacterBibleWorkflowRunnerTests
         Assert.Equal(2, result.CandidateCount);
         Assert.Equal(2, result.DecisionCount);
         Assert.Equal(2, result.Dossiers.Characters.Count);
-        Assert.Equal(2, dossierService.GetDossiers().Characters.Count);
+        Assert.Empty(dossierService.GetDossiers().Characters);
         Assert.Equal(1, extractionModelClient.CallCount);
     }
 
@@ -65,9 +66,10 @@ public sealed class CharacterBibleWorkflowRunnerTests
         Assert.Equal(1, result.CandidateCount);
         Assert.Equal(1, result.DecisionCount);
 
-        var updated = dossierService.TryGetDossier("c1");
-        Assert.NotNull(updated);
-        Assert.Contains("Johnny", updated!.AliasExamples.Keys, StringComparer.OrdinalIgnoreCase);
+        var updated = Assert.Single(result.Dossiers.Characters);
+        Assert.Equal("c1", updated.CharacterId);
+        Assert.Contains("Johnny", updated.AliasExamples.Keys, StringComparer.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Johnny", dossierService.TryGetDossier("c1")!.AliasExamples.Keys, StringComparer.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -86,11 +88,12 @@ public sealed class CharacterBibleWorkflowRunnerTests
             AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
             Gender: "unknown"));
 
-        await runner.RunAsync();
+        var result = await runner.RunAsync();
 
-        var updated = dossierService.TryGetDossier("c1");
-        Assert.NotNull(updated);
-        Assert.InRange(updated!.ImportanceLevel.GetValueOrDefault(), 1, 10);
+        var updated = Assert.Single(result.Dossiers.Characters);
+        Assert.Equal("c1", updated.CharacterId);
+        Assert.InRange(updated.ImportanceLevel.GetValueOrDefault(), 1, 10);
+        Assert.Null(dossierService.TryGetDossier("c1")!.ImportanceLevel);
     }
 
     [Fact]
@@ -154,9 +157,9 @@ public sealed class CharacterBibleWorkflowRunnerTests
             out var dossierService,
             out _);
 
-        await runner.RunAsync(new CharacterBibleWorkflowInput(["p1"]));
+        var result = await runner.RunAsync(new CharacterBibleWorkflowInput(["p1"]));
 
-        var dossier = Assert.Single(dossierService.GetDossiers().Characters);
+        var dossier = Assert.Single(result.Dossiers.Characters);
         Assert.NotNull(dossier.ImportanceLevel);
         Assert.InRange(dossier.ImportanceLevel.Value, 1, 4);
     }
@@ -259,7 +262,8 @@ public sealed class CharacterBibleWorkflowRunnerTests
             new DossierPatchPromptBuilder(),
             ApprovingReviewerClient(),
             new DossierConsistencyReviewerPromptBuilder(),
-            NewIdentityResolverClient());
+            NewIdentityResolverClient(),
+            NewVectorSearchTool());
         var runner = new CharacterBibleWorkflowRunner(generator, NullLoggerFactory.Instance);
         var progress = new List<CharacterBibleWorkflowProgress>();
 
@@ -299,7 +303,8 @@ public sealed class CharacterBibleWorkflowRunnerTests
             new DossierPatchPromptBuilder(),
             ApprovingReviewerClient(),
             new DossierConsistencyReviewerPromptBuilder(),
-            NewIdentityResolverClient());
+            NewIdentityResolverClient(),
+            NewVectorSearchTool());
         var runner = new CharacterBibleWorkflowRunner(generator, NullLoggerFactory.Instance);
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => runner.RunAsync());
@@ -332,7 +337,8 @@ public sealed class CharacterBibleWorkflowRunnerTests
             new DossierPatchPromptBuilder(),
             ApprovingReviewerClient(),
             new DossierConsistencyReviewerPromptBuilder(),
-            NewIdentityResolverClient());
+            NewIdentityResolverClient(),
+            NewVectorSearchTool());
 
         return new CharacterBibleWorkflowRunner(generator, NullLoggerFactory.Instance);
     }
@@ -367,6 +373,9 @@ public sealed class CharacterBibleWorkflowRunnerTests
 
     private static ICharacterIdentityResolutionModelClient NewIdentityResolverClient()
         => new SearchBackedIdentityResolutionModelClient();
+
+    private static ICharacterVectorSearchTool NewVectorSearchTool()
+        => new TestCharacterVectorSearchTool();
 
     private sealed class ScriptedCharacterExtractionModelClient : ICharacterExtractionModelClient
     {
@@ -522,6 +531,42 @@ public sealed class CharacterBibleWorkflowRunnerTests
             };
         }
     }
+
+    private sealed class TestCharacterVectorSearchTool : ICharacterVectorSearchTool
+    {
+        public Task<IReadOnlyList<CharacterVectorSearchHit>> SearchAsync(
+            CharacterDossiers dossiers,
+            string query,
+            int limit,
+            CancellationToken cancellationToken)
+        {
+            var normalizedQuery = query.Trim();
+            if (string.IsNullOrWhiteSpace(normalizedQuery) || limit <= 0)
+            {
+                return Task.FromResult<IReadOnlyList<CharacterVectorSearchHit>>([]);
+            }
+
+            var hits = dossiers.Characters
+                .Where(dossier =>
+                    string.Equals(dossier.Name, normalizedQuery, StringComparison.OrdinalIgnoreCase) ||
+                    dossier.Aliases.Any(alias => normalizedQuery.Contains(alias, StringComparison.OrdinalIgnoreCase)) ||
+                    normalizedQuery.Contains(dossier.Name, StringComparison.OrdinalIgnoreCase))
+                .Select(dossier => new CharacterVectorSearchHit(
+                    new CharacterVectorSearchCard(
+                        dossier.CharacterId,
+                        dossier.Name,
+                        dossier.Gender,
+                        dossier.Aliases,
+                        string.Empty),
+                    1d))
+                .Take(limit)
+                .ToArray();
+
+            return Task.FromResult<IReadOnlyList<CharacterVectorSearchHit>>(hits);
+        }
+    }
 }
+
+
 
 

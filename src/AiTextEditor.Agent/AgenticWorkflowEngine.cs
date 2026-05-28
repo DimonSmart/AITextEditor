@@ -6,6 +6,7 @@ using AiTextEditor.Agent.CharacterBible;
 using AiTextEditor.Agent.CharacterBible.Extraction;
 using AiTextEditor.Agent.CharacterBible.Patching;
 using AiTextEditor.Agent.CharacterBible.Resolution;
+using AiTextEditor.Agent.CharacterBible.VectorSearch;
 using AiTextEditor.Core.Infrastructure;
 using AiTextEditor.Core.Model;
 using AiTextEditor.Core.Services;
@@ -28,13 +29,20 @@ public sealed class AgenticWorkflowEngine
     private readonly string? fixedDossiersId;
     private readonly ILoggerFactory loggerFactory;
     private readonly string? modelOverride;
+    private readonly ICharacterVectorSearchTool? characterVectorSearchTool;
 
-    public AgenticWorkflowEngine(HttpClient? httpClient = null, ILoggerFactory? loggerFactory = null, string? fixedDossiersId = null, string? modelOverride = null)
+    public AgenticWorkflowEngine(
+        HttpClient? httpClient = null,
+        ILoggerFactory? loggerFactory = null,
+        string? fixedDossiersId = null,
+        string? modelOverride = null,
+        ICharacterVectorSearchTool? characterVectorSearchTool = null)
     {
         this.loggerFactory = loggerFactory ?? CreateDefaultLoggerFactory();
         this.httpClient = httpClient ?? CreateHttpClient(this.loggerFactory);
         this.fixedDossiersId = fixedDossiersId;
         this.modelOverride = modelOverride;
+        this.characterVectorSearchTool = characterVectorSearchTool;
     }
 
     public async Task<AgenticWorkflowContext> RunAsync(
@@ -91,34 +99,39 @@ public sealed class AgenticWorkflowEngine
             modelClient,
             loggerFactory.CreateLogger<AgenticSplitCandidateModelClient>());
 
-        var generator = new CharacterDossiersGenerator(
-            documentContext,
-            dossierService,
-            characterBibleLimits,
-            loggerFactory.CreateLogger<CharacterDossiersGenerator>(),
-            extractionClient,
-            new CharacterExtractionPromptBuilder(),
-            patchClient,
-            new DossierPatchPromptBuilder(),
-            reviewerClient,
-            new DossierConsistencyReviewerPromptBuilder(),
-            identityResolverClient,
-            loggerFactory,
-            new CharacterIdentityResolutionPromptBuilder(),
-            splitCandidateClient,
-            new SplitCandidatePromptBuilder());
-
-        var workflowRunner = new CharacterBibleWorkflowRunner(generator, loggerFactory);
-        var dossiersPlugin = new CharacterDossiersPlugin(
-            generator,
-            cursorRegistry,
-            dossierService,
-            characterBibleLimits,
-            loggerFactory.CreateLogger<CharacterDossiersPlugin>(),
-            workflowRunner);
-
         if (IsCharacterDossiersCommand(userCommand))
         {
+            if (characterVectorSearchTool is null)
+            {
+                throw new InvalidOperationException("Character Bible generation requires an ICharacterVectorSearchTool.");
+            }
+
+            var generator = new CharacterDossiersGenerator(
+                documentContext,
+                dossierService,
+                characterBibleLimits,
+                loggerFactory.CreateLogger<CharacterDossiersGenerator>(),
+                extractionClient,
+                new CharacterExtractionPromptBuilder(),
+                patchClient,
+                new DossierPatchPromptBuilder(),
+                reviewerClient,
+                new DossierConsistencyReviewerPromptBuilder(),
+                identityResolverClient,
+                characterVectorSearchTool,
+                loggerFactory,
+                new CharacterIdentityResolutionPromptBuilder(),
+                splitCandidateClient,
+                new SplitCandidatePromptBuilder());
+
+            var workflowRunner = new CharacterBibleWorkflowRunner(generator, loggerFactory);
+            var dossiersPlugin = new CharacterDossiersPlugin(
+                generator,
+                cursorRegistry,
+                dossierService,
+                characterBibleLimits,
+                loggerFactory.CreateLogger<CharacterDossiersPlugin>(),
+                workflowRunner);
             await dossiersPlugin.GenerateCharacterDossiersAsync(cancellationToken);
             var payload = dossiersPlugin.GetCharacterDossiers();
             context.CharacterDossiers = dossierService.GetDossiers();

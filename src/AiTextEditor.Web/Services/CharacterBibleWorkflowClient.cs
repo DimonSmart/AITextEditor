@@ -3,6 +3,7 @@ using AiTextEditor.Agent.CharacterBible;
 using AiTextEditor.Agent.CharacterBible.Extraction;
 using AiTextEditor.Agent.CharacterBible.Patching;
 using AiTextEditor.Agent.CharacterBible.Resolution;
+using AiTextEditor.Agent.CharacterBible.VectorSearch;
 using System.Net.Http.Headers;
 using System.Text;
 
@@ -12,13 +13,16 @@ public sealed class CharacterBibleWorkflowClient : ICharacterBibleWorkflowClient
 {
     private readonly ILoggerFactory loggerFactory;
     private readonly IProgramSettingsStore settingsStore;
+    private readonly ICharacterVectorSearchTool characterVectorSearchTool;
 
     public CharacterBibleWorkflowClient(
         IProgramSettingsStore settingsStore,
-        ILoggerFactory loggerFactory)
+        ILoggerFactory loggerFactory,
+        ICharacterVectorSearchTool characterVectorSearchTool)
     {
         this.settingsStore = settingsStore ?? throw new ArgumentNullException(nameof(settingsStore));
         this.loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+        this.characterVectorSearchTool = characterVectorSearchTool ?? throw new ArgumentNullException(nameof(characterVectorSearchTool));
     }
 
     public async Task<CharacterBibleWorkflowOutput> RunAsync(
@@ -69,6 +73,7 @@ public sealed class CharacterBibleWorkflowClient : ICharacterBibleWorkflowClient
             reviewerClient,
             new DossierConsistencyReviewerPromptBuilder(),
             identityResolverClient,
+            characterVectorSearchTool,
             loggerFactory,
             new CharacterIdentityResolutionPromptBuilder(),
             splitCandidateClient,

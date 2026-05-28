@@ -32,27 +32,25 @@ internal sealed class CharacterBibleDossierPatcher
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<CharacterBibleCommitPlan> ApplyDossierPatchesAsync(
-        CharacterBibleCommitPlan plan,
+    public async Task<CharacterBibleRunState> ApplyDossierPatchesAsync(
+        CharacterBibleRunState runState,
         IProgress<CharacterBibleWorkflowProgress>? progress = null,
         CancellationToken cancellationToken = default)
     {
-        ArgumentNullException.ThrowIfNull(plan);
+        ArgumentNullException.ThrowIfNull(runState);
         cancellationToken.ThrowIfCancellationRequested();
 
-        if (plan.Failure is not null || plan.Candidates.Count == 0 || plan.Decisions.Count == 0)
+        if (runState.Failure is not null || runState.Candidates.Count == 0 || runState.Catalog.Decisions.Count == 0)
         {
-            return plan;
+            return runState;
         }
 
-        var dossiersById = plan.ProjectedDossiers.Characters.ToDictionary(
+        var dossiersById = runState.Catalog.Current.Characters.ToDictionary(
             dossier => dossier.CharacterId,
             StringComparer.Ordinal);
-        var changedDossiers = plan.ProjectedDossiers.Characters.ToList();
-        var changed = plan.Changed;
         var proposalCount = 0;
         var appliedCount = 0;
-        var patchGroups = BuildPatchGroups(plan);
+        var patchGroups = BuildPatchGroups(runState);
 
         foreach (var patchGroup in patchGroups)
         {
@@ -97,6 +95,9 @@ internal sealed class CharacterBibleDossierPatcher
                 continue;
             }
 
+            progress?.Report(new CharacterBibleWorkflowProgress(
+                "patch",
+                $"Patch proposal for {dossier.Name}: ready. Reviewing patch."));
             var review = await ReviewPatchAsync(dossier, patchGroup.Candidates, proposal, progress, cancellationToken);
             if (!string.Equals(review.Verdict, "approved", StringComparison.Ordinal))
             {
@@ -112,19 +113,28 @@ internal sealed class CharacterBibleDossierPatcher
             var profileChanged = !CharacterProfile.HasSameContent(dossier.Profile, mergedProfile);
             if (!aliasesChanged && !profileChanged)
             {
+                progress?.Report(new CharacterBibleWorkflowProgress(
+                    "patch",
+                    $"Patch review for {dossier.Name}: approved; no local changes after merge."));
                 continue;
             }
 
-            var patchedDossier = dossier with
+            if (aliasesChanged)
             {
-                Aliases = aliasExamples.Keys.OrderBy(alias => alias, StringComparer.OrdinalIgnoreCase).ToArray(),
-                AliasExamples = aliasExamples,
-                Profile = mergedProfile
-            };
-            ReplaceDossier(changedDossiers, patchedDossier);
+                runState.Catalog.MergeAliasExamples(dossier.CharacterId, aliasExamples);
+            }
+
+            if (profileChanged)
+            {
+                runState.Catalog.UpdateProfile(dossier.CharacterId, mergedProfile);
+            }
+
+            var patchedDossier = runState.Catalog.GetRequired(dossier.CharacterId);
             dossiersById[dossier.CharacterId] = patchedDossier;
-            changed = true;
             appliedCount++;
+            progress?.Report(new CharacterBibleWorkflowProgress(
+                "patch",
+                $"Patch applied for {dossier.Name}."));
         }
 
         if (proposalCount > 0)
@@ -134,13 +144,7 @@ internal sealed class CharacterBibleDossierPatcher
                 $"Dossier patching finished: {appliedCount}/{proposalCount} patches applied."));
         }
 
-        var patchedDossiers = plan.ProjectedDossiers with { Characters = changedDossiers };
-        return plan with
-        {
-            ProjectedDossiers = patchedDossiers,
-            Changed = changed,
-            Operations = UpdateReplaceDossiersOperation(plan.Operations, patchedDossiers, changed)
-        };
+        return runState;
     }
 
     private async Task<DossierReviewResult> ReviewPatchAsync(
@@ -178,14 +182,14 @@ internal sealed class CharacterBibleDossierPatcher
         }
     }
 
-    private IReadOnlyList<DossierPatchGroup> BuildPatchGroups(CharacterBibleCommitPlan plan)
+    private IReadOnlyList<DossierPatchGroup> BuildPatchGroups(CharacterBibleRunState runState)
     {
         var groups = new List<DossierPatchGroupBuilder>();
         var groupsByCharacterId = new Dictionary<string, DossierPatchGroupBuilder>(StringComparer.Ordinal);
 
-        for (var index = 0; index < plan.Decisions.Count && index < plan.Candidates.Count; index++)
+        for (var index = 0; index < runState.Catalog.Decisions.Count && index < runState.Candidates.Count; index++)
         {
-            var decision = plan.Decisions[index];
+            var decision = runState.Catalog.Decisions[index];
             if (decision.Kind is not CharacterBibleDecisionKind.Existing and not CharacterBibleDecisionKind.New
                 || string.IsNullOrWhiteSpace(decision.CharacterId))
             {
@@ -200,7 +204,7 @@ internal sealed class CharacterBibleDossierPatcher
                 groups.Add(group);
             }
 
-            var candidate = plan.Candidates[index];
+            var candidate = runState.Candidates[index];
             group.Candidates.Add(new CharacterBibleDossierPatchCandidate(
                 candidate,
                 evidenceContextExpander.Expand(candidate.Evidence)));
@@ -277,41 +281,6 @@ internal sealed class CharacterBibleDossierPatcher
 
     private static int GetUtf8ByteCount(string? value)
         => string.IsNullOrEmpty(value) ? 0 : Encoding.UTF8.GetByteCount(value);
-
-    private static IReadOnlyList<CharacterBibleCommitOperation> UpdateReplaceDossiersOperation(
-        IReadOnlyList<CharacterBibleCommitOperation> operations,
-        CharacterDossiers patchedDossiers,
-        bool changed)
-    {
-        if (!changed)
-        {
-            return operations;
-        }
-
-        var updated = new List<CharacterBibleCommitOperation>(operations.Count + 1);
-        var replaced = false;
-        foreach (var operation in operations)
-        {
-            if (operation.Kind == CharacterBibleCommitOperationKind.ReplaceDossiers)
-            {
-                updated.Add(operation with { ReplacementDossiers = patchedDossiers });
-                replaced = true;
-            }
-            else
-            {
-                updated.Add(operation);
-            }
-        }
-
-        if (!replaced)
-        {
-            updated.Insert(0, new CharacterBibleCommitOperation(
-                CharacterBibleCommitOperationKind.ReplaceDossiers,
-                ReplacementDossiers: patchedDossiers));
-        }
-
-        return updated;
-    }
 
     private static CharacterProfile MergeProfileAdditions(CharacterProfile? existing, DossierProfilePatch? patch)
     {
@@ -418,17 +387,6 @@ internal sealed class CharacterBibleDossierPatcher
             && leftItems.All(item =>
                 rightItems.TryGetValue(item.Key, out var value)
                 && string.Equals(item.Value, value, StringComparison.Ordinal));
-    }
-
-    private static void ReplaceDossier(List<CharacterDossier> dossiers, CharacterDossier updatedDossier)
-    {
-        var index = dossiers.FindIndex(dossier => string.Equals(dossier.CharacterId, updatedDossier.CharacterId, StringComparison.Ordinal));
-        if (index < 0)
-        {
-            return;
-        }
-
-        dossiers[index] = updatedDossier;
     }
 
     private sealed record DossierPatchGroup(

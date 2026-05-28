@@ -7,6 +7,7 @@ using AiTextEditor.Agent.CharacterBible;
 using AiTextEditor.Agent.CharacterBible.Extraction;
 using AiTextEditor.Agent.CharacterBible.Patching;
 using AiTextEditor.Agent.CharacterBible.Resolution;
+using AiTextEditor.Agent.CharacterBible.VectorSearch;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
@@ -88,6 +89,8 @@ public sealed class CharacterDossiersGeneratorTests
         Assert.Contains("Use null for a field that has no new additive information", systemPrompt, StringComparison.Ordinal);
         Assert.Contains("Profile field values are additive patches", systemPrompt, StringComparison.Ordinal);
         Assert.Contains("Do not use an empty string as a delete", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("Do not wrap it in Markdown fences", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("Never return pointer strings", systemPrompt, StringComparison.Ordinal);
 
         using var json = JsonDocument.Parse(userPrompt);
         Assert.Equal("propose_dossier_patch", json.RootElement.GetProperty("task").GetString());
@@ -153,7 +156,8 @@ public sealed class CharacterDossiersGeneratorTests
             new DossierPatchPromptBuilder(),
             ApprovingReviewerClient(),
             new DossierConsistencyReviewerPromptBuilder(),
-            NewIdentityResolverClient());
+            NewIdentityResolverClient(),
+            NewVectorSearchTool());
 
         var dossiers = await generator.GenerateAsync();
 
@@ -192,7 +196,8 @@ public sealed class CharacterDossiersGeneratorTests
             new DossierPatchPromptBuilder(),
             ApprovingReviewerClient(),
             new DossierConsistencyReviewerPromptBuilder(),
-            NewIdentityResolverClient());
+            NewIdentityResolverClient(),
+            NewVectorSearchTool());
         var runner = new CharacterBibleWorkflowRunner(generator, NullLoggerFactory.Instance);
 
         await runner.RunAsync(new CharacterBibleWorkflowInput());
@@ -334,7 +339,8 @@ public sealed class CharacterDossiersGeneratorTests
             new DossierPatchPromptBuilder(),
             ApprovingReviewerClient(),
             new DossierConsistencyReviewerPromptBuilder(),
-            NewIdentityResolverClient());
+            NewIdentityResolverClient(),
+            NewVectorSearchTool());
 
         var dossiers = await generator.GenerateAsync();
 
@@ -388,7 +394,8 @@ public sealed class CharacterDossiersGeneratorTests
             new DossierPatchPromptBuilder(),
             ApprovingReviewerClient(),
             new DossierConsistencyReviewerPromptBuilder(),
-            NewIdentityResolverClient());
+            NewIdentityResolverClient(),
+            NewVectorSearchTool());
 
         var dossiers = await generator.GenerateAsync();
 
@@ -438,7 +445,8 @@ public sealed class CharacterDossiersGeneratorTests
             new DossierPatchPromptBuilder(),
             ApprovingReviewerClient(),
             new DossierConsistencyReviewerPromptBuilder(),
-            NewIdentityResolverClient());
+            NewIdentityResolverClient(),
+            NewVectorSearchTool());
 
         var dossiers = await generator.GenerateAsync();
 
@@ -475,7 +483,8 @@ public sealed class CharacterDossiersGeneratorTests
             new DossierPatchPromptBuilder(),
             ApprovingReviewerClient(),
             new DossierConsistencyReviewerPromptBuilder(),
-            NewIdentityResolverClient());
+            NewIdentityResolverClient(),
+            NewVectorSearchTool());
 
         await generator.GenerateAsync();
 
@@ -527,7 +536,8 @@ public sealed class CharacterDossiersGeneratorTests
             new DossierPatchPromptBuilder(),
             ApprovingReviewerClient(),
             new DossierConsistencyReviewerPromptBuilder(),
-            NewIdentityResolverClient());
+            NewIdentityResolverClient(),
+            NewVectorSearchTool());
 
         await generator.GenerateAsync();
 
@@ -581,7 +591,8 @@ public sealed class CharacterDossiersGeneratorTests
             new DossierPatchPromptBuilder(),
             ApprovingReviewerClient(),
             new DossierConsistencyReviewerPromptBuilder(),
-            NewIdentityResolverClient());
+            NewIdentityResolverClient(),
+            NewVectorSearchTool());
 
         await generator.GenerateAsync();
 
@@ -629,7 +640,8 @@ public sealed class CharacterDossiersGeneratorTests
             new DossierPatchPromptBuilder(),
             ApprovingReviewerClient(),
             new DossierConsistencyReviewerPromptBuilder(),
-            NewIdentityResolverClient());
+            NewIdentityResolverClient(),
+            NewVectorSearchTool());
 
         var dossiers = await generator.GenerateAsync();
 
@@ -660,7 +672,8 @@ public sealed class CharacterDossiersGeneratorTests
             new DossierPatchPromptBuilder(),
             ApprovingReviewerClient(),
             new DossierConsistencyReviewerPromptBuilder(),
-            NewIdentityResolverClient());
+            NewIdentityResolverClient(),
+            NewVectorSearchTool());
 
         await generator.GenerateAsync();
 
@@ -691,7 +704,8 @@ public sealed class CharacterDossiersGeneratorTests
             new DossierPatchPromptBuilder(),
             ApprovingReviewerClient(),
             new DossierConsistencyReviewerPromptBuilder(),
-            NewIdentityResolverClient());
+            NewIdentityResolverClient(),
+            NewVectorSearchTool());
 
         await generator.GenerateAsync();
 
@@ -723,7 +737,8 @@ public sealed class CharacterDossiersGeneratorTests
             new DossierPatchPromptBuilder(),
             ApprovingReviewerClient(),
             new DossierConsistencyReviewerPromptBuilder(),
-            NewIdentityResolverClient());
+            NewIdentityResolverClient(),
+            NewVectorSearchTool());
 
         await generator.GenerateAsync();
 
@@ -772,7 +787,8 @@ public sealed class CharacterDossiersGeneratorTests
             new DossierPatchPromptBuilder(),
             ApprovingReviewerClient(),
             new DossierConsistencyReviewerPromptBuilder(),
-            NewIdentityResolverClient());
+            NewIdentityResolverClient(),
+            NewVectorSearchTool());
 
         var evidence = new[] { new AiTextEditor.Core.Model.EvidenceItem("1.p1", "Johnny laughed.", null) };
         await generator.UpdateFromEvidenceBatchAsync(evidence);
@@ -807,7 +823,8 @@ public sealed class CharacterDossiersGeneratorTests
             new DossierPatchPromptBuilder(),
             ApprovingReviewerClient(),
             new DossierConsistencyReviewerPromptBuilder(),
-            NewIdentityResolverClient());
+            NewIdentityResolverClient(),
+            NewVectorSearchTool());
 
         var evidence = new[] { new AiTextEditor.Core.Model.EvidenceItem("p1", "John's hat was on the table.", null) };
         var dossiers = await generator.UpdateFromEvidenceBatchAsync(evidence);
@@ -839,7 +856,8 @@ public sealed class CharacterDossiersGeneratorTests
             new DossierPatchPromptBuilder(),
             ApprovingReviewerClient(),
             new DossierConsistencyReviewerPromptBuilder(),
-            NewIdentityResolverClient());
+            NewIdentityResolverClient(),
+            NewVectorSearchTool());
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => generator.GenerateAsync());
         Assert.Equal("character_extraction_empty_response_content", exception.Message);
@@ -889,7 +907,8 @@ public sealed class CharacterDossiersGeneratorTests
             new DossierPatchPromptBuilder(),
             ApprovingReviewerClient(),
             new DossierConsistencyReviewerPromptBuilder(),
-            NewIdentityResolverClient());
+            NewIdentityResolverClient(),
+            NewVectorSearchTool());
         var runner = new CharacterBibleWorkflowRunner(generator, NullLoggerFactory.Instance);
 
         await runner.RunAsync(new CharacterBibleWorkflowInput());
@@ -917,6 +936,9 @@ public sealed class CharacterDossiersGeneratorTests
 
     private static ICharacterIdentityResolutionModelClient NewIdentityResolverClient()
         => new SearchBackedIdentityResolutionModelClient();
+
+    private static ICharacterVectorSearchTool NewVectorSearchTool()
+        => new TestCharacterVectorSearchTool();
 
     private static DossierPatchProposal ReadyPatch(
         IReadOnlyList<string>? aliasesToAdd = null,
@@ -1147,6 +1169,41 @@ public sealed class CharacterDossiersGeneratorTests
             };
         }
     }
+
+    private sealed class TestCharacterVectorSearchTool : ICharacterVectorSearchTool
+    {
+        public Task<IReadOnlyList<CharacterVectorSearchHit>> SearchAsync(
+            CharacterDossiers dossiers,
+            string query,
+            int limit,
+            CancellationToken cancellationToken)
+        {
+            var normalizedQuery = query.Trim();
+            if (string.IsNullOrWhiteSpace(normalizedQuery) || limit <= 0)
+            {
+                return Task.FromResult<IReadOnlyList<CharacterVectorSearchHit>>([]);
+            }
+
+            var hits = dossiers.Characters
+                .Where(dossier =>
+                    string.Equals(dossier.Name, normalizedQuery, StringComparison.OrdinalIgnoreCase) ||
+                    dossier.Aliases.Any(alias => normalizedQuery.Contains(alias, StringComparison.OrdinalIgnoreCase)) ||
+                    normalizedQuery.Contains(dossier.Name, StringComparison.OrdinalIgnoreCase))
+                .Select(dossier => new CharacterVectorSearchHit(
+                    new CharacterVectorSearchCard(
+                        dossier.CharacterId,
+                        dossier.Name,
+                        dossier.Gender,
+                        dossier.Aliases,
+                        string.Empty),
+                    1d))
+                .Take(limit)
+                .ToArray();
+
+            return Task.FromResult<IReadOnlyList<CharacterVectorSearchHit>>(hits);
+        }
+    }
 }
+
 
 
