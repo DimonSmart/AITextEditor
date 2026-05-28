@@ -56,7 +56,7 @@ internal static class LogValueFormatter
         }
 
         return FormatHits(hits.Select((hit, index) => new HitValue(
-            index + 1,
+            hit.Rank > 0 ? hit.Rank : index + 1,
             hit.EntryId,
             hit.Name,
             hit.Score)), maxItems);

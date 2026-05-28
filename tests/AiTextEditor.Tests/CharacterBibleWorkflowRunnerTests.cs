@@ -519,14 +519,14 @@ public sealed class CharacterBibleWorkflowRunnerTests
                 .Select(alias => alias.GetString())
                 .Where(alias => !string.IsNullOrWhiteSpace(alias));
             var query = string.Join(' ', new[] { name }.Concat(aliases!));
-            var hits = await request.SearchTool.SearchCharactersAsync(query, 5, cancellationToken);
-            return hits.Count switch
+            var searchResult = await request.SearchTool.SearchCharactersAsync(query, 5, cancellationToken);
+            return searchResult.Hits.Count switch
             {
                 0 => new CharacterIdentityResolutionResponse(CharacterIdentityDecision.New, Reason: "No test search hit."),
-                1 => new CharacterIdentityResolutionResponse(CharacterIdentityDecision.Existing, hits[0].EntryId, Reason: "Matched by test search."),
+                1 => new CharacterIdentityResolutionResponse(CharacterIdentityDecision.Existing, searchResult.Hits[0].EntryId, Reason: "Matched by test search."),
                 _ => new CharacterIdentityResolutionResponse(
                     CharacterIdentityDecision.Ambiguous,
-                    EntryIds: hits.Select(hit => hit.EntryId).ToArray(),
+                    EntryIds: searchResult.Hits.Select(hit => hit.EntryId).ToArray(),
                     Reason: "Multiple test search hits.")
             };
         }

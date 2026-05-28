@@ -105,7 +105,7 @@ internal sealed class CharacterBibleResolver
             return decision;
         }
 
-        var archiveHits = await new CharacterArchiveSearchToolAdapter(
+        var archiveSearchResult = await new CharacterArchiveSearchToolAdapter(
                 currentArchive,
                 characterVectorSearchTool,
                 candidate.CandidateId,
@@ -127,7 +127,7 @@ internal sealed class CharacterBibleResolver
             var proposal = await splitCandidateModelClient.ProposeSplitAsync(
                 new SplitCandidateModelRequest(
                     splitCandidatePromptBuilder.BuildSystemPrompt(),
-                    splitCandidatePromptBuilder.BuildUserPrompt(candidate, decision, archiveHits),
+                    splitCandidatePromptBuilder.BuildUserPrompt(candidate, decision, archiveSearchResult.Hits),
                     new CharacterBibleAgentDiagnosticProgress(
                         progress,
                         "split",

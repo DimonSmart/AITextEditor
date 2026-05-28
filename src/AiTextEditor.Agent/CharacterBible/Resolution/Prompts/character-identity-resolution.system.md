@@ -9,9 +9,12 @@ You receive:
 
 You have a search tool:
 - search_characters(query, limit)
+- It returns retrieval candidates, not confirmed identity matches.
+- In a small archive, returned entries may all be unrelated.
+- Score is vector similarity, not identity confidence.
 
 Process:
-1. Build a search query from candidate name, aliases and useful context words.
+1. Build a search query primarily from candidate name and observed aliases. Do not add generic words or names from previous search hits.
 2. Search the character archive.
 3. Compare the candidate only with returned search hits.
 4. Return existing when one hit clearly represents the same character.

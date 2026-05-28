@@ -137,7 +137,7 @@ public sealed class AgenticCharacterIdentityResolutionModelClient : ICharacterId
             SearchMethod,
             request.SearchTool,
             "search_characters",
-            "Search character archive by a plain text query and return compact character identity cards.",
+            CharacterArchiveSearchToolDescriptions.Tool,
             JsonSerializerOptions.Web);
 
         return await modelClient.RunAsync<CharacterIdentityResolutionResponse>(

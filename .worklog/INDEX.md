@@ -29,10 +29,7 @@ If this index conflicts with a numbered document, trust the numbered document.
 | 0020 | spec | Character card expanded readonly view | Add one-at-a-time expanded read-only character cards inside the Character Bible grid while keeping editing in the existing dialog. | 0012, 0013, 0019 |
 | 0021 | spec | Character Bible agent structure | Separate Character Bible workflow, extraction, prompt, and resolution code without changing current behavior. | 0002, 0003, 0006, 0011 |
 | 0023 | spec | Character bible overlap byte limit | Limit character bible extraction overlap by both paragraph count and optional byte size while keeping main batch sizing separate. | 0003, 0009, 0016 |
-| 0025 | spec | Character candidate extraction contract | Narrow Character Bible extraction to pointer-backed local candidates and move profile authoring out of the extractor. | 0003, 0004, 0021 |
 | 0026 | spec | Character dossier patch agent | Restore profile generation through a post-resolution dossier patch proposal agent. | 0003, 0021, 0025 |
-| 0027 | spec | Character Bible resolver split | Split deterministic resolver responsibilities into archive search, identity resolution, and commit plan building. | 0003, 0004, 0021, 0025, 0026 |
-| 0028 | spec | Character Bible full agent pipeline | Complete the remaining multi-agent pipeline contracts, post-processing, operation commit, and support collections. | 0025, 0026, 0027 |
 | 0029 | spec | Character dossier evidence context | Expand pointer-backed candidate evidence into nearby document context before dossier patch synthesis. | 0025, 0026, 0027, 0028 |
 | 0030 | spec | Malformed model response retry | Treat malformed model responses as parse errors with copyable diagnostics and rely on retries instead of JSON fragment recovery. | 0003, 0006, 0011 |
 | 0031 | spec | LLM retry and log errors | Make operation-log errors visually explicit and keep all production LLM agent calls behind one shared retry mechanism. | 0006, 0011, 0030 |
@@ -40,6 +37,7 @@ If this index conflicts with a numbered document, trust the numbered document.
 | 0033 | spec | Compact character extraction and tool resolution | Simplify extraction to compact local candidates and route identity resolution through a one-candidate tool-based resolver. | 0003, 0004, 0026, 0029, 0032 |
 | 0034 | spec | Character Bible edit session vector resolution | Make Character Bible generation mutate one in-memory catalog session and resolve identities through snapshot-based vector search. | 0026, 0029, 0032, 0033 |
 | 0035 | spec | Character Bible diagnostic run log | Persist compact per-run Character Bible diagnostics while keeping UI progress short. | 0011, 0026, 0030, 0031, 0032, 0034 |
+| 0036 | spec | Search character candidate result metadata | Make `search_characters` expose vector results as comparison candidates with archive metadata and ranked hits. | 0032, 0033, 0034, 0035 |
 
 ## Archived documents
 
@@ -53,6 +51,9 @@ Read archived documents only when a current document references them through `Re
 | 0018 | spec | Character dossier structured profile | Added the earlier five-section profile shape that is superseded by the simplified four-field profile. | 0019 |
 | 0022 | spec | Malformed JSON response recovery | Earlier JsonExtractor-based recovery requirement for malformed structured responses. | 0030 |
 | 0024 | spec | Model response diagnostics UI | Earlier diagnostics UI requirement that included JsonExtractor recovery outcomes. | 0030 |
+| 0025 | spec | Character candidate extraction contract | Earlier pointer-backed local candidate extraction contract before compact extraction replaced it. | 0033 |
+| 0027 | spec | Character Bible resolver split | Earlier deterministic resolver split before the tool-based resolver replaced the active path. | 0033 |
+| 0028 | spec | Character Bible full agent pipeline | Earlier full agent pipeline shape before compact extraction and tool resolution replaced it. | 0033 |
 
 ## Maintenance
 

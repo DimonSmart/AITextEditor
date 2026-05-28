@@ -29,23 +29,26 @@ internal sealed class CharacterArchiveSearchToolAdapter : ICharacterArchiveSearc
 
     public IReadOnlySet<string> ObservedEntryIds => observedEntryIds;
 
-    [Description("Search character archive by a plain text query and return compact candidate identity cards.")]
-    public async Task<IReadOnlyList<CharacterArchiveSearchHit>> SearchCharactersAsync(
-        [Description("Plain text query built from candidate name, aliases, and useful context words.")] string query,
-        [Description("Maximum number of character cards to return.")] int limit,
+    [Description(CharacterArchiveSearchToolDescriptions.Tool)]
+    public async Task<CharacterArchiveSearchResult> SearchCharactersAsync(
+        [Description(CharacterArchiveSearchToolDescriptions.QueryParameter)] string query,
+        [Description(CharacterArchiveSearchToolDescriptions.LimitParameter)] int limit,
         CancellationToken cancellationToken)
     {
         var effectiveLimit = limit <= 0 ? DefaultLimit : Math.Min(limit, 20);
+        var archiveSize = currentArchive.Characters.Count;
         CharacterBibleRunLogScope.Current?.Debug(
             "resolve.search",
-            $"candidateId={LogValueFormatter.ShortId(candidateId)} name={LogValueFormatter.Quote(candidateName)} query={LogValueFormatter.Quote(query)} limit={effectiveLimit}");
+            $"candidateId={LogValueFormatter.ShortId(candidateId)} name={LogValueFormatter.Quote(candidateName)} query={LogValueFormatter.Quote(query)} limit={effectiveLimit} archiveSize={archiveSize}");
         var hits = await vectorSearchTool.SearchAsync(
             currentArchive,
             query,
             effectiveLimit,
             cancellationToken).ConfigureAwait(false);
 
-        var searchHits = hits.Select(ToSearchHit).ToArray();
+        var searchHits = hits
+            .Select((hit, index) => ToSearchHit(hit, index + 1))
+            .ToArray();
         foreach (var hit in searchHits)
         {
             if (!string.IsNullOrWhiteSpace(hit.EntryId))
@@ -56,21 +59,29 @@ internal sealed class CharacterArchiveSearchToolAdapter : ICharacterArchiveSearc
 
         CharacterBibleRunLogScope.Current?.Debug(
             "resolve.search.hits",
-            $"candidateId={LogValueFormatter.ShortId(candidateId)} count={searchHits.Length} hits={LogValueFormatter.Hits(searchHits)}");
-        for (var index = 0; index < searchHits.Length; index++)
+            $"candidateId={LogValueFormatter.ShortId(candidateId)} returned={searchHits.Length} archiveSize={archiveSize} hits={LogValueFormatter.Hits(searchHits)}");
+        foreach (var hit in searchHits)
         {
-            var hit = searchHits[index];
             CharacterBibleRunLogScope.Current?.Debug(
                 "resolve.search.hit",
-                $"candidateId={LogValueFormatter.ShortId(candidateId)} rank={index + 1} entryId={hit.EntryId} name={LogValueFormatter.Quote(hit.Name)} gender={LogValueFormatter.Quote(hit.Gender)} aliases={LogValueFormatter.List(hit.Aliases)} score={LogValueFormatter.Score(hit.Score)} summary={LogValueFormatter.Quote(LogValueFormatter.ShortText(hit.Identity))}");
+                $"candidateId={LogValueFormatter.ShortId(candidateId)} rank={hit.Rank} entryId={hit.EntryId} name={LogValueFormatter.Quote(hit.Name)} gender={LogValueFormatter.Quote(hit.Gender)} aliases={LogValueFormatter.List(hit.Aliases)} score={LogValueFormatter.Score(hit.Score)} summary={LogValueFormatter.Quote(LogValueFormatter.ShortText(hit.Identity))}");
         }
 
-        return searchHits;
+        return new CharacterArchiveSearchResult(
+            query,
+            effectiveLimit,
+            archiveSize,
+            searchHits.Length,
+            CharacterArchiveSearchResultNotes.ClosestEntriesMayBeUnrelated,
+            searchHits);
     }
 
-    private static CharacterArchiveSearchHit ToSearchHit(CharacterVectorSearchHit hit)
+    private static CharacterArchiveSearchHit ToSearchHit(
+        CharacterVectorSearchHit hit,
+        int rank)
     {
         return new CharacterArchiveSearchHit(
+            rank,
             hit.Card.EntryId,
             hit.Card.Name,
             hit.Card.Gender,
