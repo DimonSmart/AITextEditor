@@ -39,6 +39,7 @@ If this index conflicts with a numbered document, trust the numbered document.
 | 0032 | spec | Character vector search | Add a pure semantic vector search tool over current Character Bible dossiers using an automatically synchronized in-memory index. | 0012, 0019, 0027, 0028, 0029 |
 | 0033 | spec | Compact character extraction and tool resolution | Simplify extraction to compact local candidates and route identity resolution through a one-candidate tool-based resolver. | 0003, 0004, 0026, 0029, 0032 |
 | 0034 | spec | Character Bible edit session vector resolution | Make Character Bible generation mutate one in-memory catalog session and resolve identities through snapshot-based vector search. | 0026, 0029, 0032, 0033 |
+| 0035 | spec | Character Bible diagnostic run log | Persist compact per-run Character Bible diagnostics while keeping UI progress short. | 0011, 0026, 0030, 0031, 0032, 0034 |
 
 ## Archived documents
 

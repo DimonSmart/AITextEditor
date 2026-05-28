@@ -1,4 +1,5 @@
 using AiTextEditor.Agent.CharacterBible;
+using AiTextEditor.Agent.CharacterBible.Diagnostics;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.Logging;
 
@@ -29,8 +30,12 @@ internal sealed class CollectTextFragmentsExecutor : Executor<CharacterBibleWork
         ArgumentNullException.ThrowIfNull(request);
         cancellationToken.ThrowIfCancellationRequested();
 
+        CharacterBibleRunLogScope.Current?.Info("collect.start", "stage=collect");
         progress?.Report(new CharacterBibleWorkflowProgress("collect", "Collecting character bible paragraphs."));
         var paragraphs = generator.CollectParagraphs(request.ChangedPointers, progress);
+        CharacterBibleRunLogScope.Current?.Info(
+            "collect.done",
+            $"paragraphCount={paragraphs.Count} firstPointer={LogValueFormatter.Quote(paragraphs.FirstOrDefault()?.Pointer)} lastPointer={LogValueFormatter.Quote(paragraphs.LastOrDefault()?.Pointer)}");
         logger.LogInformation("character_bible_paragraphs_collected: count={Count}", paragraphs.Count);
         progress?.Report(new CharacterBibleWorkflowProgress(
             "collect",
@@ -66,6 +71,7 @@ internal sealed class ExtractCharacterBibleCandidatesExecutor : Executor<Charact
 
         try
         {
+            CharacterBibleRunLogScope.Current?.Info("extract.start", $"paragraphCount={input.Paragraphs.Count}");
             progress?.Report(new CharacterBibleWorkflowProgress(
                 "extract",
                 $"Starting candidate extraction from {input.Paragraphs.Count} paragraphs."));
@@ -80,6 +86,10 @@ internal sealed class ExtractCharacterBibleCandidatesExecutor : Executor<Charact
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
+            CharacterBibleRunLogScope.Current?.Error(
+                "extract.failed",
+                $"errorType={ex.GetType().Name} message={LogValueFormatter.Quote(ex.Message)}",
+                ex);
             logger.LogError(ex, "character_bible_candidates_extraction_failed");
             progress?.Report(new CharacterBibleWorkflowProgress(
                 "extract",
@@ -124,6 +134,9 @@ internal sealed class ResolveCharacterBibleCandidatesExecutor : Executor<Charact
 
         if (input.Failure is not null)
         {
+            CharacterBibleRunLogScope.Current?.Warning(
+                "resolve.skipped",
+                $"reason={LogValueFormatter.Quote("extraction failed")}");
             progress?.Report(new CharacterBibleWorkflowProgress(
                 "resolve",
                 "Skipping candidate resolution because extraction failed.",
@@ -156,6 +169,9 @@ internal sealed class ResolveCharacterBibleCandidatesExecutor : Executor<Charact
         progress?.Report(new CharacterBibleWorkflowProgress(
             "resolve",
             $"Resolved {runState.Catalog.Decisions.Count} decisions; ambiguous: {runState.Catalog.Decisions.Count(decision => decision.Kind == CharacterBibleDecisionKind.Ambiguous)}."));
+        CharacterBibleRunLogScope.Current?.Info(
+            "resolve.done",
+            $"candidateCount={runState.Candidates.Count} decisionCount={runState.Catalog.Decisions.Count} ambiguousCount={runState.Catalog.Decisions.Count(decision => decision.Kind == CharacterBibleDecisionKind.Ambiguous)}");
 
         return runState;
     }
@@ -188,6 +204,9 @@ internal sealed class PatchCharacterBibleDossiersExecutor : Executor<CharacterBi
 
         if (runState.Failure is not null)
         {
+            CharacterBibleRunLogScope.Current?.Warning(
+                "patch.skipped",
+                $"reason={LogValueFormatter.Quote("workflow failed")}");
             progress?.Report(new CharacterBibleWorkflowProgress(
                 "patch",
                 "Skipping dossier patching because the workflow failed.",
@@ -198,11 +217,17 @@ internal sealed class PatchCharacterBibleDossiersExecutor : Executor<CharacterBi
         progress?.Report(new CharacterBibleWorkflowProgress(
             "patch",
             $"Patching dossiers for {runState.Catalog.Decisions.Count} resolved decisions."));
+        CharacterBibleRunLogScope.Current?.Info(
+            "patch.start",
+            $"decisionCount={runState.Catalog.Decisions.Count}");
         var patchedRunState = await generator.ApplyDossierPatchesAsync(runState, progress, cancellationToken);
         logger.LogInformation(
             "character_bible_dossiers_patched: changed={Changed}, decisions={DecisionCount}",
             patchedRunState.Catalog.Changed,
             patchedRunState.Catalog.Decisions.Count);
+        CharacterBibleRunLogScope.Current?.Info(
+            "patch.done",
+            $"changed={patchedRunState.Catalog.Changed} decisionCount={patchedRunState.Catalog.Decisions.Count}");
         return patchedRunState;
     }
 }
@@ -239,6 +264,10 @@ internal sealed class FinishCharacterBibleWorkflowExecutor : Executor<CharacterB
                 "finish",
                 "Bible update skipped because the workflow failed.",
                 IsError: true));
+            CharacterBibleRunLogScope.Current?.Error(
+                "finish.failed",
+                $"message={LogValueFormatter.Quote(runState.Failure.Message)}",
+                runState.Failure);
             return ValueTask.FromResult(new CharacterBibleWorkflowOutput(
                 runState.Catalog.Current,
                 "failed",
@@ -255,6 +284,9 @@ internal sealed class FinishCharacterBibleWorkflowExecutor : Executor<CharacterB
         progress?.Report(new CharacterBibleWorkflowProgress(
             "finish",
             $"Finishing character bible workflow from {runState.Catalog.Decisions.Count} decisions."));
+        CharacterBibleRunLogScope.Current?.Info(
+            "finish.start",
+            $"decisionCount={runState.Catalog.Decisions.Count}");
         var dossiers = generator.FinishRun(runState);
         var changedPointerCount = NormalizePointers(runState.Request.ChangedPointers).Count;
         var status = runState.Request.ChangedPointers is null ? "generated" : "refreshed";

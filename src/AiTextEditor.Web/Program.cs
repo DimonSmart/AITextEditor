@@ -1,5 +1,6 @@
 using AiTextEditor.Web.Components;
 using AiTextEditor.Agent.CharacterBible.VectorSearch;
+using AiTextEditor.Core.Infrastructure;
 using AiTextEditor.Web.Services;
 using MatBlazor;
 using Microsoft.AspNetCore.SignalR;
@@ -7,6 +8,12 @@ using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 const long BookEditorReceiveMessageLimit = 4 * 1024 * 1024;
+
+// Application logs live beside %LOCALAPPDATA%\AITextEditor\settings.json:
+// %LOCALAPPDATA%\AITextEditor\logs\aitexteditor.log
+builder.Logging.AddProvider(new SimpleFileLoggerProvider(
+    Path.Combine(AppLogPaths.GetLogRoot(), "aitexteditor.log"),
+    minimumLevel: LogLevel.Information));
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();

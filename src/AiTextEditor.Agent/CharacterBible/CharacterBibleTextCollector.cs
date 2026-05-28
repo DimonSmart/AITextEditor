@@ -1,6 +1,7 @@
 using AiTextEditor.Core.Interfaces;
 using AiTextEditor.Core.Model;
 using AiTextEditor.Core.Services;
+using AiTextEditor.Agent.CharacterBible.Diagnostics;
 using Microsoft.Extensions.Logging;
 
 namespace AiTextEditor.Agent.CharacterBible;
@@ -20,6 +21,8 @@ internal sealed class CharacterBibleTextCollector
         this.limits = limits ?? throw new ArgumentNullException(nameof(limits));
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
+
+    public int DocumentItemCount => documentContext.Document.Items.Count;
 
     public IReadOnlyList<TextFragment> CollectParagraphs(
         IReadOnlyCollection<string>? changedPointers,
@@ -96,6 +99,9 @@ internal sealed class CharacterBibleTextCollector
             progress?.Report(new CharacterBibleWorkflowProgress(
                 "collect",
                 $"Read book chunk {chunkNumber}: {paragraphs.Count - beforeCount} paragraphs collected, {paragraphs.Count} total."));
+            CharacterBibleRunLogScope.Current?.Info(
+                "collect.chunk",
+                $"index={chunkNumber} paragraphsCollected={paragraphs.Count - beforeCount} total={paragraphs.Count} firstPointer={LogValueFormatter.Quote(paragraphs.Skip(beforeCount).FirstOrDefault()?.Pointer)} lastPointer={LogValueFormatter.Quote(paragraphs.LastOrDefault()?.Pointer)}");
 
             if (!portion.HasMore)
             {
@@ -123,6 +129,9 @@ internal sealed class CharacterBibleTextCollector
             if (!lookup.TryGetValue(pointer, out var item))
             {
                 logger.LogWarning("RefreshCharacterDossiers: pointer not found: {Pointer}", pointer);
+                CharacterBibleRunLogScope.Current?.Warning(
+                    "collect.pointer.skipped",
+                    $"pointer={LogValueFormatter.Quote(pointer)} reason={LogValueFormatter.Quote("not found")}");
                 progress?.Report(new CharacterBibleWorkflowProgress(
                     "collect",
                     $"Changed pointer {pointer} was not found."));
@@ -131,6 +140,9 @@ internal sealed class CharacterBibleTextCollector
 
             if (item.Type == LinearItemType.Heading)
             {
+                CharacterBibleRunLogScope.Current?.Debug(
+                    "collect.pointer.skipped",
+                    $"pointer={LogValueFormatter.Quote(pointer)} reason={LogValueFormatter.Quote("heading")}");
                 progress?.Report(new CharacterBibleWorkflowProgress(
                     "collect",
                     $"Changed pointer {pointer} is a heading and was skipped."));
@@ -139,6 +151,9 @@ internal sealed class CharacterBibleTextCollector
 
             if (string.IsNullOrWhiteSpace(item.Markdown))
             {
+                CharacterBibleRunLogScope.Current?.Debug(
+                    "collect.pointer.skipped",
+                    $"pointer={LogValueFormatter.Quote(pointer)} reason={LogValueFormatter.Quote("empty")}");
                 progress?.Report(new CharacterBibleWorkflowProgress(
                     "collect",
                     $"Changed pointer {pointer} is empty and was skipped."));
@@ -146,6 +161,9 @@ internal sealed class CharacterBibleTextCollector
             }
 
             paragraphs.Add(new TextFragment(pointer, item.Markdown));
+            CharacterBibleRunLogScope.Current?.Info(
+                "collect.chunk",
+                $"index={paragraphs.Count} paragraphsCollected=1 total={paragraphs.Count} firstPointer={LogValueFormatter.Quote(pointer)} lastPointer={LogValueFormatter.Quote(pointer)}");
             progress?.Report(new CharacterBibleWorkflowProgress(
                 "collect",
                 $"Changed pointer {pointer} added to extraction input."));
@@ -154,4 +172,3 @@ internal sealed class CharacterBibleTextCollector
         return paragraphs;
     }
 }
-

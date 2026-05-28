@@ -1,43 +1,56 @@
 using Microsoft.Extensions.Logging;
-using System;
-using System.IO;
 using System.Text;
 
 namespace AiTextEditor.Core.Infrastructure;
 
-public class SimpleFileLogger : ILogger
+public sealed class SimpleFileLogger : ILogger
 {
-    private readonly string _categoryName;
-    private readonly string _filePath;
-    private static readonly object _lock = new object();
-    private static readonly Encoding LogEncoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: true);
+    private static readonly object SyncRoot = new();
+    private static readonly Encoding LogEncoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
 
-    public SimpleFileLogger(string categoryName, string filePath)
+    private readonly string filePath;
+    private readonly LogLevel minimumLevel;
+
+    public SimpleFileLogger(string filePath, LogLevel minimumLevel)
     {
-        _categoryName = categoryName;
-        _filePath = filePath;
+        ArgumentException.ThrowIfNullOrWhiteSpace(filePath);
+        this.filePath = filePath;
+        this.minimumLevel = minimumLevel;
     }
 
     public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
 
-    public bool IsEnabled(LogLevel logLevel) => true;
+    public bool IsEnabled(LogLevel logLevel)
+    {
+        return logLevel != LogLevel.None && logLevel >= minimumLevel;
+    }
 
     public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
     {
-        if (!IsEnabled(logLevel)) return;
+        ArgumentNullException.ThrowIfNull(formatter);
+        if (!IsEnabled(logLevel))
+        {
+            return;
+        }
 
         var message = formatter(state, exception);
-        var logRecord = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] [{logLevel}] [{_categoryName}] {message}";
+        var logRecord = $"{DateTimeOffset.Now:HH:mm:ss} {FormatLevel(logLevel)} {message}";
         if (exception != null)
         {
             logRecord += Environment.NewLine + exception.ToString();
         }
 
-        lock (_lock)
+        lock (SyncRoot)
         {
             try
             {
-                File.AppendAllText(_filePath, logRecord + Environment.NewLine, LogEncoding);
+                var directory = Path.GetDirectoryName(filePath);
+                if (!string.IsNullOrWhiteSpace(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
+
+                File.AppendAllText(filePath, logRecord + Environment.NewLine, LogEncoding);
             }
             catch
             {
@@ -45,15 +58,32 @@ public class SimpleFileLogger : ILogger
             }
         }
     }
+
+    private static string FormatLevel(LogLevel logLevel)
+    {
+        return logLevel switch
+        {
+            LogLevel.Trace => "TRC",
+            LogLevel.Debug => "DBG",
+            LogLevel.Information => "INF",
+            LogLevel.Warning => "WRN",
+            LogLevel.Error => "ERR",
+            LogLevel.Critical => "CRT",
+            _ => "LOG"
+        };
+    }
 }
 
-public class SimpleFileLoggerProvider : ILoggerProvider
+public sealed class SimpleFileLoggerProvider : ILoggerProvider
 {
-    private readonly string _filePath;
+    private readonly string filePath;
+    private readonly LogLevel minimumLevel;
 
-    public SimpleFileLoggerProvider(string filePath)
+    public SimpleFileLoggerProvider(string filePath, LogLevel minimumLevel = LogLevel.Debug)
     {
-        _filePath = filePath;
+        ArgumentException.ThrowIfNullOrWhiteSpace(filePath);
+        this.filePath = filePath;
+        this.minimumLevel = minimumLevel;
     }
 
     public static string CreateTimestampedPath(string filePath)
@@ -81,7 +111,7 @@ public class SimpleFileLoggerProvider : ILoggerProvider
 
     public ILogger CreateLogger(string categoryName)
     {
-        return new SimpleFileLogger(categoryName, _filePath);
+        return new SimpleFileLogger(filePath, minimumLevel);
     }
 
     public void Dispose() { }

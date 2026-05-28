@@ -17,6 +17,7 @@ public sealed class CharacterDossiersGenerator
     private readonly CharacterBibleCandidateExtractor candidateExtractor;
     private readonly CharacterBibleResolver resolver;
     private readonly CharacterBibleDossierPatcher dossierPatcher;
+    private readonly CharacterBibleExtractionLimits limits;
 
     public CharacterDossiersGenerator(
         IDocumentContext documentContext,
@@ -50,6 +51,7 @@ public sealed class CharacterDossiersGenerator
         ArgumentNullException.ThrowIfNull(characterVectorSearchTool);
 
         this.dossierService = dossierService;
+        this.limits = limits;
         var paragraphBatcher = new CharacterBibleParagraphBatcher(limits);
         textCollector = new CharacterBibleTextCollector(documentContext, limits, logger);
         candidateExtractor = new CharacterBibleCandidateExtractor(
@@ -81,6 +83,10 @@ public sealed class CharacterDossiersGenerator
     {
         return textCollector.CollectParagraphs(changedPointers, progress);
     }
+
+    internal int DocumentItemCount => textCollector.DocumentItemCount;
+
+    internal CharacterBibleExtractionLimits Limits => limits;
 
     internal Task<CharacterBibleCandidateExtractionResult> ExtractCandidatesAsync(
         IReadOnlyList<TextFragment> paragraphs,

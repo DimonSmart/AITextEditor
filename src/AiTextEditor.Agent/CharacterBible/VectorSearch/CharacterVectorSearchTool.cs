@@ -1,6 +1,8 @@
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Diagnostics;
+using AiTextEditor.Agent.CharacterBible.Diagnostics;
 using AiTextEditor.Core.Model;
 
 namespace AiTextEditor.Agent.CharacterBible.VectorSearch;
@@ -71,6 +73,9 @@ public sealed partial class CharacterVectorSearchTool : ICharacterVectorSearchTo
         ArgumentNullException.ThrowIfNull(dossiers);
         if (string.IsNullOrWhiteSpace(query) || limit <= 0)
         {
+            CharacterBibleRunLogScope.Current?.Debug(
+                "vector.search.done",
+                $"query={LogValueFormatter.Quote(query)} limit={limit} resultCount=0 durationMs=0");
             return [];
         }
 
@@ -78,14 +83,18 @@ public sealed partial class CharacterVectorSearchTool : ICharacterVectorSearchTo
         var snapshot = indexSnapshot;
         if (snapshot.Entries.Count == 0)
         {
+            CharacterBibleRunLogScope.Current?.Debug(
+                "vector.search.done",
+                $"query={LogValueFormatter.Quote(query)} limit={limit} resultCount=0 durationMs=0");
             return [];
         }
 
+        var stopwatch = Stopwatch.StartNew();
         var queryEmbedding = await embeddingClient.GenerateEmbeddingAsync(
             NormalizeText(query),
             cancellationToken).ConfigureAwait(false);
 
-        return snapshot.Entries
+        var results = snapshot.Entries
             .Select(entry => new CharacterVectorSearchHit(
                 entry.Card,
                 CosineSimilarity(queryEmbedding.Span, entry.Embedding.Span)))
@@ -94,6 +103,11 @@ public sealed partial class CharacterVectorSearchTool : ICharacterVectorSearchTo
             .ThenBy(hit => hit.Card.EntryId, StringComparer.Ordinal)
             .Take(limit)
             .ToList();
+        stopwatch.Stop();
+        CharacterBibleRunLogScope.Current?.Debug(
+            "vector.search.done",
+            $"query={LogValueFormatter.Quote(query)} limit={limit} resultCount={results.Count} durationMs={stopwatch.ElapsedMilliseconds}");
+        return results;
     }
 
     private async Task EnsureIndexIsCurrentAsync(
@@ -110,7 +124,27 @@ public sealed partial class CharacterVectorSearchTool : ICharacterVectorSearchTo
             if (documents.Count == 0)
             {
                 indexSnapshot = CharacterVectorIndexSnapshot.Empty;
+                CharacterBibleRunLogScope.Current?.Info(
+                    "vector.index.rebuild",
+                    "characters=0 fingerprint=empty reason=\"snapshot empty\"");
                 return;
+            }
+
+            var snapshotFingerprint = ComputeSnapshotFingerprint(documents);
+            var previousFingerprint = ComputeSnapshotFingerprint(indexSnapshot.Entries);
+            var reusedSnapshot = indexSnapshot.Entries.Count == documents.Count
+                && string.Equals(previousFingerprint, snapshotFingerprint, StringComparison.Ordinal);
+            if (reusedSnapshot)
+            {
+                CharacterBibleRunLogScope.Current?.Debug(
+                    "vector.index.reuse",
+                    $"characters={documents.Count} fingerprint={snapshotFingerprint}");
+            }
+            else
+            {
+                CharacterBibleRunLogScope.Current?.Info(
+                    "vector.index.rebuild",
+                    $"characters={documents.Count} fingerprint={snapshotFingerprint} reason={LogValueFormatter.Quote("snapshot changed")}");
             }
 
             var existingEntries = indexSnapshot.Entries.ToDictionary(
@@ -241,6 +275,33 @@ public sealed partial class CharacterVectorSearchTool : ICharacterVectorSearchTo
 
         return Convert.ToHexString(
             SHA256.HashData(Encoding.UTF8.GetBytes(fingerprintInput)));
+    }
+
+    private static string ComputeSnapshotFingerprint(IEnumerable<CharacterVectorIndexDocument> documents)
+    {
+        var input = string.Join(
+            "\n",
+            documents
+                .OrderBy(document => document.EntryId, StringComparer.Ordinal)
+                .Select(document => $"{document.EntryId}:{document.Fingerprint}"));
+
+        return ShortHash(input);
+    }
+
+    private static string ComputeSnapshotFingerprint(IEnumerable<CharacterVectorIndexEntry> entries)
+    {
+        var input = string.Join(
+            "\n",
+            entries
+                .OrderBy(entry => entry.EntryId, StringComparer.Ordinal)
+                .Select(entry => $"{entry.EntryId}:{entry.Fingerprint}"));
+
+        return input.Length == 0 ? "empty" : ShortHash(input);
+    }
+
+    private static string ShortHash(string value)
+    {
+        return Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(value)))[..8].ToLowerInvariant();
     }
 
     private static double CosineSimilarity(ReadOnlySpan<float> left, ReadOnlySpan<float> right)

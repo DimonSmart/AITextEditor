@@ -1,4 +1,5 @@
 using AiTextEditor.Core.Model;
+using AiTextEditor.Agent.CharacterBible.Diagnostics;
 
 namespace AiTextEditor.Agent.CharacterBible.Resolution;
 
@@ -48,6 +49,9 @@ internal sealed class CharacterBibleCandidateResolutionApplier
         {
             cancellationToken.ThrowIfCancellationRequested();
             var candidate = candidates[index];
+            CharacterBibleRunLogScope.Current?.Info(
+                "resolve.candidate.start",
+                $"index={index + 1} total={candidates.Count} candidateId={LogValueFormatter.ShortId(candidate.CandidateId)} name={LogValueFormatter.Quote(candidate.CanonicalName)} gender={LogValueFormatter.Quote(candidate.Gender)} aliases={LogValueFormatter.List(candidate.AliasExamples.Keys)} pointers={LogValueFormatter.List(candidate.Evidence.Select(evidence => evidence.Pointer))}");
             var identityDecision = await resolveIdentity(session.Current, candidate, cancellationToken).ConfigureAwait(false);
 
             ApplyDecision(
@@ -56,6 +60,13 @@ internal sealed class CharacterBibleCandidateResolutionApplier
                 identityDecision,
                 importanceAccumulator,
                 createdCharacterIds);
+            var decision = session.Decisions[^1];
+            CharacterBibleRunLogScope.Current?.Info(
+                "resolve.decision",
+                $"candidateId={LogValueFormatter.ShortId(candidate.CandidateId)} name={LogValueFormatter.Quote(candidate.CanonicalName)} decision={decision.Kind.ToString().ToLowerInvariant()} entryId={LogValueFormatter.ShortId(decision.CharacterId)} entryIds={LogValueFormatter.List(decision.CandidateIds)} reason={LogValueFormatter.Quote(decision.Reason)}");
+            CharacterBibleRunLogScope.Current?.Info(
+                "resolve.apply",
+                $"candidateId={LogValueFormatter.ShortId(candidate.CandidateId)} characterId={LogValueFormatter.ShortId(decision.CharacterId)} decision={decision.Kind.ToString().ToLowerInvariant()} evidenceAdded={candidate.Evidence.Count}");
             progress?.Report(new CharacterBibleWorkflowProgress(
                 "resolve",
                 $"Resolved candidate {index + 1}/{candidates.Count}: {candidate.CanonicalName} -> {session.Decisions[^1].Kind}."));

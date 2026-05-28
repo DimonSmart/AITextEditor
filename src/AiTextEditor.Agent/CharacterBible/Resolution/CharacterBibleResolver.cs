@@ -1,4 +1,5 @@
 using AiTextEditor.Agent.CharacterBible.Patching;
+using AiTextEditor.Agent.CharacterBible.Diagnostics;
 using AiTextEditor.Agent.CharacterBible.VectorSearch;
 using AiTextEditor.Core.Model;
 using Microsoft.Extensions.Logging;
@@ -64,7 +65,11 @@ internal sealed class CharacterBibleResolver
         IProgress<CharacterBibleWorkflowProgress>? progress,
         CancellationToken cancellationToken)
     {
-        var searchTool = new CharacterArchiveSearchToolAdapter(currentArchive, characterVectorSearchTool);
+        var searchTool = new CharacterArchiveSearchToolAdapter(
+            currentArchive,
+            characterVectorSearchTool,
+            candidate.CandidateId,
+            candidate.CanonicalName);
         var response = await identityResolutionModelClient.ResolveAsync(
             new CharacterIdentityResolutionModelRequest(
                 identityResolutionPromptBuilder.BuildSystemPrompt(),
@@ -73,9 +78,11 @@ internal sealed class CharacterBibleResolver
                 new CharacterBibleAgentDiagnosticProgress(
                     progress,
                     "resolve",
-                    $"Identity resolver for {candidate.CanonicalName}")),
+                    $"Identity resolver for {candidate.CanonicalName}",
+                    $"candidateId={LogValueFormatter.ShortId(candidate.CandidateId)} name={LogValueFormatter.Quote(candidate.CanonicalName)}")),
             cancellationToken).ConfigureAwait(false);
 
+        LogProtocolDiagnostics(candidate, response, currentArchive, searchTool.ObservedEntryIds);
         var decision = ToIdentityDecision(response, currentArchive);
         if (decision.Kind == IdentityResolutionKind.IdentityConflict)
         {
@@ -98,7 +105,11 @@ internal sealed class CharacterBibleResolver
             return decision;
         }
 
-        var archiveHits = await new CharacterArchiveSearchToolAdapter(currentArchive, characterVectorSearchTool)
+        var archiveHits = await new CharacterArchiveSearchToolAdapter(
+                currentArchive,
+                characterVectorSearchTool,
+                candidate.CandidateId,
+                candidate.CanonicalName)
             .SearchCharactersAsync(
                 string.Join(' ', candidate.CanonicalName, string.Join(' ', candidate.AliasExamples.Keys)),
                 limit: 10,
@@ -110,6 +121,9 @@ internal sealed class CharacterBibleResolver
             progress?.Report(new CharacterBibleWorkflowProgress(
                 "split",
                 $"Proposing split for identity conflict: {candidate.CanonicalName}."));
+            CharacterBibleRunLogScope.Current?.Info(
+                "split.start",
+                $"candidateId={LogValueFormatter.ShortId(candidate.CandidateId)} name={LogValueFormatter.Quote(candidate.CanonicalName)} entryIds={LogValueFormatter.List(decision.AlternativeEntryIds)}");
             var proposal = await splitCandidateModelClient.ProposeSplitAsync(
                 new SplitCandidateModelRequest(
                     splitCandidatePromptBuilder.BuildSystemPrompt(),
@@ -117,11 +131,15 @@ internal sealed class CharacterBibleResolver
                     new CharacterBibleAgentDiagnosticProgress(
                         progress,
                         "split",
-                        $"Split proposal for {candidate.CanonicalName}")),
+                        $"Split proposal for {candidate.CanonicalName}",
+                        $"candidateId={LogValueFormatter.ShortId(candidate.CandidateId)} name={LogValueFormatter.Quote(candidate.CanonicalName)}")),
                 cancellationToken).ConfigureAwait(false);
             progress?.Report(new CharacterBibleWorkflowProgress(
                 "split",
                 $"Split proposal for {candidate.CanonicalName}: {proposal.Kind}."));
+            CharacterBibleRunLogScope.Current?.Info(
+                "split.result",
+                $"candidateId={LogValueFormatter.ShortId(candidate.CandidateId)} name={LogValueFormatter.Quote(candidate.CanonicalName)} kind={LogValueFormatter.Quote(proposal.Kind)} reason={LogValueFormatter.Quote(proposal.Reason)}");
             return decision with { SplitProposal = proposal };
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
@@ -130,6 +148,10 @@ internal sealed class CharacterBibleResolver
                 ex,
                 "split_candidate_agent_failed: candidate={CandidateName}",
                 candidate.CanonicalName);
+            CharacterBibleRunLogScope.Current?.Error(
+                "split.failed",
+                $"candidateId={LogValueFormatter.ShortId(candidate.CandidateId)} name={LogValueFormatter.Quote(candidate.CanonicalName)} message={LogValueFormatter.Quote(ex.Message)}",
+                ex);
             progress?.Report(new CharacterBibleWorkflowProgress(
                 "split",
                 $"Split candidate agent failed for {candidate.CanonicalName}; conflict recorded without split proposal.",
@@ -161,6 +183,48 @@ internal sealed class CharacterBibleResolver
                 reason),
             _ => IdentityResolutionDecision.Defer([], "Identity resolver agent returned unsupported decision.")
         };
+    }
+
+    private static void LogProtocolDiagnostics(
+        CharacterBibleCharacterCandidate candidate,
+        CharacterIdentityResolutionResponse response,
+        CharacterDossiers currentArchive,
+        IReadOnlySet<string> observedEntryIds)
+    {
+        var logger = CharacterBibleRunLogScope.Current;
+        if (logger is null)
+        {
+            return;
+        }
+
+        if (response.Decision == CharacterIdentityDecision.Existing)
+        {
+            if (string.IsNullOrWhiteSpace(response.EntryId))
+            {
+                logger.Warning(
+                    "resolve.protocol.error",
+                    $"candidateId={LogValueFormatter.ShortId(candidate.CandidateId)} decision=existing message={LogValueFormatter.Quote("entryId is missing")}");
+                logger.Warning(
+                    "resolve.protocol.defer",
+                    $"candidateId={LogValueFormatter.ShortId(candidate.CandidateId)} reason={LogValueFormatter.Quote("resolver returned missing entryId for existing decision")}");
+                return;
+            }
+
+            var entryId = response.EntryId.Trim();
+            if (!observedEntryIds.Contains(entryId))
+            {
+                logger.Warning(
+                    "resolve.protocol.warning",
+                    $"candidateId={LogValueFormatter.ShortId(candidate.CandidateId)} decision=existing entryId={entryId} message={LogValueFormatter.Quote("entryId was not present in observed search hits")}");
+            }
+
+            if (!currentArchive.Characters.Any(character => string.Equals(character.CharacterId, entryId, StringComparison.Ordinal)))
+            {
+                logger.Warning(
+                    "resolve.protocol.defer",
+                    $"candidateId={LogValueFormatter.ShortId(candidate.CandidateId)} reason={LogValueFormatter.Quote("resolver returned missing archive entry for existing decision")}");
+            }
+        }
     }
 
     private static IdentityResolutionDecision ResolveExisting(

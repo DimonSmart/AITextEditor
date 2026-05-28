@@ -1,6 +1,7 @@
 using System.Text.Json;
 using AiTextEditor.Agent;
 using AiTextEditor.Agent.CharacterBible;
+using AiTextEditor.Agent.CharacterBible.Diagnostics;
 using Microsoft.Extensions.Logging;
 
 namespace AiTextEditor.Agent.CharacterBible.Extraction;
@@ -38,6 +39,7 @@ internal sealed class CharacterBibleCandidateExtractor
 
         if (paragraphs.Count == 0)
         {
+            CharacterBibleRunLogScope.Current?.Info("extract.done", "candidateCount=0 skippedBatchCount=0 parseErrors=0 contractErrors=0 retries=0 retrySucceeded=0");
             progress?.Report(new CharacterBibleWorkflowProgress(
                 "extract",
                 "No paragraphs available for candidate extraction."));
@@ -51,6 +53,9 @@ internal sealed class CharacterBibleCandidateExtractor
         foreach (var batch in paragraphBatcher.SplitParagraphs(paragraphs.Select(p => (p.Pointer, p.Text)).ToList()))
         {
             batchNumber++;
+            CharacterBibleRunLogScope.Current?.Info(
+                "extract.batch.start",
+                $"batchIndex={batchNumber} paragraphCount={batch.Count} firstPointer={LogValueFormatter.Quote(batch[0].Pointer)} lastPointer={LogValueFormatter.Quote(batch[^1].Pointer)}");
             progress?.Report(new CharacterBibleWorkflowProgress(
                     "extract",
                     $"Extracting candidates from batch {batchNumber} ({batch.Count} paragraphs, {batch[0].Pointer}..{batch[^1].Pointer})."));
@@ -65,6 +70,17 @@ internal sealed class CharacterBibleCandidateExtractor
                     .ToArray();
                 var batchCandidates = postProcessor.Process(hits, batchFragments, progress).ToList();
                 candidates.AddRange(batchCandidates.Where(candidate => seenCandidateIds.Add(candidate.CandidateId)));
+                for (var candidateIndex = 0; candidateIndex < batchCandidates.Count; candidateIndex++)
+                {
+                    var candidate = batchCandidates[candidateIndex];
+                    CharacterBibleRunLogScope.Current?.Info(
+                        "extract.candidate",
+                        $"batch={batchNumber} index={candidateIndex + 1} candidateId={LogValueFormatter.ShortId(candidate.CandidateId)} name={LogValueFormatter.Quote(candidate.CanonicalName)} gender={LogValueFormatter.Quote(candidate.Gender)} aliases={LogValueFormatter.List(candidate.AliasExamples.Keys)} pointers={LogValueFormatter.List(candidate.Evidence.Select(evidence => evidence.Pointer))}");
+                }
+
+                CharacterBibleRunLogScope.Current?.Info(
+                    "extract.batch.result",
+                    $"batchIndex={batchNumber} candidateCount={batchCandidates.Count} candidates={LogValueFormatter.List(batchCandidates.Select(candidate => candidate.CanonicalName))}");
                 var batchNames = batchCandidates.Count > 0
                     ? ": " + string.Join(", ", batchCandidates.Select(c => c.CanonicalName))
                     : string.Empty;
@@ -75,6 +91,10 @@ internal sealed class CharacterBibleCandidateExtractor
             catch (Exception ex) when (IsRecoverableBatchExtractionError(ex))
             {
                 modelResponseErrors.AddSkippedBatch(batch.Count);
+                CharacterBibleRunLogScope.Current?.Error(
+                    "extract.batch.error",
+                    $"batchIndex={batchNumber} errorType={ex.GetType().Name} message={LogValueFormatter.Quote(ex.Message)}",
+                    ex);
                 logger.LogError(
                     ex,
                     "Character extraction failed for batch {BatchNumber} ({ParagraphCount} paragraphs, {FirstPointer}..{LastPointer}). Skipping batch.",
@@ -90,6 +110,9 @@ internal sealed class CharacterBibleCandidateExtractor
         }
 
         var statistics = modelResponseErrors.ToStatistics();
+        CharacterBibleRunLogScope.Current?.Info(
+            "extract.done",
+            $"candidateCount={candidates.Count} skippedBatchCount={statistics.SkippedBatchCount} parseErrors={statistics.ParseErrorCount} contractErrors={statistics.ContractErrorCount} retries={statistics.RetryCount} retrySucceeded={statistics.RetrySucceededCount}");
         if (statistics.SkippedBatchCount > 0)
         {
             progress?.Report(new CharacterBibleWorkflowProgress(
@@ -143,6 +166,24 @@ internal sealed class CharacterBibleCandidateExtractor
             ArgumentNullException.ThrowIfNull(value);
 
             statistics.Add(value);
+            var logger = CharacterBibleRunLogScope.Current;
+            var message = $"responseType={value.ResponseType} attempt={value.Attempt} max={value.MaxAttempts} message={LogValueFormatter.Quote(value.Message)} error={LogValueFormatter.Quote(value.Error)} raw={LogValueFormatter.Quote(LogValueFormatter.ShortText(value.RawResponse))}";
+            switch (value.Kind)
+            {
+                case AgenticModelDiagnosticKind.Retry:
+                    logger?.Warning("extract.retry", $"batch={batchNumber} {message}");
+                    break;
+                case AgenticModelDiagnosticKind.RetrySucceeded:
+                    logger?.Info("extract.retry.succeeded", $"batch={batchNumber} {message}");
+                    break;
+                case AgenticModelDiagnosticKind.MalformedResponse:
+                    logger?.Warning("extract.malformed_response", $"batch={batchNumber} {message}");
+                    break;
+                case AgenticModelDiagnosticKind.InvalidContract:
+                    logger?.Warning("extract.contract_error", $"batch={batchNumber} {message}");
+                    break;
+            }
+
             progress?.Report(new CharacterBibleWorkflowProgress(
                 "extract",
                 $"Batch {batchNumber}: {value.Message}",

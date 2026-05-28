@@ -1,4 +1,5 @@
 using AiTextEditor.Core.Model;
+using AiTextEditor.Agent.CharacterBible.Diagnostics;
 using AiTextEditor.Agent.CharacterBible.Workflow;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.Logging;
@@ -32,6 +33,17 @@ public sealed class CharacterBibleWorkflowRunner
         CancellationToken cancellationToken = default)
     {
         request ??= new CharacterBibleWorkflowInput();
+        using var runLogger = CharacterBibleRunLogger.Create(DateTimeOffset.Now);
+        using var runLogScope = CharacterBibleRunLogScope.Push(runLogger);
+        progress?.Report(new CharacterBibleWorkflowProgress(
+            "log",
+            $"Detailed log: {runLogger.Context.LogPath}",
+            CopyText: runLogger.Context.LogPath,
+            CopyLabel: "Copy log path",
+            AlwaysVisible: true));
+        runLogger.Info(
+            "workflow.start",
+            $"run={runLogger.Context.RunId} documentItems={generator.DocumentItemCount} changedPointersCount={NormalizePointers(request.ChangedPointers).Count} fullScanMaxItems={generator.Limits.FullScanMaxItems} maxParagraphsPerBatch={generator.Limits.MaxParagraphsPerBatch} maxBatchBytes={generator.Limits.MaxBatchBytes} overlapParagraphs={generator.Limits.OverlapParagraphs}");
 
         var traversalExecutor = new CollectTextFragmentsExecutor(
             generator,
@@ -80,9 +92,13 @@ public sealed class CharacterBibleWorkflowRunner
             {
                 if (result.Failure is not null)
                 {
+                    runLogger.Error("workflow.finish", $"status=failed error={LogValueFormatter.Quote(result.Failure.Message)}", result.Failure);
                     ExceptionDispatchInfo.Capture(result.Failure).Throw();
                 }
 
+                runLogger.Info(
+                    "workflow.finish",
+                    $"status={result.Status} dossiersCount={result.Dossiers.Characters.Count} version={result.Dossiers.Version} candidateCount={result.CandidateCount} decisionCount={result.DecisionCount} ambiguousCount={result.AmbiguousDecisionCount} durationMs={(DateTimeOffset.Now - runLogger.Context.StartedAt).TotalMilliseconds:0}");
                 return result;
             }
         }
@@ -91,9 +107,11 @@ public sealed class CharacterBibleWorkflowRunner
         {
             if (failedEvent.Data is Exception exception)
             {
+                runLogger.Error("stage.failed", $"message={LogValueFormatter.Quote(exception.Message)}", exception);
                 ExceptionDispatchInfo.Capture(exception).Throw();
             }
 
+            runLogger.Error("stage.failed", "message=\"character_bible_workflow_executor_failed\"");
             throw new InvalidOperationException("character_bible_workflow_executor_failed");
         }
 
@@ -101,12 +119,24 @@ public sealed class CharacterBibleWorkflowRunner
         {
             if (errorEvent.Exception is not null)
             {
+                runLogger.Error("workflow.failed", $"message={LogValueFormatter.Quote(errorEvent.Exception.Message)}", errorEvent.Exception);
                 ExceptionDispatchInfo.Capture(errorEvent.Exception).Throw();
             }
 
+            runLogger.Error("workflow.failed", "message=\"character_bible_workflow_failed\"");
             throw new InvalidOperationException("character_bible_workflow_failed");
         }
 
+        runLogger.Error("workflow.failed", "message=\"character_bible_workflow_produced_no_result\"");
         throw new InvalidOperationException("character_bible_workflow_produced_no_result");
+    }
+
+    private static IReadOnlyCollection<string> NormalizePointers(IReadOnlyCollection<string>? changedPointers)
+    {
+        return changedPointers?
+            .Where(pointer => !string.IsNullOrWhiteSpace(pointer))
+            .Select(pointer => pointer.Trim())
+            .Distinct(StringComparer.Ordinal)
+            .ToArray() ?? [];
     }
 }
