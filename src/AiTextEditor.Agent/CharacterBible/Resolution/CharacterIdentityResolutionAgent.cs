@@ -71,7 +71,6 @@ public sealed class CharacterIdentityResolutionPromptBuilder
             task = "resolve_character_identity",
             candidate = new
             {
-                id = candidate.CandidateId,
                 name = candidate.CanonicalName,
                 gender = candidate.Gender,
                 aliases = candidate.AliasExamples.Keys.ToArray(),
