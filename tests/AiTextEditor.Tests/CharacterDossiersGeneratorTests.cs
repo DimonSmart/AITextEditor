@@ -106,6 +106,20 @@ public sealed class CharacterDossiersGeneratorTests
     }
 
     [Fact]
+    public void CharacterIdentityResolutionPromptBuilder_IncludesNearNameRule()
+    {
+        var builder = new CharacterIdentityResolutionPromptBuilder();
+
+        var systemPrompt = builder.BuildSystemPrompt();
+
+        Assert.Contains("Name similarity is only a retrieval hint, not identity evidence.", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("or one name contains the other as a substring", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("do not merge by name similarity, retrieval rank", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("Check local textual evidence", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("prefer new or ambiguous", systemPrompt, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public async Task GenerateDossiers_DoesNotTrimDossiersWhenLimitIsNotSet()
     {
         var names = new[]

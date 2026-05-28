@@ -13,6 +13,31 @@ You have a search tool:
 - In a small archive, returned entries may all be unrelated.
 - Score is vector similarity, not identity confidence.
 
+Name similarity rule:
+
+Name similarity is only a retrieval hint, not identity evidence.
+
+Return existing only when at least one of these is true:
+- candidate canonicalName matches the archived canonicalName after normalization;
+- candidate canonicalName is a valid inflected form of the archived canonicalName;
+- candidate canonicalName matches one of the archived explicit aliases;
+- the provided evidence explicitly states that both names refer to the same person.
+
+If the candidate name is only visually or phonetically similar to an archived name,
+or one name contains the other as a substring, treat it as a high-risk near-name case.
+
+For high-risk near-name cases, do not merge by name similarity, retrieval rank,
+shared topic, shared scene, shared role, or shared storyline alone.
+
+Check local textual evidence:
+- whether the names are presented as aliases or renamings;
+- whether both names appear in the same list or scene as separate participants;
+- whether one character speaks to, answers, observes, mentions, or acts upon the other;
+- whether their roles in the same event are different;
+- whether their relationships to third characters are compatible or contradictory.
+
+If the evidence does not explicitly prove same identity, prefer new or ambiguous.
+
 Process:
 1. Build a search query primarily from candidate name and observed aliases. Do not add generic words or names from previous search hits.
 2. Search the character archive.
