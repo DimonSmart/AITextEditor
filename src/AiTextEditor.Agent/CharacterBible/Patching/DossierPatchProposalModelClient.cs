@@ -17,42 +17,43 @@ public sealed record DossierPatchProposalModelRequest(
     string UserPrompt,
     IProgress<AgenticModelDiagnostic>? Diagnostics = null);
 
+[JsonConverter(typeof(JsonStringEnumConverter<CharacterBiblePatchProposalStatus>))]
+public enum CharacterBiblePatchProposalStatus
+{
+    [JsonStringEnumMemberName("ready")]
+    Ready,
+
+    [JsonStringEnumMemberName("noUsefulChanges")]
+    NoUsefulChanges
+}
+
+[JsonConverter(typeof(JsonStringEnumConverter<CharacterBibleProfileField>))]
+public enum CharacterBibleProfileField
+{
+    Appearance,
+    StatusAndCompetence,
+    PsychologicalProfile,
+    SpeechAndCommunication
+}
+
 public sealed class DossierPatchProposal
 {
     [JsonRequired]
     [JsonPropertyName("status")]
-    public string? Status { get; init; }
+    public CharacterBiblePatchProposalStatus? Status { get; init; }
 
     [JsonRequired]
-    [JsonPropertyName("aliasesToAdd")]
-    public List<string>? AliasesToAdd { get; init; }
-
-    [JsonRequired]
-    [JsonPropertyName("profilePatch")]
-    public DossierProfilePatch? ProfilePatch { get; init; }
-
-    [JsonRequired]
-    [JsonPropertyName("reason")]
-    public string? Reason { get; init; }
+    [JsonPropertyName("additions")]
+    public List<CharacterBibleProfileAddition>? Additions { get; init; }
 }
 
-public sealed record DossierProfilePatch(
+public sealed record CharacterBibleProfileAddition(
     [property: JsonRequired]
-    [property: JsonPropertyName("appearance")] string? Appearance,
+    [property: JsonPropertyName("field")] CharacterBibleProfileField? Field,
     [property: JsonRequired]
-    [property: JsonPropertyName("statusAndCompetence")] string? StatusAndCompetence,
+    [property: JsonPropertyName("text")] string? Text,
     [property: JsonRequired]
-    [property: JsonPropertyName("psychologicalProfile")] string? PsychologicalProfile,
-    [property: JsonRequired]
-    [property: JsonPropertyName("speechAndCommunication")] string? SpeechAndCommunication,
-    [property: JsonRequired]
-    [property: JsonPropertyName("evidence")] List<DossierPatchEvidence>? Evidence);
-
-public sealed record DossierPatchEvidence(
-    [property: JsonRequired]
-    [property: JsonPropertyName("pointer")] string? Pointer,
-    [property: JsonRequired]
-    [property: JsonPropertyName("excerpt")] string? Excerpt);
+    [property: JsonPropertyName("evidencePointers")] List<string>? EvidencePointers);
 
 public sealed class AgenticDossierPatchProposalModelClient : IDossierPatchProposalModelClient
 {
@@ -98,50 +99,62 @@ public sealed class AgenticDossierPatchProposalModelClient : IDossierPatchPropos
 
     private static bool IsValidResponseContract(DossierPatchProposal proposal, out string error)
     {
-        if (string.IsNullOrWhiteSpace(proposal.Status))
+        if (proposal.Status is null)
         {
             error = "status is required.";
             return false;
         }
 
-        if (!string.Equals(proposal.Status, "ready", StringComparison.Ordinal)
-            && !string.Equals(proposal.Status, "no_useful_changes", StringComparison.Ordinal)
-            && !string.Equals(proposal.Status, "identity_conflict", StringComparison.Ordinal))
+        if (proposal.Additions is null)
         {
-            error = "status has unsupported value.";
+            error = "additions is required.";
             return false;
         }
 
-        if (proposal.Reason is null)
+        if (proposal.Status == CharacterBiblePatchProposalStatus.NoUsefulChanges && proposal.Additions.Count > 0)
         {
-            error = "reason is required.";
+            error = "additions must be empty when status is noUsefulChanges.";
             return false;
         }
 
-        if (proposal.AliasesToAdd is null)
+        if (proposal.Status == CharacterBiblePatchProposalStatus.Ready && proposal.Additions.Count == 0)
         {
-            error = "aliasesToAdd is required.";
+            error = "additions must not be empty when status is ready.";
             return false;
         }
 
-        if (proposal.AliasesToAdd.Any(string.IsNullOrWhiteSpace))
+        for (var index = 0; index < proposal.Additions.Count; index++)
         {
-            error = "aliasesToAdd must not contain empty values.";
-            return false;
-        }
+            var addition = proposal.Additions[index];
+            if (addition.Field is null)
+            {
+                error = $"additions[{index}].field is required.";
+                return false;
+            }
 
-        if (string.Equals(proposal.Status, "ready", StringComparison.Ordinal)
-            && proposal.ProfilePatch is null
-            && proposal.AliasesToAdd.Count == 0)
-        {
-            error = "profilePatch or aliasesToAdd is required when status is ready.";
-            return false;
-        }
+            if (string.IsNullOrWhiteSpace(addition.Text))
+            {
+                error = $"additions[{index}].text is required.";
+                return false;
+            }
 
-        if (proposal.ProfilePatch is not null && proposal.ProfilePatch.Evidence is null)
-        {
-            error = "profilePatch.evidence is required.";
-            return false;
+            if (addition.EvidencePointers is null)
+            {
+                error = $"additions[{index}].evidencePointers is required.";
+                return false;
+            }
+
+            if (addition.EvidencePointers.Count == 0)
+            {
+                error = $"additions[{index}].evidencePointers must not be empty.";
+                return false;
+            }
+
+            if (addition.EvidencePointers.Any(string.IsNullOrWhiteSpace))
+            {
+                error = $"additions[{index}].evidencePointers must not contain empty values.";
+                return false;
+            }
         }
 
         error = string.Empty;

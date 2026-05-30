@@ -464,10 +464,8 @@ public sealed class CharacterBibleWorkflowRunnerTests
         {
             return Task.FromResult(new DossierPatchProposal
             {
-                Status = "no_useful_changes",
-                AliasesToAdd = [],
-                ProfilePatch = null,
-                Reason = "No test patch."
+                Status = CharacterBiblePatchProposalStatus.NoUsefulChanges,
+                Additions = []
             });
         }
     }
@@ -483,10 +481,8 @@ public sealed class CharacterBibleWorkflowRunnerTests
             CallCount++;
             return Task.FromResult(new DossierPatchProposal
             {
-                Status = "no_useful_changes",
-                AliasesToAdd = [],
-                ProfilePatch = null,
-                Reason = "No test patch."
+                Status = CharacterBiblePatchProposalStatus.NoUsefulChanges,
+                Additions = []
             });
         }
     }
@@ -499,7 +495,7 @@ public sealed class CharacterBibleWorkflowRunnerTests
         {
             return Task.FromResult(new DossierReviewResult
             {
-                Verdict = "approved",
+                Verdict = CharacterBiblePatchReviewVerdict.Approved,
                 Issues = []
             });
         }

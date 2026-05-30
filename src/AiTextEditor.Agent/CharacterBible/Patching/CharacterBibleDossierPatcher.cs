@@ -104,8 +104,21 @@ internal sealed class CharacterBibleDossierPatcher
 
             CharacterBibleRunLogScope.Current?.Info(
                 "patch.proposal.result",
-                $"characterId={dossier.CharacterId} status={LogValueFormatter.Quote(proposal.Status)} aliasesToAdd={proposal.AliasesToAdd?.Count ?? 0} changedFields={LogValueFormatter.List(GetChangedProfileFields(proposal.ProfilePatch))} reason={LogValueFormatter.Quote(proposal.Reason)}");
-            if (!string.Equals(proposal.Status, "ready", StringComparison.Ordinal))
+                $"characterId={dossier.CharacterId} status={LogValueFormatter.Quote(proposal.Status?.ToString())} additions={proposal.Additions?.Count ?? 0} changedFields={LogValueFormatter.List(GetChangedProfileFields(proposal.Additions))}");
+            var newEvidence = DossierPatchPromptBuilder.BuildEvidence(patchGroup.Candidates);
+            var validationIssues = ValidateProposal(proposal, newEvidence);
+            if (validationIssues.Count > 0)
+            {
+                CharacterBibleRunLogScope.Current?.Warning(
+                    "patch.proposal.invalid",
+                    $"characterId={dossier.CharacterId} issues={LogValueFormatter.List(validationIssues)}");
+                progress?.Report(new CharacterBibleWorkflowProgress(
+                    "patch",
+                    $"Patch proposal for {dossier.Name}: invalid contract details."));
+                continue;
+            }
+
+            if (proposal.Status != CharacterBiblePatchProposalStatus.Ready)
             {
                 CharacterBibleRunLogScope.Current?.Info(
                     "patch.apply.skipped",
@@ -122,8 +135,8 @@ internal sealed class CharacterBibleDossierPatcher
             var review = await ReviewPatchAsync(dossier, patchGroup.Candidates, proposal, progress, cancellationToken);
             CharacterBibleRunLogScope.Current?.Info(
                 "patch.review.result",
-                $"characterId={dossier.CharacterId} name={LogValueFormatter.Quote(dossier.Name)} verdict={LogValueFormatter.Quote(review.Verdict)} issues={LogValueFormatter.List(review.Issues ?? [])}");
-            if (!string.Equals(review.Verdict, "approved", StringComparison.Ordinal))
+                $"characterId={dossier.CharacterId} name={LogValueFormatter.Quote(dossier.Name)} verdict={LogValueFormatter.Quote(review.Verdict?.ToString())} issues={LogValueFormatter.List(FormatReviewIssues(review.Issues ?? []))}");
+            if (review.Verdict != CharacterBiblePatchReviewVerdict.Approved)
             {
                 CharacterBibleRunLogScope.Current?.Info(
                     "patch.apply.skipped",
@@ -134,11 +147,9 @@ internal sealed class CharacterBibleDossierPatcher
                 continue;
             }
 
-            var aliasExamples = MergeAliases(dossier.AliasExamples, patchGroup.Candidates, proposal.AliasesToAdd);
-            var aliasesChanged = !HasSameAliasExamples(dossier.AliasExamples, aliasExamples);
-            var mergedProfile = MergeProfileAdditions(dossier.Profile, proposal.ProfilePatch);
+            var mergedProfile = MergeProfileAdditions(dossier.Profile, proposal.Additions ?? []);
             var profileChanged = !CharacterProfile.HasSameContent(dossier.Profile, mergedProfile);
-            if (!aliasesChanged && !profileChanged)
+            if (!profileChanged)
             {
                 CharacterBibleRunLogScope.Current?.Info(
                     "patch.apply.no_change",
@@ -149,22 +160,14 @@ internal sealed class CharacterBibleDossierPatcher
                 continue;
             }
 
-            if (aliasesChanged)
-            {
-                runState.Catalog.MergeAliasExamples(dossier.CharacterId, aliasExamples);
-            }
-
-            if (profileChanged)
-            {
-                runState.Catalog.UpdateProfile(dossier.CharacterId, mergedProfile);
-            }
+            runState.Catalog.UpdateProfile(dossier.CharacterId, mergedProfile);
 
             var patchedDossier = runState.Catalog.GetRequired(dossier.CharacterId);
             dossiersById[dossier.CharacterId] = patchedDossier;
             appliedCount++;
             CharacterBibleRunLogScope.Current?.Info(
                 "patch.apply",
-                $"characterId={dossier.CharacterId} name={LogValueFormatter.Quote(dossier.Name)} aliasesAdded={proposal.AliasesToAdd?.Count ?? 0} profileFieldsUpdated={LogValueFormatter.List(GetChangedProfileFields(proposal.ProfilePatch))}");
+                $"characterId={dossier.CharacterId} name={LogValueFormatter.Quote(dossier.Name)} profileFieldsUpdated={LogValueFormatter.List(GetChangedProfileFields(proposal.Additions))}");
             progress?.Report(new CharacterBibleWorkflowProgress(
                 "patch",
                 $"Patch applied for {dossier.Name}."));
@@ -187,17 +190,14 @@ internal sealed class CharacterBibleDossierPatcher
         IProgress<CharacterBibleWorkflowProgress>? progress,
         CancellationToken cancellationToken)
     {
-        var evidenceContexts = candidates
-            .SelectMany(candidate => candidate.EvidenceContexts)
-            .DistinctBy(context => $"{context.Pointer}\u001f{context.AnchorExcerpt}", StringComparer.Ordinal)
-            .ToArray();
+        var evidence = DossierPatchPromptBuilder.BuildReferencedEvidence(candidates, proposal);
 
         try
         {
             return await reviewerModelClient.ReviewAsync(
                 new DossierReviewModelRequest(
                     reviewerPromptBuilder.BuildSystemPrompt(),
-                    reviewerPromptBuilder.BuildUserPrompt(dossier, proposal, evidenceContexts),
+                    reviewerPromptBuilder.BuildUserPrompt(dossier, proposal, evidence),
                     new CharacterBibleAgentDiagnosticProgress(
                         progress,
                         "patch",
@@ -214,8 +214,14 @@ internal sealed class CharacterBibleDossierPatcher
             logger.LogError(ex, "Dossier patch review failed for character {CharacterId}. Patch rejected.", dossier.CharacterId);
             return new DossierReviewResult
             {
-                Verdict = "reject_patch",
-                Issues = ["Reviewer call failed."]
+                Verdict = CharacterBiblePatchReviewVerdict.RevisePatch,
+                Issues =
+                [
+                    new CharacterBiblePatchReviewIssue(
+                        CharacterBiblePatchReviewIssueCode.UnsupportedClaim,
+                        null,
+                        "Reviewer call failed.")
+                ]
             };
         }
     }
@@ -320,50 +326,62 @@ internal sealed class CharacterBibleDossierPatcher
     private static int GetUtf8ByteCount(string? value)
         => string.IsNullOrEmpty(value) ? 0 : Encoding.UTF8.GetByteCount(value);
 
-    private static IReadOnlyList<string> GetChangedProfileFields(DossierProfilePatch? patch)
+    private static IReadOnlyList<string> GetChangedProfileFields(IReadOnlyList<CharacterBibleProfileAddition>? additions)
     {
-        if (patch is null)
+        if (additions is null || additions.Count == 0)
         {
             return [];
         }
 
-        var fields = new List<string>();
-        if (!string.IsNullOrWhiteSpace(patch.Appearance))
-        {
-            fields.Add("appearance");
-        }
-
-        if (!string.IsNullOrWhiteSpace(patch.StatusAndCompetence))
-        {
-            fields.Add("statusAndCompetence");
-        }
-
-        if (!string.IsNullOrWhiteSpace(patch.PsychologicalProfile))
-        {
-            fields.Add("psychologicalProfile");
-        }
-
-        if (!string.IsNullOrWhiteSpace(patch.SpeechAndCommunication))
-        {
-            fields.Add("speechAndCommunication");
-        }
-
-        return fields;
+        return additions
+            .Where(addition => addition.Field is not null)
+            .Select(addition => ToProfileFieldName(addition.Field!.Value))
+            .Distinct(StringComparer.Ordinal)
+            .ToArray();
     }
 
-    private static CharacterProfile MergeProfileAdditions(CharacterProfile? existing, DossierProfilePatch? patch)
+    private static CharacterProfile MergeProfileAdditions(
+        CharacterProfile? existing,
+        IReadOnlyList<CharacterBibleProfileAddition> additions)
     {
-        if (patch is null)
+        var normalizedExisting = CharacterProfile.Normalize(existing);
+        var appearance = normalizedExisting.Appearance;
+        var statusAndCompetence = normalizedExisting.StatusAndCompetence;
+        var psychologicalProfile = normalizedExisting.PsychologicalProfile;
+        var speechAndCommunication = normalizedExisting.SpeechAndCommunication;
+
+        foreach (var addition in additions)
         {
-            return CharacterProfile.Normalize(existing);
+            var text = NullIfWhiteSpace(addition.Text);
+            if (text is null || addition.Field is null)
+            {
+                continue;
+            }
+
+            switch (addition.Field.Value)
+            {
+                case CharacterBibleProfileField.Appearance:
+                    appearance = MergeProfileField(appearance, text);
+                    break;
+                case CharacterBibleProfileField.StatusAndCompetence:
+                    statusAndCompetence = MergeProfileField(statusAndCompetence, text);
+                    break;
+                case CharacterBibleProfileField.PsychologicalProfile:
+                    psychologicalProfile = MergeProfileField(psychologicalProfile, text);
+                    break;
+                case CharacterBibleProfileField.SpeechAndCommunication:
+                    speechAndCommunication = MergeProfileField(speechAndCommunication, text);
+                    break;
+                default:
+                    throw new InvalidOperationException($"Unsupported profile field '{addition.Field}'.");
+            }
         }
 
-        var normalizedExisting = CharacterProfile.Normalize(existing);
         return CharacterProfile.Normalize(new CharacterProfile(
-            MergeProfileField(normalizedExisting.Appearance, patch.Appearance),
-            MergeProfileField(normalizedExisting.StatusAndCompetence, patch.StatusAndCompetence),
-            MergeProfileField(normalizedExisting.PsychologicalProfile, patch.PsychologicalProfile),
-            MergeProfileField(normalizedExisting.SpeechAndCommunication, patch.SpeechAndCommunication)));
+            appearance,
+            statusAndCompetence,
+            psychologicalProfile,
+            speechAndCommunication));
     }
 
     private static string MergeProfileField(string existing, string? addition)
@@ -402,61 +420,61 @@ internal sealed class CharacterBibleDossierPatcher
     private static bool EndsWithSentencePunctuation(string value)
         => value.Length > 0 && value[^1] is '.' or '!' or '?';
 
-    private static Dictionary<string, string> MergeAliases(
-        IReadOnlyDictionary<string, string>? currentAliasExamples,
-        IReadOnlyList<CharacterBibleDossierPatchCandidate> candidates,
-        IReadOnlyList<string>? aliasesToAdd)
+    private static IReadOnlyList<string> ValidateProposal(
+        DossierPatchProposal proposal,
+        IReadOnlyList<CharacterBiblePatchEvidence> newEvidence)
     {
-        var merged = new Dictionary<string, string>(currentAliasExamples ?? new Dictionary<string, string>(), StringComparer.OrdinalIgnoreCase);
-        foreach (var alias in aliasesToAdd ?? [])
+        var issues = new List<string>();
+        var allowedPointers = newEvidence
+            .Select(evidence => evidence.Pointer)
+            .ToHashSet(StringComparer.Ordinal);
+
+        if (proposal.Status == CharacterBiblePatchProposalStatus.Ready && proposal.Additions?.Count == 0)
         {
-            var normalizedAlias = NullIfWhiteSpace(alias);
-            if (normalizedAlias is null || merged.ContainsKey(normalizedAlias))
+            issues.Add("ready proposal has no additions");
+        }
+
+        if (proposal.Status == CharacterBiblePatchProposalStatus.NoUsefulChanges && proposal.Additions?.Count > 0)
+        {
+            issues.Add("noUsefulChanges proposal has additions");
+        }
+
+        foreach (var addition in proposal.Additions ?? [])
+        {
+            if (addition.EvidencePointers is null || addition.EvidencePointers.Count == 0)
             {
+                issues.Add("addition is missing evidence pointers");
                 continue;
             }
 
-            if (!TryGetAliasEvidence(candidates, normalizedAlias, out var evidence)
-                || string.IsNullOrWhiteSpace(evidence.Excerpt))
+            foreach (var pointer in addition.EvidencePointers)
             {
-                continue;
+                if (!allowedPointers.Contains(pointer))
+                {
+                    issues.Add($"evidence pointer not found: {pointer}");
+                }
             }
-
-            merged[normalizedAlias] = evidence.Excerpt.Trim();
         }
 
-        return merged;
+        return issues;
     }
 
-    private static bool TryGetAliasEvidence(
-        IReadOnlyList<CharacterBibleDossierPatchCandidate> candidates,
-        string alias,
-        out CharacterBibleCandidateEvidence evidence)
+    private static IReadOnlyList<string> FormatReviewIssues(IReadOnlyList<CharacterBiblePatchReviewIssue> issues)
     {
-        foreach (var patchCandidate in candidates)
+        return issues
+            .Select(issue => $"{issue.Code}:{issue.Field}:{issue.Message}")
+            .ToArray();
+    }
+
+    private static string ToProfileFieldName(CharacterBibleProfileField field)
+        => field switch
         {
-            if (patchCandidate.Candidate.AliasEvidence.TryGetValue(alias, out var found))
-            {
-                evidence = found;
-                return true;
-            }
-        }
-
-        evidence = default!;
-        return false;
-    }
-
-    private static bool HasSameAliasExamples(
-        IReadOnlyDictionary<string, string>? left,
-        IReadOnlyDictionary<string, string>? right)
-    {
-        var leftItems = left ?? new Dictionary<string, string>();
-        var rightItems = right ?? new Dictionary<string, string>();
-        return leftItems.Count == rightItems.Count
-            && leftItems.All(item =>
-                rightItems.TryGetValue(item.Key, out var value)
-                && string.Equals(item.Value, value, StringComparison.Ordinal));
-    }
+            CharacterBibleProfileField.Appearance => "appearance",
+            CharacterBibleProfileField.StatusAndCompetence => "statusAndCompetence",
+            CharacterBibleProfileField.PsychologicalProfile => "psychologicalProfile",
+            CharacterBibleProfileField.SpeechAndCommunication => "speechAndCommunication",
+            _ => throw new InvalidOperationException($"Unsupported profile field '{field}'.")
+        };
 
     private sealed record DossierPatchGroup(
         string CharacterId,

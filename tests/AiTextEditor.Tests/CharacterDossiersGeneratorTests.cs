@@ -85,24 +85,77 @@ public sealed class CharacterDossiersGeneratorTests
         var userPrompt = builder.BuildUserPrompt([patchCandidate], decision, dossier);
 
         Assert.Contains("DossierPatchProposalAgent", systemPrompt, StringComparison.Ordinal);
-        Assert.Contains("aliasesToAdd", systemPrompt, StringComparison.Ordinal);
-        Assert.Contains("Use null for a field that has no new additive information", systemPrompt, StringComparison.Ordinal);
-        Assert.Contains("Profile field values are additive patches", systemPrompt, StringComparison.Ordinal);
-        Assert.Contains("Do not use an empty string as a delete", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("The output is a list of additions, not a full profile patch", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("Do not rewrite existing profile fields", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("If evidence contains only a bare mention", systemPrompt, StringComparison.Ordinal);
         Assert.Contains("Do not wrap it in Markdown fences", systemPrompt, StringComparison.Ordinal);
-        Assert.Contains("Never return pointer strings", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("evidencePointers must contain at least one pointer from newEvidence", systemPrompt, StringComparison.Ordinal);
 
         using var json = JsonDocument.Parse(userPrompt);
-        Assert.Equal("propose_dossier_patch", json.RootElement.GetProperty("task").GetString());
-        var promptCandidate = json.RootElement.GetProperty("candidates").EnumerateArray().Single();
-        Assert.Equal("John", promptCandidate.GetProperty("canonicalName").GetString());
-        var context = promptCandidate.GetProperty("evidenceContexts").EnumerateArray().Single();
-        Assert.Equal("Johnny entered.", context.GetProperty("anchorExcerpt").GetString());
-        Assert.Equal("Johnny entered and answered briefly.", context.GetProperty("currentParagraph").GetString());
-        var nearby = context.GetProperty("nearbyParagraphs").EnumerateArray().Single();
-        Assert.Equal("p2", nearby.GetProperty("pointer").GetString());
-        Assert.Equal("c1", json.RootElement.GetProperty("identityDecision").GetProperty("targetEntryId").GetString());
-        Assert.Equal("John", json.RootElement.GetProperty("dossier").GetProperty("name").GetString());
+        Assert.Equal("John", json.RootElement.GetProperty("target").GetProperty("name").GetString());
+        Assert.Equal(JsonValueKind.Null, json.RootElement.GetProperty("currentProfile").GetProperty("appearance").ValueKind);
+        var evidence = json.RootElement.GetProperty("newEvidence").EnumerateArray().Single();
+        Assert.Equal("p1", evidence.GetProperty("pointer").GetString());
+        var evidenceText = evidence.GetProperty("text").GetString();
+        Assert.Contains("Johnny entered.", evidenceText, StringComparison.Ordinal);
+        Assert.Contains("Johnny entered and answered briefly.", evidenceText, StringComparison.Ordinal);
+        Assert.Contains("Mary watched.", evidenceText, StringComparison.Ordinal);
+        Assert.DoesNotContain("candidateId", userPrompt, StringComparison.Ordinal);
+        Assert.DoesNotContain("characterId", userPrompt, StringComparison.Ordinal);
+        Assert.DoesNotContain("identityDecision", userPrompt, StringComparison.Ordinal);
+        Assert.DoesNotContain("candidateIds", userPrompt, StringComparison.Ordinal);
+        Assert.DoesNotContain("evidenceContexts", userPrompt, StringComparison.Ordinal);
+        Assert.DoesNotContain("aliasesToAdd", userPrompt, StringComparison.Ordinal);
+        Assert.DoesNotContain("profilePatch", userPrompt, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void DossierConsistencyReviewerPromptBuilder_BuildsCompactUserPromptJson()
+    {
+        var builder = new DossierConsistencyReviewerPromptBuilder();
+        var dossier = new AiTextEditor.Core.Model.CharacterDossier(
+            "c1",
+            "John",
+            ["Johnny"],
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["Johnny"] = "Johnny entered."
+            },
+            "unknown",
+            null,
+            new AiTextEditor.Core.Model.CharacterProfile(
+                StatusAndCompetence: "Учёный и организатор экспедиции."));
+        var proposal = new DossierPatchProposal
+        {
+            Status = CharacterBiblePatchProposalStatus.Ready,
+            Additions =
+            [
+                new CharacterBibleProfileAddition(
+                    CharacterBibleProfileField.StatusAndCompetence,
+                    "Опубликовал книгу о путешествии.",
+                    ["p10"])
+            ]
+        };
+        var userPrompt = builder.BuildUserPrompt(
+            dossier,
+            proposal,
+            [new CharacterBiblePatchEvidence("p10", "John published a travel book.")]);
+
+        using var json = JsonDocument.Parse(userPrompt);
+        Assert.Equal("John", json.RootElement.GetProperty("target").GetProperty("name").GetString());
+        Assert.Equal(
+            "Учёный и организатор экспедиции.",
+            json.RootElement.GetProperty("currentProfile").GetProperty("statusAndCompetence").GetString());
+        Assert.Equal("ready", json.RootElement.GetProperty("proposal").GetProperty("status").GetString());
+        var addition = json.RootElement.GetProperty("proposal").GetProperty("additions").EnumerateArray().Single();
+        Assert.Equal("StatusAndCompetence", addition.GetProperty("field").GetString());
+        Assert.Equal("p10", addition.GetProperty("evidencePointers").EnumerateArray().Single().GetString());
+        Assert.Equal("p10", json.RootElement.GetProperty("evidence").EnumerateArray().Single().GetProperty("pointer").GetString());
+        Assert.DoesNotContain("candidateId", userPrompt, StringComparison.Ordinal);
+        Assert.DoesNotContain("characterId", userPrompt, StringComparison.Ordinal);
+        Assert.DoesNotContain("identityDecision", userPrompt, StringComparison.Ordinal);
+        Assert.DoesNotContain("aliases", userPrompt, StringComparison.Ordinal);
+        Assert.DoesNotContain("evidenceContexts", userPrompt, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -542,6 +595,54 @@ public sealed class CharacterDossiersGeneratorTests
     }
 
     [Fact]
+    public async Task GenerateDossiers_DoesNotApplyUnsupportedPatchAddition()
+    {
+        var dossierService = new CharacterDossierService();
+        var repository = new MarkdownDocumentRepository();
+        var document = repository.LoadFromMarkdown("John wore old clothes that smelled of naphthalene.");
+        var documentContext = new DocumentContext(document, dossierService);
+        var limits = new CharacterBibleExtractionLimits { MaxParagraphsPerBatch = 256, MaxBatchBytes = 1024 * 128 };
+        var extractionModelClient = new ScriptedCharacterExtractionModelClient(
+            Response(Character(
+                "John",
+                Alias("John", "John wore old clothes that smelled of naphthalene."))));
+        var patchClient = new ScriptedDossierPatchProposalModelClient(
+            ReadyPatch(statusAndCompetence: "Пытался улучшить гардероб."));
+        var reviewerClient = new ScriptedDossierConsistencyReviewerModelClient(
+            new DossierReviewResult
+            {
+                Verdict = CharacterBiblePatchReviewVerdict.RevisePatch,
+                Issues =
+                [
+                    new CharacterBiblePatchReviewIssue(
+                        CharacterBiblePatchReviewIssueCode.UnsupportedClaim,
+                        CharacterBibleProfileField.StatusAndCompetence,
+                        "Evidence supports old clothes and naphthalene smell, not an attempt to improve the wardrobe.")
+                ]
+            });
+
+        var generator = new CharacterDossiersGenerator(
+            documentContext,
+            dossierService,
+            limits,
+            NullLogger<CharacterDossiersGenerator>.Instance,
+            extractionModelClient,
+            new CharacterExtractionPromptBuilder(),
+            patchClient,
+            new DossierPatchPromptBuilder(),
+            reviewerClient,
+            new DossierConsistencyReviewerPromptBuilder(),
+            NewIdentityResolverClient(),
+            NewVectorSearchTool());
+
+        var dossiers = await generator.GenerateAsync();
+
+        var dossier = Assert.Single(dossiers.Characters);
+        Assert.Equal(string.Empty, dossier.Profile!.StatusAndCompetence);
+        Assert.Single(reviewerClient.Requests);
+    }
+
+    [Fact]
     public async Task GenerateDossiers_PatchPromptExpandsAnchorPointerToNearbyDialogue()
     {
         var dossierService = new CharacterDossierService();
@@ -575,16 +676,11 @@ public sealed class CharacterDossiersGeneratorTests
 
         var request = Assert.Single(patchClient.Requests);
         using var json = JsonDocument.Parse(request.UserPrompt);
-        var promptCandidate = json.RootElement.GetProperty("candidates").EnumerateArray().Single();
-        var context = promptCandidate.GetProperty("evidenceContexts").EnumerateArray().Single();
-        Assert.Equal("p1", context.GetProperty("pointer").GetString());
-        Assert.Equal("А Незнайка сказал:", context.GetProperty("anchorExcerpt").GetString());
-        Assert.Equal("А Незнайка сказал:", context.GetProperty("currentParagraph").GetString());
-
-        var nearbyParagraphs = context.GetProperty("nearbyParagraphs").EnumerateArray().ToArray();
-        Assert.Contains(nearbyParagraphs, paragraph =>
-            paragraph.GetProperty("position").GetString() == "next"
-            && paragraph.GetProperty("text").GetString() == "– Мы будем сегодня завтракать?");
+        var evidence = json.RootElement.GetProperty("newEvidence").EnumerateArray().Single();
+        Assert.Equal("p1", evidence.GetProperty("pointer").GetString());
+        var evidenceText = evidence.GetProperty("text").GetString();
+        Assert.Contains("А Незнайка сказал:", evidenceText, StringComparison.Ordinal);
+        Assert.Contains("– Мы будем сегодня завтракать?", evidenceText, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -628,15 +724,12 @@ public sealed class CharacterDossiersGeneratorTests
 
         var request = Assert.Single(patchClient.Requests);
         using var json = JsonDocument.Parse(request.UserPrompt);
-        var candidates = json.RootElement.GetProperty("candidates").EnumerateArray().ToArray();
-        Assert.Equal(2, candidates.Length);
-
-        var contextPointers = candidates
-            .SelectMany(candidate => candidate.GetProperty("evidenceContexts").EnumerateArray())
-            .Select(context => context.GetProperty("pointer").GetString() ?? string.Empty)
+        var evidencePointers = json.RootElement.GetProperty("newEvidence")
+            .EnumerateArray()
+            .Select(evidence => evidence.GetProperty("pointer").GetString() ?? string.Empty)
             .OrderBy(pointer => pointer, StringComparer.Ordinal)
             .ToArray();
-        Assert.Equal(["p1", "p2"], contextPointers);
+        Assert.Equal(["p1", "p2"], evidencePointers);
         Assert.Equal(1, patchClient.CallCount);
     }
 
@@ -685,12 +778,12 @@ public sealed class CharacterDossiersGeneratorTests
         Assert.All(patchClient.Requests, request =>
         {
             using var json = JsonDocument.Parse(request.UserPrompt);
-            Assert.Single(json.RootElement.GetProperty("candidates").EnumerateArray());
+            Assert.Single(json.RootElement.GetProperty("newEvidence").EnumerateArray());
         });
     }
 
     [Fact]
-    public async Task GenerateDossiers_AppliesAliasPatchFromCandidateEvidence()
+    public async Task GenerateDossiers_PatchPromptDoesNotExposeAliases()
     {
         var dossierService = new CharacterDossierService();
         dossierService.UpsertDossier(new AiTextEditor.Core.Model.CharacterDossier(
@@ -712,7 +805,7 @@ public sealed class CharacterDossiersGeneratorTests
                 "John",
                 Alias("Johnny", "Johnny stood tall."))));
         var patchClient = new ScriptedDossierPatchProposalModelClient(
-            ReadyPatch(aliasesToAdd: ["Johnny"]));
+            ReadyPatch(statusAndCompetence: "Стоит прямо."));
 
         var generator = new CharacterDossiersGenerator(
             documentContext,
@@ -734,6 +827,8 @@ public sealed class CharacterDossiersGeneratorTests
         Assert.Contains("Johnny", dossier.Aliases, StringComparer.OrdinalIgnoreCase);
         Assert.Equal("Johnny stood tall.", dossier.AliasExamples["Johnny"]);
         Assert.Equal(1, patchClient.CallCount);
+        Assert.DoesNotContain("aliases", patchClient.Requests.Single().UserPrompt, StringComparison.Ordinal);
+        Assert.DoesNotContain("aliasesToAdd", patchClient.Requests.Single().SystemPrompt, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -1026,24 +1121,35 @@ public sealed class CharacterDossiersGeneratorTests
         => new TestCharacterVectorSearchTool();
 
     private static DossierPatchProposal ReadyPatch(
-        IReadOnlyList<string>? aliasesToAdd = null,
         string? appearance = null,
         string? statusAndCompetence = null,
         string? psychologicalProfile = null,
         string? speechAndCommunication = null)
     {
+        var additions = new List<CharacterBibleProfileAddition>();
+        AddProfileAddition(additions, CharacterBibleProfileField.Appearance, appearance);
+        AddProfileAddition(additions, CharacterBibleProfileField.StatusAndCompetence, statusAndCompetence);
+        AddProfileAddition(additions, CharacterBibleProfileField.PsychologicalProfile, psychologicalProfile);
+        AddProfileAddition(additions, CharacterBibleProfileField.SpeechAndCommunication, speechAndCommunication);
+
         return new DossierPatchProposal
         {
-            Status = "ready",
-            AliasesToAdd = aliasesToAdd?.ToList() ?? [],
-            ProfilePatch = new DossierProfilePatch(
-                appearance,
-                statusAndCompetence,
-                psychologicalProfile,
-                speechAndCommunication,
-                [new DossierPatchEvidence("p1", "John stood tall and answered briefly.")]),
-            Reason = "Profile evidence found."
+            Status = CharacterBiblePatchProposalStatus.Ready,
+            Additions = additions
         };
+    }
+
+    private static void AddProfileAddition(
+        List<CharacterBibleProfileAddition> additions,
+        CharacterBibleProfileField field,
+        string? text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return;
+        }
+
+        additions.Add(new CharacterBibleProfileAddition(field, text, ["p1"]));
     }
 
     private sealed class CapturingCharacterExtractionModelClient : ICharacterExtractionModelClient
@@ -1179,10 +1285,8 @@ public sealed class CharacterDossiersGeneratorTests
         {
             return Task.FromResult(new DossierPatchProposal
             {
-                Status = "no_useful_changes",
-                AliasesToAdd = [],
-                ProfilePatch = null,
-                Reason = "No test patch."
+                Status = CharacterBiblePatchProposalStatus.NoUsefulChanges,
+                Additions = []
             });
         }
     }
@@ -1206,10 +1310,8 @@ public sealed class CharacterDossiersGeneratorTests
                 ? proposals.Dequeue()
                 : new DossierPatchProposal
                 {
-                    Status = "no_useful_changes",
-                    AliasesToAdd = [],
-                    ProfilePatch = null,
-                    Reason = "No scripted patch."
+                    Status = CharacterBiblePatchProposalStatus.NoUsefulChanges,
+                    Additions = []
                 });
         }
     }
@@ -1222,9 +1324,31 @@ public sealed class CharacterDossiersGeneratorTests
         {
             return Task.FromResult(new DossierReviewResult
             {
-                Verdict = "approved",
+                Verdict = CharacterBiblePatchReviewVerdict.Approved,
                 Issues = []
             });
+        }
+    }
+
+    private sealed class ScriptedDossierConsistencyReviewerModelClient(params DossierReviewResult[] results)
+        : IDossierConsistencyReviewerModelClient
+    {
+        private readonly Queue<DossierReviewResult> results = new(results);
+
+        public List<DossierReviewModelRequest> Requests { get; } = [];
+
+        public Task<DossierReviewResult> ReviewAsync(
+            DossierReviewModelRequest request,
+            CancellationToken cancellationToken = default)
+        {
+            Requests.Add(request);
+            return Task.FromResult(results.Count > 0
+                ? results.Dequeue()
+                : new DossierReviewResult
+                {
+                    Verdict = CharacterBiblePatchReviewVerdict.Approved,
+                    Issues = []
+                });
         }
     }
 

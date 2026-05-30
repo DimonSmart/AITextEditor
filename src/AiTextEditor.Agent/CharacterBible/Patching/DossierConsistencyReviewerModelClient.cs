@@ -23,12 +23,41 @@ public sealed class DossierReviewResult
 {
     [JsonRequired]
     [JsonPropertyName("verdict")]
-    public string? Verdict { get; init; }
+    public CharacterBiblePatchReviewVerdict? Verdict { get; init; }
 
     [JsonRequired]
     [JsonPropertyName("issues")]
-    public List<string>? Issues { get; init; }
+    public List<CharacterBiblePatchReviewIssue>? Issues { get; init; }
 }
+
+[JsonConverter(typeof(JsonStringEnumConverter<CharacterBiblePatchReviewVerdict>))]
+public enum CharacterBiblePatchReviewVerdict
+{
+    [JsonStringEnumMemberName("approved")]
+    Approved,
+
+    [JsonStringEnumMemberName("revisePatch")]
+    RevisePatch
+}
+
+[JsonConverter(typeof(JsonStringEnumConverter<CharacterBiblePatchReviewIssueCode>))]
+public enum CharacterBiblePatchReviewIssueCode
+{
+    UnsupportedClaim,
+    MissingEvidencePointer,
+    PointerNotInEvidence,
+    DuplicatesExistingFact,
+    WrongCharacter,
+    AttemptsToReplaceExistingField
+}
+
+public sealed record CharacterBiblePatchReviewIssue(
+    [property: JsonRequired]
+    [property: JsonPropertyName("code")] CharacterBiblePatchReviewIssueCode? Code,
+    [property: JsonRequired]
+    [property: JsonPropertyName("field")] CharacterBibleProfileField? Field,
+    [property: JsonRequired]
+    [property: JsonPropertyName("message")] string? Message);
 
 public sealed class DossierConsistencyReviewerPromptBuilder
 {
@@ -38,7 +67,7 @@ public sealed class DossierConsistencyReviewerPromptBuilder
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNameCaseInsensitive = true,
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
         WriteIndented = false
     };
@@ -48,34 +77,36 @@ public sealed class DossierConsistencyReviewerPromptBuilder
     internal string BuildUserPrompt(
         CharacterDossier dossierBefore,
         DossierPatchProposal patchProposal,
-        IReadOnlyList<CharacterBibleEvidenceContext> evidenceContexts)
+        IReadOnlyList<CharacterBiblePatchEvidence> evidence)
     {
         ArgumentNullException.ThrowIfNull(dossierBefore);
         ArgumentNullException.ThrowIfNull(patchProposal);
-        ArgumentNullException.ThrowIfNull(evidenceContexts);
+        ArgumentNullException.ThrowIfNull(evidence);
+
+        var profile = CharacterProfile.Normalize(dossierBefore.Profile);
 
         var payload = new
         {
-            task = "review_dossier_patch",
-            dossierBefore,
-            patchProposal,
-            evidenceContexts = evidenceContexts.Select(context => new
+            target = new
             {
-                pointer = context.Pointer,
-                anchorExcerpt = context.AnchorExcerpt,
-                currentParagraph = context.CurrentParagraph,
-                focusedText = context.FocusedText,
-                nearbyParagraphs = context.NearbyParagraphs.Select(paragraph => new
-                {
-                    pointer = paragraph.Pointer,
-                    text = paragraph.Text,
-                    position = paragraph.Position
-                })
-            })
+                name = dossierBefore.Name
+            },
+            currentProfile = new
+            {
+                appearance = NullIfWhiteSpace(profile.Appearance),
+                statusAndCompetence = NullIfWhiteSpace(profile.StatusAndCompetence),
+                psychologicalProfile = NullIfWhiteSpace(profile.PsychologicalProfile),
+                speechAndCommunication = NullIfWhiteSpace(profile.SpeechAndCommunication)
+            },
+            proposal = patchProposal,
+            evidence
         };
 
         return JsonSerializer.Serialize(payload, JsonOptions);
     }
+
+    private static string? NullIfWhiteSpace(string? value)
+        => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
 
     private static string LoadSystemPrompt()
     {
@@ -139,18 +170,9 @@ public sealed class AgenticDossierConsistencyReviewerModelClient : IDossierConsi
 
     private static bool IsValid(DossierReviewResult result, out string error)
     {
-        if (string.IsNullOrWhiteSpace(result.Verdict))
+        if (result.Verdict is null)
         {
             error = "verdict is required.";
-            return false;
-        }
-
-        if (!string.Equals(result.Verdict, "approved", StringComparison.Ordinal)
-            && !string.Equals(result.Verdict, "revise_patch", StringComparison.Ordinal)
-            && !string.Equals(result.Verdict, "reject_patch", StringComparison.Ordinal)
-            && !string.Equals(result.Verdict, "identity_conflict", StringComparison.Ordinal))
-        {
-            error = "verdict has unsupported value.";
             return false;
         }
 
@@ -158,6 +180,34 @@ public sealed class AgenticDossierConsistencyReviewerModelClient : IDossierConsi
         {
             error = "issues is required.";
             return false;
+        }
+
+        if (result.Verdict == CharacterBiblePatchReviewVerdict.Approved && result.Issues.Count > 0)
+        {
+            error = "issues must be empty when verdict is approved.";
+            return false;
+        }
+
+        if (result.Verdict == CharacterBiblePatchReviewVerdict.RevisePatch && result.Issues.Count == 0)
+        {
+            error = "issues must not be empty when verdict is revisePatch.";
+            return false;
+        }
+
+        for (var index = 0; index < result.Issues.Count; index++)
+        {
+            var issue = result.Issues[index];
+            if (issue.Code is null)
+            {
+                error = $"issues[{index}].code is required.";
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(issue.Message))
+            {
+                error = $"issues[{index}].message is required.";
+                return false;
+            }
         }
 
         error = string.Empty;

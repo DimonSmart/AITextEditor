@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using AiTextEditor.Core.Model;
@@ -14,7 +15,7 @@ public sealed class DossierPatchPromptBuilder
     private static readonly JsonSerializerOptions UserPromptJsonOptions = new()
     {
         PropertyNameCaseInsensitive = true,
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
         WriteIndented = false
     };
@@ -30,83 +31,97 @@ public sealed class DossierPatchPromptBuilder
         ArgumentNullException.ThrowIfNull(decision);
         ArgumentNullException.ThrowIfNull(dossier);
 
-        var payload = new
-        {
-            task = "propose_dossier_patch",
-            candidates = candidates.Select(ToCandidatePayload),
-            identityDecision = new
-            {
-                kind = decision.Kind.ToString(),
-                targetEntryId = decision.CharacterId,
-                candidateIds = candidates
-                    .Select(candidate => candidate.Candidate.CandidateId)
-                    .Where(candidateId => !string.IsNullOrWhiteSpace(candidateId))
-                    .Distinct(StringComparer.Ordinal)
-                    .ToArray(),
-                reason = decision.Reason
-            },
-            dossier = new
-            {
-                characterId = dossier.CharacterId,
-                name = dossier.Name,
-                aliases = dossier.Aliases,
-                gender = dossier.Gender,
-                profile = CharacterProfile.Normalize(dossier.Profile)
-            }
-        };
-
-        return JsonSerializer.Serialize(payload, UserPromptJsonOptions);
+        return JsonSerializer.Serialize(BuildPromptInput(candidates, dossier), UserPromptJsonOptions);
     }
 
-    private static object ToCandidatePayload(CharacterBibleDossierPatchCandidate patchCandidate)
+    internal static CharacterBiblePatchProposalPromptInput BuildPromptInput(
+        IReadOnlyList<CharacterBibleDossierPatchCandidate> candidates,
+        CharacterDossier dossier)
     {
-        var candidate = patchCandidate.Candidate;
-        return new
-        {
-            candidateId = candidate.CandidateId,
-            canonicalName = candidate.CanonicalName,
-            gender = candidate.Gender,
-            aliases = candidate.AliasExamples.Select(alias => new
-            {
-                form = alias.Key,
-                evidence = ToAliasEvidence(candidate, alias.Key, alias.Value)
-            }),
-            evidence = candidate.Evidence.Select(evidence => new
-            {
-                pointer = evidence.Pointer,
-                anchorExcerpt = evidence.Excerpt
-            }),
-            evidenceContexts = patchCandidate.EvidenceContexts.Select(context => new
-            {
-                pointer = context.Pointer,
-                anchorExcerpt = context.AnchorExcerpt,
-                currentParagraph = context.CurrentParagraph,
-                focusedText = context.FocusedText,
-                nearbyParagraphs = context.NearbyParagraphs.Select(paragraph => new
-                {
-                    pointer = paragraph.Pointer,
-                    text = paragraph.Text,
-                    position = paragraph.Position
-                })
-            })
-        };
+        ArgumentNullException.ThrowIfNull(candidates);
+        ArgumentNullException.ThrowIfNull(dossier);
+
+        var profile = CharacterProfile.Normalize(dossier.Profile);
+        return new CharacterBiblePatchProposalPromptInput(
+            new CharacterBiblePatchTarget(dossier.Name),
+            new CharacterBiblePatchCurrentProfile(
+                NullIfWhiteSpace(profile.Appearance),
+                NullIfWhiteSpace(profile.StatusAndCompetence),
+                NullIfWhiteSpace(profile.PsychologicalProfile),
+                NullIfWhiteSpace(profile.SpeechAndCommunication)),
+            BuildEvidence(candidates));
     }
 
-    private static object ToAliasEvidence(
-        CharacterBibleCharacterCandidate candidate,
-        string alias,
-        string excerpt)
+    internal static IReadOnlyList<CharacterBiblePatchEvidence> BuildEvidence(
+        IReadOnlyList<CharacterBibleDossierPatchCandidate> candidates)
     {
-        var evidence = candidate.AliasEvidence.TryGetValue(alias, out var aliasEvidence)
-            ? aliasEvidence
-            : candidate.Evidence.FirstOrDefault();
+        ArgumentNullException.ThrowIfNull(candidates);
 
-        return new
-        {
-            pointer = evidence?.Pointer ?? string.Empty,
-            excerpt
-        };
+        return candidates
+            .SelectMany(candidate => candidate.EvidenceContexts)
+            .GroupBy(context => context.Pointer, StringComparer.Ordinal)
+            .Select(group => group.First())
+            .Select(context => new CharacterBiblePatchEvidence(context.Pointer, BuildEvidenceText(context)))
+            .ToArray();
     }
+
+    internal static IReadOnlyList<CharacterBiblePatchEvidence> BuildReferencedEvidence(
+        IReadOnlyList<CharacterBibleDossierPatchCandidate> candidates,
+        DossierPatchProposal proposal)
+    {
+        ArgumentNullException.ThrowIfNull(candidates);
+        ArgumentNullException.ThrowIfNull(proposal);
+
+        var referencedPointers = (proposal.Additions ?? [])
+            .SelectMany(addition => addition.EvidencePointers ?? [])
+            .Where(pointer => !string.IsNullOrWhiteSpace(pointer))
+            .ToHashSet(StringComparer.Ordinal);
+
+        if (referencedPointers.Count == 0)
+        {
+            return [];
+        }
+
+        return BuildEvidence(candidates)
+            .Where(evidence => referencedPointers.Contains(evidence.Pointer))
+            .ToArray();
+    }
+
+    private static string BuildEvidenceText(CharacterBibleEvidenceContext context)
+    {
+        var builder = new StringBuilder();
+        AppendSection(builder, "Anchor excerpt", context.AnchorExcerpt);
+        AppendSection(builder, "Current paragraph", context.CurrentParagraph);
+        AppendSection(builder, "Focused text", context.FocusedText);
+
+        foreach (var paragraph in context.NearbyParagraphs)
+        {
+            AppendSection(builder, $"Nearby paragraph ({paragraph.Position}, {paragraph.Pointer})", paragraph.Text);
+        }
+
+        return builder.ToString().Trim();
+    }
+
+    private static void AppendSection(StringBuilder builder, string label, string? text)
+    {
+        var normalizedText = NullIfWhiteSpace(text);
+        if (normalizedText is null)
+        {
+            return;
+        }
+
+        if (builder.Length > 0)
+        {
+            builder.AppendLine();
+        }
+
+        builder.Append(label);
+        builder.Append(": ");
+        builder.Append(normalizedText);
+    }
+
+    private static string? NullIfWhiteSpace(string? value)
+        => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
 
     private static string LoadSystemPrompt()
     {

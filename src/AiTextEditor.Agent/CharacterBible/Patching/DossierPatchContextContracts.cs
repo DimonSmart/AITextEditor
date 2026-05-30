@@ -4,6 +4,23 @@ internal sealed record CharacterBibleDossierPatchCandidate(
     CharacterBibleCharacterCandidate Candidate,
     IReadOnlyList<CharacterBibleEvidenceContext> EvidenceContexts);
 
+internal sealed record CharacterBiblePatchProposalPromptInput(
+    CharacterBiblePatchTarget Target,
+    CharacterBiblePatchCurrentProfile CurrentProfile,
+    IReadOnlyList<CharacterBiblePatchEvidence> NewEvidence);
+
+internal sealed record CharacterBiblePatchTarget(string Name);
+
+internal sealed record CharacterBiblePatchCurrentProfile(
+    string? Appearance,
+    string? StatusAndCompetence,
+    string? PsychologicalProfile,
+    string? SpeechAndCommunication);
+
+internal sealed record CharacterBiblePatchEvidence(
+    string Pointer,
+    string Text);
+
 internal sealed record CharacterBibleEvidenceContext(
     string Pointer,
     string AnchorExcerpt,
