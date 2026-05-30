@@ -120,6 +120,77 @@ public sealed class CharacterDossiersGeneratorTests
     }
 
     [Fact]
+    public void CharacterIdentityResolutionPromptBuilder_MaterializesAllCandidatePointers()
+    {
+        var builder = new CharacterIdentityResolutionPromptBuilder();
+        var candidate = new CharacterBibleCharacterCandidate(
+            "Знайка",
+            "unknown",
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
+            [
+                new CharacterBibleCandidateEvidence("1.1.1.p8", "Знайка ответил третьим."),
+                new CharacterBibleCandidateEvidence("1.1.1.p5", "Знайка вошел."),
+                new CharacterBibleCandidateEvidence("1.1.1.p6", "Знайка сказал.")
+            ])
+        {
+            CandidateId = "64b46ca7db6b"
+        };
+
+        var input = builder.BuildPromptInput(candidate);
+
+        Assert.Equal(
+            ["1.1.1.p5", "1.1.1.p6", "1.1.1.p8"],
+            input.Evidence.Select(evidence => evidence.Pointer).ToArray());
+        Assert.Equal("Знайка вошел.", input.Evidence[0].Text);
+        Assert.Equal("Знайка сказал.", input.Evidence[1].Text);
+        Assert.Equal("Знайка ответил третьим.", input.Evidence[2].Text);
+    }
+
+    [Fact]
+    public void CharacterIdentityResolutionPromptBuilder_DoesNotSerializeCandidatePointers()
+    {
+        var builder = new CharacterIdentityResolutionPromptBuilder();
+        var candidate = new CharacterBibleCharacterCandidate(
+            "Знайка",
+            "unknown",
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
+            [new CharacterBibleCandidateEvidence("1.1.1.p5", "Знайка вошел.")])
+        {
+            CandidateId = "64b46ca7db6b"
+        };
+
+        var userPrompt = builder.BuildUserPrompt(candidate);
+
+        Assert.Contains("\"candidateId\":\"64b46ca7db6b\"", userPrompt, StringComparison.Ordinal);
+        Assert.Contains("\"evidence\":[", userPrompt, StringComparison.Ordinal);
+        Assert.Contains("\"pointer\":\"1.1.1.p5\"", userPrompt, StringComparison.Ordinal);
+        Assert.DoesNotContain("\"pointers\"", userPrompt, StringComparison.Ordinal);
+        Assert.DoesNotContain("\"paragraphs\"", userPrompt, StringComparison.Ordinal);
+        using var json = JsonDocument.Parse(userPrompt);
+        Assert.False(json.RootElement.GetProperty("candidate").TryGetProperty("pointers", out _));
+    }
+
+    [Fact]
+    public void CharacterIdentityResolutionPromptBuilder_FailsWhenPointerCannotBeMaterialized()
+    {
+        var builder = new CharacterIdentityResolutionPromptBuilder();
+        var candidate = new CharacterBibleCharacterCandidate(
+            "Знайка",
+            "unknown",
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
+            [
+                new CharacterBibleCandidateEvidence("1.1.1.p5", "Знайка вошел."),
+                new CharacterBibleCandidateEvidence("1.1.1.p404", " ")
+            ])
+        {
+            CandidateId = "64b46ca7db6b"
+        };
+
+        var exception = Assert.Throws<InvalidOperationException>(() => builder.BuildPromptInput(candidate));
+        Assert.Contains("1.1.1.p404", exception.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public async Task GenerateDossiers_DoesNotTrimDossiersWhenLimitIsNotSet()
     {
         var names = new[]

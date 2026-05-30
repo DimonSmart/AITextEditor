@@ -5,7 +5,15 @@ Resolve one local character candidate against the character archive.
 
 You receive:
 - one local candidate;
-- paragraph texts that support this candidate.
+- the full evidence texts available for this resolution.
+
+Use only the evidence items provided in the evidence array.
+Each evidence item contains:
+- pointer: stable paragraph identifier;
+- text: paragraph text.
+
+Do not infer identity from omitted paragraphs or from candidateId.
+candidateId is an internal technical identifier and is not evidence.
 
 You have a search tool:
 - search_characters(query, limit)

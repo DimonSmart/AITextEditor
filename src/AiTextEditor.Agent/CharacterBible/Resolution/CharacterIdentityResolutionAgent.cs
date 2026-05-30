@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using AiTextEditor.Agent;
+using AiTextEditor.Core.Model;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
 
@@ -20,6 +21,42 @@ public sealed record CharacterIdentityResolutionModelRequest(
     string UserPrompt,
     ICharacterArchiveSearchTool SearchTool,
     IProgress<AgenticModelDiagnostic>? Diagnostics = null);
+
+public sealed record CharacterIdentityResolutionPromptInput
+{
+    [JsonPropertyName("task")]
+    public required string Task { get; init; }
+
+    [JsonPropertyName("candidate")]
+    public required CharacterCandidateIdentityInput Candidate { get; init; }
+
+    [JsonPropertyName("evidence")]
+    public required IReadOnlyList<CharacterEvidenceText> Evidence { get; init; }
+}
+
+public sealed record CharacterCandidateIdentityInput
+{
+    [JsonPropertyName("candidateId")]
+    public required string CandidateId { get; init; }
+
+    [JsonPropertyName("name")]
+    public required string Name { get; init; }
+
+    [JsonPropertyName("gender")]
+    public required string Gender { get; init; }
+
+    [JsonPropertyName("aliases")]
+    public required IReadOnlyList<string> Aliases { get; init; }
+}
+
+public sealed record CharacterEvidenceText
+{
+    [JsonPropertyName("pointer")]
+    public required string Pointer { get; init; }
+
+    [JsonPropertyName("text")]
+    public required string Text { get; init; }
+}
 
 public sealed record CharacterIdentityResolutionResponse(
     [property: JsonRequired]
@@ -64,26 +101,132 @@ public sealed class CharacterIdentityResolutionPromptBuilder
 
     internal string BuildUserPrompt(CharacterBibleCharacterCandidate candidate)
     {
-        ArgumentNullException.ThrowIfNull(candidate);
+        var payload = BuildPromptInput(candidate);
 
-        var payload = new
-        {
-            task = "resolve_character_identity",
-            candidate = new
-            {
-                name = candidate.CanonicalName,
-                gender = candidate.Gender,
-                aliases = candidate.AliasExamples.Keys.ToArray(),
-                pointers = candidate.Evidence.Select(evidence => evidence.Pointer).ToArray()
-            },
-            paragraphs = candidate.Evidence.Select(evidence => new
-            {
-                pointer = evidence.Pointer,
-                text = evidence.Excerpt
-            })
-        };
+        return BuildUserPrompt(payload);
+    }
+
+    internal string BuildUserPrompt(CharacterIdentityResolutionPromptInput payload)
+    {
+        ArgumentNullException.ThrowIfNull(payload);
 
         return JsonSerializer.Serialize(payload, JsonOptions);
+    }
+
+    internal CharacterIdentityResolutionPromptInput BuildPromptInput(CharacterBibleCharacterCandidate candidate)
+    {
+        ArgumentNullException.ThrowIfNull(candidate);
+
+        var evidence = BuildEvidence(candidate);
+        return new CharacterIdentityResolutionPromptInput
+        {
+            Task = "resolve_character_identity",
+            Candidate = new CharacterCandidateIdentityInput
+            {
+                CandidateId = candidate.CandidateId,
+                Name = candidate.CanonicalName,
+                Gender = candidate.Gender,
+                Aliases = candidate.AliasExamples.Keys.ToArray()
+            },
+            Evidence = evidence
+        };
+    }
+
+    private static IReadOnlyList<CharacterEvidenceText> BuildEvidence(CharacterBibleCharacterCandidate candidate)
+    {
+        var evidenceByPointer = new Dictionary<string, CharacterEvidenceText>(StringComparer.Ordinal);
+        foreach (var evidence in candidate.Evidence)
+        {
+            var pointer = evidence.Pointer.Trim();
+            if (string.IsNullOrWhiteSpace(pointer))
+            {
+                throw new InvalidOperationException(
+                    $"Character identity resolver evidence for candidate '{candidate.CandidateId}' has an empty pointer.");
+            }
+
+            if (string.IsNullOrWhiteSpace(evidence.Excerpt))
+            {
+                throw new InvalidOperationException(
+                    $"Character identity resolver evidence pointer '{pointer}' for candidate '{candidate.CandidateId}' has no materialized text.");
+            }
+
+            evidenceByPointer.TryAdd(pointer, new CharacterEvidenceText
+            {
+                Pointer = pointer,
+                Text = evidence.Excerpt.Trim()
+            });
+        }
+
+        if (evidenceByPointer.Count == 0)
+        {
+            throw new InvalidOperationException(
+                $"Character identity resolver candidate '{candidate.CandidateId}' has no materialized evidence.");
+        }
+
+        return evidenceByPointer.Values
+            .OrderBy(evidence => evidence.Pointer, CharacterBibleEvidencePointerComparer.Instance)
+            .ToArray();
+    }
+
+    private sealed class CharacterBibleEvidencePointerComparer : IComparer<string>
+    {
+        public static CharacterBibleEvidencePointerComparer Instance { get; } = new();
+
+        public int Compare(string? x, string? y)
+        {
+            if (ReferenceEquals(x, y))
+            {
+                return 0;
+            }
+
+            if (x is null)
+            {
+                return -1;
+            }
+
+            if (y is null)
+            {
+                return 1;
+            }
+
+            if (!SemanticPointer.TryParse(x, out var left) || left is null ||
+                !SemanticPointer.TryParse(y, out var right) || right is null)
+            {
+                return string.Compare(x, y, StringComparison.Ordinal);
+            }
+
+            return CompareParsedPointers(left.Parsed, right.Parsed, x, y);
+        }
+
+        private static int CompareParsedPointers(
+            SemanticPointer.Path left,
+            SemanticPointer.Path right,
+            string leftLabel,
+            string rightLabel)
+        {
+            var leftNumbers = left.Numbers ?? [];
+            var rightNumbers = right.Numbers ?? [];
+            var sharedLength = Math.Min(leftNumbers.Length, rightNumbers.Length);
+            for (var index = 0; index < sharedLength; index++)
+            {
+                var numberComparison = leftNumbers[index].CompareTo(rightNumbers[index]);
+                if (numberComparison != 0)
+                {
+                    return numberComparison;
+                }
+            }
+
+            var lengthComparison = leftNumbers.Length.CompareTo(rightNumbers.Length);
+            if (lengthComparison != 0)
+            {
+                return lengthComparison;
+            }
+
+            var paragraphComparison = Nullable.Compare(left.Paragraph, right.Paragraph);
+            return paragraphComparison != 0
+                ? paragraphComparison
+                : string.Compare(leftLabel, rightLabel, StringComparison.Ordinal);
+        }
     }
 
     private static string LoadSystemPrompt()

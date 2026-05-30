@@ -70,10 +70,27 @@ internal sealed class CharacterBibleResolver
             characterVectorSearchTool,
             candidate.CandidateId,
             candidate.CanonicalName);
+        CharacterIdentityResolutionPromptInput promptInput;
+        try
+        {
+            promptInput = identityResolutionPromptBuilder.BuildPromptInput(candidate);
+        }
+        catch (InvalidOperationException)
+        {
+            CharacterBibleRunLogScope.Current?.Error(
+                "resolve.prompt.input.invalid",
+                $"candidateId={LogValueFormatter.ShortId(candidate.CandidateId)} candidatePointers={LogValueFormatter.List(candidate.Evidence.Select(evidence => evidence.Pointer))} materializedEvidencePointers={LogValueFormatter.List(candidate.Evidence.Where(evidence => !string.IsNullOrWhiteSpace(evidence.Excerpt)).Select(evidence => evidence.Pointer))}");
+            throw;
+        }
+
+        CharacterBibleRunLogScope.Current?.Info(
+            "resolve.prompt.input",
+            $"candidateId={LogValueFormatter.ShortId(candidate.CandidateId)} name={LogValueFormatter.Quote(candidate.CanonicalName)} evidenceCount={promptInput.Evidence.Count} evidencePointers={LogValueFormatter.List(promptInput.Evidence.Select(evidence => evidence.Pointer))}");
+
         var response = await identityResolutionModelClient.ResolveAsync(
             new CharacterIdentityResolutionModelRequest(
                 identityResolutionPromptBuilder.BuildSystemPrompt(),
-                identityResolutionPromptBuilder.BuildUserPrompt(candidate),
+                identityResolutionPromptBuilder.BuildUserPrompt(promptInput),
                 searchTool,
                 new CharacterBibleAgentDiagnosticProgress(
                     progress,

@@ -39,6 +39,7 @@ If this index conflicts with a numbered document, trust the numbered document.
 | 0035 | spec | Character Bible diagnostic run log | Persist compact per-run Character Bible diagnostics while keeping UI progress short. | 0011, 0026, 0030, 0031, 0032, 0034 |
 | 0036 | spec | Search character candidate result metadata | Make `search_characters` expose vector results as comparison candidates with archive metadata and ranked hits. | 0032, 0033, 0034, 0035 |
 | 0037 | spec | LLM contract rules | Define practical rules for minimal typed LLM input/output contracts, projection models, nullable fields, IDs, and schema strictness. | 0006, 0021, 0033, 0036 |
+| 0038 | spec | Resolver evidence prompt contract | Make the identity resolver prompt expose one materialized `evidence` list and remove candidate-level `pointers`. | 0029, 0037 |
 
 ## Archived documents
 
