@@ -55,12 +55,6 @@ public sealed class CharacterDossiersGeneratorTests
                 ["Johnny"] = "Johnny entered."
             },
             [new CharacterBibleCandidateEvidence("p1", "Johnny entered.")]);
-        var decision = new CharacterBibleResolverDecision(
-            "John",
-            CharacterBibleDecisionKind.New,
-            "c1",
-            [],
-            "No existing name or alias match was found.");
         var dossier = new AiTextEditor.Core.Model.CharacterDossier(
             "c1",
             "John",
@@ -82,7 +76,7 @@ public sealed class CharacterDossiersGeneratorTests
                     "Johnny entered and answered briefly.",
                     [new CharacterBibleNearbyParagraph("p2", "Mary watched.", "next")])
             ]);
-        var userPrompt = builder.BuildUserPrompt([patchCandidate], decision, dossier);
+        var userPrompt = builder.BuildUserPrompt([patchCandidate], dossier);
 
         Assert.Contains("DossierPatchProposalAgent", systemPrompt, StringComparison.Ordinal);
         Assert.Contains("The output is a list of additions, not a full profile patch", systemPrompt, StringComparison.Ordinal);

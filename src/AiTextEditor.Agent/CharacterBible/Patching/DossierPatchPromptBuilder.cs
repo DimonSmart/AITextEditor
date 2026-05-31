@@ -24,11 +24,9 @@ public sealed class DossierPatchPromptBuilder
 
     internal string BuildUserPrompt(
         IReadOnlyList<CharacterBibleDossierPatchCandidate> candidates,
-        CharacterBibleResolverDecision decision,
         CharacterDossier dossier)
     {
         ArgumentNullException.ThrowIfNull(candidates);
-        ArgumentNullException.ThrowIfNull(decision);
         ArgumentNullException.ThrowIfNull(dossier);
 
         return JsonSerializer.Serialize(BuildPromptInput(candidates, dossier), UserPromptJsonOptions);

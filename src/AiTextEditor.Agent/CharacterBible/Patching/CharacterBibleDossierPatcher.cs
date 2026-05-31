@@ -80,7 +80,7 @@ internal sealed class CharacterBibleDossierPatcher
                 proposal = await modelClient.ProposePatchAsync(
                     new DossierPatchProposalModelRequest(
                         promptBuilder.BuildSystemPrompt(),
-                        promptBuilder.BuildUserPrompt(patchGroup.Candidates, patchGroup.Decision, dossier),
+                        promptBuilder.BuildUserPrompt(patchGroup.Candidates, dossier),
                         new CharacterBibleAgentDiagnosticProgress(
                             progress,
                             "patch",
@@ -243,7 +243,7 @@ internal sealed class CharacterBibleDossierPatcher
             var characterId = decision.CharacterId.Trim();
             if (!groupsByCharacterId.TryGetValue(characterId, out var group))
             {
-                group = new DossierPatchGroupBuilder(characterId, decision);
+                group = new DossierPatchGroupBuilder(characterId);
                 groupsByCharacterId[characterId] = group;
                 groups.Add(group);
             }
@@ -273,7 +273,7 @@ internal sealed class CharacterBibleDossierPatcher
             var wouldOverflow = batch.Count >= maxCandidates || batchBytes + candidateBytes > maxBytes;
             if (wouldOverflow && batch.Count > 0)
             {
-                yield return new DossierPatchGroup(group.CharacterId, group.Decision, batch.ToArray());
+                yield return new DossierPatchGroup(group.CharacterId, batch.ToArray());
                 batch = [];
                 batchBytes = 0;
             }
@@ -284,7 +284,7 @@ internal sealed class CharacterBibleDossierPatcher
 
         if (batch.Count > 0)
         {
-            yield return new DossierPatchGroup(group.CharacterId, group.Decision, batch.ToArray());
+            yield return new DossierPatchGroup(group.CharacterId, batch.ToArray());
         }
     }
 
@@ -478,16 +478,11 @@ internal sealed class CharacterBibleDossierPatcher
 
     private sealed record DossierPatchGroup(
         string CharacterId,
-        CharacterBibleResolverDecision Decision,
         IReadOnlyList<CharacterBibleDossierPatchCandidate> Candidates);
 
-    private sealed class DossierPatchGroupBuilder(
-        string characterId,
-        CharacterBibleResolverDecision decision)
+    private sealed class DossierPatchGroupBuilder(string characterId)
     {
         public string CharacterId { get; } = characterId;
-
-        public CharacterBibleResolverDecision Decision { get; } = decision;
 
         public List<CharacterBibleDossierPatchCandidate> Candidates { get; } = [];
     }
