@@ -85,7 +85,11 @@ internal sealed class CharacterBibleResolver
 
         CharacterBibleRunLogScope.Current?.Info(
             "resolve.prompt.input",
-            $"candidateId={LogValueFormatter.ShortId(candidate.CandidateId)} name={LogValueFormatter.Quote(candidate.CanonicalName)} evidenceCount={promptInput.Evidence.Count} evidencePointers={LogValueFormatter.List(promptInput.Evidence.Select(evidence => evidence.Pointer))}");
+            $"candidateId={LogValueFormatter.ShortId(candidate.CandidateId)} name={LogValueFormatter.Quote(candidate.CanonicalName)} evidenceCount={promptInput.Candidate.Evidence.Count} evidencePointers={LogValueFormatter.List(promptInput.Candidate.Evidence.Select(evidence => evidence.Pointer))}");
+        CharacterBibleLlmInputLogger.DebugInput(
+            "resolve.llm.input",
+            $"candidateId={LogValueFormatter.ShortId(candidate.CandidateId)} modelType={nameof(CharacterIdentityResolutionPromptInput)}",
+            promptInput);
 
         var response = await identityResolutionModelClient.ResolveAsync(
             new CharacterIdentityResolutionModelRequest(

@@ -53,6 +53,21 @@ internal sealed class CharacterBibleRunLogger : ICharacterBibleRunLogger, IDispo
         Write("DBG", eventName, message, null);
     }
 
+    public void DebugBlock(string eventName, string header, string block)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(eventName);
+        ArgumentNullException.ThrowIfNull(header);
+        ArgumentNullException.ThrowIfNull(block);
+        ObjectDisposedException.ThrowIf(disposed, this);
+
+        lock (syncRoot)
+        {
+            writer?.WriteLine(BuildLine("DBG", eventName.Trim() + ".begin", header));
+            writer?.WriteLine(block);
+            writer?.WriteLine(BuildLine("DBG", eventName.Trim() + ".end", header));
+        }
+    }
+
     public void Warning(string eventName, string message)
     {
         Write("WRN", eventName, message, null);
@@ -84,7 +99,7 @@ internal sealed class CharacterBibleRunLogger : ICharacterBibleRunLogger, IDispo
         ArgumentException.ThrowIfNullOrWhiteSpace(eventName);
         ObjectDisposedException.ThrowIf(disposed, this);
 
-        var line = $"{DateTimeOffset.Now:HH:mm:ss} {level} {eventName.Trim()} {message}".TrimEnd();
+        var line = BuildLine(level, eventName.Trim(), message);
         lock (syncRoot)
         {
             writer?.WriteLine(line);
@@ -94,4 +109,7 @@ internal sealed class CharacterBibleRunLogger : ICharacterBibleRunLogger, IDispo
             }
         }
     }
+
+    private static string BuildLine(string level, string eventName, string message)
+        => $"{DateTimeOffset.Now:HH:mm:ss} {level} {eventName} {message}".TrimEnd();
 }

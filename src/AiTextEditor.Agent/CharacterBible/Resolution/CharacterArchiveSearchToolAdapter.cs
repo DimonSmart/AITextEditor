@@ -38,7 +38,7 @@ internal sealed class CharacterArchiveSearchToolAdapter : ICharacterArchiveSearc
         var effectiveLimit = limit <= 0 ? DefaultLimit : Math.Min(limit, 20);
         var archiveSize = currentArchive.Characters.Count;
         CharacterBibleRunLogScope.Current?.Debug(
-            "resolve.search",
+            "resolve.tool.search",
             $"candidateId={LogValueFormatter.ShortId(candidateId)} name={LogValueFormatter.Quote(candidateName)} query={LogValueFormatter.Quote(query)} limit={effectiveLimit} archiveSize={archiveSize}");
         var hits = await vectorSearchTool.SearchAsync(
             currentArchive,
@@ -57,9 +57,17 @@ internal sealed class CharacterArchiveSearchToolAdapter : ICharacterArchiveSearc
             }
         }
 
-        CharacterBibleRunLogScope.Current?.Debug(
-            "resolve.search.hits",
-            $"candidateId={LogValueFormatter.ShortId(candidateId)} returned={searchHits.Length} archiveSize={archiveSize} hits={LogValueFormatter.Hits(searchHits)}");
+        var result = new CharacterArchiveSearchResult(
+            query,
+            effectiveLimit,
+            archiveSize,
+            searchHits.Length,
+            CharacterArchiveSearchResultNotes.ClosestEntriesMayBeUnrelated,
+            searchHits);
+        CharacterBibleLlmInputLogger.DebugInput(
+            "resolve.tool.search.result",
+            $"candidateId={LogValueFormatter.ShortId(candidateId)} returned={searchHits.Length} archiveSize={archiveSize} modelType={nameof(CharacterArchiveSearchResult)}",
+            result);
         foreach (var hit in searchHits)
         {
             CharacterBibleRunLogScope.Current?.Debug(
@@ -67,13 +75,7 @@ internal sealed class CharacterArchiveSearchToolAdapter : ICharacterArchiveSearc
                 $"candidateId={LogValueFormatter.ShortId(candidateId)} rank={hit.Rank} entryId={hit.EntryId} name={LogValueFormatter.Quote(hit.Name)} gender={LogValueFormatter.Quote(hit.Gender)} aliases={LogValueFormatter.List(hit.Aliases)} score={LogValueFormatter.Score(hit.Score)} summary={LogValueFormatter.Quote(LogValueFormatter.ShortText(hit.Identity))}");
         }
 
-        return new CharacterArchiveSearchResult(
-            query,
-            effectiveLimit,
-            archiveSize,
-            searchHits.Length,
-            CharacterArchiveSearchResultNotes.ClosestEntriesMayBeUnrelated,
-            searchHits);
+        return result;
     }
 
     private static CharacterArchiveSearchHit ToSearchHit(

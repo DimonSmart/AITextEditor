@@ -24,21 +24,12 @@ public sealed record CharacterIdentityResolutionModelRequest(
 
 public sealed record CharacterIdentityResolutionPromptInput
 {
-    [JsonPropertyName("task")]
-    public required string Task { get; init; }
-
     [JsonPropertyName("candidate")]
     public required CharacterCandidateIdentityInput Candidate { get; init; }
-
-    [JsonPropertyName("evidence")]
-    public required IReadOnlyList<CharacterEvidenceText> Evidence { get; init; }
 }
 
 public sealed record CharacterCandidateIdentityInput
 {
-    [JsonPropertyName("candidateId")]
-    public required string CandidateId { get; init; }
-
     [JsonPropertyName("name")]
     public required string Name { get; init; }
 
@@ -47,6 +38,9 @@ public sealed record CharacterCandidateIdentityInput
 
     [JsonPropertyName("aliases")]
     public required IReadOnlyList<string> Aliases { get; init; }
+
+    [JsonPropertyName("evidence")]
+    public required IReadOnlyList<CharacterEvidenceText> Evidence { get; init; }
 }
 
 public sealed record CharacterEvidenceText
@@ -120,15 +114,13 @@ public sealed class CharacterIdentityResolutionPromptBuilder
         var evidence = BuildEvidence(candidate);
         return new CharacterIdentityResolutionPromptInput
         {
-            Task = "resolve_character_identity",
             Candidate = new CharacterCandidateIdentityInput
             {
-                CandidateId = candidate.CandidateId,
                 Name = candidate.CanonicalName,
                 Gender = candidate.Gender,
-                Aliases = candidate.AliasExamples.Keys.ToArray()
-            },
-            Evidence = evidence
+                Aliases = candidate.AliasExamples.Keys.ToArray(),
+                Evidence = evidence
+            }
         };
     }
 

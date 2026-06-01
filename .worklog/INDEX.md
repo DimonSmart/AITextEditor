@@ -41,6 +41,7 @@ If this index conflicts with a numbered document, trust the numbered document.
 | 0037 | spec | LLM contract rules | Define practical rules for minimal typed LLM input/output contracts, projection models, nullable fields, IDs, and schema strictness. | 0006, 0021, 0033, 0036 |
 | 0038 | spec | Resolver evidence prompt contract | Make the identity resolver prompt expose one materialized `evidence` list and remove candidate-level `pointers`. | 0029, 0037 |
 | 0039 | spec | Compact dossier patch contract | Make dossier patch proposal and review prompts use compact evidence-backed contracts and apply profile facts as atomic additions. | 0026, 0029, 0037, 0038 |
+| 0040 | spec | LLM-facing input diagnostics | Log dynamic Character Bible LLM input DTOs without full prompts or static instruction noise. | 0035, 0037, 0038, 0039 |
 
 ## Archived documents
 

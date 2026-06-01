@@ -83,26 +83,35 @@ public sealed class DossierConsistencyReviewerPromptBuilder
         ArgumentNullException.ThrowIfNull(patchProposal);
         ArgumentNullException.ThrowIfNull(evidence);
 
+        return BuildUserPrompt(BuildPromptInput(dossierBefore, patchProposal, evidence));
+    }
+
+    internal string BuildUserPrompt(DossierReviewPromptInput input)
+    {
+        ArgumentNullException.ThrowIfNull(input);
+
+        return JsonSerializer.Serialize(input, JsonOptions);
+    }
+
+    internal static DossierReviewPromptInput BuildPromptInput(
+        CharacterDossier dossierBefore,
+        DossierPatchProposal patchProposal,
+        IReadOnlyList<CharacterBiblePatchEvidence> evidence)
+    {
+        ArgumentNullException.ThrowIfNull(dossierBefore);
+        ArgumentNullException.ThrowIfNull(patchProposal);
+        ArgumentNullException.ThrowIfNull(evidence);
+
         var profile = CharacterProfile.Normalize(dossierBefore.Profile);
-
-        var payload = new
-        {
-            target = new
-            {
-                name = dossierBefore.Name
-            },
-            currentProfile = new
-            {
-                appearance = NullIfWhiteSpace(profile.Appearance),
-                statusAndCompetence = NullIfWhiteSpace(profile.StatusAndCompetence),
-                psychologicalProfile = NullIfWhiteSpace(profile.PsychologicalProfile),
-                speechAndCommunication = NullIfWhiteSpace(profile.SpeechAndCommunication)
-            },
-            proposal = patchProposal,
-            evidence
-        };
-
-        return JsonSerializer.Serialize(payload, JsonOptions);
+        return new DossierReviewPromptInput(
+            new CharacterBiblePatchTarget(dossierBefore.Name),
+            new CharacterBiblePatchCurrentProfile(
+                NullIfWhiteSpace(profile.Appearance),
+                NullIfWhiteSpace(profile.StatusAndCompetence),
+                NullIfWhiteSpace(profile.PsychologicalProfile),
+                NullIfWhiteSpace(profile.SpeechAndCommunication)),
+            patchProposal,
+            evidence);
     }
 
     private static string? NullIfWhiteSpace(string? value)
@@ -127,6 +136,12 @@ public sealed class DossierConsistencyReviewerPromptBuilder
         return prompt.Trim();
     }
 }
+
+internal sealed record DossierReviewPromptInput(
+    CharacterBiblePatchTarget Target,
+    CharacterBiblePatchCurrentProfile CurrentProfile,
+    DossierPatchProposal Proposal,
+    IReadOnlyList<CharacterBiblePatchEvidence> Evidence);
 
 public sealed class AgenticDossierConsistencyReviewerModelClient : IDossierConsistencyReviewerModelClient
 {

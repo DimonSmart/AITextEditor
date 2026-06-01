@@ -8,6 +8,8 @@ internal interface ICharacterBibleRunLogger
 
     void Debug(string eventName, string message);
 
+    void DebugBlock(string eventName, string header, string block);
+
     void Warning(string eventName, string message);
 
     void Error(string eventName, string message, Exception? exception = null);

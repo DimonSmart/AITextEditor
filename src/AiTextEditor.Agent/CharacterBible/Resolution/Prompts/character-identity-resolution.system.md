@@ -7,7 +7,7 @@ You receive:
 - one local candidate;
 - the full evidence texts available for this resolution.
 
-Use only the evidence items provided in the evidence array.
+Use only the evidence items provided in candidate.evidence.
 Each evidence item contains:
 - pointer: stable paragraph identifier;
 - text: paragraph text.

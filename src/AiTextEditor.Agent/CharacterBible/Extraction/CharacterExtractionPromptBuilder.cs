@@ -22,15 +22,24 @@ public sealed class CharacterExtractionPromptBuilder
 
     public string BuildUserPrompt(IReadOnlyList<(string Pointer, string Text)> paragraphs)
     {
+        return BuildUserPrompt(BuildPromptInput(paragraphs));
+    }
+
+    internal string BuildUserPrompt(CharacterExtractionPromptInput input)
+    {
+        ArgumentNullException.ThrowIfNull(input);
+
+        return JsonSerializer.Serialize(input, UserPromptJsonOptions);
+    }
+
+    internal CharacterExtractionPromptInput BuildPromptInput(IReadOnlyList<(string Pointer, string Text)> paragraphs)
+    {
         ArgumentNullException.ThrowIfNull(paragraphs);
 
-        var payload = new
-        {
-            task = "extract_character_candidates",
-            paragraphs = paragraphs.Select(paragraph => new { pointer = paragraph.Pointer, text = paragraph.Text })
-        };
-
-        return JsonSerializer.Serialize(payload, UserPromptJsonOptions);
+        return new CharacterExtractionPromptInput(
+            paragraphs
+                .Select(paragraph => new CharacterExtractionParagraphInput(paragraph.Pointer, paragraph.Text))
+                .ToArray());
     }
 
     private static string LoadSystemPrompt()
@@ -52,3 +61,10 @@ public sealed class CharacterExtractionPromptBuilder
         return prompt.Trim();
     }
 }
+
+internal sealed record CharacterExtractionPromptInput(
+    [property: JsonPropertyName("paragraphs")] IReadOnlyList<CharacterExtractionParagraphInput> Paragraphs);
+
+internal sealed record CharacterExtractionParagraphInput(
+    [property: JsonPropertyName("pointer")] string Pointer,
+    [property: JsonPropertyName("text")] string Text);

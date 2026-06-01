@@ -74,13 +74,19 @@ internal sealed class CharacterBibleDossierPatcher
             DossierPatchProposal proposal;
             try
             {
+                var promptInput = DossierPatchPromptBuilder.BuildPromptInput(patchGroup.Candidates, dossier);
                 CharacterBibleRunLogScope.Current?.Info(
                     "patch.proposal.call",
                     $"characterId={dossier.CharacterId} inputCandidates={patchGroup.Candidates.Count} evidencePointers={LogValueFormatter.List(patchGroup.Candidates.SelectMany(candidate => candidate.Candidate.Evidence).Select(evidence => evidence.Pointer))}");
+                CharacterBibleLlmInputLogger.DebugInput(
+                    "patch.proposal.llm.input",
+                    $"characterId={dossier.CharacterId} candidateIds={LogValueFormatter.List(patchGroup.Candidates.Select(candidate => candidate.Candidate.CandidateId))} modelKeys={LogValueFormatter.List(["target", "currentProfile", "newEvidence"])} modelType={nameof(CharacterBiblePatchProposalPromptInput)}",
+                    promptInput);
+                CharacterBibleLlmInputLogger.DebugPatchProposalContract(promptInput);
                 proposal = await modelClient.ProposePatchAsync(
                     new DossierPatchProposalModelRequest(
                         promptBuilder.BuildSystemPrompt(),
-                        promptBuilder.BuildUserPrompt(patchGroup.Candidates, dossier),
+                        promptBuilder.BuildUserPrompt(promptInput),
                         new CharacterBibleAgentDiagnosticProgress(
                             progress,
                             "patch",
@@ -194,10 +200,15 @@ internal sealed class CharacterBibleDossierPatcher
 
         try
         {
+            var promptInput = DossierConsistencyReviewerPromptBuilder.BuildPromptInput(dossier, proposal, evidence);
+            CharacterBibleLlmInputLogger.DebugInput(
+                "patch.review.llm.input",
+                $"characterId={dossier.CharacterId} candidateIds={LogValueFormatter.List(candidates.Select(candidate => candidate.Candidate.CandidateId))} referencedEvidenceCount={evidence.Count} modelType={nameof(DossierReviewPromptInput)}",
+                promptInput);
             return await reviewerModelClient.ReviewAsync(
                 new DossierReviewModelRequest(
                     reviewerPromptBuilder.BuildSystemPrompt(),
-                    reviewerPromptBuilder.BuildUserPrompt(dossier, proposal, evidence),
+                    reviewerPromptBuilder.BuildUserPrompt(promptInput),
                     new CharacterBibleAgentDiagnosticProgress(
                         progress,
                         "patch",

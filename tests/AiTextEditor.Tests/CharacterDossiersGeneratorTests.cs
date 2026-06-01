@@ -35,7 +35,7 @@ public sealed class CharacterDossiersGeneratorTests
         Assert.DoesNotContain("character.profile", systemPrompt, StringComparison.Ordinal);
 
         using var json = JsonDocument.Parse(userPrompt);
-        Assert.Equal("extract_character_candidates", json.RootElement.GetProperty("task").GetString());
+        Assert.False(json.RootElement.TryGetProperty("task", out _));
         var paragraphs = json.RootElement.GetProperty("paragraphs").EnumerateArray().ToArray();
         Assert.Equal("p1", paragraphs[0].GetProperty("pointer").GetString());
         Assert.Equal("Анна вошла.", paragraphs[0].GetProperty("text").GetString());
@@ -187,10 +187,10 @@ public sealed class CharacterDossiersGeneratorTests
 
         Assert.Equal(
             ["1.1.1.p5", "1.1.1.p6", "1.1.1.p8"],
-            input.Evidence.Select(evidence => evidence.Pointer).ToArray());
-        Assert.Equal("Знайка вошел.", input.Evidence[0].Text);
-        Assert.Equal("Знайка сказал.", input.Evidence[1].Text);
-        Assert.Equal("Знайка ответил третьим.", input.Evidence[2].Text);
+            input.Candidate.Evidence.Select(evidence => evidence.Pointer).ToArray());
+        Assert.Equal("Знайка вошел.", input.Candidate.Evidence[0].Text);
+        Assert.Equal("Знайка сказал.", input.Candidate.Evidence[1].Text);
+        Assert.Equal("Знайка ответил третьим.", input.Candidate.Evidence[2].Text);
     }
 
     [Fact]
@@ -208,13 +208,16 @@ public sealed class CharacterDossiersGeneratorTests
 
         var userPrompt = builder.BuildUserPrompt(candidate);
 
-        Assert.Contains("\"candidateId\":\"64b46ca7db6b\"", userPrompt, StringComparison.Ordinal);
+        Assert.DoesNotContain("\"candidateId\"", userPrompt, StringComparison.Ordinal);
         Assert.Contains("\"evidence\":[", userPrompt, StringComparison.Ordinal);
         Assert.Contains("\"pointer\":\"1.1.1.p5\"", userPrompt, StringComparison.Ordinal);
         Assert.DoesNotContain("\"pointers\"", userPrompt, StringComparison.Ordinal);
         Assert.DoesNotContain("\"paragraphs\"", userPrompt, StringComparison.Ordinal);
         using var json = JsonDocument.Parse(userPrompt);
         Assert.False(json.RootElement.GetProperty("candidate").TryGetProperty("pointers", out _));
+        Assert.Equal(
+            "1.1.1.p5",
+            json.RootElement.GetProperty("candidate").GetProperty("evidence").EnumerateArray().Single().GetProperty("pointer").GetString());
     }
 
     [Fact]

@@ -29,7 +29,14 @@ public sealed class DossierPatchPromptBuilder
         ArgumentNullException.ThrowIfNull(candidates);
         ArgumentNullException.ThrowIfNull(dossier);
 
-        return JsonSerializer.Serialize(BuildPromptInput(candidates, dossier), UserPromptJsonOptions);
+        return BuildUserPrompt(BuildPromptInput(candidates, dossier));
+    }
+
+    internal string BuildUserPrompt(CharacterBiblePatchProposalPromptInput input)
+    {
+        ArgumentNullException.ThrowIfNull(input);
+
+        return JsonSerializer.Serialize(input, UserPromptJsonOptions);
     }
 
     internal static CharacterBiblePatchProposalPromptInput BuildPromptInput(

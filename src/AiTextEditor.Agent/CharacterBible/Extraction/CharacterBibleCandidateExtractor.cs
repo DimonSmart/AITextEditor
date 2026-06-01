@@ -63,6 +63,7 @@ internal sealed class CharacterBibleCandidateExtractor
             {
                 var hits = await ExtractCharactersWithModelAsync(
                     batch,
+                    batchNumber,
                     new CharacterBibleModelDiagnosticProgress(progress, modelResponseErrors, batchNumber),
                     cancellationToken);
                 var batchFragments = batch
@@ -131,6 +132,7 @@ internal sealed class CharacterBibleCandidateExtractor
 
     private async Task<IReadOnlyList<ExtractedLocalCharacter>> ExtractCharactersWithModelAsync(
         IReadOnlyList<(string Pointer, string Text)> paragraphs,
+        int batchNumber,
         IProgress<AgenticModelDiagnostic> diagnostics,
         CancellationToken cancellationToken)
     {
@@ -139,10 +141,16 @@ internal sealed class CharacterBibleCandidateExtractor
             return [];
         }
 
+        var promptInput = promptBuilder.BuildPromptInput(paragraphs);
+        CharacterBibleLlmInputLogger.DebugInput(
+            "extract.llm.input",
+            $"batchIndex={batchNumber} paragraphCount={promptInput.Paragraphs.Count} firstPointer={LogValueFormatter.Quote(promptInput.Paragraphs[0].Pointer)} lastPointer={LogValueFormatter.Quote(promptInput.Paragraphs[^1].Pointer)} modelType={nameof(CharacterExtractionPromptInput)}",
+            promptInput);
+
         var extractionResponse = await characterExtractionModelClient.ExtractCharactersAsync(
             new CharacterExtractionModelRequest(
                 promptBuilder.BuildSystemPrompt(),
-                promptBuilder.BuildUserPrompt(paragraphs),
+                promptBuilder.BuildUserPrompt(promptInput),
                 diagnostics),
             cancellationToken);
 
