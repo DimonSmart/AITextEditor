@@ -1,39 +1,37 @@
-using AiTextEditor.Core.Model;
-using AiTextEditor.Agent.CharacterBible.Diagnostics;
-using Microsoft.Extensions.Logging;
 using System.Text;
+using AiTextEditor.Agent.CharacterBible.Diagnostics;
+using AiTextEditor.Core.Model;
+using Microsoft.Extensions.Logging;
 
 namespace AiTextEditor.Agent.CharacterBible.Patching;
 
+internal sealed record CharacterBibleDossierPatchResult(
+    CharacterBibleRunState RunState,
+    CharacterProfilePatchStatistics Statistics);
+
 internal sealed class CharacterBibleDossierPatcher
 {
-    private readonly IDossierPatchProposalModelClient modelClient;
+    private readonly ICharacterProfilePatchModelClient modelClient;
     private readonly DossierPatchPromptBuilder promptBuilder;
-    private readonly IDossierConsistencyReviewerModelClient reviewerModelClient;
-    private readonly DossierConsistencyReviewerPromptBuilder reviewerPromptBuilder;
     private readonly CharacterBibleEvidenceContextExpander evidenceContextExpander;
     private readonly CharacterBibleDossierPatchLimits patchLimits;
     private readonly ILogger<CharacterBibleDossierPatcher> logger;
 
     public CharacterBibleDossierPatcher(
-        IDossierPatchProposalModelClient modelClient,
+        ICharacterProfilePatchModelClient modelClient,
         DossierPatchPromptBuilder promptBuilder,
-        IDossierConsistencyReviewerModelClient reviewerModelClient,
-        DossierConsistencyReviewerPromptBuilder reviewerPromptBuilder,
         CharacterBibleEvidenceContextExpander evidenceContextExpander,
         CharacterBibleDossierPatchLimits? patchLimits,
         ILogger<CharacterBibleDossierPatcher> logger)
     {
         this.modelClient = modelClient ?? throw new ArgumentNullException(nameof(modelClient));
         this.promptBuilder = promptBuilder ?? throw new ArgumentNullException(nameof(promptBuilder));
-        this.reviewerModelClient = reviewerModelClient ?? throw new ArgumentNullException(nameof(reviewerModelClient));
-        this.reviewerPromptBuilder = reviewerPromptBuilder ?? throw new ArgumentNullException(nameof(reviewerPromptBuilder));
         this.evidenceContextExpander = evidenceContextExpander ?? throw new ArgumentNullException(nameof(evidenceContextExpander));
         this.patchLimits = patchLimits ?? new CharacterBibleDossierPatchLimits();
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<CharacterBibleRunState> ApplyDossierPatchesAsync(
+    public async Task<CharacterBibleDossierPatchResult> ApplyDossierPatchesAsync(
         CharacterBibleRunState runState,
         IProgress<CharacterBibleWorkflowProgress>? progress = null,
         CancellationToken cancellationToken = default)
@@ -41,21 +39,21 @@ internal sealed class CharacterBibleDossierPatcher
         ArgumentNullException.ThrowIfNull(runState);
         cancellationToken.ThrowIfCancellationRequested();
 
+        var statistics = new CharacterProfilePatchStatistics();
+        var processedCharacterIds = new HashSet<string>(StringComparer.Ordinal);
         if (runState.Failure is not null || runState.Candidates.Count == 0 || runState.Catalog.Decisions.Count == 0)
         {
-            return runState;
+            return new CharacterBibleDossierPatchResult(runState, statistics);
         }
 
-        var dossiersById = runState.Catalog.Current.Characters.ToDictionary(
-            dossier => dossier.CharacterId,
-            StringComparer.Ordinal);
-        var proposalCount = 0;
-        var appliedCount = 0;
-        var patchGroups = BuildPatchGroups(runState);
-
-        foreach (var patchGroup in patchGroups)
+        foreach (var patchGroup in BuildPatchGroups(runState))
         {
-            if (!dossiersById.TryGetValue(patchGroup.CharacterId, out var dossier))
+            CharacterDossier dossier;
+            try
+            {
+                dossier = runState.Catalog.GetRequired(patchGroup.CharacterId);
+            }
+            catch (InvalidOperationException)
             {
                 CharacterBibleRunLogScope.Current?.Warning(
                     "patch.group.skipped",
@@ -63,178 +61,72 @@ internal sealed class CharacterBibleDossierPatcher
                 continue;
             }
 
-            proposalCount++;
+            var evidence = DossierPatchPromptBuilder.BuildEvidence(patchGroup.Candidates);
+            if (evidence.Count == 0)
+            {
+                continue;
+            }
+
+            if (processedCharacterIds.Add(dossier.CharacterId))
+            {
+                statistics.CharactersProcessed++;
+            }
+            statistics.AgentCalls++;
             CharacterBibleRunLogScope.Current?.Info(
                 "patch.group.start",
-                $"characterId={dossier.CharacterId} name={LogValueFormatter.Quote(dossier.Name)} candidateCount={patchGroup.Candidates.Count} candidateIds={LogValueFormatter.List(patchGroup.Candidates.Select(candidate => candidate.Candidate.CandidateId))}");
+                $"characterId={dossier.CharacterId} name={LogValueFormatter.Quote(dossier.Name)} candidateCount={patchGroup.Candidates.Count} evidencePointers={LogValueFormatter.List(evidence.Select(item => item.Pointer))}");
             progress?.Report(new CharacterBibleWorkflowProgress(
                 "patch",
-                $"Proposing profile update for {dossier.Name} from {patchGroup.Candidates.Count} candidate evidence group(s)."));
+                $"Updating profile for {dossier.Name} from {evidence.Count} evidence paragraph(s)."));
 
-            DossierProfileUpdateProposal proposal;
+            var context = new CharacterProfilePatchContext(
+                dossier.Profile,
+                evidence.Select(item => item.Pointer).ToHashSet(StringComparer.Ordinal),
+                evidence.ToDictionary(item => item.Pointer, item => item.Text, StringComparer.Ordinal));
+            var tools = new CharacterProfilePatchTools(
+                dossier.CharacterId,
+                dossier.Name,
+                context,
+                runState.Catalog,
+                statistics);
+            var promptInput = DossierPatchPromptBuilder.BuildPromptInput(patchGroup.Candidates, dossier);
+
             try
             {
-                var promptInput = DossierPatchPromptBuilder.BuildPromptInput(patchGroup.Candidates, dossier);
-                CharacterBibleRunLogScope.Current?.Info(
-                    "patch.proposal.call",
-                    $"characterId={dossier.CharacterId} inputCandidates={patchGroup.Candidates.Count} evidencePointers={LogValueFormatter.List(patchGroup.Candidates.SelectMany(candidate => candidate.Candidate.Evidence).Select(evidence => evidence.Pointer))}");
                 CharacterBibleLlmInputLogger.DebugInput(
-                    "patch.proposal.llm.input",
-                    $"characterId={dossier.CharacterId} candidateIds={LogValueFormatter.List(patchGroup.Candidates.Select(candidate => candidate.Candidate.CandidateId))} modelKeys={LogValueFormatter.List(["target", "currentProfile", "newEvidence"])} modelType={nameof(CharacterBiblePatchProposalPromptInput)}",
+                    "patch.llm.input",
+                    $"characterId={dossier.CharacterId} modelKeys={LogValueFormatter.List(["character", "evidence"])} modelType={nameof(CharacterProfilePatchPromptInput)}",
                     promptInput);
-                CharacterBibleLlmInputLogger.DebugPatchProposalContract(promptInput);
-                proposal = await modelClient.ProposePatchAsync(
-                    new DossierPatchProposalModelRequest(
+                await modelClient.PatchAsync(
+                    new CharacterProfilePatchModelRequest(
                         promptBuilder.BuildSystemPrompt(),
                         promptBuilder.BuildUserPrompt(promptInput),
+                        tools,
                         new CharacterBibleAgentDiagnosticProgress(
                             progress,
                             "patch",
-                            $"Patch proposal for {dossier.Name}",
+                            $"Profile patch for {dossier.Name}",
                             $"characterId={dossier.CharacterId} name={LogValueFormatter.Quote(dossier.Name)}")),
                     cancellationToken).ConfigureAwait(false);
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
                 CharacterBibleRunLogScope.Current?.Error(
-                    "patch.proposal.failed",
+                    "patch.failed",
                     $"characterId={dossier.CharacterId} name={LogValueFormatter.Quote(dossier.Name)} message={LogValueFormatter.Quote(ex.Message)}",
                     ex);
-                logger.LogError(ex, "Dossier profile update proposal failed for character {CharacterId}. Profile unchanged.", dossier.CharacterId);
+                logger.LogError(ex, "Dossier profile patch failed for character {CharacterId}. Applied tool updates were preserved.", dossier.CharacterId);
                 progress?.Report(new CharacterBibleWorkflowProgress(
                     "patch",
-                    $"Profile update proposal failed for {dossier.Name}; profile unchanged.",
+                    $"Profile patch failed for {dossier.Name}; valid tool updates already applied were preserved.",
                     IsError: true));
-                continue;
             }
-
-            CharacterBibleRunLogScope.Current?.Info(
-                "patch.proposal.result",
-                $"characterId={dossier.CharacterId} status={LogValueFormatter.Quote(proposal.Status?.ToString())} changes={proposal.Changes?.Count ?? 0} changedFields={LogValueFormatter.List(GetChangedProfileFields(proposal.Changes))}");
-            var newEvidence = DossierPatchPromptBuilder.BuildEvidence(patchGroup.Candidates);
-            var validationIssues = ValidateProposal(dossier.Profile, proposal, newEvidence);
-            if (validationIssues.Count > 0)
-            {
-                CharacterBibleRunLogScope.Current?.Warning(
-                    "patch.proposal.invalid",
-                    $"characterId={dossier.CharacterId} issues={LogValueFormatter.List(validationIssues)}");
-                progress?.Report(new CharacterBibleWorkflowProgress(
-                    "patch",
-                    $"Profile update proposal for {dossier.Name}: invalid contract details."));
-                continue;
-            }
-
-            if (proposal.Status != CharacterBibleProfileUpdateStatus.Updated)
-            {
-                CharacterBibleRunLogScope.Current?.Info(
-                    "patch.apply.skipped",
-                    $"characterId={dossier.CharacterId} reason={LogValueFormatter.Quote($"proposal status {proposal.Status}")}");
-                progress?.Report(new CharacterBibleWorkflowProgress(
-                    "patch",
-                    $"Profile update proposal for {dossier.Name}: {proposal.Status}."));
-                continue;
-            }
-
-            progress?.Report(new CharacterBibleWorkflowProgress(
-                "patch",
-                $"Profile update for {dossier.Name}: proposed. Reviewing profile update."));
-            var review = await ReviewPatchAsync(dossier, patchGroup.Candidates, proposal, progress, cancellationToken);
-            CharacterBibleRunLogScope.Current?.Info(
-                "patch.review.result",
-                $"characterId={dossier.CharacterId} name={LogValueFormatter.Quote(dossier.Name)} verdict={LogValueFormatter.Quote(review.Verdict?.ToString())} issues={LogValueFormatter.List(FormatReviewIssues(review.Issues ?? []))}");
-            if (review.Verdict != CharacterBiblePatchReviewVerdict.Approved)
-            {
-                CharacterBibleRunLogScope.Current?.Info(
-                    "patch.apply.skipped",
-                    $"characterId={dossier.CharacterId} reason={LogValueFormatter.Quote($"review verdict {review.Verdict}")}");
-                progress?.Report(new CharacterBibleWorkflowProgress(
-                    "patch",
-                    $"Profile update review for {dossier.Name}: {review.Verdict}."));
-                continue;
-            }
-
-            var approvedProfile = ToCharacterProfile(proposal.Profile!);
-            var profileChanged = !CharacterProfile.HasSameContent(dossier.Profile, approvedProfile);
-            if (!profileChanged)
-            {
-                CharacterBibleRunLogScope.Current?.Info(
-                    "patch.apply.no_change",
-                    $"characterId={dossier.CharacterId} name={LogValueFormatter.Quote(dossier.Name)}");
-                progress?.Report(new CharacterBibleWorkflowProgress(
-                    "patch",
-                    $"Profile update review for {dossier.Name}: approved; no local profile changes."));
-                continue;
-            }
-
-            runState.Catalog.UpdateProfile(dossier.CharacterId, approvedProfile);
-
-            var patchedDossier = runState.Catalog.GetRequired(dossier.CharacterId);
-            dossiersById[dossier.CharacterId] = patchedDossier;
-            appliedCount++;
-            CharacterBibleRunLogScope.Current?.Info(
-                "patch.apply",
-                $"characterId={dossier.CharacterId} name={LogValueFormatter.Quote(dossier.Name)} profileFieldsUpdated={LogValueFormatter.List(GetChangedProfileFields(proposal.Changes))}");
-            progress?.Report(new CharacterBibleWorkflowProgress(
-                "patch",
-                $"Approved profile update applied for {dossier.Name}."));
         }
 
-        if (proposalCount > 0)
-        {
-            progress?.Report(new CharacterBibleWorkflowProgress(
-                "patch",
-                $"Dossier profile updating finished: {appliedCount}/{proposalCount} updates applied."));
-        }
-
-        return runState;
-    }
-
-    private async Task<DossierReviewResult> ReviewPatchAsync(
-        CharacterDossier dossier,
-        IReadOnlyList<CharacterBibleDossierPatchCandidate> candidates,
-        DossierProfileUpdateProposal proposal,
-        IProgress<CharacterBibleWorkflowProgress>? progress,
-        CancellationToken cancellationToken)
-    {
-        var evidence = DossierPatchPromptBuilder.BuildReferencedEvidence(candidates, proposal);
-
-        try
-        {
-            var promptInput = DossierConsistencyReviewerPromptBuilder.BuildPromptInput(dossier, proposal, evidence);
-            CharacterBibleLlmInputLogger.DebugInput(
-                "patch.review.llm.input",
-                $"characterId={dossier.CharacterId} candidateIds={LogValueFormatter.List(candidates.Select(candidate => candidate.Candidate.CandidateId))} referencedEvidenceCount={evidence.Count} modelType={nameof(DossierReviewPromptInput)}",
-                promptInput);
-            return await reviewerModelClient.ReviewAsync(
-                new DossierReviewModelRequest(
-                    reviewerPromptBuilder.BuildSystemPrompt(),
-                    reviewerPromptBuilder.BuildUserPrompt(promptInput),
-                    new CharacterBibleAgentDiagnosticProgress(
-                        progress,
-                        "patch",
-                        $"Patch review for {dossier.Name}",
-                        $"characterId={dossier.CharacterId} name={LogValueFormatter.Quote(dossier.Name)}")),
-                cancellationToken).ConfigureAwait(false);
-        }
-        catch (Exception ex) when (ex is not OperationCanceledException)
-        {
-            CharacterBibleRunLogScope.Current?.Error(
-                "patch.review.failed",
-                $"characterId={dossier.CharacterId} name={LogValueFormatter.Quote(dossier.Name)} message={LogValueFormatter.Quote(ex.Message)}",
-                ex);
-            logger.LogError(ex, "Dossier profile update review failed for character {CharacterId}. Profile update rejected.", dossier.CharacterId);
-            return new DossierReviewResult
-            {
-                Verdict = CharacterBiblePatchReviewVerdict.RevisePatch,
-                Issues =
-                [
-                    new CharacterBiblePatchReviewIssue(
-                        CharacterBiblePatchReviewIssueCode.UnsupportedClaim,
-                        null,
-                        "Reviewer call failed.")
-                ]
-            };
-        }
+        progress?.Report(new CharacterBibleWorkflowProgress(
+            "patch",
+            $"Dossier profile updating finished: {statistics.ProfileFieldsChanged} field update(s) applied."));
+        return new CharacterBibleDossierPatchResult(runState, statistics);
     }
 
     private IReadOnlyList<DossierPatchGroup> BuildPatchGroups(CharacterBibleRunState runState)
@@ -281,8 +173,7 @@ internal sealed class CharacterBibleDossierPatcher
         foreach (var candidate in group.Candidates)
         {
             var candidateBytes = EstimatePatchCandidateBytes(candidate);
-            var wouldOverflow = batch.Count >= maxCandidates || batchBytes + candidateBytes > maxBytes;
-            if (wouldOverflow && batch.Count > 0)
+            if ((batch.Count >= maxCandidates || batchBytes + candidateBytes > maxBytes) && batch.Count > 0)
             {
                 yield return new DossierPatchGroup(group.CharacterId, batch.ToArray());
                 batch = [];
@@ -301,21 +192,7 @@ internal sealed class CharacterBibleDossierPatcher
 
     private static int EstimatePatchCandidateBytes(CharacterBibleDossierPatchCandidate patchCandidate)
     {
-        var candidate = patchCandidate.Candidate;
-        var bytes = GetUtf8ByteCount(candidate.CandidateId)
-                    + GetUtf8ByteCount(candidate.CanonicalName)
-                    + GetUtf8ByteCount(candidate.Gender);
-
-        foreach (var alias in candidate.AliasExamples)
-        {
-            bytes += GetUtf8ByteCount(alias.Key) + GetUtf8ByteCount(alias.Value);
-        }
-
-        foreach (var evidence in candidate.Evidence)
-        {
-            bytes += GetUtf8ByteCount(evidence.Pointer) + GetUtf8ByteCount(evidence.Excerpt);
-        }
-
+        var bytes = 0;
         foreach (var context in patchCandidate.EvidenceContexts)
         {
             bytes += GetUtf8ByteCount(context.Pointer)
@@ -336,161 +213,6 @@ internal sealed class CharacterBibleDossierPatcher
 
     private static int GetUtf8ByteCount(string? value)
         => string.IsNullOrEmpty(value) ? 0 : Encoding.UTF8.GetByteCount(value);
-
-    private static IReadOnlyList<string> GetChangedProfileFields(IReadOnlyList<CharacterBibleProfileChange>? changes)
-    {
-        if (changes is null || changes.Count == 0)
-        {
-            return [];
-        }
-
-        return changes
-            .Where(change => change.Field is not null)
-            .Select(change => ToProfileFieldName(change.Field!.Value))
-            .Distinct(StringComparer.Ordinal)
-            .ToArray();
-    }
-
-    private static IReadOnlyList<string> ValidateProposal(
-        CharacterProfile? currentProfile,
-        DossierProfileUpdateProposal proposal,
-        IReadOnlyList<CharacterBiblePatchEvidence> newEvidence)
-    {
-        var issues = new List<string>();
-        var proposedProfile = proposal.Profile is null ? null : ToCharacterProfile(proposal.Profile);
-        var allowedPointers = newEvidence
-            .Select(evidence => evidence.Pointer)
-            .ToHashSet(StringComparer.Ordinal);
-
-        if (proposal.Profile is null)
-        {
-            issues.Add("proposal has no profile");
-        }
-        else if (proposal.Status == CharacterBibleProfileUpdateStatus.NoUsefulChanges
-                 && !CharacterProfile.HasSameContent(currentProfile, proposedProfile))
-        {
-            issues.Add("noUsefulChanges proposal changes the profile");
-        }
-        else if (proposal.Status == CharacterBibleProfileUpdateStatus.Updated
-                 && CharacterProfile.HasSameContent(currentProfile, proposedProfile))
-        {
-            issues.Add("updated proposal does not change the profile");
-        }
-
-        if (proposedProfile is not null)
-        {
-            var changedFields = GetChangedProfileFields(currentProfile, proposedProfile);
-            var describedFieldList = (proposal.Changes ?? [])
-                .Where(change => change.Field is not null)
-                .Select(change => change.Field!.Value)
-                .ToArray();
-            var describedFields = describedFieldList.ToHashSet();
-
-            foreach (var duplicateField in describedFieldList
-                         .GroupBy(field => field)
-                         .Where(group => group.Count() > 1)
-                         .Select(group => group.Key))
-            {
-                issues.Add($"profile field has duplicate changes: {duplicateField}");
-            }
-
-            foreach (var field in changedFields.Except(describedFields))
-            {
-                issues.Add($"changed profile field is not described: {field}");
-            }
-
-            foreach (var field in describedFields.Except(changedFields))
-            {
-                issues.Add($"change describes unchanged profile field: {field}");
-            }
-        }
-
-        if (proposal.Status == CharacterBibleProfileUpdateStatus.Updated && proposal.Changes?.Count == 0)
-        {
-            issues.Add("updated proposal has no changes");
-        }
-
-        if (proposal.Status == CharacterBibleProfileUpdateStatus.NoUsefulChanges && proposal.Changes?.Count > 0)
-        {
-            issues.Add("noUsefulChanges proposal has changes");
-        }
-
-        foreach (var change in proposal.Changes ?? [])
-        {
-            if (change.EvidencePointers is null || change.EvidencePointers.Count == 0)
-            {
-                issues.Add("change is missing evidence pointers");
-                continue;
-            }
-
-            foreach (var pointer in change.EvidencePointers)
-            {
-                if (string.IsNullOrWhiteSpace(pointer))
-                {
-                    issues.Add("change has blank evidence pointer");
-                    continue;
-                }
-
-                if (!allowedPointers.Contains(pointer))
-                {
-                    issues.Add($"evidence pointer not found: {pointer}");
-                }
-            }
-        }
-
-        return issues;
-    }
-
-    private static CharacterProfile ToCharacterProfile(CharacterBibleProfileUpdate profile)
-        => CharacterProfile.Normalize(new CharacterProfile(
-            profile.Appearance ?? string.Empty,
-            profile.StatusAndCompetence ?? string.Empty,
-            profile.PsychologicalProfile ?? string.Empty,
-            profile.SpeechAndCommunication ?? string.Empty));
-
-    private static IReadOnlySet<CharacterBibleProfileField> GetChangedProfileFields(
-        CharacterProfile? currentProfile,
-        CharacterProfile proposedProfile)
-    {
-        var current = CharacterProfile.Normalize(currentProfile);
-        var fields = new HashSet<CharacterBibleProfileField>();
-
-        AddChangedField(fields, CharacterBibleProfileField.Appearance, current.Appearance, proposedProfile.Appearance);
-        AddChangedField(fields, CharacterBibleProfileField.StatusAndCompetence, current.StatusAndCompetence, proposedProfile.StatusAndCompetence);
-        AddChangedField(fields, CharacterBibleProfileField.PsychologicalProfile, current.PsychologicalProfile, proposedProfile.PsychologicalProfile);
-        AddChangedField(fields, CharacterBibleProfileField.SpeechAndCommunication, current.SpeechAndCommunication, proposedProfile.SpeechAndCommunication);
-
-        return fields;
-    }
-
-    private static void AddChangedField(
-        ISet<CharacterBibleProfileField> fields,
-        CharacterBibleProfileField field,
-        string currentValue,
-        string proposedValue)
-    {
-        if (!string.Equals(currentValue, proposedValue, StringComparison.Ordinal))
-        {
-            fields.Add(field);
-        }
-    }
-
-    private static IReadOnlyList<string> FormatReviewIssues(IReadOnlyList<CharacterBiblePatchReviewIssue> issues)
-    {
-        return issues
-            .Select(issue => $"{issue.Code}:{issue.Field}:{issue.Message}")
-            .ToArray();
-    }
-
-    private static string ToProfileFieldName(CharacterBibleProfileField field)
-        => field switch
-        {
-            CharacterBibleProfileField.Appearance => "appearance",
-            CharacterBibleProfileField.StatusAndCompetence => "statusAndCompetence",
-            CharacterBibleProfileField.PsychologicalProfile => "psychologicalProfile",
-            CharacterBibleProfileField.SpeechAndCommunication => "speechAndCommunication",
-            _ => throw new InvalidOperationException($"Unsupported profile field '{field}'.")
-        };
 
     private sealed record DossierPatchGroup(
         string CharacterId,

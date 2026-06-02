@@ -26,10 +26,8 @@ public sealed class CharacterDossiersGenerator
         ILogger<CharacterDossiersGenerator> logger,
         ICharacterExtractionModelClient characterExtractionModelClient,
         CharacterExtractionPromptBuilder promptBuilder,
-        IDossierPatchProposalModelClient dossierPatchProposalModelClient,
+        ICharacterProfilePatchModelClient characterProfilePatchModelClient,
         DossierPatchPromptBuilder dossierPatchPromptBuilder,
-        IDossierConsistencyReviewerModelClient dossierConsistencyReviewerModelClient,
-        DossierConsistencyReviewerPromptBuilder dossierConsistencyReviewerPromptBuilder,
         ICharacterIdentityResolutionModelClient identityResolutionModelClient,
         ICharacterVectorSearchTool characterVectorSearchTool,
         ILoggerFactory? loggerFactory = null,
@@ -43,10 +41,8 @@ public sealed class CharacterDossiersGenerator
         ArgumentNullException.ThrowIfNull(logger);
         ArgumentNullException.ThrowIfNull(characterExtractionModelClient);
         ArgumentNullException.ThrowIfNull(promptBuilder);
-        ArgumentNullException.ThrowIfNull(dossierPatchProposalModelClient);
+        ArgumentNullException.ThrowIfNull(characterProfilePatchModelClient);
         ArgumentNullException.ThrowIfNull(dossierPatchPromptBuilder);
-        ArgumentNullException.ThrowIfNull(dossierConsistencyReviewerModelClient);
-        ArgumentNullException.ThrowIfNull(dossierConsistencyReviewerPromptBuilder);
         ArgumentNullException.ThrowIfNull(identityResolutionModelClient);
         ArgumentNullException.ThrowIfNull(characterVectorSearchTool);
 
@@ -68,10 +64,8 @@ public sealed class CharacterDossiersGenerator
             splitCandidatePromptBuilder,
             loggerFactory?.CreateLogger<CharacterBibleResolver>() ?? NullLogger<CharacterBibleResolver>.Instance);
         dossierPatcher = new CharacterBibleDossierPatcher(
-            dossierPatchProposalModelClient,
+            characterProfilePatchModelClient,
             dossierPatchPromptBuilder,
-            dossierConsistencyReviewerModelClient,
-            dossierConsistencyReviewerPromptBuilder,
             new CharacterBibleEvidenceContextExpander(documentContext),
             null,
             loggerFactory?.CreateLogger<CharacterBibleDossierPatcher>() ?? NullLogger<CharacterBibleDossierPatcher>.Instance);
@@ -112,7 +106,7 @@ public sealed class CharacterDossiersGenerator
         return resolver.ResolveAndUpdateCatalogAsync(request, session, paragraphCount, candidates, progress, cancellationToken);
     }
 
-    internal Task<CharacterBibleRunState> ApplyDossierPatchesAsync(
+    internal Task<CharacterBibleDossierPatchResult> ApplyDossierPatchesAsync(
         CharacterBibleRunState runState,
         IProgress<CharacterBibleWorkflowProgress>? progress = null,
         CancellationToken cancellationToken = default)
@@ -137,7 +131,7 @@ public sealed class CharacterDossiersGenerator
         var extraction = await ExtractCandidatesAsync(paragraphs, cancellationToken: cancellationToken);
         var session = CreateEditSession();
         var runState = await ResolveCandidatesIntoCatalogAsync(new CharacterBibleWorkflowInput(), session, paragraphs.Count, extraction.Candidates, cancellationToken: cancellationToken);
-        runState = await ApplyDossierPatchesAsync(runState, cancellationToken: cancellationToken);
+        runState = (await ApplyDossierPatchesAsync(runState, cancellationToken: cancellationToken)).RunState;
         return FinishRun(runState);
     }
 
@@ -161,7 +155,7 @@ public sealed class CharacterDossiersGenerator
         var extraction = await ExtractCandidatesAsync(paragraphs, cancellationToken: cancellationToken);
         var session = CreateEditSession();
         var runState = await ResolveCandidatesIntoCatalogAsync(new CharacterBibleWorkflowInput(changedPointers), session, paragraphs.Count, extraction.Candidates, cancellationToken: cancellationToken);
-        runState = await ApplyDossierPatchesAsync(runState, cancellationToken: cancellationToken);
+        runState = (await ApplyDossierPatchesAsync(runState, cancellationToken: cancellationToken)).RunState;
         return FinishRun(runState);
     }
 
@@ -185,7 +179,7 @@ public sealed class CharacterDossiersGenerator
         var changedPointers = paragraphs.Select(paragraph => paragraph.Pointer).ToArray();
         var session = CreateEditSession();
         var runState = await ResolveCandidatesIntoCatalogAsync(new CharacterBibleWorkflowInput(changedPointers), session, paragraphs.Count, extraction.Candidates, cancellationToken: cancellationToken);
-        runState = await ApplyDossierPatchesAsync(runState, cancellationToken: cancellationToken);
+        runState = (await ApplyDossierPatchesAsync(runState, cancellationToken: cancellationToken)).RunState;
         return FinishRun(runState);
     }
 }

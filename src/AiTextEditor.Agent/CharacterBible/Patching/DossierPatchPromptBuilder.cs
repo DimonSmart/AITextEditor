@@ -32,14 +32,14 @@ public sealed class DossierPatchPromptBuilder
         return BuildUserPrompt(BuildPromptInput(candidates, dossier));
     }
 
-    internal string BuildUserPrompt(CharacterBiblePatchProposalPromptInput input)
+    internal string BuildUserPrompt(CharacterProfilePatchPromptInput input)
     {
         ArgumentNullException.ThrowIfNull(input);
 
         return JsonSerializer.Serialize(input, UserPromptJsonOptions);
     }
 
-    internal static CharacterBiblePatchProposalPromptInput BuildPromptInput(
+    internal static CharacterProfilePatchPromptInput BuildPromptInput(
         IReadOnlyList<CharacterBibleDossierPatchCandidate> candidates,
         CharacterDossier dossier)
     {
@@ -47,13 +47,17 @@ public sealed class DossierPatchPromptBuilder
         ArgumentNullException.ThrowIfNull(dossier);
 
         var profile = CharacterProfile.Normalize(dossier.Profile);
-        return new CharacterBiblePatchProposalPromptInput(
-            new CharacterBiblePatchTarget(dossier.Name),
-            new CharacterBiblePatchCurrentProfile(
-                NullIfWhiteSpace(profile.Appearance),
-                NullIfWhiteSpace(profile.StatusAndCompetence),
-                NullIfWhiteSpace(profile.PsychologicalProfile),
-                NullIfWhiteSpace(profile.SpeechAndCommunication)),
+        return new CharacterProfilePatchPromptInput(
+            new CharacterProfilePatchPromptCard(
+                dossier.Name,
+                dossier.Gender,
+                dossier.Aliases,
+                CharacterImportance.GetLabel(dossier.ImportanceLevel),
+                new CharacterBiblePatchCurrentProfile(
+                    NullIfWhiteSpace(profile.Appearance),
+                    NullIfWhiteSpace(profile.StatusAndCompetence),
+                    NullIfWhiteSpace(profile.PsychologicalProfile),
+                    NullIfWhiteSpace(profile.SpeechAndCommunication))),
             BuildEvidence(candidates));
     }
 

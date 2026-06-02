@@ -9,6 +9,17 @@ internal sealed record CharacterBiblePatchProposalPromptInput(
     CharacterBiblePatchCurrentProfile CurrentProfile,
     IReadOnlyList<CharacterBiblePatchEvidence> NewEvidence);
 
+internal sealed record CharacterProfilePatchPromptInput(
+    CharacterProfilePatchPromptCard Character,
+    IReadOnlyList<CharacterBiblePatchEvidence> Evidence);
+
+internal sealed record CharacterProfilePatchPromptCard(
+    string Name,
+    string Gender,
+    IReadOnlyList<string> Aliases,
+    string Importance,
+    CharacterBiblePatchCurrentProfile CurrentProfile);
+
 internal sealed record CharacterBiblePatchTarget(string Name);
 
 internal sealed record CharacterBiblePatchCurrentProfile(

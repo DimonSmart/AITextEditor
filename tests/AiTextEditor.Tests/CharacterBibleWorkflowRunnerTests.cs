@@ -260,8 +260,6 @@ public sealed class CharacterBibleWorkflowRunnerTests
             new CharacterExtractionPromptBuilder(),
             NoopPatchClient(),
             new DossierPatchPromptBuilder(),
-            ApprovingReviewerClient(),
-            new DossierConsistencyReviewerPromptBuilder(),
             NewIdentityResolverClient(),
             NewVectorSearchTool());
         var runner = new CharacterBibleWorkflowRunner(generator, NullLoggerFactory.Instance);
@@ -301,8 +299,6 @@ public sealed class CharacterBibleWorkflowRunnerTests
             new CharacterExtractionPromptBuilder(),
             NoopPatchClient(),
             new DossierPatchPromptBuilder(),
-            ApprovingReviewerClient(),
-            new DossierConsistencyReviewerPromptBuilder(),
             NewIdentityResolverClient(),
             NewVectorSearchTool());
         var runner = new CharacterBibleWorkflowRunner(generator, NullLoggerFactory.Instance);
@@ -317,7 +313,7 @@ public sealed class CharacterBibleWorkflowRunnerTests
         CharacterExtractionResponse response,
         out CharacterDossierService dossierService,
         out ScriptedCharacterExtractionModelClient extractionModelClient,
-        IDossierPatchProposalModelClient? patchModelClient = null)
+        ICharacterProfilePatchModelClient? patchModelClient = null)
     {
         var repository = new MarkdownDocumentRepository();
         var document = repository.LoadFromMarkdown(markdown);
@@ -335,8 +331,6 @@ public sealed class CharacterBibleWorkflowRunnerTests
             new CharacterExtractionPromptBuilder(),
             patchModelClient ?? NoopPatchClient(),
             new DossierPatchPromptBuilder(),
-            ApprovingReviewerClient(),
-            new DossierConsistencyReviewerPromptBuilder(),
             NewIdentityResolverClient(),
             NewVectorSearchTool());
 
@@ -367,7 +361,7 @@ public sealed class CharacterBibleWorkflowRunnerTests
             .ToArray();
     }
 
-    private static IDossierPatchProposalModelClient NoopPatchClient() => new NoopDossierPatchProposalModelClient();
+    private static ICharacterProfilePatchModelClient NoopPatchClient() => new NoopDossierPatchProposalModelClient();
 
     private static IDossierConsistencyReviewerModelClient ApprovingReviewerClient() => new ApprovingDossierConsistencyReviewerModelClient();
 
@@ -456,36 +450,26 @@ public sealed class CharacterBibleWorkflowRunnerTests
         }
     }
 
-    private sealed class NoopDossierPatchProposalModelClient : IDossierPatchProposalModelClient
+    private sealed class NoopDossierPatchProposalModelClient : ICharacterProfilePatchModelClient
     {
-        public Task<DossierProfileUpdateProposal> ProposePatchAsync(
-            DossierPatchProposalModelRequest request,
+        public Task<CharacterProfilePatchCompletion> PatchAsync(
+            CharacterProfilePatchModelRequest request,
             CancellationToken cancellationToken = default)
         {
-            return Task.FromResult(new DossierProfileUpdateProposal
-            {
-                Status = CharacterBibleProfileUpdateStatus.NoUsefulChanges,
-                Profile = new CharacterBibleProfileUpdate("", "", "", ""),
-                Changes = []
-            });
+            return Task.FromResult(new CharacterProfilePatchCompletion(true));
         }
     }
 
-    private sealed class CountingDossierPatchProposalModelClient : IDossierPatchProposalModelClient
+    private sealed class CountingDossierPatchProposalModelClient : ICharacterProfilePatchModelClient
     {
         public int CallCount { get; private set; }
 
-        public Task<DossierProfileUpdateProposal> ProposePatchAsync(
-            DossierPatchProposalModelRequest request,
+        public Task<CharacterProfilePatchCompletion> PatchAsync(
+            CharacterProfilePatchModelRequest request,
             CancellationToken cancellationToken = default)
         {
             CallCount++;
-            return Task.FromResult(new DossierProfileUpdateProposal
-            {
-                Status = CharacterBibleProfileUpdateStatus.NoUsefulChanges,
-                Profile = new CharacterBibleProfileUpdate("", "", "", ""),
-                Changes = []
-            });
+            return Task.FromResult(new CharacterProfilePatchCompletion(true));
         }
     }
 

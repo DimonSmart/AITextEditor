@@ -220,14 +220,15 @@ internal sealed class PatchCharacterBibleDossiersExecutor : Executor<CharacterBi
         CharacterBibleRunLogScope.Current?.Info(
             "patch.start",
             $"decisionCount={runState.Catalog.Decisions.Count}");
-        var patchedRunState = await generator.ApplyDossierPatchesAsync(runState, progress, cancellationToken);
+        var patchResult = await generator.ApplyDossierPatchesAsync(runState, progress, cancellationToken);
+        var patchedRunState = patchResult.RunState;
         logger.LogInformation(
             "character_bible_dossiers_patched: changed={Changed}, decisions={DecisionCount}",
             patchedRunState.Catalog.Changed,
             patchedRunState.Catalog.Decisions.Count);
         CharacterBibleRunLogScope.Current?.Info(
             "patch.done",
-            $"changed={patchedRunState.Catalog.Changed} decisionCount={patchedRunState.Catalog.Decisions.Count}");
+            $"charactersProcessed={patchResult.Statistics.CharactersProcessed} agentCalls={patchResult.Statistics.AgentCalls} toolCalls={patchResult.Statistics.ToolCalls} applied={patchResult.Statistics.Applied} noop={patchResult.Statistics.NoOp} rejected={patchResult.Statistics.Rejected} conflict={patchResult.Statistics.Conflict} profileFieldsChanged={patchResult.Statistics.ProfileFieldsChanged}");
         return patchedRunState;
     }
 }

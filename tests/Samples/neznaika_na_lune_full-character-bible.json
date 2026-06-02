@@ -1,95 +1,23 @@
 {
-  "dossiersId": "fa2328dd11fe40b39fc8530e6cdfe76f",
+  "dossiersId": "687531ce35c0454592fd3db7575e3584",
   "version": 2,
   "characters": [
-    {
-      "characterId": "546723556a0506d4ebfe383b3296c943",
-      "name": "Вертибутылкина",
-      "aliases": [],
-      "aliasExamples": {},
-      "gender": "unknown",
-      "importanceLevel": 7,
-      "profile": {
-        "appearance": "",
-        "statusAndCompetence": "",
-        "psychologicalProfile": "",
-        "speechAndCommunication": ""
-      }
-    },
     {
       "characterId": "224ff90a6305d585a7edeaf921f0411f",
       "name": "Знайка",
       "aliases": [
-        "Знайка",
         "Знайкиной"
       ],
       "aliasExamples": {
-        "Знайка": "Все астрономы – и вулканисты и метеоритчики – смеялись над этой Знайкиной теорией.",
         "Знайкиной": "Все астрономы – и вулканисты и метеоритчики – смеялись над этой Знайкиной теорией."
       },
       "gender": "male",
       "importanceLevel": 10,
       "profile": {
-        "appearance": "",
-        "statusAndCompetence": "",
-        "psychologicalProfile": "",
-        "speechAndCommunication": ""
-      }
-    },
-    {
-      "characterId": "4f10f31cbffe04d6a668eefd1f16988f",
-      "name": "Клёпки",
-      "aliases": [],
-      "aliasExamples": {},
-      "gender": "unknown",
-      "importanceLevel": 7,
-      "profile": {
-        "appearance": "",
-        "statusAndCompetence": "",
-        "psychologicalProfile": "",
-        "speechAndCommunication": ""
-      }
-    },
-    {
-      "characterId": "b24ce18c81a92d74ed8fee4d085c5a2e",
-      "name": "Кнопочки",
-      "aliases": [],
-      "aliasExamples": {},
-      "gender": "unknown",
-      "importanceLevel": 7,
-      "profile": {
-        "appearance": "",
-        "statusAndCompetence": "",
-        "psychologicalProfile": "",
-        "speechAndCommunication": ""
-      }
-    },
-    {
-      "characterId": "9a36d23aadd561a4f9f8d95e9e8e3b4c",
-      "name": "Незнайка",
-      "aliases": [],
-      "aliasExamples": {},
-      "gender": "unknown",
-      "importanceLevel": 7,
-      "profile": {
-        "appearance": "",
-        "statusAndCompetence": "",
-        "psychologicalProfile": "",
-        "speechAndCommunication": ""
-      }
-    },
-    {
-      "characterId": "45fe4522da94703171832beae61773d1",
-      "name": "Пачкули Пёстренького",
-      "aliases": [],
-      "aliasExamples": {},
-      "gender": "unknown",
-      "importanceLevel": 7,
-      "profile": {
-        "appearance": "",
-        "statusAndCompetence": "",
-        "psychologicalProfile": "",
-        "speechAndCommunication": ""
+        "appearance": null,
+        "statusAndCompetence": "Rocket engineer, lunar explorer, and owner of a personal crater theory.",
+        "psychologicalProfile": "Criticized existing volcanic and meteorite theories and developed his own lunar crater theory",
+        "speechAndCommunication": null
       }
     },
     {
@@ -100,16 +28,16 @@
         "Пончику"
       ],
       "aliasExamples": {
-        "Пончика": "Все были очень довольны. Единственным, кто пострадал на этом деле, оказался Пончик. Когда Пончик увидел, что теперь можно брать в магазине любую вещь, какая только могла понадобиться, он стал недоумевать, к чему ему вся та куча костюмов, которая накопилась у него дома. Все эти костюмы к тому же вышли из моды, и их всё равно нельзя было носить. Выбрав потемней ночку, Пончик завязал свои старые костюмы в огромный узел, вынес тайком из дома и утопил в Огурцовой реке, а вместо них натаскал себе из магазинов новых костюмов. Кончилось тем, что его комната превратилась в какой-то склад готового платья. Костюмы лежали у него и в шкафу, и на шкафу, и на столе, и под столом, и на книжных полках, висели на стенах, на спинках стульев и даже под потолком, на верёвочках.",
-        "Пончику": "Все были очень довольны. Единственным, кто пострадал на этом деле, оказался Пончик. Когда Пончик увидел, что теперь можно брать в магазине любую вещь, какая только могла понадобиться, он стал недоумевать, к чему ему вся та куча костюмов, которая накопилась у него дома. Все эти костюмы к тому же вышли из моды, и их всё равно нельзя было носить. Выбрав потемней ночку, Пончик завязал свои старые костюмы в огромный узел, вынес тайком из дома и утопил в Огурцовой реке, а вместо них натаскал себе из магазинов новых костюмов. Кончилось тем, что его комната превратилась в какой-то склад готового платья. Костюмы лежали у него и в шкафу, и на шкафу, и на столе, и под столом, и на книжных полках, висели на стенах, на спинках стульев и даже под потолком, на верёвочках."
+        "Пончика": "От такого обилия шерстяных изделий в доме развелась моль, и, чтоб она не изгрызла костюмов, Пончику приходилось ежедневно травить её нафталином, от которого в комнате стоял такой сильный запах, что непривычного коротышку валило с ног. Пончик и сам пропах, насквозь этим одуряющим запахом, но настолько привык к нему, что даже перестал замечать. Для других, однако же, этот запах был очень заметён. Как только Пончик приходил к кому-нибудь в гости, у хозяев сейчас же начинала кружиться от одурения голова. Пончика моментально прогоняли и поскорей открывали настежь все окна и двери, чтобы проветрить помещение, иначе можно было упасть в обморок или сойти с ума. По этой же причине Пончик не имел даже возможности поиграть с коротышками во дворе. Как только он выходил во двор, все вокруг начинали плеваться и, зажав руками носы, бросались бежать от него в разные стороны без оглядки. Никто не хотел с ним водиться. Нечего и говорить, что для Пончика это было страшно обидно, и пришлось ему все ненужные для него костюмы отнести на чердак.",
+        "Пончику": "От такого обилия шерстяных изделий в доме развелась моль, и, чтоб она не изгрызла костюмов, Пончику приходилось ежедневно травить её нафталином, от которого в комнате стоял такой сильный запах, что непривычного коротышку валило с ног. Пончик и сам пропах, насквозь этим одуряющим запахом, но настолько привык к нему, что даже перестал замечать. Для других, однако же, этот запах был очень заметён. Как только Пончик приходил к кому-нибудь в гости, у хозяев сейчас же начинала кружиться от одурения голова. Пончика моментально прогоняли и поскорей открывали настежь все окна и двери, чтобы проветрить помещение, иначе можно было упасть в обморок или сойти с ума. По этой же причине Пончик не имел даже возможности поиграть с коротышками во дворе. Как только он выходил во двор, все вокруг начинали плеваться и, зажав руками носы, бросались бежать от него в разные стороны без оглядки. Никто не хотел с ним водиться. Нечего и говорить, что для Пончика это было страшно обидно, и пришлось ему все ненужные для него костюмы отнести на чердак."
       },
       "gender": "male",
-      "importanceLevel": 10,
+      "importanceLevel": 7,
       "profile": {
-        "appearance": "",
-        "statusAndCompetence": "",
-        "psychologicalProfile": "",
-        "speechAndCommunication": ""
+        "appearance": "В комнате часто пахнет нальфалином",
+        "statusAndCompetence": null,
+        "psychologicalProfile": null,
+        "speechAndCommunication": null
       }
     },
     {
@@ -124,10 +52,10 @@
       "gender": "unknown",
       "importanceLevel": 7,
       "profile": {
-        "appearance": "",
-        "statusAndCompetence": "",
-        "psychologicalProfile": "",
-        "speechAndCommunication": ""
+        "appearance": null,
+        "statusAndCompetence": "Child scientist who helped build the second lunar rocket and participated in a moon expedition to study gravity changes.",
+        "psychologicalProfile": null,
+        "speechAndCommunication": null
       }
     },
     {
@@ -144,10 +72,10 @@
       "gender": "male",
       "importanceLevel": 10,
       "profile": {
-        "appearance": "",
-        "statusAndCompetence": "",
-        "psychologicalProfile": "",
-        "speechAndCommunication": ""
+        "appearance": null,
+        "statusAndCompetence": "Astronomer who observed lunar craters with a telescope",
+        "psychologicalProfile": null,
+        "speechAndCommunication": null
       }
     },
     {
@@ -162,10 +90,10 @@
       "gender": "unknown",
       "importanceLevel": 7,
       "profile": {
-        "appearance": "",
-        "statusAndCompetence": "",
-        "psychologicalProfile": "",
-        "speechAndCommunication": ""
+        "appearance": null,
+        "statusAndCompetence": "Малышка‑ученый, участвовал в создании космической ракеты и совместно с Знайкой и Селёдочкой совершил межпланетное путешествие на Луну",
+        "psychologicalProfile": null,
+        "speechAndCommunication": null
       }
     }
   ],

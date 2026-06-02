@@ -3,10 +3,10 @@ using System.Collections.Generic;
 namespace AiTextEditor.Core.Model;
 
 public sealed record CharacterProfile(
-    string Appearance = "",
-    string StatusAndCompetence = "",
-    string PsychologicalProfile = "",
-    string SpeechAndCommunication = "")
+    string? Appearance = null,
+    string? StatusAndCompetence = null,
+    string? PsychologicalProfile = null,
+    string? SpeechAndCommunication = null)
 {
     public static CharacterProfile Empty { get; } = new();
 
@@ -75,9 +75,9 @@ public sealed record CharacterProfile(
             && string.Equals(normalizedLeft.SpeechAndCommunication, normalizedRight.SpeechAndCommunication, StringComparison.Ordinal);
     }
 
-    private static string ChooseExisting(string existing, string candidate)
+    private static string? ChooseExisting(string? existing, string? candidate)
         => string.IsNullOrWhiteSpace(existing) ? candidate : existing;
 
-    private static string Trim(string? value)
-        => value?.Trim() ?? string.Empty;
+    private static string? Trim(string? value)
+        => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
 }
