@@ -147,17 +147,32 @@ public sealed class CharacterDossiersGeneratorTests
         Assert.Equal(
             "Учёный и организатор экспедиции.",
             json.RootElement.GetProperty("currentProfile").GetProperty("statusAndCompetence").GetString());
-        Assert.Equal("updated", json.RootElement.GetProperty("proposal").GetProperty("status").GetString());
-        var change = json.RootElement.GetProperty("proposal").GetProperty("changes").EnumerateArray().Single();
+        Assert.Equal(
+            "Учёный, организатор экспедиции и автор книги о путешествии.",
+            json.RootElement.GetProperty("proposedProfile").GetProperty("statusAndCompetence").GetString());
+        var change = json.RootElement.GetProperty("changes").EnumerateArray().Single();
         Assert.Equal("StatusAndCompetence", change.GetProperty("field").GetString());
         Assert.Equal("replace", change.GetProperty("action").GetString());
         Assert.Equal("p10", change.GetProperty("evidencePointers").EnumerateArray().Single().GetString());
         Assert.Equal("p10", json.RootElement.GetProperty("evidence").EnumerateArray().Single().GetProperty("pointer").GetString());
+        Assert.False(json.RootElement.TryGetProperty("proposal", out _));
         Assert.DoesNotContain("candidateId", userPrompt, StringComparison.Ordinal);
         Assert.DoesNotContain("characterId", userPrompt, StringComparison.Ordinal);
         Assert.DoesNotContain("identityDecision", userPrompt, StringComparison.Ordinal);
         Assert.DoesNotContain("aliases", userPrompt, StringComparison.Ordinal);
         Assert.DoesNotContain("evidenceContexts", userPrompt, StringComparison.Ordinal);
+        Assert.DoesNotContain("additions", userPrompt, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void DossierConsistencyReviewerPromptBuilder_InstructsStrictProfileTransitionReview()
+    {
+        var systemPrompt = new DossierConsistencyReviewerPromptBuilder().BuildSystemPrompt();
+
+        Assert.Contains("Preserve unaffected fields without style-only rewrites.", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("Reject one-time actions presented as stable traits.", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("refines, weakens, contradicts, or corrects", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("Every change.field must match a field that actually differs", systemPrompt, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -634,7 +649,112 @@ public sealed class CharacterDossiersGeneratorTests
     }
 
     [Fact]
-    public async Task GenerateDossiers_AppliesProfilePatchWithoutOverwritingManualSections()
+    public async Task GenerateDossiers_ApprovedProfileUpdateIsAppliedAsWholeProfile()
+    {
+        var currentProfile = new AiTextEditor.Core.Model.CharacterProfile(
+            Appearance: "Старое описание внешности.",
+            PsychologicalProfile: "Проявляет храбрость.");
+        var proposedPsychologicalProfile = "Не обладает устойчивой храбростью: при реальной опасности склонен теряться.";
+        var proposal = ProfileUpdate(
+            new CharacterBibleProfileUpdate(
+                currentProfile.Appearance,
+                "",
+                proposedPsychologicalProfile,
+                ""),
+            new CharacterBibleProfileChange(
+                CharacterBibleProfileField.PsychologicalProfile,
+                CharacterBibleProfileUpdateAction.Replace,
+                ["p1"],
+                "Новое evidence ослабляет прежнюю характеристику храбрости."));
+
+        var result = await GenerateWithProfileUpdateAsync(currentProfile, proposal);
+
+        Assert.Equal("Старое описание внешности.", result.Dossier.Profile!.Appearance);
+        Assert.Equal(proposedPsychologicalProfile, result.Dossier.Profile.PsychologicalProfile);
+        Assert.DoesNotContain("Проявляет храбрость.", result.Dossier.Profile.PsychologicalProfile, StringComparison.Ordinal);
+        Assert.Single(result.ReviewerClient.Requests);
+    }
+
+    [Fact]
+    public async Task GenerateDossiers_InvalidProfileUpdatesAreNotSentToReviewer()
+    {
+        var currentProfile = new AiTextEditor.Core.Model.CharacterProfile(
+            Appearance: "Старое описание внешности.",
+            PsychologicalProfile: "Проявляет храбрость.");
+        var changedPsychologicalProfile = "При реальной опасности склонен теряться.";
+        var psychologicalChange = new CharacterBibleProfileChange(
+            CharacterBibleProfileField.PsychologicalProfile,
+            CharacterBibleProfileUpdateAction.Replace,
+            ["p1"],
+            "Новое evidence ослабляет прежнюю характеристику храбрости.");
+        var invalidProposals =
+            new[]
+            {
+                ProfileUpdate(
+                    new CharacterBibleProfileUpdate(
+                        currentProfile.Appearance,
+                        "",
+                        currentProfile.PsychologicalProfile,
+                        ""),
+                    psychologicalChange),
+                ProfileUpdate(
+                    new CharacterBibleProfileUpdate(
+                        currentProfile.Appearance,
+                        "",
+                        changedPsychologicalProfile,
+                        "")),
+                ProfileUpdate(
+                    new CharacterBibleProfileUpdate(
+                        "Переформулированное описание внешности.",
+                        "",
+                        changedPsychologicalProfile,
+                        ""),
+                    psychologicalChange),
+                new DossierProfileUpdateProposal
+                {
+                    Status = CharacterBibleProfileUpdateStatus.NoUsefulChanges,
+                    Profile = new CharacterBibleProfileUpdate(
+                        currentProfile.Appearance,
+                        "",
+                        changedPsychologicalProfile,
+                        ""),
+                    Changes = []
+                },
+                ProfileUpdate(
+                    new CharacterBibleProfileUpdate(
+                        currentProfile.Appearance,
+                        "",
+                        changedPsychologicalProfile,
+                        ""),
+                    psychologicalChange with { EvidencePointers = ["missing"] }),
+                ProfileUpdate(
+                    new CharacterBibleProfileUpdate(
+                        currentProfile.Appearance,
+                        "",
+                        changedPsychologicalProfile,
+                        ""),
+                    psychologicalChange with { EvidencePointers = [" "] }),
+                ProfileUpdate(
+                    new CharacterBibleProfileUpdate(
+                        currentProfile.Appearance,
+                        "",
+                        changedPsychologicalProfile,
+                        ""),
+                    psychologicalChange,
+                    psychologicalChange)
+            };
+
+        foreach (var proposal in invalidProposals)
+        {
+            var result = await GenerateWithProfileUpdateAsync(currentProfile, proposal);
+
+            Assert.True(AiTextEditor.Core.Model.CharacterProfile.HasSameContent(currentProfile, result.Dossier.Profile));
+            Assert.Empty(result.ReviewerClient.Requests);
+        }
+    }
+
+    [Fact]
+    public async Task GenerateDossiers_AppliesProfileUpdateWhilePreservingUnaffectedSections()
     {
         var dossierService = new CharacterDossierService();
         dossierService.UpsertDossier(new AiTextEditor.Core.Model.CharacterDossier(
@@ -744,7 +864,7 @@ public sealed class CharacterDossiersGeneratorTests
     }
 
     [Fact]
-    public async Task GenerateDossiers_DoesNotApplyUnsupportedPatchAddition()
+    public async Task GenerateDossiers_RejectedProfileUpdateIsNotApplied()
     {
         var dossierService = new CharacterDossierService();
         var repository = new MarkdownDocumentRepository();
@@ -1279,6 +1399,58 @@ public sealed class CharacterDossiersGeneratorTests
             () => client.ProposePatchAsync(new DossierPatchProposalModelRequest("system", "user")));
     }
 
+    private static DossierProfileUpdateProposal ProfileUpdate(
+        CharacterBibleProfileUpdate profile,
+        params CharacterBibleProfileChange[] changes)
+        => new()
+        {
+            Status = CharacterBibleProfileUpdateStatus.Updated,
+            Profile = profile,
+            Changes = [.. changes]
+        };
+
+    private static async Task<ProfileUpdateTestResult> GenerateWithProfileUpdateAsync(
+        AiTextEditor.Core.Model.CharacterProfile currentProfile,
+        DossierProfileUpdateProposal proposal)
+    {
+        var dossierService = new CharacterDossierService();
+        dossierService.UpsertDossier(new AiTextEditor.Core.Model.CharacterDossier(
+            CharacterId: "c1",
+            Name: "John",
+            Aliases: ["John"],
+            AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["John"] = "John changed."
+            },
+            Gender: "unknown",
+            Profile: currentProfile));
+
+        var repository = new MarkdownDocumentRepository();
+        var document = repository.LoadFromMarkdown("John changed.");
+        var documentContext = new DocumentContext(document, dossierService);
+        var limits = new CharacterBibleExtractionLimits { MaxParagraphsPerBatch = 256, MaxBatchBytes = 1024 * 128 };
+        var extractionModelClient = new ScriptedCharacterExtractionModelClient(
+            Response(Character("John", Alias("John", "John changed."))));
+        var patchClient = new ScriptedDossierPatchProposalModelClient(proposal);
+        var reviewerClient = new ScriptedDossierConsistencyReviewerModelClient();
+        var generator = new CharacterDossiersGenerator(
+            documentContext,
+            dossierService,
+            limits,
+            NullLogger<CharacterDossiersGenerator>.Instance,
+            extractionModelClient,
+            new CharacterExtractionPromptBuilder(),
+            patchClient,
+            new DossierPatchPromptBuilder(),
+            reviewerClient,
+            new DossierConsistencyReviewerPromptBuilder(),
+            NewIdentityResolverClient(),
+            NewVectorSearchTool());
+
+        var dossier = Assert.Single((await generator.GenerateAsync()).Characters);
+        return new ProfileUpdateTestResult(dossier, reviewerClient);
+    }
+
     private static DossierProfileUpdateProposal ReadyPatch(
         string? appearance = null,
         string? statusAndCompetence = null,
@@ -1553,6 +1725,10 @@ public sealed class CharacterDossiersGeneratorTests
                 });
         }
     }
+
+    private sealed record ProfileUpdateTestResult(
+        AiTextEditor.Core.Model.CharacterDossier Dossier,
+        ScriptedDossierConsistencyReviewerModelClient ReviewerClient);
 
     private sealed class SearchBackedIdentityResolutionModelClient : ICharacterIdentityResolutionModelClient
     {

@@ -69,7 +69,7 @@ internal sealed class CharacterBibleDossierPatcher
                 $"characterId={dossier.CharacterId} name={LogValueFormatter.Quote(dossier.Name)} candidateCount={patchGroup.Candidates.Count} candidateIds={LogValueFormatter.List(patchGroup.Candidates.Select(candidate => candidate.Candidate.CandidateId))}");
             progress?.Report(new CharacterBibleWorkflowProgress(
                 "patch",
-                $"Proposing dossier patch for {dossier.Name} from {patchGroup.Candidates.Count} candidate evidence group(s)."));
+                $"Proposing profile update for {dossier.Name} from {patchGroup.Candidates.Count} candidate evidence group(s)."));
 
             DossierProfileUpdateProposal proposal;
             try
@@ -100,10 +100,10 @@ internal sealed class CharacterBibleDossierPatcher
                     "patch.proposal.failed",
                     $"characterId={dossier.CharacterId} name={LogValueFormatter.Quote(dossier.Name)} message={LogValueFormatter.Quote(ex.Message)}",
                     ex);
-                logger.LogError(ex, "Dossier patch proposal failed for character {CharacterId}. Profile unchanged.", dossier.CharacterId);
+                logger.LogError(ex, "Dossier profile update proposal failed for character {CharacterId}. Profile unchanged.", dossier.CharacterId);
                 progress?.Report(new CharacterBibleWorkflowProgress(
                     "patch",
-                    $"Patch proposal failed for {dossier.Name}; profile unchanged.",
+                    $"Profile update proposal failed for {dossier.Name}; profile unchanged.",
                     IsError: true));
                 continue;
             }
@@ -120,7 +120,7 @@ internal sealed class CharacterBibleDossierPatcher
                     $"characterId={dossier.CharacterId} issues={LogValueFormatter.List(validationIssues)}");
                 progress?.Report(new CharacterBibleWorkflowProgress(
                     "patch",
-                    $"Patch proposal for {dossier.Name}: invalid contract details."));
+                    $"Profile update proposal for {dossier.Name}: invalid contract details."));
                 continue;
             }
 
@@ -131,13 +131,13 @@ internal sealed class CharacterBibleDossierPatcher
                     $"characterId={dossier.CharacterId} reason={LogValueFormatter.Quote($"proposal status {proposal.Status}")}");
                 progress?.Report(new CharacterBibleWorkflowProgress(
                     "patch",
-                    $"Patch proposal for {dossier.Name}: {proposal.Status}."));
+                    $"Profile update proposal for {dossier.Name}: {proposal.Status}."));
                 continue;
             }
 
             progress?.Report(new CharacterBibleWorkflowProgress(
                 "patch",
-                $"Patch proposal for {dossier.Name}: updated. Reviewing patch."));
+                $"Profile update for {dossier.Name}: proposed. Reviewing profile update."));
             var review = await ReviewPatchAsync(dossier, patchGroup.Candidates, proposal, progress, cancellationToken);
             CharacterBibleRunLogScope.Current?.Info(
                 "patch.review.result",
@@ -149,12 +149,12 @@ internal sealed class CharacterBibleDossierPatcher
                     $"characterId={dossier.CharacterId} reason={LogValueFormatter.Quote($"review verdict {review.Verdict}")}");
                 progress?.Report(new CharacterBibleWorkflowProgress(
                     "patch",
-                    $"Patch review for {dossier.Name}: {review.Verdict}."));
+                    $"Profile update review for {dossier.Name}: {review.Verdict}."));
                 continue;
             }
 
-            var mergedProfile = ToCharacterProfile(proposal.Profile!);
-            var profileChanged = !CharacterProfile.HasSameContent(dossier.Profile, mergedProfile);
+            var approvedProfile = ToCharacterProfile(proposal.Profile!);
+            var profileChanged = !CharacterProfile.HasSameContent(dossier.Profile, approvedProfile);
             if (!profileChanged)
             {
                 CharacterBibleRunLogScope.Current?.Info(
@@ -162,11 +162,11 @@ internal sealed class CharacterBibleDossierPatcher
                     $"characterId={dossier.CharacterId} name={LogValueFormatter.Quote(dossier.Name)}");
                 progress?.Report(new CharacterBibleWorkflowProgress(
                     "patch",
-                    $"Patch review for {dossier.Name}: approved; no local profile changes."));
+                    $"Profile update review for {dossier.Name}: approved; no local profile changes."));
                 continue;
             }
 
-            runState.Catalog.UpdateProfile(dossier.CharacterId, mergedProfile);
+            runState.Catalog.UpdateProfile(dossier.CharacterId, approvedProfile);
 
             var patchedDossier = runState.Catalog.GetRequired(dossier.CharacterId);
             dossiersById[dossier.CharacterId] = patchedDossier;
@@ -176,14 +176,14 @@ internal sealed class CharacterBibleDossierPatcher
                 $"characterId={dossier.CharacterId} name={LogValueFormatter.Quote(dossier.Name)} profileFieldsUpdated={LogValueFormatter.List(GetChangedProfileFields(proposal.Changes))}");
             progress?.Report(new CharacterBibleWorkflowProgress(
                 "patch",
-                $"Patch applied for {dossier.Name}."));
+                $"Approved profile update applied for {dossier.Name}."));
         }
 
         if (proposalCount > 0)
         {
             progress?.Report(new CharacterBibleWorkflowProgress(
                 "patch",
-                $"Dossier patching finished: {appliedCount}/{proposalCount} patches applied."));
+                $"Dossier profile updating finished: {appliedCount}/{proposalCount} updates applied."));
         }
 
         return runState;
@@ -222,7 +222,7 @@ internal sealed class CharacterBibleDossierPatcher
                 "patch.review.failed",
                 $"characterId={dossier.CharacterId} name={LogValueFormatter.Quote(dossier.Name)} message={LogValueFormatter.Quote(ex.Message)}",
                 ex);
-            logger.LogError(ex, "Dossier patch review failed for character {CharacterId}. Patch rejected.", dossier.CharacterId);
+            logger.LogError(ex, "Dossier profile update review failed for character {CharacterId}. Profile update rejected.", dossier.CharacterId);
             return new DossierReviewResult
             {
                 Verdict = CharacterBiblePatchReviewVerdict.RevisePatch,
@@ -380,10 +380,19 @@ internal sealed class CharacterBibleDossierPatcher
         if (proposedProfile is not null)
         {
             var changedFields = GetChangedProfileFields(currentProfile, proposedProfile);
-            var describedFields = (proposal.Changes ?? [])
+            var describedFieldList = (proposal.Changes ?? [])
                 .Where(change => change.Field is not null)
                 .Select(change => change.Field!.Value)
-                .ToHashSet();
+                .ToArray();
+            var describedFields = describedFieldList.ToHashSet();
+
+            foreach (var duplicateField in describedFieldList
+                         .GroupBy(field => field)
+                         .Where(group => group.Count() > 1)
+                         .Select(group => group.Key))
+            {
+                issues.Add($"profile field has duplicate changes: {duplicateField}");
+            }
 
             foreach (var field in changedFields.Except(describedFields))
             {
@@ -416,6 +425,12 @@ internal sealed class CharacterBibleDossierPatcher
 
             foreach (var pointer in change.EvidencePointers)
             {
+                if (string.IsNullOrWhiteSpace(pointer))
+                {
+                    issues.Add("change has blank evidence pointer");
+                    continue;
+                }
+
                 if (!allowedPointers.Contains(pointer))
                 {
                     issues.Add($"evidence pointer not found: {pointer}");

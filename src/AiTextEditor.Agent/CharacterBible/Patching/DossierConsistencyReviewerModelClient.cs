@@ -48,7 +48,11 @@ public enum CharacterBiblePatchReviewIssueCode
     PointerNotInEvidence,
     DuplicatesExistingFact,
     WrongCharacter,
-    ChangesUnaffectedField
+    ChangesUnaffectedField,
+    LosesExistingFact,
+    StyleOnlyRewrite,
+    OneTimeActionAsTrait,
+    ChangeDoesNotMatchProfileDiff
 }
 
 public sealed record CharacterBiblePatchReviewIssue(
@@ -110,7 +114,8 @@ public sealed class DossierConsistencyReviewerPromptBuilder
                 NullIfWhiteSpace(profile.StatusAndCompetence),
                 NullIfWhiteSpace(profile.PsychologicalProfile),
                 NullIfWhiteSpace(profile.SpeechAndCommunication)),
-            patchProposal,
+            patchProposal.Profile ?? throw new InvalidOperationException("Profile update proposal must contain proposed profile."),
+            patchProposal.Changes ?? throw new InvalidOperationException("Profile update proposal must contain changes."),
             evidence);
     }
 
@@ -140,7 +145,8 @@ public sealed class DossierConsistencyReviewerPromptBuilder
 internal sealed record DossierReviewPromptInput(
     CharacterBiblePatchTarget Target,
     CharacterBiblePatchCurrentProfile CurrentProfile,
-    DossierProfileUpdateProposal Proposal,
+    CharacterBibleProfileUpdate ProposedProfile,
+    IReadOnlyList<CharacterBibleProfileChange> Changes,
     IReadOnlyList<CharacterBiblePatchEvidence> Evidence);
 
 public sealed class AgenticDossierConsistencyReviewerModelClient : IDossierConsistencyReviewerModelClient
