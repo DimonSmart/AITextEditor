@@ -14,14 +14,14 @@ public sealed class CharacterArchiveSearchToolAdapterTests
             "test",
             1,
             [
-                Character("c1", "Незнайка", "male"),
-                Character("c2", "Знайка", "male")
+                Character(1, "Незнайка", "male"),
+                Character(2, "Знайка", "male")
             ]);
         var adapter = new CharacterArchiveSearchToolAdapter(
             archive,
             new FakeCharacterVectorSearchTool([
-                Hit("c2", "Знайка", "male", 0.75),
-                Hit("c1", "Незнайка", "male", 0.59)
+                Hit(2, "Знайка", "male", 0.75),
+                Hit(1, "Незнайка", "male", 0.59)
             ]));
 
         var result = await adapter.SearchCharactersAsync("Фуксия", 10, CancellationToken.None);
@@ -32,13 +32,13 @@ public sealed class CharacterArchiveSearchToolAdapterTests
         Assert.Equal(2, result.ReturnedCount);
         Assert.Equal(CharacterArchiveSearchResultNotes.ClosestEntriesMayBeUnrelated, result.Note);
         Assert.Equal([1, 2], result.Hits.Select(hit => hit.Rank));
-        Assert.Equal(["c2", "c1"], result.Hits.Select(hit => hit.EntryId));
+        Assert.Equal([2, 1], result.Hits.Select(hit => hit.EntryId));
     }
 
     [Fact]
     public async Task SearchCharactersAsync_NormalizesLimitForResultAndVectorSearch()
     {
-        var archive = new CharacterDossiers("test", 1, [Character("c1", "Незнайка", "male")]);
+        var archive = new CharacterDossiers("test", 1, [Character(1, "Незнайка", "male")]);
         var vectorSearchTool = new FakeCharacterVectorSearchTool([]);
         var adapter = new CharacterArchiveSearchToolAdapter(archive, vectorSearchTool);
 
@@ -52,7 +52,7 @@ public sealed class CharacterArchiveSearchToolAdapterTests
     }
 
     private static CharacterDossier Character(
-        string characterId,
+        int characterId,
         string name,
         string gender)
     {
@@ -65,7 +65,7 @@ public sealed class CharacterArchiveSearchToolAdapterTests
     }
 
     private static CharacterVectorSearchHit Hit(
-        string entryId,
+        int entryId,
         string name,
         string gender,
         double score)

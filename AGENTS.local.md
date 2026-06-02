@@ -9,3 +9,4 @@
 - Route production LLM agent calls through the shared retry mechanism instead of local ad hoc retry loops.
 - Display operation log errors with explicit red styling. Keep raw malformed-response copy actions visually quiet, closer to a text link than a primary button.
 - Character vector embedding clients receive their embedding model through construction/options. Do not add embedding model parameters to per-call embedding generation methods.
+- Do not add migrations, legacy format readers, compatibility wrappers, or fallback loading paths unless the user explicitly requests compatibility.

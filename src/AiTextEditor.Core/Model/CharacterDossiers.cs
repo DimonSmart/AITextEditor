@@ -6,6 +6,7 @@ public sealed record CharacterDossiers(
     string DossiersId,
     int Version,
     IReadOnlyList<CharacterDossier> Characters,
+    int NextCharacterId = 1,
     IReadOnlyList<SuspectArchiveEntry>? SuspectArchive = null,
     IReadOnlyList<CharacterEvidenceIndexEntry>? EvidenceIndex = null,
     IReadOnlyList<IdentityConflictRecord>? IdentityConflicts = null,
@@ -22,13 +23,13 @@ public sealed record SuspectArchiveEntry(
 public sealed record CharacterEvidenceIndexEntry(
     string Pointer,
     string Excerpt,
-    string? CharacterId = null,
+    int? CharacterId = null,
     string? CandidateId = null);
 
 public sealed record IdentityConflictRecord(
     string CandidateId,
     string CanonicalName,
-    IReadOnlyList<string> AlternativeEntryIds,
+    IReadOnlyList<int> AlternativeEntryIds,
     string Reason,
     string? SplitProposalKind = null,
     IReadOnlyList<string>? SplitShardNames = null,

@@ -19,7 +19,7 @@ public sealed class CharacterProfileUpdateToolAdapterTests
             "New evidence adds a visible detail.");
 
         Assert.Equal(ReplaceProfileFieldResultStatus.Applied, result.Status);
-        Assert.Equal("Пахнет нафталином.", session.GetRequired("c1").Profile!.Appearance);
+        Assert.Equal("Пахнет нафталином.", session.GetRequired(1).Profile!.Appearance);
     }
 
     [Fact]
@@ -30,7 +30,7 @@ public sealed class CharacterProfileUpdateToolAdapterTests
         var result = tools.ReplaceProfileField(CharacterBibleProfileField.Appearance, "", ["1.1.1.p4"], "Reason.");
 
         Assert.Equal(ReplaceProfileFieldResultStatus.Rejected, result.Status);
-        Assert.Null(session.GetRequired("c1").Profile!.Appearance);
+        Assert.Null(session.GetRequired(1).Profile!.Appearance);
     }
 
     [Fact]
@@ -45,7 +45,7 @@ public sealed class CharacterProfileUpdateToolAdapterTests
             "New evidence adds a visible detail.");
 
         Assert.Equal(ReplaceProfileFieldResultStatus.Rejected, result.Status);
-        Assert.Null(session.GetRequired("c1").Profile!.Appearance);
+        Assert.Null(session.GetRequired(1).Profile!.Appearance);
     }
 
     [Fact]
@@ -60,7 +60,7 @@ public sealed class CharacterProfileUpdateToolAdapterTests
             "Evidence confirms the existing detail.");
 
         Assert.Equal(ReplaceProfileFieldResultStatus.NoOp, result.Status);
-        Assert.Equal("Пахнет нафталином.", session.GetRequired("c1").Profile!.Appearance);
+        Assert.Equal("Пахнет нафталином.", session.GetRequired(1).Profile!.Appearance);
     }
 
     [Fact]
@@ -75,7 +75,7 @@ public sealed class CharacterProfileUpdateToolAdapterTests
             "New evidence changes the best current characterization.");
 
         Assert.Equal(ReplaceProfileFieldResultStatus.Applied, result.Status);
-        Assert.Equal("Любит порядок.", session.GetRequired("c1").Profile!.PsychologicalProfile);
+        Assert.Equal("Любит порядок.", session.GetRequired(1).Profile!.PsychologicalProfile);
     }
 
     [Fact]
@@ -94,7 +94,7 @@ public sealed class CharacterProfileUpdateToolAdapterTests
         CharacterProfile? profile = null)
     {
         var dossier = new CharacterDossier(
-            "c1",
+            1,
             "Пончик",
             [],
             new Dictionary<string, string>(),
@@ -109,7 +109,7 @@ public sealed class CharacterProfileUpdateToolAdapterTests
             evidence.Keys.ToHashSet(StringComparer.Ordinal),
             evidence);
         var tools = new CharacterProfileUpdateToolAdapter(
-            "c1",
+            1,
             "Пончик",
             context,
             session,

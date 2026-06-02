@@ -24,7 +24,7 @@ public sealed record CharacterArchiveSearchResult(
 
 public sealed record CharacterArchiveSearchHit(
     int Rank,
-    string EntryId,
+    int EntryId,
     string Name,
     string Gender,
     IReadOnlyList<string> Aliases,
@@ -68,15 +68,15 @@ internal enum IdentityResolutionKind
 
 internal sealed record IdentityResolutionDecision(
     IdentityResolutionKind Kind,
-    string? TargetEntryId,
-    IReadOnlyList<string> AlternativeEntryIds,
+    int? TargetEntryId,
+    IReadOnlyList<int> AlternativeEntryIds,
     string Reason,
     bool ExactNameMatch)
 {
     public SplitProposal? SplitProposal { get; init; }
 
     public static IdentityResolutionDecision Ambiguous(
-        IReadOnlyList<string> alternativeEntryIds,
+        IReadOnlyList<int> alternativeEntryIds,
         string reason)
     {
         return new IdentityResolutionDecision(
@@ -88,7 +88,7 @@ internal sealed record IdentityResolutionDecision(
     }
 
     public static IdentityResolutionDecision Defer(
-        IReadOnlyList<string> alternativeEntryIds,
+        IReadOnlyList<int> alternativeEntryIds,
         string reason)
     {
         return new IdentityResolutionDecision(
@@ -100,7 +100,7 @@ internal sealed record IdentityResolutionDecision(
     }
 
     public static IdentityResolutionDecision IdentityConflict(
-        IReadOnlyList<string> alternativeEntryIds,
+        IReadOnlyList<int> alternativeEntryIds,
         string reason)
     {
         return new IdentityResolutionDecision(
@@ -112,7 +112,7 @@ internal sealed record IdentityResolutionDecision(
     }
 
     public static IdentityResolutionDecision Existing(
-        string targetEntryId,
+        int targetEntryId,
         string reason)
     {
         return new IdentityResolutionDecision(

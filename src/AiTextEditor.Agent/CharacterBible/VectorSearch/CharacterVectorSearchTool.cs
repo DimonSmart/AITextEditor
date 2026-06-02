@@ -21,7 +21,7 @@ public sealed record CharacterVectorSearchHit(
     double Score);
 
 public sealed record CharacterVectorSearchCard(
-    string EntryId,
+    int EntryId,
     string Name,
     string Gender,
     IReadOnlyList<string> Aliases,
@@ -100,7 +100,7 @@ public sealed partial class CharacterVectorSearchTool : ICharacterVectorSearchTo
                 CosineSimilarity(queryEmbedding.Span, entry.Embedding.Span)))
             .OrderByDescending(hit => hit.Score)
             .ThenBy(hit => hit.Card.Name, StringComparer.Ordinal)
-            .ThenBy(hit => hit.Card.EntryId, StringComparer.Ordinal)
+            .ThenBy(hit => hit.Card.EntryId)
             .Take(limit)
             .ToList();
         stopwatch.Stop();
@@ -147,9 +147,7 @@ public sealed partial class CharacterVectorSearchTool : ICharacterVectorSearchTo
                     $"characters={documents.Count} fingerprint={snapshotFingerprint} reason={LogValueFormatter.Quote("snapshot changed")}");
             }
 
-            var existingEntries = indexSnapshot.Entries.ToDictionary(
-                entry => entry.EntryId,
-                StringComparer.Ordinal);
+            var existingEntries = indexSnapshot.Entries.ToDictionary(entry => entry.EntryId);
             var nextEntries = new List<CharacterVectorIndexEntry>(documents.Count);
 
             foreach (var document in documents)
@@ -211,7 +209,7 @@ public sealed partial class CharacterVectorSearchTool : ICharacterVectorSearchTo
             .ToList();
 
         return new CharacterVectorSearchCard(
-            dossier.CharacterId.Trim(),
+            dossier.CharacterId,
             dossier.Name.Trim(),
             NormalizeValue(dossier.Gender),
             aliases,
@@ -282,7 +280,7 @@ public sealed partial class CharacterVectorSearchTool : ICharacterVectorSearchTo
         var input = string.Join(
             "\n",
             documents
-                .OrderBy(document => document.EntryId, StringComparer.Ordinal)
+                .OrderBy(document => document.EntryId)
                 .Select(document => $"{document.EntryId}:{document.Fingerprint}"));
 
         return ShortHash(input);
@@ -293,7 +291,7 @@ public sealed partial class CharacterVectorSearchTool : ICharacterVectorSearchTo
         var input = string.Join(
             "\n",
             entries
-                .OrderBy(entry => entry.EntryId, StringComparer.Ordinal)
+                .OrderBy(entry => entry.EntryId)
                 .Select(entry => $"{entry.EntryId}:{entry.Fingerprint}"));
 
         return input.Length == 0 ? "empty" : ShortHash(input);
@@ -364,13 +362,13 @@ public sealed partial class CharacterVectorSearchTool : ICharacterVectorSearchTo
     private static partial Regex WhitespaceRegex();
 
     internal sealed record CharacterVectorIndexDocument(
-        string EntryId,
+        int EntryId,
         string Text,
         CharacterVectorSearchCard Card,
         string Fingerprint);
 
     internal sealed record CharacterVectorIndexEntry(
-        string EntryId,
+        int EntryId,
         string Fingerprint,
         ReadOnlyMemory<float> Embedding,
         CharacterVectorSearchCard Card);

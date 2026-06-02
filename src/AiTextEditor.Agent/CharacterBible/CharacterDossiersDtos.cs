@@ -8,8 +8,8 @@ public sealed record CharacterDossiersCommandResult(
     [property: JsonPropertyName("dossiersId")] string DossiersId,
     [property: JsonPropertyName("version")] int Version,
     [property: JsonPropertyName("status")] string Status,
-    [property: JsonPropertyName("characterId")] string? CharacterId = null,
-    [property: JsonPropertyName("candidateIds")] IReadOnlyList<string>? CandidateIds = null);
+    [property: JsonPropertyName("characterId")] int? CharacterId = null,
+    [property: JsonPropertyName("candidateIds")] IReadOnlyList<int>? CandidateIds = null);
 
 public sealed record CharacterDossiersPayload(
     [property: JsonPropertyName("dossiersId")] string DossiersId,
@@ -17,7 +17,7 @@ public sealed record CharacterDossiersPayload(
     [property: JsonPropertyName("characters")] IReadOnlyList<CharacterDossierEntry> Characters);
 
 public sealed record CharacterDossierEntry(
-    [property: JsonPropertyName("id")] string Id,
+    [property: JsonPropertyName("id")] int Id,
     [property: JsonPropertyName("name")] string Name,
     [property: JsonPropertyName("gender")] string Gender,
     [property: JsonPropertyName("importanceLevel")] int? ImportanceLevel,

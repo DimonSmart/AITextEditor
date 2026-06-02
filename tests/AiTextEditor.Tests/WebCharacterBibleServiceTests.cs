@@ -52,7 +52,7 @@ public sealed class WebCharacterBibleServiceTests
             1,
             [
                 new CharacterDossier(
-                    "c1",
+                    1,
                     "Alice",
                     ["Al"],
                     new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
@@ -136,7 +136,7 @@ public sealed class WebCharacterBibleServiceTests
         var characterBiblePath = store.GetCompanionPath(bookPath);
         var source = new CharacterDossierService("d1");
         source.UpsertDossier(new CharacterDossier(
-            "c1",
+            1,
             "Alice",
             ["Al"],
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
@@ -160,51 +160,6 @@ public sealed class WebCharacterBibleServiceTests
     }
 
     [Fact]
-    public async Task CharacterBibleFileStore_LoadsLegacyMarkdownYamlCompanionWhenJsonMissing()
-    {
-        var directory = Path.Combine(Path.GetTempPath(), "AiTextEditorTests", Guid.NewGuid().ToString("N"));
-        var bookPath = Path.Combine(directory, "novel.md");
-        var store = new CharacterBibleFileStore();
-        var characterBiblePath = store.GetCompanionPath(bookPath);
-        var legacyCharacterBiblePath = Path.Combine(directory, "novel-character-bible.md");
-        var source = new CharacterDossierService("d1");
-        source.UpsertDossier(new CharacterDossier(
-            "c1",
-            "Alice",
-            ["Al"],
-            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
-            {
-                ["Al"] = "Al opened the notebook."
-            },
-            "female"));
-
-        Directory.CreateDirectory(directory);
-        await File.WriteAllTextAsync(
-            legacyCharacterBiblePath,
-            $"""
-            # Character Bible
-
-            <!-- ai-text-editor-character-dossiers:start -->
-            ```yaml
-            {source.SaveToYaml().TrimEnd()}
-            ```
-            <!-- ai-text-editor-character-dossiers:end -->
-
-            ## Markdown projection
-            """);
-
-        var target = new CharacterDossierService("empty");
-        var loaded = await store.LoadAsync(characterBiblePath, target, CancellationToken.None);
-
-        Assert.True(loaded);
-        Assert.False(File.Exists(characterBiblePath));
-        var dossier = Assert.Single(target.GetDossiers().Characters);
-        Assert.Equal("Alice", dossier.Name);
-        Assert.Equal("female", dossier.Gender);
-        Assert.Equal(["Al"], dossier.Aliases);
-    }
-
-    [Fact]
     public async Task EditorWorkspaceState_LoadBookAsync_LoadsBookAndDerivedCharacterBible()
     {
         var directory = Path.Combine(Path.GetTempPath(), "AiTextEditorTests", Guid.NewGuid().ToString("N"));
@@ -214,7 +169,7 @@ public sealed class WebCharacterBibleServiceTests
         var characterBiblePath = Path.Combine(directory, "novel-character-bible.json");
         var characterDossiers = new CharacterDossierService("d1");
         characterDossiers.UpsertDossier(new CharacterDossier(
-            "c1",
+            1,
             "Alice",
             [],
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
@@ -243,7 +198,7 @@ public sealed class WebCharacterBibleServiceTests
         var workspace = new EditorWorkspaceState();
         await workspace.LoadBookAsync(bookPath);
         workspace.CharacterDossiers.UpsertDossier(new CharacterDossier(
-            "c1",
+            1,
             "Alice",
             [],
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
@@ -266,7 +221,7 @@ public sealed class WebCharacterBibleServiceTests
         Assert.True(workspace.IsReadOnly);
         Assert.Throws<InvalidOperationException>(() => workspace.LoadMarkdown("# Updated"));
         Assert.Throws<InvalidOperationException>(() => workspace.UpsertCharacterDossier(new CharacterDossier(
-            "c1",
+            1,
             "Alice",
             [],
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
@@ -278,7 +233,7 @@ public sealed class WebCharacterBibleServiceTests
     {
         var source = new CharacterDossierService("d1");
         source.UpsertDossier(new CharacterDossier(
-            "c1",
+            1,
             "Alice",
             ["unused"],
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
@@ -319,10 +274,11 @@ public sealed class WebCharacterBibleServiceTests
             """
             {
               "dossiersId": "d1",
-              "version": 1,
+              "version": 3,
+              "nextCharacterId": 2,
               "characters": [
                 {
-                  "characterId": "c1",
+                  "characterId": 1,
                   "name": "Alice",
                   "aliases": [],
                   "aliasExamples": {},
@@ -346,10 +302,11 @@ public sealed class WebCharacterBibleServiceTests
             """
             {
               "dossiersId": "d1",
-              "version": 1,
+              "version": 3,
+              "nextCharacterId": 2,
               "characters": [
                 {
-                  "characterId": "c1",
+                  "characterId": 1,
                   "name": "Alice",
                   "aliases": [],
                   "aliasExamples": {},
@@ -370,7 +327,7 @@ public sealed class WebCharacterBibleServiceTests
     {
         var service = new CharacterDossierService("d1");
         service.UpsertDossier(new CharacterDossier(
-            "c1",
+            1,
             "Alice",
             [],
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
@@ -390,27 +347,6 @@ public sealed class WebCharacterBibleServiceTests
         Assert.Equal("clipped speech", dossier.Profile.SpeechAndCommunication);
     }
 
-    [Fact]
-    public void CharacterDossierService_LoadFromYamlWithoutImportanceLevel_SetsNull()
-    {
-        var service = new CharacterDossierService("empty");
-
-        service.LoadFromYaml(
-            """
-            dossiersId: d1
-            version: 1
-            characters:
-            - characterId: c1
-              name: Alice
-              aliases: []
-              aliasExamples: {}
-              gender: female
-            """);
-
-        var dossier = Assert.Single(service.GetDossiers().Characters);
-        Assert.Null(dossier.ImportanceLevel);
-    }
-
     [Theory]
     [InlineData(null, null)]
     [InlineData(-1, null)]
@@ -422,7 +358,7 @@ public sealed class WebCharacterBibleServiceTests
     {
         var service = new CharacterDossierService("d1");
         service.UpsertDossier(new CharacterDossier(
-            "c1",
+            1,
             "Alice",
             [],
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
@@ -441,7 +377,7 @@ public sealed class WebCharacterBibleServiceTests
         var dossiers = new[]
         {
             new CharacterDossier(
-                "c1",
+                1,
                 "Alice",
                 ["Note Keeper"],
                 new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
@@ -450,7 +386,7 @@ public sealed class WebCharacterBibleServiceTests
                 },
                 "female"),
             new CharacterDossier(
-                "c2",
+                2,
                 "Bob",
                 [],
                 new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
@@ -473,14 +409,14 @@ public sealed class WebCharacterBibleServiceTests
         var dossiers = new[]
         {
             new CharacterDossier(
-                "c1",
+                1,
                 "Alice",
                 [],
                 new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
                 "female",
                 Profile: FullProfile()),
             new CharacterDossier(
-                "c2",
+                2,
                 "Charlie",
                 [],
                 new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
@@ -499,13 +435,13 @@ public sealed class WebCharacterBibleServiceTests
         var dossiers = new[]
         {
             new CharacterDossier(
-                "c1",
+                1,
                 "Alice",
                 ["Al"],
                 new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
                 "female"),
             new CharacterDossier(
-                "c2",
+                2,
                 "Bob",
                 [],
                 new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
@@ -823,7 +759,7 @@ public sealed class WebCharacterBibleServiceTests
             1,
             [
                 new CharacterDossier(
-                    "c1",
+                    1,
                     "Alice",
                     ["Al"],
                     new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)

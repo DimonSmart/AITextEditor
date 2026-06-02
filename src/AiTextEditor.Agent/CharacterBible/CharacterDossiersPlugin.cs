@@ -139,19 +139,19 @@ public sealed class CharacterDossiersPlugin
         return new CharacterDossiersCommandResult(refreshed.Dossiers.DossiersId, refreshed.Dossiers.Version, Status: "updated");
     }
 
-    [Description("Manually create/update a character dossier. If characterId is empty, resolves by name/aliases; ambiguous does not auto-merge.")]
+    [Description("Manually create/update a character dossier. If characterId is omitted, resolves by name/aliases; ambiguous does not auto-merge.")]
     public CharacterDossiersCommandResult UpsertCharacterDossier(
         string name,
         string gender = "unknown",
         Dictionary<string, string>? aliasExamples = null,
-        string? characterId = null)
+        int? characterId = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
 
-        if (!string.IsNullOrWhiteSpace(characterId))
+        if (characterId is not null)
         {
             var updated = dossierService.UpdateDossierById(
-                characterId.Trim(),
+                characterId.Value,
                 name: name.Trim(),
                 gender: gender,
                 aliasExamples: aliasExamples,

@@ -48,6 +48,16 @@ internal static class LogValueFormatter
         return "[" + string.Join(", ", visible) + "]";
     }
 
+    public static string List(IEnumerable<int>? values, int maxItems = 10)
+    {
+        if (values is null)
+        {
+            return "null";
+        }
+
+        return "[" + string.Join(", ", values.Take(maxItems)) + "]";
+    }
+
     public static string Hits(IEnumerable<CharacterArchiveSearchHit>? hits, int maxItems = 10)
     {
         if (hits is null)
@@ -86,6 +96,9 @@ internal static class LogValueFormatter
         var normalized = value.Trim();
         return normalized.Length <= 12 ? normalized : normalized[..12];
     }
+
+    public static string ShortId(int? value)
+        => value?.ToString(CultureInfo.InvariantCulture) ?? "empty";
 
     public static string ShortText(string? value, int maxChars = 300)
     {
@@ -132,7 +145,7 @@ internal static class LogValueFormatter
             builder
                 .Append(hit.Rank)
                 .Append(':')
-                .Append(string.IsNullOrWhiteSpace(hit.EntryId) ? "empty" : hit.EntryId.Trim())
+                .Append(hit.EntryId)
                 .Append(':')
                 .Append(Quote(hit.Name))
                 .Append(':')
@@ -150,7 +163,7 @@ internal static class LogValueFormatter
 
     private sealed record HitValue(
         int Rank,
-        string EntryId,
+        int EntryId,
         string Name,
         double Score);
 }

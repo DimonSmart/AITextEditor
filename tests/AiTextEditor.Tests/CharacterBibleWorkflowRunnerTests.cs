@@ -49,7 +49,7 @@ public sealed class CharacterBibleWorkflowRunnerTests
             out _);
 
         dossierService.UpsertDossier(new CharacterDossier(
-            CharacterId: "c1",
+            CharacterId: 1,
             Name: "John",
             Aliases: ["John"],
             AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
@@ -67,9 +67,9 @@ public sealed class CharacterBibleWorkflowRunnerTests
         Assert.Equal(1, result.DecisionCount);
 
         var updated = Assert.Single(result.Dossiers.Characters);
-        Assert.Equal("c1", updated.CharacterId);
+        Assert.Equal(1, updated.CharacterId);
         Assert.Contains("Johnny", updated.AliasExamples.Keys, StringComparer.OrdinalIgnoreCase);
-        Assert.DoesNotContain("Johnny", dossierService.TryGetDossier("c1")!.AliasExamples.Keys, StringComparer.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Johnny", dossierService.TryGetDossier(1)!.AliasExamples.Keys, StringComparer.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -82,7 +82,7 @@ public sealed class CharacterBibleWorkflowRunnerTests
             out _);
 
         dossierService.UpsertDossier(new CharacterDossier(
-            CharacterId: "c1",
+            CharacterId: 1,
             Name: "John",
             Aliases: [],
             AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
@@ -91,9 +91,9 @@ public sealed class CharacterBibleWorkflowRunnerTests
         var result = await runner.RunAsync();
 
         var updated = Assert.Single(result.Dossiers.Characters);
-        Assert.Equal("c1", updated.CharacterId);
+        Assert.Equal(1, updated.CharacterId);
         Assert.InRange(updated.ImportanceLevel.GetValueOrDefault(), 1, 10);
-        Assert.Null(dossierService.TryGetDossier("c1")!.ImportanceLevel);
+        Assert.Null(dossierService.TryGetDossier(1)!.ImportanceLevel);
     }
 
     [Fact]
@@ -106,7 +106,7 @@ public sealed class CharacterBibleWorkflowRunnerTests
             out _);
 
         dossierService.UpsertDossier(new CharacterDossier(
-            CharacterId: "c1",
+            CharacterId: 1,
             Name: "John",
             Aliases: [],
             AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
@@ -115,7 +115,7 @@ public sealed class CharacterBibleWorkflowRunnerTests
 
         await runner.RunAsync();
 
-        var updated = dossierService.TryGetDossier("c1");
+        var updated = dossierService.TryGetDossier(1);
         Assert.NotNull(updated);
         Assert.Equal(8, updated!.ImportanceLevel);
     }
@@ -130,7 +130,7 @@ public sealed class CharacterBibleWorkflowRunnerTests
             out _);
 
         dossierService.UpsertDossier(new CharacterDossier(
-            CharacterId: "c1",
+            CharacterId: 1,
             Name: "John",
             Aliases: [],
             AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
@@ -139,7 +139,7 @@ public sealed class CharacterBibleWorkflowRunnerTests
 
         await runner.RunAsync(new CharacterBibleWorkflowInput(["p1"]));
 
-        var updated = dossierService.TryGetDossier("c1");
+        var updated = dossierService.TryGetDossier(1);
         Assert.NotNull(updated);
         Assert.Equal(9, updated!.ImportanceLevel);
     }
@@ -178,7 +178,7 @@ public sealed class CharacterBibleWorkflowRunnerTests
             patchModelClient: patchClient);
 
         dossierService.UpsertDossier(new CharacterDossier(
-            CharacterId: "c1",
+            CharacterId: 1,
             Name: "Alexander Reed",
             Aliases: ["Alex Prime"],
             AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
@@ -188,7 +188,7 @@ public sealed class CharacterBibleWorkflowRunnerTests
             Gender: "unknown"));
 
         dossierService.UpsertDossier(new CharacterDossier(
-            CharacterId: "c2",
+            CharacterId: 2,
             Name: "Alexandra Stone",
             Aliases: ["Alex Prime"],
             AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
@@ -206,7 +206,7 @@ public sealed class CharacterBibleWorkflowRunnerTests
         var decision = Assert.Single(result.Decisions);
         Assert.Equal(CharacterBibleDecisionKind.Ambiguous, decision.Kind);
         Assert.Null(decision.CharacterId);
-        Assert.Equal(["c1", "c2"], decision.CandidateIds.OrderBy(id => id, StringComparer.Ordinal).ToArray());
+        Assert.Equal([1, 2], decision.CandidateIds.OrderBy(id => id).ToArray());
 
         Assert.Equal(2, dossierService.GetDossiers().Characters.Count);
         Assert.DoesNotContain(dossierService.FindByNameOrAlias("Alex Prime"), dossier => dossier.Name == "Alex Prime");

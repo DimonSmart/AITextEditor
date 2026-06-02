@@ -124,7 +124,7 @@ public sealed class CharacterBibleOperationRunner : ICharacterBibleOperationRunn
         try
         {
             var output = await activeWorkflowTask;
-            workspace.ReplaceCharacterDossiers(output.Dossiers.Characters);
+            workspace.ReplaceCharacterDossiers(output.Dossiers);
             var completedMessage = "Operation completed.";
             if (!string.IsNullOrWhiteSpace(workspace.CurrentBookPath))
             {

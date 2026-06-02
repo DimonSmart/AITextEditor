@@ -40,7 +40,7 @@ internal sealed class CharacterBibleProfileUpdater
         cancellationToken.ThrowIfCancellationRequested();
 
         var statistics = new CharacterProfileUpdateStatistics();
-        var processedCharacterIds = new HashSet<string>(StringComparer.Ordinal);
+        var processedCharacterIds = new HashSet<int>();
         if (runState.Failure is not null || runState.Candidates.Count == 0 || runState.Catalog.Decisions.Count == 0)
         {
             return new CharacterBibleProfileUpdateResult(runState, statistics);
@@ -136,18 +136,18 @@ internal sealed class CharacterBibleProfileUpdater
     private IReadOnlyList<DossierPatchGroup> BuildPatchGroups(CharacterBibleRunState runState)
     {
         var groups = new List<DossierPatchGroupBuilder>();
-        var groupsByCharacterId = new Dictionary<string, DossierPatchGroupBuilder>(StringComparer.Ordinal);
+        var groupsByCharacterId = new Dictionary<int, DossierPatchGroupBuilder>();
 
         for (var index = 0; index < runState.Catalog.Decisions.Count && index < runState.Candidates.Count; index++)
         {
             var decision = runState.Catalog.Decisions[index];
             if (decision.Kind is not CharacterBibleDecisionKind.Existing and not CharacterBibleDecisionKind.New
-                || string.IsNullOrWhiteSpace(decision.CharacterId))
+                || decision.CharacterId is null)
             {
                 continue;
             }
 
-            var characterId = decision.CharacterId.Trim();
+            var characterId = decision.CharacterId.Value;
             if (!groupsByCharacterId.TryGetValue(characterId, out var group))
             {
                 group = new DossierPatchGroupBuilder(characterId);
@@ -219,12 +219,12 @@ internal sealed class CharacterBibleProfileUpdater
         => string.IsNullOrEmpty(value) ? 0 : Encoding.UTF8.GetByteCount(value);
 
     private sealed record DossierPatchGroup(
-        string CharacterId,
+        int CharacterId,
         IReadOnlyList<CharacterBibleDossierPatchCandidate> Candidates);
 
-    private sealed class DossierPatchGroupBuilder(string characterId)
+    private sealed class DossierPatchGroupBuilder(int characterId)
     {
-        public string CharacterId { get; } = characterId;
+        public int CharacterId { get; } = characterId;
 
         public List<CharacterBibleDossierPatchCandidate> Candidates { get; } = [];
     }

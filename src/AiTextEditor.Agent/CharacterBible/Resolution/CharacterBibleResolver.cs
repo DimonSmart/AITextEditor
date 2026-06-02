@@ -210,7 +210,7 @@ internal sealed class CharacterBibleResolver
         CharacterBibleCharacterCandidate candidate,
         CharacterIdentityResolutionResponse response,
         CharacterDossiers currentArchive,
-        IReadOnlySet<string> observedEntryIds)
+        IReadOnlySet<int> observedEntryIds)
     {
         var logger = CharacterBibleRunLogScope.Current;
         if (logger is null)
@@ -220,7 +220,7 @@ internal sealed class CharacterBibleResolver
 
         if (response.Decision == CharacterIdentityDecision.Existing)
         {
-            if (string.IsNullOrWhiteSpace(response.EntryId))
+            if (response.EntryId is null)
             {
                 logger.Warning(
                     "resolve.protocol.error",
@@ -231,7 +231,7 @@ internal sealed class CharacterBibleResolver
                 return;
             }
 
-            var entryId = response.EntryId.Trim();
+            var entryId = response.EntryId.Value;
             if (!observedEntryIds.Contains(entryId))
             {
                 logger.Warning(
@@ -239,7 +239,7 @@ internal sealed class CharacterBibleResolver
                     $"candidateId={LogValueFormatter.ShortId(candidate.CandidateId)} decision=existing entryId={entryId} message={LogValueFormatter.Quote("entryId was not present in observed search hits")}");
             }
 
-            if (!currentArchive.Characters.Any(character => string.Equals(character.CharacterId, entryId, StringComparison.Ordinal)))
+            if (!currentArchive.Characters.Any(character => character.CharacterId == entryId))
             {
                 logger.Warning(
                     "resolve.protocol.defer",
@@ -249,17 +249,17 @@ internal sealed class CharacterBibleResolver
     }
 
     private static IdentityResolutionDecision ResolveExisting(
-        string? entryId,
+        int? entryId,
         CharacterDossiers currentArchive,
         string reason)
     {
-        if (string.IsNullOrWhiteSpace(entryId))
+        if (entryId is null)
         {
             return IdentityResolutionDecision.Defer([], "Identity resolver did not return entryId for existing decision.");
         }
 
-        var normalizedEntryId = entryId.Trim();
-        if (!currentArchive.Characters.Any(character => string.Equals(character.CharacterId, normalizedEntryId, StringComparison.Ordinal)))
+        var normalizedEntryId = entryId.Value;
+        if (!currentArchive.Characters.Any(character => character.CharacterId == normalizedEntryId))
         {
             return IdentityResolutionDecision.Defer(
                 [normalizedEntryId],
@@ -269,21 +269,20 @@ internal sealed class CharacterBibleResolver
         return IdentityResolutionDecision.Existing(normalizedEntryId, reason);
     }
 
-    private static IReadOnlyList<string> ResolveExistingEntryIds(
-        IReadOnlyList<string>? entryIds,
+    private static IReadOnlyList<int> ResolveExistingEntryIds(
+        IReadOnlyList<int>? entryIds,
         CharacterDossiers currentArchive)
     {
         return NormalizeEntryIds(entryIds)
-            .Where(entryId => currentArchive.Characters.Any(character => string.Equals(character.CharacterId, entryId, StringComparison.Ordinal)))
+            .Where(entryId => currentArchive.Characters.Any(character => character.CharacterId == entryId))
             .ToArray();
     }
 
-    private static IReadOnlyList<string> NormalizeEntryIds(IReadOnlyList<string>? entryIds)
+    private static IReadOnlyList<int> NormalizeEntryIds(IReadOnlyList<int>? entryIds)
     {
         return entryIds?
-            .Where(id => !string.IsNullOrWhiteSpace(id))
-            .Select(id => id.Trim())
-            .Distinct(StringComparer.Ordinal)
+            .Where(id => id > 0)
+            .Distinct()
             .ToArray() ?? [];
     }
 

@@ -55,8 +55,8 @@ public sealed record CharacterEvidenceText
 public sealed record CharacterIdentityResolutionResponse(
     [property: JsonRequired]
     [property: JsonPropertyName("decision")] CharacterIdentityDecision Decision,
-    [property: JsonPropertyName("entryId")] string? EntryId = null,
-    [property: JsonPropertyName("entryIds")] IReadOnlyList<string>? EntryIds = null,
+    [property: JsonPropertyName("entryId")] int? EntryId = null,
+    [property: JsonPropertyName("entryIds")] IReadOnlyList<int>? EntryIds = null,
     [property: JsonPropertyName("reason")] string? Reason = null);
 
 [JsonConverter(typeof(JsonStringEnumConverter<CharacterIdentityDecision>))]
@@ -299,7 +299,7 @@ public sealed class AgenticCharacterIdentityResolutionModelClient : ICharacterId
         switch (response.Decision)
         {
             case CharacterIdentityDecision.Existing:
-                if (string.IsNullOrWhiteSpace(response.EntryId))
+                if (response.EntryId is null)
                 {
                     error = "entryId is required for existing decision.";
                     return false;

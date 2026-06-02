@@ -75,20 +75,19 @@ public sealed class CharacterProfileUpdateToolAdapter
     private static readonly Regex Whitespace = new(@"\s+", RegexOptions.Compiled);
     private static readonly Regex Markdown = new(@"(^|\s)(#{1,6}\s|[-*+]\s|>\s|```)|(\[[^\]]+\]\([^)]+\))|(\*\*|__|`)", RegexOptions.Compiled);
 
-    private readonly string characterId;
+    private readonly int characterId;
     private readonly string characterName;
     private readonly CharacterProfileUpdateContext context;
     private readonly CharacterDossierEditSession store;
     private readonly CharacterProfileUpdateStatistics statistics;
 
     internal CharacterProfileUpdateToolAdapter(
-        string characterId,
+        int characterId,
         string characterName,
         CharacterProfileUpdateContext context,
         CharacterDossierEditSession store,
         CharacterProfileUpdateStatistics statistics)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(characterId);
         ArgumentException.ThrowIfNullOrWhiteSpace(characterName);
         this.characterId = characterId;
         this.characterName = characterName;

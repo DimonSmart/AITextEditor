@@ -30,32 +30,33 @@ internal sealed class CharacterDossierEditSession
         decisions.Add(decision);
     }
 
-    public CharacterDossier AddCandidate(CharacterBibleCharacterCandidate candidate)
+    public CharacterDossier CreateCharacter(CharacterBibleCharacterCandidate candidate)
     {
         ArgumentNullException.ThrowIfNull(candidate);
 
-        var dossier = CreateDossierFromCandidate(candidate);
+        var dossier = CreateDossierFromCandidate(Current.NextCharacterId, candidate);
         var characters = Current.Characters
-            .Where(character => !string.Equals(character.CharacterId, dossier.CharacterId, StringComparison.Ordinal))
             .Append(dossier)
             .OrderBy(character => character.Name, StringComparer.OrdinalIgnoreCase)
             .ToArray();
-        Current = Current with { Characters = characters };
+        Current = Current with
+        {
+            NextCharacterId = dossier.CharacterId + 1,
+            Characters = characters
+        };
         Changed = true;
         return dossier;
     }
 
-    public CharacterDossier GetRequired(string characterId)
+    public CharacterDossier GetRequired(int characterId)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(characterId);
-
         return Current.Characters.FirstOrDefault(character =>
-                   string.Equals(character.CharacterId, characterId, StringComparison.Ordinal))
+                   character.CharacterId == characterId)
                ?? throw new InvalidOperationException($"character_dossier_not_found: {characterId}");
     }
 
     public bool RefineCanonicalName(
-        string characterId,
+        int characterId,
         CharacterBibleCharacterCandidate candidate,
         bool exactNameMatch)
     {
@@ -90,7 +91,7 @@ internal sealed class CharacterDossierEditSession
     }
 
     public bool MergeAliases(
-        string characterId,
+        int characterId,
         CharacterBibleCharacterCandidate candidate,
         bool exactNameMatch)
     {
@@ -108,7 +109,7 @@ internal sealed class CharacterDossierEditSession
     }
 
     public bool MergeAliasExamples(
-        string characterId,
+        int characterId,
         IReadOnlyDictionary<string, string> aliasExamples)
     {
         ArgumentNullException.ThrowIfNull(aliasExamples);
@@ -134,7 +135,7 @@ internal sealed class CharacterDossierEditSession
         });
     }
 
-    public bool SetGenderIfUnknown(string characterId, string? gender)
+    public bool SetGenderIfUnknown(int characterId, string? gender)
     {
         var normalizedGender = NormalizeGender(gender);
         if (string.Equals(normalizedGender, "unknown", StringComparison.OrdinalIgnoreCase))
@@ -151,7 +152,7 @@ internal sealed class CharacterDossierEditSession
         return ReplaceDossier(dossier with { Gender = normalizedGender });
     }
 
-    public bool SetImportanceLevelIfMissing(string characterId, int level)
+    public bool SetImportanceLevelIfMissing(int characterId, int level)
     {
         var normalizedLevel = CharacterImportance.NormalizeLevel(level);
         if (normalizedLevel is null)
@@ -168,7 +169,7 @@ internal sealed class CharacterDossierEditSession
         return ReplaceDossier(dossier with { ImportanceLevel = normalizedLevel });
     }
 
-    public bool UpdateProfile(string characterId, CharacterProfile profile)
+    public bool UpdateProfile(int characterId, CharacterProfile profile)
     {
         ArgumentNullException.ThrowIfNull(profile);
 
@@ -192,7 +193,6 @@ internal sealed class CharacterDossierEditSession
             {
                 Pointer = entry.Pointer.Trim(),
                 Excerpt = entry.Excerpt.Trim(),
-                CharacterId = string.IsNullOrWhiteSpace(entry.CharacterId) ? null : entry.CharacterId.Trim(),
                 CandidateId = string.IsNullOrWhiteSpace(entry.CandidateId) ? null : entry.CandidateId.Trim()
             })
             .ToArray();
@@ -252,7 +252,7 @@ internal sealed class CharacterDossierEditSession
         var characters = Current.Characters
             .Select(character =>
             {
-                if (!string.Equals(character.CharacterId, updated.CharacterId, StringComparison.Ordinal))
+                if (character.CharacterId != updated.CharacterId)
                 {
                     return character;
                 }
@@ -272,15 +272,15 @@ internal sealed class CharacterDossierEditSession
         return true;
     }
 
-    private static CharacterDossier CreateDossierFromCandidate(CharacterBibleCharacterCandidate candidate)
+    private static CharacterDossier CreateDossierFromCandidate(
+        int characterId,
+        CharacterBibleCharacterCandidate candidate)
     {
         var name = candidate.CanonicalName.Trim();
-        using var md5 = System.Security.Cryptography.MD5.Create();
-        var hash = md5.ComputeHash(System.Text.Encoding.UTF8.GetBytes(name));
         var aliasExamples = NormalizeAliasExamples(candidate.AliasExamples);
 
         return new CharacterDossier(
-            new Guid(hash).ToString("N"),
+            characterId,
             name,
             BuildAliases(aliasExamples),
             aliasExamples,

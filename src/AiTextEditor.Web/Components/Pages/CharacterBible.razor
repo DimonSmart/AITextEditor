@@ -152,7 +152,7 @@
 
     private List<CharacterDossier> characters = [];
     private string semanticQuery = string.Empty;
-    private IReadOnlyList<string>? semanticResultIds;
+    private IReadOnlyList<int>? semanticResultIds;
     private string searchQuery = string.Empty;
     private string genderFilter = AllGenders;
     private ImportanceFilterOption importanceFilter = ImportanceFilterOption.Any;
@@ -161,7 +161,7 @@
     private bool isSaving;
     private bool hasUnsavedChanges;
     private bool hasSavedSuccessfully;
-    private string? ExpandedCharacterId;
+    private int? ExpandedCharacterId;
 
     private IReadOnlyList<CharacterDossier> FilteredCharacters =>
         CharacterDossierSearch.Filter(SemanticOrderedCharacters, searchQuery, genderFilter, onlyIncomplete, importanceFilter.Matches);
@@ -249,12 +249,22 @@
 
         var dialog = await DialogService.ShowAsync<CharacterDossierEditDialog>(title, parameters, EditDialogOptions);
         var result = await dialog.Result;
-        if (result?.Canceled != false || result.Data is not CharacterDossier updatedDossier)
+        if (result?.Canceled != false)
         {
             return;
         }
 
-        Workspace.UpsertCharacterDossier(updatedDossier);
+        switch (result.Data)
+        {
+            case NewCharacterDraft draft:
+                Workspace.CreateCharacter(draft);
+                break;
+            case CharacterDossier updatedDossier:
+                Workspace.UpsertCharacterDossier(updatedDossier);
+                break;
+            default:
+                return;
+        }
         RefreshCards();
         hasUnsavedChanges = true;
         await SaveAfterChangeAsync("Character saved.");
@@ -341,7 +351,7 @@
         {
             var knownIds = characters
                 .Select(dossier => dossier.CharacterId)
-                .ToHashSet(StringComparer.Ordinal);
+                .ToHashSet();
             semanticResultIds = semanticResultIds
                 .Where(knownIds.Contains)
                 .ToList();
@@ -355,7 +365,7 @@
 
     private IReadOnlyList<CharacterDossier> BuildSemanticOrderedCharacters()
     {
-        var byId = characters.ToDictionary(dossier => dossier.CharacterId, StringComparer.Ordinal);
+        var byId = characters.ToDictionary(dossier => dossier.CharacterId);
         return semanticResultIds!
             .Select(id => byId.TryGetValue(id, out var dossier) ? dossier : null)
             .Where(dossier => dossier is not null)

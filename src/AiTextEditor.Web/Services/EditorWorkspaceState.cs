@@ -130,7 +130,15 @@ public sealed class EditorWorkspaceState
         return saved;
     }
 
-    public bool RemoveCharacterDossier(string characterId)
+    public CharacterDossier CreateCharacter(NewCharacterDraft draft)
+    {
+        EnsureEditable();
+        var saved = CharacterDossiers.CreateCharacter(draft);
+        NotifyChanged();
+        return saved;
+    }
+
+    public bool RemoveCharacterDossier(int characterId)
     {
         EnsureEditable();
         var removed = CharacterDossiers.RemoveDossier(characterId);
@@ -142,9 +150,9 @@ public sealed class EditorWorkspaceState
         return removed;
     }
 
-    public void ReplaceCharacterDossiers(IReadOnlyCollection<CharacterDossier> characters)
+    public void ReplaceCharacterDossiers(CharacterDossiers dossiers)
     {
-        CharacterDossiers.ReplaceDossiers(characters);
+        CharacterDossiers.ReplaceDossiers(dossiers);
         NotifyChanged();
     }
 

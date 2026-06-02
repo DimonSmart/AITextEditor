@@ -176,10 +176,10 @@
             return;
         }
 
-        MudDialog.Close(DialogResult.Ok(ToDossier()));
+        MudDialog.Close(DialogResult.Ok(ToResult()));
     }
 
-    private CharacterDossier ToDossier()
+    private object ToResult()
     {
         var aliasExamples = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         foreach (var row in aliasRows)
@@ -202,14 +202,21 @@
             model.PsychologicalProfile,
             model.SpeechAndCommunication));
 
-        return new CharacterDossier(
-            model.CharacterId,
-            model.Name.Trim(),
-            aliasExamples.Keys.OrderBy(alias => alias, StringComparer.OrdinalIgnoreCase).ToList(),
-            aliasExamples,
-            model.Gender,
-            CharacterImportance.NormalizeLevel(model.ImportanceLevel),
-            profile);
+        return model.CharacterId is null
+            ? new NewCharacterDraft(
+                model.Name.Trim(),
+                aliasExamples,
+                model.Gender,
+                CharacterImportance.NormalizeLevel(model.ImportanceLevel),
+                profile)
+            : new CharacterDossier(
+                model.CharacterId.Value,
+                model.Name.Trim(),
+                aliasExamples.Keys.OrderBy(alias => alias, StringComparer.OrdinalIgnoreCase).ToList(),
+                aliasExamples,
+                model.Gender,
+                CharacterImportance.NormalizeLevel(model.ImportanceLevel),
+                profile);
     }
 
     private void Cancel()
@@ -219,7 +226,7 @@
 
     private sealed class EditableCharacterDossier
     {
-        public string CharacterId { get; set; } = Guid.NewGuid().ToString("N");
+        public int? CharacterId { get; set; }
 
         public string Name { get; set; } = string.Empty;
 

@@ -56,7 +56,7 @@ public sealed class CharacterDossiersGeneratorTests
             },
             [new CharacterBibleCandidateEvidence("p1", "Johnny entered.")]);
         var dossier = new AiTextEditor.Core.Model.CharacterDossier(
-            "c1",
+            1,
             "John",
             ["Johnny"],
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
@@ -389,7 +389,7 @@ public sealed class CharacterDossiersGeneratorTests
     {
         var dossierService = new CharacterDossierService();
         dossierService.UpsertDossier(new AiTextEditor.Core.Model.CharacterDossier(
-            CharacterId: "c1",
+            CharacterId: 1,
             Name: "John",
             Aliases: ["John"],
             AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
@@ -436,7 +436,7 @@ public sealed class CharacterDossiersGeneratorTests
     {
         var dossierService = new CharacterDossierService();
         dossierService.UpsertDossier(new AiTextEditor.Core.Model.CharacterDossier(
-            CharacterId: "c1",
+            CharacterId: 1,
             Name: "John",
             Aliases: ["John"],
             AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
@@ -539,7 +539,7 @@ public sealed class CharacterDossiersGeneratorTests
     {
         var dossierService = new CharacterDossierService();
         dossierService.UpsertDossier(new AiTextEditor.Core.Model.CharacterDossier(
-            CharacterId: "c1",
+            CharacterId: 1,
             Name: "John",
             Aliases: ["John"],
             AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
@@ -598,7 +598,7 @@ public sealed class CharacterDossiersGeneratorTests
     {
         var dossierService = new CharacterDossierService();
         dossierService.UpsertDossier(new AiTextEditor.Core.Model.CharacterDossier(
-            CharacterId: "c1",
+            CharacterId: 1,
             Name: "John",
             Aliases: ["John"],
             AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
@@ -810,7 +810,7 @@ public sealed class CharacterDossiersGeneratorTests
     {
         var dossierService = new CharacterDossierService();
         dossierService.UpsertDossier(new AiTextEditor.Core.Model.CharacterDossier(
-            CharacterId: "c1",
+            CharacterId: 1,
             Name: "John",
             Aliases: ["John"],
             AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
@@ -951,7 +951,7 @@ public sealed class CharacterDossiersGeneratorTests
     {
         var dossierService = new CharacterDossierService();
         dossierService.UpsertDossier(new AiTextEditor.Core.Model.CharacterDossier(
-            CharacterId: "c1",
+            CharacterId: 1,
             Name: "John",
             Aliases: ["Johnny"],
             AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
@@ -985,7 +985,7 @@ public sealed class CharacterDossiersGeneratorTests
         var evidence = new[] { new AiTextEditor.Core.Model.EvidenceItem("1.p1", "Johnny laughed.", null) };
         await generator.UpdateFromEvidenceBatchAsync(evidence);
 
-        var updated = dossierService.TryGetDossier("c1");
+        var updated = dossierService.TryGetDossier(1);
         Assert.NotNull(updated);
         Assert.Equal("Johnny waved.", updated!.AliasExamples["Johnny"]);
     }
@@ -1130,7 +1130,7 @@ public sealed class CharacterDossiersGeneratorTests
     {
         var dossierService = new CharacterDossierService();
         dossierService.UpsertDossier(new AiTextEditor.Core.Model.CharacterDossier(
-            CharacterId: "c1",
+            CharacterId: 1,
             Name: "John",
             Aliases: ["John"],
             AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)

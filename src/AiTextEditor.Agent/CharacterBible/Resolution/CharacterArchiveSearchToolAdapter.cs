@@ -13,7 +13,7 @@ internal sealed class CharacterArchiveSearchToolAdapter : ICharacterArchiveSearc
     private readonly ICharacterVectorSearchTool vectorSearchTool;
     private readonly string? candidateId;
     private readonly string? candidateName;
-    private readonly HashSet<string> observedEntryIds = new(StringComparer.Ordinal);
+    private readonly HashSet<int> observedEntryIds = [];
 
     public CharacterArchiveSearchToolAdapter(
         CharacterDossiers currentArchive,
@@ -27,7 +27,7 @@ internal sealed class CharacterArchiveSearchToolAdapter : ICharacterArchiveSearc
         this.candidateName = candidateName;
     }
 
-    public IReadOnlySet<string> ObservedEntryIds => observedEntryIds;
+    public IReadOnlySet<int> ObservedEntryIds => observedEntryIds;
 
     [Description(CharacterArchiveSearchToolDescriptions.Tool)]
     public async Task<CharacterArchiveSearchResult> SearchCharactersAsync(
@@ -51,10 +51,7 @@ internal sealed class CharacterArchiveSearchToolAdapter : ICharacterArchiveSearc
             .ToArray();
         foreach (var hit in searchHits)
         {
-            if (!string.IsNullOrWhiteSpace(hit.EntryId))
-            {
-                observedEntryIds.Add(hit.EntryId.Trim());
-            }
+            observedEntryIds.Add(hit.EntryId);
         }
 
         var result = new CharacterArchiveSearchResult(

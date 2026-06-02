@@ -43,7 +43,7 @@ internal sealed class CharacterBibleCandidateResolutionApplier
         }
 
         var importanceAccumulator = new CharacterImportanceAccumulator();
-        var createdCharacterIds = new HashSet<string>(StringComparer.Ordinal);
+        var createdCharacterIds = new HashSet<int>();
 
         for (var index = 0; index < candidates.Count; index++)
         {
@@ -93,7 +93,7 @@ internal sealed class CharacterBibleCandidateResolutionApplier
         CharacterBibleCharacterCandidate candidate,
         IdentityResolutionDecision identityDecision,
         CharacterImportanceAccumulator importanceAccumulator,
-        ISet<string> createdCharacterIds)
+        ISet<int> createdCharacterIds)
     {
         var canonicalName = candidate.CanonicalName.Trim();
         CharacterBibleResolverDecision resolverDecision;
@@ -147,7 +147,7 @@ internal sealed class CharacterBibleCandidateResolutionApplier
 
         var created = identityDecision.Kind == IdentityResolutionKind.New;
         var dossier = created
-            ? session.AddCandidate(candidate)
+            ? session.CreateCharacter(candidate)
             : session.GetRequired(identityDecision.TargetEntryId
                 ?? throw new InvalidOperationException("Existing identity decision is missing target entry id."));
 
@@ -230,8 +230,8 @@ internal sealed class CharacterBibleCandidateResolutionApplier
     private static void ApplyImportanceLevels(
         CharacterDossierEditSession session,
         bool isFullGeneration,
-        IReadOnlyDictionary<string, int> activityScores,
-        IReadOnlySet<string> createdCharacterIds)
+        IReadOnlyDictionary<int, int> activityScores,
+        IReadOnlySet<int> createdCharacterIds)
     {
         if (activityScores.Count == 0)
         {
@@ -258,17 +258,12 @@ internal sealed class CharacterBibleCandidateResolutionApplier
 
     private sealed class CharacterImportanceAccumulator
     {
-        private readonly Dictionary<string, int> scores = new(StringComparer.Ordinal);
+        private readonly Dictionary<int, int> scores = [];
 
-        public IReadOnlyDictionary<string, int> Scores => scores;
+        public IReadOnlyDictionary<int, int> Scores => scores;
 
-        public void AddResolved(string characterId)
+        public void AddResolved(int characterId)
         {
-            if (string.IsNullOrWhiteSpace(characterId))
-            {
-                return;
-            }
-
             scores[characterId] = scores.TryGetValue(characterId, out var current)
                 ? current + 1
                 : 1;

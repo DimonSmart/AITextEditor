@@ -83,8 +83,8 @@ public enum CharacterBibleDecisionKind
 public sealed record CharacterBibleResolverDecision(
     string CanonicalName,
     CharacterBibleDecisionKind Kind,
-    string? CharacterId,
-    IReadOnlyList<string> CandidateIds,
+    int? CharacterId,
+    IReadOnlyList<int> CandidateIds,
     string Reason)
 {
     public SplitProposal? SplitProposal { get; init; }

@@ -1,11 +1,7 @@
-using System.Collections.Generic;
-
 namespace AiTextEditor.Core.Model;
 
-public sealed record CharacterDossier(
-    int CharacterId,
+public sealed record NewCharacterDraft(
     string Name,
-    IReadOnlyList<string> Aliases,
     IReadOnlyDictionary<string, string> AliasExamples,
     string Gender = "unknown",
     int? ImportanceLevel = null,
