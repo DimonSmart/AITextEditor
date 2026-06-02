@@ -109,7 +109,7 @@ public sealed class CharacterBibleLlmInputLoggerTests
                     ])
             };
 
-        var evidence = DossierPatchPromptBuilder.BuildReferencedEvidence(candidates, proposal);
+        var evidence = CharacterProfileUpdatePromptBuilder.BuildReferencedEvidence(candidates, proposal);
         var input = DossierConsistencyReviewerPromptBuilder.BuildPromptInput(dossier, proposal, evidence);
         var userPrompt = new DossierConsistencyReviewerPromptBuilder().BuildUserPrompt(input);
 
@@ -153,3 +153,4 @@ public sealed class CharacterBibleLlmInputLoggerTests
         }
     }
 }
+

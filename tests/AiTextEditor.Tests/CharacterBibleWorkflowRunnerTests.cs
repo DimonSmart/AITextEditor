@@ -259,7 +259,7 @@ public sealed class CharacterBibleWorkflowRunnerTests
             extractionModelClient,
             new CharacterExtractionPromptBuilder(),
             NoopPatchClient(),
-            new DossierPatchPromptBuilder(),
+            new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
             NewVectorSearchTool());
         var runner = new CharacterBibleWorkflowRunner(generator, NullLoggerFactory.Instance);
@@ -298,7 +298,7 @@ public sealed class CharacterBibleWorkflowRunnerTests
             new FailingCharacterExtractionModelClient("character_extraction_empty_response_content"),
             new CharacterExtractionPromptBuilder(),
             NoopPatchClient(),
-            new DossierPatchPromptBuilder(),
+            new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
             NewVectorSearchTool());
         var runner = new CharacterBibleWorkflowRunner(generator, NullLoggerFactory.Instance);
@@ -313,7 +313,7 @@ public sealed class CharacterBibleWorkflowRunnerTests
         CharacterExtractionResponse response,
         out CharacterDossierService dossierService,
         out ScriptedCharacterExtractionModelClient extractionModelClient,
-        ICharacterProfilePatchModelClient? patchModelClient = null)
+        ICharacterProfileUpdateModelClient? patchModelClient = null)
     {
         var repository = new MarkdownDocumentRepository();
         var document = repository.LoadFromMarkdown(markdown);
@@ -330,7 +330,7 @@ public sealed class CharacterBibleWorkflowRunnerTests
             extractionModelClient,
             new CharacterExtractionPromptBuilder(),
             patchModelClient ?? NoopPatchClient(),
-            new DossierPatchPromptBuilder(),
+            new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
             NewVectorSearchTool());
 
@@ -361,9 +361,7 @@ public sealed class CharacterBibleWorkflowRunnerTests
             .ToArray();
     }
 
-    private static ICharacterProfilePatchModelClient NoopPatchClient() => new NoopDossierPatchProposalModelClient();
-
-    private static IDossierConsistencyReviewerModelClient ApprovingReviewerClient() => new ApprovingDossierConsistencyReviewerModelClient();
+    private static ICharacterProfileUpdateModelClient NoopPatchClient() => new NoopDossierPatchProposalModelClient();
 
     private static ICharacterIdentityResolutionModelClient NewIdentityResolverClient()
         => new SearchBackedIdentityResolutionModelClient();
@@ -450,40 +448,26 @@ public sealed class CharacterBibleWorkflowRunnerTests
         }
     }
 
-    private sealed class NoopDossierPatchProposalModelClient : ICharacterProfilePatchModelClient
+    private sealed class NoopDossierPatchProposalModelClient : ICharacterProfileUpdateModelClient
     {
-        public Task<CharacterProfilePatchCompletion> PatchAsync(
-            CharacterProfilePatchModelRequest request,
+        public Task<CharacterProfileUpdateCompletion> UpdateProfileAsync(
+            CharacterProfileUpdateModelRequest request,
             CancellationToken cancellationToken = default)
         {
-            return Task.FromResult(new CharacterProfilePatchCompletion(true));
+            return Task.FromResult(new CharacterProfileUpdateCompletion(true));
         }
     }
 
-    private sealed class CountingDossierPatchProposalModelClient : ICharacterProfilePatchModelClient
+    private sealed class CountingDossierPatchProposalModelClient : ICharacterProfileUpdateModelClient
     {
         public int CallCount { get; private set; }
 
-        public Task<CharacterProfilePatchCompletion> PatchAsync(
-            CharacterProfilePatchModelRequest request,
+        public Task<CharacterProfileUpdateCompletion> UpdateProfileAsync(
+            CharacterProfileUpdateModelRequest request,
             CancellationToken cancellationToken = default)
         {
             CallCount++;
-            return Task.FromResult(new CharacterProfilePatchCompletion(true));
-        }
-    }
-
-    private sealed class ApprovingDossierConsistencyReviewerModelClient : IDossierConsistencyReviewerModelClient
-    {
-        public Task<DossierReviewResult> ReviewAsync(
-            DossierReviewModelRequest request,
-            CancellationToken cancellationToken = default)
-        {
-            return Task.FromResult(new DossierReviewResult
-            {
-                Verdict = CharacterBiblePatchReviewVerdict.Approved,
-                Issues = []
-            });
+            return Task.FromResult(new CharacterProfileUpdateCompletion(true));
         }
     }
 
@@ -548,6 +532,7 @@ public sealed class CharacterBibleWorkflowRunnerTests
         }
     }
 }
+
 
 
 

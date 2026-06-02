@@ -4,31 +4,20 @@ internal sealed record CharacterBibleDossierPatchCandidate(
     CharacterBibleCharacterCandidate Candidate,
     IReadOnlyList<CharacterBibleEvidenceContext> EvidenceContexts);
 
-internal sealed record CharacterBiblePatchProposalPromptInput(
-    CharacterBiblePatchTarget Target,
-    CharacterBiblePatchCurrentProfile CurrentProfile,
-    IReadOnlyList<CharacterBiblePatchEvidence> NewEvidence);
+internal sealed record CharacterProfileUpdatePromptInput(
+    CharacterProfileUpdateTarget Target,
+    CharacterProfileUpdateCurrentProfile CurrentProfile,
+    IReadOnlyList<CharacterProfileUpdateEvidence> NewEvidence);
 
-internal sealed record CharacterProfilePatchPromptInput(
-    CharacterProfilePatchPromptCard Character,
-    IReadOnlyList<CharacterBiblePatchEvidence> Evidence);
+internal sealed record CharacterProfileUpdateTarget(string Name);
 
-internal sealed record CharacterProfilePatchPromptCard(
-    string Name,
-    string Gender,
-    IReadOnlyList<string> Aliases,
-    string Importance,
-    CharacterBiblePatchCurrentProfile CurrentProfile);
-
-internal sealed record CharacterBiblePatchTarget(string Name);
-
-internal sealed record CharacterBiblePatchCurrentProfile(
+internal sealed record CharacterProfileUpdateCurrentProfile(
     string? Appearance,
     string? StatusAndCompetence,
     string? PsychologicalProfile,
     string? SpeechAndCommunication);
 
-internal sealed record CharacterBiblePatchEvidence(
+internal sealed record CharacterProfileUpdateEvidence(
     string Pointer,
     string Text);
 

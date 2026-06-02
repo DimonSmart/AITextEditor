@@ -7,19 +7,19 @@ namespace AiTextEditor.Agent.CharacterBible.Patching;
 
 internal sealed record CharacterBibleDossierPatchResult(
     CharacterBibleRunState RunState,
-    CharacterProfilePatchStatistics Statistics);
+    CharacterProfileUpdateStatistics Statistics);
 
 internal sealed class CharacterBibleDossierPatcher
 {
-    private readonly ICharacterProfilePatchModelClient modelClient;
-    private readonly DossierPatchPromptBuilder promptBuilder;
+    private readonly ICharacterProfileUpdateModelClient modelClient;
+    private readonly CharacterProfileUpdatePromptBuilder promptBuilder;
     private readonly CharacterBibleEvidenceContextExpander evidenceContextExpander;
     private readonly CharacterBibleDossierPatchLimits patchLimits;
     private readonly ILogger<CharacterBibleDossierPatcher> logger;
 
     public CharacterBibleDossierPatcher(
-        ICharacterProfilePatchModelClient modelClient,
-        DossierPatchPromptBuilder promptBuilder,
+        ICharacterProfileUpdateModelClient modelClient,
+        CharacterProfileUpdatePromptBuilder promptBuilder,
         CharacterBibleEvidenceContextExpander evidenceContextExpander,
         CharacterBibleDossierPatchLimits? patchLimits,
         ILogger<CharacterBibleDossierPatcher> logger)
@@ -39,7 +39,7 @@ internal sealed class CharacterBibleDossierPatcher
         ArgumentNullException.ThrowIfNull(runState);
         cancellationToken.ThrowIfCancellationRequested();
 
-        var statistics = new CharacterProfilePatchStatistics();
+        var statistics = new CharacterProfileUpdateStatistics();
         var processedCharacterIds = new HashSet<string>(StringComparer.Ordinal);
         if (runState.Failure is not null || runState.Candidates.Count == 0 || runState.Catalog.Decisions.Count == 0)
         {
@@ -56,12 +56,12 @@ internal sealed class CharacterBibleDossierPatcher
             catch (InvalidOperationException)
             {
                 CharacterBibleRunLogScope.Current?.Warning(
-                    "patch.group.skipped",
+                    "profile.update.group.skipped",
                     $"characterId={patchGroup.CharacterId} reason={LogValueFormatter.Quote("character not found")}");
                 continue;
             }
 
-            var evidence = DossierPatchPromptBuilder.BuildEvidence(patchGroup.Candidates);
+            var evidence = CharacterProfileUpdatePromptBuilder.BuildEvidence(patchGroup.Candidates);
             if (evidence.Count == 0)
             {
                 continue;
@@ -73,59 +73,63 @@ internal sealed class CharacterBibleDossierPatcher
             }
             statistics.AgentCalls++;
             CharacterBibleRunLogScope.Current?.Info(
-                "patch.group.start",
+                "profile.update.group.start",
                 $"characterId={dossier.CharacterId} name={LogValueFormatter.Quote(dossier.Name)} candidateCount={patchGroup.Candidates.Count} evidencePointers={LogValueFormatter.List(evidence.Select(item => item.Pointer))}");
             progress?.Report(new CharacterBibleWorkflowProgress(
                 "patch",
                 $"Updating profile for {dossier.Name} from {evidence.Count} evidence paragraph(s)."));
 
-            var context = new CharacterProfilePatchContext(
+            var context = new CharacterProfileUpdateContext(
                 dossier.Profile,
                 evidence.Select(item => item.Pointer).ToHashSet(StringComparer.Ordinal),
                 evidence.ToDictionary(item => item.Pointer, item => item.Text, StringComparer.Ordinal));
-            var tools = new CharacterProfilePatchTools(
+            var tool = new CharacterProfileUpdateToolAdapter(
                 dossier.CharacterId,
                 dossier.Name,
                 context,
                 runState.Catalog,
                 statistics);
-            var promptInput = DossierPatchPromptBuilder.BuildPromptInput(patchGroup.Candidates, dossier);
+            var promptInput = CharacterProfileUpdatePromptBuilder.BuildPromptInput(patchGroup.Candidates, dossier);
 
             try
             {
                 CharacterBibleLlmInputLogger.DebugInput(
-                    "patch.llm.input",
-                    $"characterId={dossier.CharacterId} modelKeys={LogValueFormatter.List(["character", "evidence"])} modelType={nameof(CharacterProfilePatchPromptInput)}",
+                    "profile.update.llm.input",
+                    $"characterId={dossier.CharacterId} modelKeys={LogValueFormatter.List(["target", "currentProfile", "newEvidence"])} modelType={nameof(CharacterProfileUpdatePromptInput)}",
                     promptInput);
-                await modelClient.PatchAsync(
-                    new CharacterProfilePatchModelRequest(
+                var appliedBefore = statistics.Applied;
+                await modelClient.UpdateProfileAsync(
+                    new CharacterProfileUpdateModelRequest(
                         promptBuilder.BuildSystemPrompt(),
                         promptBuilder.BuildUserPrompt(promptInput),
-                        tools,
+                        tool,
                         new CharacterBibleAgentDiagnosticProgress(
                             progress,
                             "patch",
-                            $"Profile patch for {dossier.Name}",
+                            $"Profile update for {dossier.Name}",
                             $"characterId={dossier.CharacterId} name={LogValueFormatter.Quote(dossier.Name)}")),
                     cancellationToken).ConfigureAwait(false);
+                CharacterBibleRunLogScope.Current?.Info(
+                    statistics.Applied == appliedBefore ? "profile.update.no_change" : "profile.update.applied",
+                    $"characterId={dossier.CharacterId} name={LogValueFormatter.Quote(dossier.Name)} applied={statistics.Applied - appliedBefore}");
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
                 CharacterBibleRunLogScope.Current?.Error(
-                    "patch.failed",
+                    "profile.update.failed",
                     $"characterId={dossier.CharacterId} name={LogValueFormatter.Quote(dossier.Name)} message={LogValueFormatter.Quote(ex.Message)}",
                     ex);
-                logger.LogError(ex, "Dossier profile patch failed for character {CharacterId}. Applied tool updates were preserved.", dossier.CharacterId);
+                logger.LogError(ex, "Character profile update failed for character {CharacterId}. Applied tool updates were preserved.", dossier.CharacterId);
                 progress?.Report(new CharacterBibleWorkflowProgress(
                     "patch",
-                    $"Profile patch failed for {dossier.Name}; valid tool updates already applied were preserved.",
+                    $"Profile update failed for {dossier.Name}; valid tool updates already applied were preserved.",
                     IsError: true));
             }
         }
 
         progress?.Report(new CharacterBibleWorkflowProgress(
             "patch",
-            $"Dossier profile updating finished: {statistics.ProfileFieldsChanged} field update(s) applied."));
+            $"Character profile updating finished: {statistics.ProfileFieldsChanged} field update(s) applied."));
         return new CharacterBibleDossierPatchResult(runState, statistics);
     }
 

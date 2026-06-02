@@ -26,8 +26,8 @@ public sealed class CharacterDossiersGenerator
         ILogger<CharacterDossiersGenerator> logger,
         ICharacterExtractionModelClient characterExtractionModelClient,
         CharacterExtractionPromptBuilder promptBuilder,
-        ICharacterProfilePatchModelClient characterProfilePatchModelClient,
-        DossierPatchPromptBuilder dossierPatchPromptBuilder,
+        ICharacterProfileUpdateModelClient characterProfileUpdateModelClient,
+        CharacterProfileUpdatePromptBuilder characterProfileUpdatePromptBuilder,
         ICharacterIdentityResolutionModelClient identityResolutionModelClient,
         ICharacterVectorSearchTool characterVectorSearchTool,
         ILoggerFactory? loggerFactory = null,
@@ -41,8 +41,8 @@ public sealed class CharacterDossiersGenerator
         ArgumentNullException.ThrowIfNull(logger);
         ArgumentNullException.ThrowIfNull(characterExtractionModelClient);
         ArgumentNullException.ThrowIfNull(promptBuilder);
-        ArgumentNullException.ThrowIfNull(characterProfilePatchModelClient);
-        ArgumentNullException.ThrowIfNull(dossierPatchPromptBuilder);
+        ArgumentNullException.ThrowIfNull(characterProfileUpdateModelClient);
+        ArgumentNullException.ThrowIfNull(characterProfileUpdatePromptBuilder);
         ArgumentNullException.ThrowIfNull(identityResolutionModelClient);
         ArgumentNullException.ThrowIfNull(characterVectorSearchTool);
 
@@ -64,8 +64,8 @@ public sealed class CharacterDossiersGenerator
             splitCandidatePromptBuilder,
             loggerFactory?.CreateLogger<CharacterBibleResolver>() ?? NullLogger<CharacterBibleResolver>.Instance);
         dossierPatcher = new CharacterBibleDossierPatcher(
-            characterProfilePatchModelClient,
-            dossierPatchPromptBuilder,
+            characterProfileUpdateModelClient,
+            characterProfileUpdatePromptBuilder,
             new CharacterBibleEvidenceContextExpander(documentContext),
             null,
             loggerFactory?.CreateLogger<CharacterBibleDossierPatcher>() ?? NullLogger<CharacterBibleDossierPatcher>.Instance);

@@ -24,7 +24,7 @@ internal static class CharacterBibleLlmInputLogger
             JsonSerializer.Serialize(input, JsonOptions));
     }
 
-    public static void DebugPatchProposalContract(CharacterBiblePatchProposalPromptInput input)
+    public static void DebugProfileUpdateContract(CharacterProfileUpdatePromptInput input)
     {
         ArgumentNullException.ThrowIfNull(input);
 
@@ -50,7 +50,7 @@ internal static class CharacterBibleLlmInputLogger
             .ToArray();
 
         CharacterBibleRunLogScope.Current?.Debug(
-            "patch.proposal.llm.input.contract",
+            "profile.update.llm.input.contract",
             $"topLevelKeys={LogValueFormatter.List(topLevelKeys)} forbiddenKeysFound={LogValueFormatter.List(forbiddenKeysFound)} evidenceCount={input.NewEvidence.Count} emptyEvidenceTexts={LogValueFormatter.List(emptyEvidenceTexts)}");
     }
 

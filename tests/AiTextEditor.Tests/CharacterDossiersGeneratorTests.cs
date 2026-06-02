@@ -44,9 +44,9 @@ public sealed class CharacterDossiersGeneratorTests
     }
 
     [Fact]
-    public void DossierPatchPromptBuilder_LoadsPromptAndBuildsUserPromptJson()
+    public void CharacterProfileUpdatePromptBuilder_LoadsPromptAndBuildsUserPromptJson()
     {
-        var builder = new DossierPatchPromptBuilder();
+        var builder = new CharacterProfileUpdatePromptBuilder();
         var candidate = new CharacterBibleCharacterCandidate(
             "John",
             "unknown",
@@ -78,17 +78,15 @@ public sealed class CharacterDossiersGeneratorTests
             ]);
         var userPrompt = builder.BuildUserPrompt([patchCandidate], dossier);
 
-        Assert.Contains("Call set_profile_field zero or more times", systemPrompt, StringComparison.Ordinal);
-        Assert.Contains("Do nothing when evidence does not add anything new", systemPrompt, StringComparison.Ordinal);
-        Assert.Contains("Do not rewrite the whole profile", systemPrompt, StringComparison.Ordinal);
-        Assert.Contains("Do not use empty strings", systemPrompt, StringComparison.Ordinal);
-        Assert.Contains("evidencePointers must point only to paragraphs from the provided evidence", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("If newEvidence does not change the profile, call no tools", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("If newEvidence only confirms the current profile, call no tools", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("If newEvidence only describes a one-time action", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("replace_profile_field.value is the full new value", systemPrompt, StringComparison.Ordinal);
 
         using var json = JsonDocument.Parse(userPrompt);
-        var character = json.RootElement.GetProperty("character");
-        Assert.Equal("John", character.GetProperty("name").GetString());
-        Assert.Equal(JsonValueKind.Null, character.GetProperty("currentProfile").GetProperty("appearance").ValueKind);
-        var evidence = json.RootElement.GetProperty("evidence").EnumerateArray().Single();
+        Assert.Equal("John", json.RootElement.GetProperty("target").GetProperty("name").GetString());
+        Assert.Equal(JsonValueKind.Null, json.RootElement.GetProperty("currentProfile").GetProperty("appearance").ValueKind);
+        var evidence = json.RootElement.GetProperty("newEvidence").EnumerateArray().Single();
         Assert.Equal("p1", evidence.GetProperty("pointer").GetString());
         var evidenceText = evidence.GetProperty("text").GetString();
         Assert.Contains("Johnny entered.", evidenceText, StringComparison.Ordinal);
@@ -99,140 +97,9 @@ public sealed class CharacterDossiersGeneratorTests
         Assert.DoesNotContain("identityDecision", userPrompt, StringComparison.Ordinal);
         Assert.DoesNotContain("candidateIds", userPrompt, StringComparison.Ordinal);
         Assert.DoesNotContain("evidenceContexts", userPrompt, StringComparison.Ordinal);
-        Assert.DoesNotContain("aliasesToAdd", userPrompt, StringComparison.Ordinal);
-        Assert.DoesNotContain("profilePatch", userPrompt, StringComparison.Ordinal);
-        Assert.DoesNotContain("additions", userPrompt, StringComparison.Ordinal);
-    }
-
-    [Fact]
-    public void DossierConsistencyReviewerPromptBuilder_BuildsCompactUserPromptJson()
-    {
-        var builder = new DossierConsistencyReviewerPromptBuilder();
-        var dossier = new AiTextEditor.Core.Model.CharacterDossier(
-            "c1",
-            "John",
-            ["Johnny"],
-            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
-            {
-                ["Johnny"] = "Johnny entered."
-            },
-            "unknown",
-            null,
-            new AiTextEditor.Core.Model.CharacterProfile(
-                StatusAndCompetence: "Учёный и организатор экспедиции."));
-        var proposal = new DossierProfileUpdateProposal
-        {
-            Status = CharacterBibleProfileUpdateStatus.Updated,
-            Profile = new CharacterBibleProfileUpdate(
-                "",
-                "Учёный, организатор экспедиции и автор книги о путешествии.",
-                "",
-                ""),
-            Changes =
-            [
-                new CharacterBibleProfileChange(
-                    CharacterBibleProfileField.StatusAndCompetence,
-                    CharacterBibleProfileUpdateAction.Replace,
-                    ["p10"],
-                    "Новое evidence уточняет компетенции персонажа.")
-            ]
-        };
-        var userPrompt = builder.BuildUserPrompt(
-            dossier,
-            proposal,
-            [new CharacterBiblePatchEvidence("p10", "John published a travel book.")]);
-
-        using var json = JsonDocument.Parse(userPrompt);
-        Assert.Equal("John", json.RootElement.GetProperty("target").GetProperty("name").GetString());
-        Assert.Equal(
-            "Учёный и организатор экспедиции.",
-            json.RootElement.GetProperty("currentProfile").GetProperty("statusAndCompetence").GetString());
-        Assert.Equal(
-            "Учёный, организатор экспедиции и автор книги о путешествии.",
-            json.RootElement.GetProperty("proposedProfile").GetProperty("statusAndCompetence").GetString());
-        var change = json.RootElement.GetProperty("changes").EnumerateArray().Single();
-        Assert.Equal("StatusAndCompetence", change.GetProperty("field").GetString());
-        Assert.Equal("replace", change.GetProperty("action").GetString());
-        Assert.Equal("p10", change.GetProperty("evidencePointers").EnumerateArray().Single().GetString());
-        Assert.Equal("p10", json.RootElement.GetProperty("evidence").EnumerateArray().Single().GetProperty("pointer").GetString());
-        Assert.False(json.RootElement.TryGetProperty("proposal", out _));
-        Assert.DoesNotContain("candidateId", userPrompt, StringComparison.Ordinal);
-        Assert.DoesNotContain("characterId", userPrompt, StringComparison.Ordinal);
-        Assert.DoesNotContain("identityDecision", userPrompt, StringComparison.Ordinal);
         Assert.DoesNotContain("aliases", userPrompt, StringComparison.Ordinal);
-        Assert.DoesNotContain("evidenceContexts", userPrompt, StringComparison.Ordinal);
         Assert.DoesNotContain("additions", userPrompt, StringComparison.Ordinal);
-    }
-
-    [Fact]
-    public void DossierConsistencyReviewerPromptBuilder_InstructsStrictProfileTransitionReview()
-    {
-        var systemPrompt = new DossierConsistencyReviewerPromptBuilder().BuildSystemPrompt();
-
-        Assert.Contains("Preserve unaffected fields without style-only rewrites.", systemPrompt, StringComparison.Ordinal);
-        Assert.Contains("Reject one-time actions presented as stable traits.", systemPrompt, StringComparison.Ordinal);
-        Assert.Contains("refines, weakens, contradicts, or corrects", systemPrompt, StringComparison.Ordinal);
-        Assert.Contains("Every change.field must match a field that actually differs", systemPrompt, StringComparison.Ordinal);
-    }
-
-    [Fact]
-    public async Task PatchProposalValidationRequiresFullProfile()
-    {
-        await AssertPatchProposalContractInvalidAsync(new DossierProfileUpdateProposal
-        {
-            Status = CharacterBibleProfileUpdateStatus.Updated,
-            Changes =
-            [
-                new CharacterBibleProfileChange(
-                    CharacterBibleProfileField.Appearance,
-                    CharacterBibleProfileUpdateAction.Append,
-                    ["p1"],
-                    "Новое evidence добавляет деталь внешности.")
-            ]
-        });
-
-        await AssertPatchProposalContractInvalidAsync(new DossierProfileUpdateProposal
-        {
-            Status = CharacterBibleProfileUpdateStatus.Updated,
-            Profile = new CharacterBibleProfileUpdate(null, "", "", ""),
-            Changes =
-            [
-                new CharacterBibleProfileChange(
-                    CharacterBibleProfileField.Appearance,
-                    CharacterBibleProfileUpdateAction.Append,
-                    ["p1"],
-                    "Новое evidence добавляет деталь внешности.")
-            ]
-        });
-    }
-
-    [Fact]
-    public async Task UpdatedPatchProposalValidationRequiresChanges()
-    {
-        await AssertPatchProposalContractInvalidAsync(new DossierProfileUpdateProposal
-        {
-            Status = CharacterBibleProfileUpdateStatus.Updated,
-            Profile = new CharacterBibleProfileUpdate("", "", "", ""),
-            Changes = []
-        });
-    }
-
-    [Fact]
-    public async Task NoUsefulChangesPatchProposalValidationRequiresEmptyChanges()
-    {
-        await AssertPatchProposalContractInvalidAsync(new DossierProfileUpdateProposal
-        {
-            Status = CharacterBibleProfileUpdateStatus.NoUsefulChanges,
-            Profile = new CharacterBibleProfileUpdate("", "", "", ""),
-            Changes =
-            [
-                new CharacterBibleProfileChange(
-                    CharacterBibleProfileField.Appearance,
-                    CharacterBibleProfileUpdateAction.Append,
-                    ["p1"],
-                    "Новое evidence добавляет деталь внешности.")
-            ]
-        });
+        Assert.False(json.RootElement.TryGetProperty("proposal", out _));
     }
 
     [Fact]
@@ -371,7 +238,7 @@ public sealed class CharacterDossiersGeneratorTests
             extractionModelClient,
             new CharacterExtractionPromptBuilder(),
             NoopPatchClient(),
-            new DossierPatchPromptBuilder(),
+            new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
             NewVectorSearchTool());
 
@@ -409,7 +276,7 @@ public sealed class CharacterDossiersGeneratorTests
             extractionModelClient,
             new CharacterExtractionPromptBuilder(),
             NoopPatchClient(),
-            new DossierPatchPromptBuilder(),
+            new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
             NewVectorSearchTool());
         var runner = new CharacterBibleWorkflowRunner(generator, NullLoggerFactory.Instance);
@@ -550,7 +417,7 @@ public sealed class CharacterDossiersGeneratorTests
             extractionModelClient,
             new CharacterExtractionPromptBuilder(),
             NoopPatchClient(),
-            new DossierPatchPromptBuilder(),
+            new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
             NewVectorSearchTool());
 
@@ -600,7 +467,7 @@ public sealed class CharacterDossiersGeneratorTests
             extractionModelClient,
             new CharacterExtractionPromptBuilder(),
             patchClient,
-            new DossierPatchPromptBuilder(),
+            new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
             NewVectorSearchTool());
 
@@ -629,7 +496,7 @@ public sealed class CharacterDossiersGeneratorTests
             extractionModelClient,
             new CharacterExtractionPromptBuilder(),
             NoopPatchClient(),
-            new DossierPatchPromptBuilder(),
+            new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
             NewVectorSearchTool());
 
@@ -787,7 +654,7 @@ public sealed class CharacterDossiersGeneratorTests
             extractionModelClient,
             new CharacterExtractionPromptBuilder(),
             patchClient,
-            new DossierPatchPromptBuilder(),
+            new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
             NewVectorSearchTool());
 
@@ -836,7 +703,7 @@ public sealed class CharacterDossiersGeneratorTests
             extractionModelClient,
             new CharacterExtractionPromptBuilder(),
             patchClient,
-            new DossierPatchPromptBuilder(),
+            new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
             NewVectorSearchTool());
 
@@ -881,7 +748,7 @@ public sealed class CharacterDossiersGeneratorTests
             extractionModelClient,
             new CharacterExtractionPromptBuilder(),
             patchClient,
-            new DossierPatchPromptBuilder(),
+            new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
             NewVectorSearchTool());
 
@@ -916,7 +783,7 @@ public sealed class CharacterDossiersGeneratorTests
             extractionModelClient,
             new CharacterExtractionPromptBuilder(),
             patchClient,
-            new DossierPatchPromptBuilder(),
+            new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
             NewVectorSearchTool());
 
@@ -962,7 +829,7 @@ public sealed class CharacterDossiersGeneratorTests
             extractionModelClient,
             new CharacterExtractionPromptBuilder(),
             patchClient,
-            new DossierPatchPromptBuilder(),
+            new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
             NewVectorSearchTool());
 
@@ -1012,7 +879,7 @@ public sealed class CharacterDossiersGeneratorTests
             extractionModelClient,
             new CharacterExtractionPromptBuilder(),
             patchClient,
-            new DossierPatchPromptBuilder(),
+            new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
             NewVectorSearchTool());
 
@@ -1059,7 +926,7 @@ public sealed class CharacterDossiersGeneratorTests
             extractionModelClient,
             new CharacterExtractionPromptBuilder(),
             patchClient,
-            new DossierPatchPromptBuilder(),
+            new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
             NewVectorSearchTool());
 
@@ -1091,7 +958,7 @@ public sealed class CharacterDossiersGeneratorTests
             extractionModelClient,
             new CharacterExtractionPromptBuilder(),
             NoopPatchClient(),
-            new DossierPatchPromptBuilder(),
+            new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
             NewVectorSearchTool());
 
@@ -1121,7 +988,7 @@ public sealed class CharacterDossiersGeneratorTests
             extractionModelClient,
             new CharacterExtractionPromptBuilder(),
             NoopPatchClient(),
-            new DossierPatchPromptBuilder(),
+            new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
             NewVectorSearchTool());
 
@@ -1152,7 +1019,7 @@ public sealed class CharacterDossiersGeneratorTests
             extractionModelClient,
             new CharacterExtractionPromptBuilder(),
             NoopPatchClient(),
-            new DossierPatchPromptBuilder(),
+            new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
             NewVectorSearchTool());
 
@@ -1200,7 +1067,7 @@ public sealed class CharacterDossiersGeneratorTests
             extractionModelClient,
             new CharacterExtractionPromptBuilder(),
             NoopPatchClient(),
-            new DossierPatchPromptBuilder(),
+            new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
             NewVectorSearchTool());
 
@@ -1234,7 +1101,7 @@ public sealed class CharacterDossiersGeneratorTests
             extractionModelClient,
             new CharacterExtractionPromptBuilder(),
             NoopPatchClient(),
-            new DossierPatchPromptBuilder(),
+            new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
             NewVectorSearchTool());
 
@@ -1265,7 +1132,7 @@ public sealed class CharacterDossiersGeneratorTests
             extractionModelClient,
             new CharacterExtractionPromptBuilder(),
             NoopPatchClient(),
-            new DossierPatchPromptBuilder(),
+            new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
             NewVectorSearchTool());
 
@@ -1314,7 +1181,7 @@ public sealed class CharacterDossiersGeneratorTests
             extractionModelClient,
             new CharacterExtractionPromptBuilder(),
             NoopPatchClient(),
-            new DossierPatchPromptBuilder(),
+            new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
             NewVectorSearchTool());
         var runner = new CharacterBibleWorkflowRunner(generator, NullLoggerFactory.Instance);
@@ -1338,7 +1205,7 @@ public sealed class CharacterDossiersGeneratorTests
 
     private static string Alias(string form, string excerpt) => form;
 
-    private static ICharacterProfilePatchModelClient NoopPatchClient() => new NoopDossierPatchProposalModelClient();
+    private static ICharacterProfileUpdateModelClient NoopPatchClient() => new NoopDossierPatchProposalModelClient();
 
     private static IDossierConsistencyReviewerModelClient ApprovingReviewerClient() => new ApprovingDossierConsistencyReviewerModelClient();
 
@@ -1400,7 +1267,7 @@ public sealed class CharacterDossiersGeneratorTests
             extractionModelClient,
             new CharacterExtractionPromptBuilder(),
             patchClient,
-            new DossierPatchPromptBuilder(),
+            new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
             NewVectorSearchTool());
 
@@ -1576,27 +1443,27 @@ public sealed class CharacterDossiersGeneratorTests
             => throw new InvalidOperationException(message);
     }
 
-    private sealed class NoopDossierPatchProposalModelClient : ICharacterProfilePatchModelClient
+    private sealed class NoopDossierPatchProposalModelClient : ICharacterProfileUpdateModelClient
     {
-        public Task<CharacterProfilePatchCompletion> PatchAsync(
-            CharacterProfilePatchModelRequest request,
+        public Task<CharacterProfileUpdateCompletion> PatchAsync(
+            CharacterProfileUpdateModelRequest request,
             CancellationToken cancellationToken = default)
         {
-            return Task.FromResult(new CharacterProfilePatchCompletion(true));
+            return Task.FromResult(new CharacterProfileUpdateCompletion(true));
         }
     }
 
     private sealed class ScriptedDossierPatchProposalModelClient(params DossierProfileUpdateProposal[] proposals)
-        : ICharacterProfilePatchModelClient
+        : ICharacterProfileUpdateModelClient
     {
         private readonly Queue<DossierProfileUpdateProposal> proposals = new(proposals);
 
         public int CallCount { get; private set; }
 
-        public List<CharacterProfilePatchModelRequest> Requests { get; } = [];
+        public List<CharacterProfileUpdateModelRequest> Requests { get; } = [];
 
-        public Task<CharacterProfilePatchCompletion> PatchAsync(
-            CharacterProfilePatchModelRequest request,
+        public Task<CharacterProfileUpdateCompletion> PatchAsync(
+            CharacterProfileUpdateModelRequest request,
             CancellationToken cancellationToken = default)
         {
             CallCount++;
@@ -1606,11 +1473,11 @@ public sealed class CharacterDossiersGeneratorTests
                 ApplyProposal(request.Tools, proposals.Dequeue());
             }
 
-            return Task.FromResult(new CharacterProfilePatchCompletion(true));
+            return Task.FromResult(new CharacterProfileUpdateCompletion(true));
         }
 
         private static void ApplyProposal(
-            CharacterProfilePatchTools tools,
+            CharacterProfileUpdateToolAdapter tools,
             DossierProfileUpdateProposal proposal)
         {
             if (proposal.Status != CharacterBibleProfileUpdateStatus.Updated || proposal.Profile is null)
@@ -1625,7 +1492,7 @@ public sealed class CharacterDossiersGeneratorTests
                     continue;
                 }
 
-                tools.SetProfileField(
+                tools.ReplaceProfileField(
                     change.Field.Value,
                     ReadProfileField(proposal.Profile, change.Field.Value),
                     change.EvidencePointers ?? []);
@@ -1765,6 +1632,7 @@ public sealed class CharacterDossiersGeneratorTests
         }
     }
 }
+
 
 
 

@@ -6,9 +6,9 @@ using AiTextEditor.Core.Model;
 
 namespace AiTextEditor.Agent.CharacterBible.Patching;
 
-public sealed class DossierPatchPromptBuilder
+public sealed class CharacterProfileUpdatePromptBuilder
 {
-    private const string SystemPromptResourceName = "AiTextEditor.Agent.CharacterBible.Patching.Prompts.dossier-patch-proposal.system.md";
+    private const string SystemPromptResourceName = "AiTextEditor.Agent.CharacterBible.Patching.Prompts.profile-update.system.md";
 
     private static readonly Lazy<string> SystemPrompt = new(LoadSystemPrompt);
 
@@ -32,14 +32,14 @@ public sealed class DossierPatchPromptBuilder
         return BuildUserPrompt(BuildPromptInput(candidates, dossier));
     }
 
-    internal string BuildUserPrompt(CharacterProfilePatchPromptInput input)
+    internal string BuildUserPrompt(CharacterProfileUpdatePromptInput input)
     {
         ArgumentNullException.ThrowIfNull(input);
 
         return JsonSerializer.Serialize(input, UserPromptJsonOptions);
     }
 
-    internal static CharacterProfilePatchPromptInput BuildPromptInput(
+    internal static CharacterProfileUpdatePromptInput BuildPromptInput(
         IReadOnlyList<CharacterBibleDossierPatchCandidate> candidates,
         CharacterDossier dossier)
     {
@@ -47,21 +47,17 @@ public sealed class DossierPatchPromptBuilder
         ArgumentNullException.ThrowIfNull(dossier);
 
         var profile = CharacterProfile.Normalize(dossier.Profile);
-        return new CharacterProfilePatchPromptInput(
-            new CharacterProfilePatchPromptCard(
-                dossier.Name,
-                dossier.Gender,
-                dossier.Aliases,
-                CharacterImportance.GetLabel(dossier.ImportanceLevel),
-                new CharacterBiblePatchCurrentProfile(
-                    NullIfWhiteSpace(profile.Appearance),
-                    NullIfWhiteSpace(profile.StatusAndCompetence),
-                    NullIfWhiteSpace(profile.PsychologicalProfile),
-                    NullIfWhiteSpace(profile.SpeechAndCommunication))),
+        return new CharacterProfileUpdatePromptInput(
+            new CharacterProfileUpdateTarget(dossier.Name),
+            new CharacterProfileUpdateCurrentProfile(
+                NullIfWhiteSpace(profile.Appearance),
+                NullIfWhiteSpace(profile.StatusAndCompetence),
+                NullIfWhiteSpace(profile.PsychologicalProfile),
+                NullIfWhiteSpace(profile.SpeechAndCommunication)),
             BuildEvidence(candidates));
     }
 
-    internal static IReadOnlyList<CharacterBiblePatchEvidence> BuildEvidence(
+    internal static IReadOnlyList<CharacterProfileUpdateEvidence> BuildEvidence(
         IReadOnlyList<CharacterBibleDossierPatchCandidate> candidates)
     {
         ArgumentNullException.ThrowIfNull(candidates);
@@ -70,29 +66,7 @@ public sealed class DossierPatchPromptBuilder
             .SelectMany(candidate => candidate.EvidenceContexts)
             .GroupBy(context => context.Pointer, StringComparer.Ordinal)
             .Select(group => group.First())
-            .Select(context => new CharacterBiblePatchEvidence(context.Pointer, BuildEvidenceText(context)))
-            .ToArray();
-    }
-
-    internal static IReadOnlyList<CharacterBiblePatchEvidence> BuildReferencedEvidence(
-        IReadOnlyList<CharacterBibleDossierPatchCandidate> candidates,
-        DossierProfileUpdateProposal proposal)
-    {
-        ArgumentNullException.ThrowIfNull(candidates);
-        ArgumentNullException.ThrowIfNull(proposal);
-
-        var referencedPointers = (proposal.Changes ?? [])
-            .SelectMany(change => change.EvidencePointers ?? [])
-            .Where(pointer => !string.IsNullOrWhiteSpace(pointer))
-            .ToHashSet(StringComparer.Ordinal);
-
-        if (referencedPointers.Count == 0)
-        {
-            return [];
-        }
-
-        return BuildEvidence(candidates)
-            .Where(evidence => referencedPointers.Contains(evidence.Pointer))
+            .Select(context => new CharacterProfileUpdateEvidence(context.Pointer, BuildEvidenceText(context)))
             .ToArray();
     }
 
@@ -134,18 +108,18 @@ public sealed class DossierPatchPromptBuilder
 
     private static string LoadSystemPrompt()
     {
-        var assembly = typeof(DossierPatchPromptBuilder).Assembly;
+        var assembly = typeof(CharacterProfileUpdatePromptBuilder).Assembly;
         using var stream = assembly.GetManifestResourceStream(SystemPromptResourceName);
         if (stream is null)
         {
-            throw new InvalidOperationException($"Embedded dossier patch prompt resource '{SystemPromptResourceName}' was not found.");
+            throw new InvalidOperationException($"Embedded profile update prompt resource '{SystemPromptResourceName}' was not found.");
         }
 
         using var reader = new StreamReader(stream);
         var prompt = reader.ReadToEnd();
         if (string.IsNullOrWhiteSpace(prompt))
         {
-            throw new InvalidOperationException($"Embedded dossier patch prompt resource '{SystemPromptResourceName}' is empty.");
+            throw new InvalidOperationException($"Embedded profile update prompt resource '{SystemPromptResourceName}' is empty.");
         }
 
         return prompt.Trim();

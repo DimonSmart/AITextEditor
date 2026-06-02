@@ -86,9 +86,9 @@ public sealed class AgenticWorkflowEngine
         var extractionClient = new AgenticCharacterExtractionModelClient(
             modelClient,
             loggerFactory.CreateLogger<AgenticCharacterExtractionModelClient>());
-        var patchClient = new AgenticCharacterProfilePatchModelClient(
+        var patchClient = new AgenticCharacterProfileUpdateModelClient(
             modelClient,
-            loggerFactory.CreateLogger<AgenticCharacterProfilePatchModelClient>());
+            loggerFactory.CreateLogger<AgenticCharacterProfileUpdateModelClient>());
         var identityResolverClient = new AgenticCharacterIdentityResolutionModelClient(
             modelClient,
             loggerFactory.CreateLogger<AgenticCharacterIdentityResolutionModelClient>());
@@ -111,7 +111,7 @@ public sealed class AgenticWorkflowEngine
                 extractionClient,
                 new CharacterExtractionPromptBuilder(),
                 patchClient,
-                new DossierPatchPromptBuilder(),
+                new CharacterProfileUpdatePromptBuilder(),
                 identityResolverClient,
                 characterVectorSearchTool,
                 loggerFactory,

@@ -7,70 +7,70 @@ using Microsoft.Extensions.Logging;
 
 namespace AiTextEditor.Agent.CharacterBible.Patching;
 
-public interface ICharacterProfilePatchModelClient
+public interface ICharacterProfileUpdateModelClient
 {
-    Task<CharacterProfilePatchCompletion> PatchAsync(
-        CharacterProfilePatchModelRequest request,
+    Task<CharacterProfileUpdateCompletion> UpdateProfileAsync(
+        CharacterProfileUpdateModelRequest request,
         CancellationToken cancellationToken = default);
 }
 
-public sealed record CharacterProfilePatchModelRequest(
+public sealed record CharacterProfileUpdateModelRequest(
     string SystemPrompt,
     string UserPrompt,
-    CharacterProfilePatchTools Tools,
+    CharacterProfileUpdateToolAdapter Tool,
     IProgress<AgenticModelDiagnostic>? Diagnostics = null);
 
-public sealed record CharacterProfilePatchCompletion(
+public sealed record CharacterProfileUpdateCompletion(
     [property: JsonRequired]
     [property: JsonPropertyName("completed")] bool Completed);
 
-public sealed class AgenticCharacterProfilePatchModelClient : ICharacterProfilePatchModelClient
+public sealed class AgenticCharacterProfileUpdateModelClient : ICharacterProfileUpdateModelClient
 {
-    private static readonly MethodInfo SetProfileFieldMethod = typeof(CharacterProfilePatchTools)
-        .GetMethod(nameof(CharacterProfilePatchTools.SetProfileField))
-        ?? throw new InvalidOperationException("Set profile field tool method was not found.");
+    private static readonly MethodInfo ReplaceProfileFieldMethod = typeof(CharacterProfileUpdateToolAdapter)
+        .GetMethod(nameof(CharacterProfileUpdateToolAdapter.ReplaceProfileField))
+        ?? throw new InvalidOperationException("Replace profile field tool method was not found.");
 
     private readonly IAgenticModelClient modelClient;
-    private readonly ILogger<AgenticCharacterProfilePatchModelClient> logger;
+    private readonly ILogger<AgenticCharacterProfileUpdateModelClient> logger;
 
-    public AgenticCharacterProfilePatchModelClient(
+    public AgenticCharacterProfileUpdateModelClient(
         IAgenticModelClient modelClient,
-        ILogger<AgenticCharacterProfilePatchModelClient> logger)
+        ILogger<AgenticCharacterProfileUpdateModelClient> logger)
     {
         this.modelClient = modelClient ?? throw new ArgumentNullException(nameof(modelClient));
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<CharacterProfilePatchCompletion> PatchAsync(
-        CharacterProfilePatchModelRequest request,
+    public async Task<CharacterProfileUpdateCompletion> UpdateProfileAsync(
+        CharacterProfileUpdateModelRequest request,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
         ArgumentException.ThrowIfNullOrWhiteSpace(request.SystemPrompt);
         ArgumentException.ThrowIfNullOrWhiteSpace(request.UserPrompt);
-        ArgumentNullException.ThrowIfNull(request.Tools);
+        ArgumentNullException.ThrowIfNull(request.Tool);
 
-        var setProfileFieldFunction = AIFunctionFactory.Create(
-            SetProfileFieldMethod,
-            request.Tools,
-            "set_profile_field",
-            "Sets one evidence-backed profile field for the current character.",
+        var replaceProfileFieldFunction = AIFunctionFactory.Create(
+            ReplaceProfileFieldMethod,
+            request.Tool,
+            "replace_profile_field",
+            "Replaces one evidence-backed profile field for the current character.",
             JsonSerializerOptions.Web);
 
-        return await modelClient.RunAsync<CharacterProfilePatchCompletion>(
-            new AgenticModelRequest<CharacterProfilePatchCompletion>(
+        return await modelClient.RunAsync<CharacterProfileUpdateCompletion>(
+            new AgenticModelRequest<CharacterProfileUpdateCompletion>(
                 [
                     new ChatMessage(ChatRole.System, request.SystemPrompt),
                     new ChatMessage(ChatRole.User, request.UserPrompt)
                 ],
                 InvalidContractError: "character_profile_patch_completion_contract_invalid",
                 ValidateResponse: Validate,
-                Tools: [setProfileFieldFunction],
+                Tools: [replaceProfileFieldFunction],
                 Diagnostics: request.Diagnostics),
             cancellationToken).ConfigureAwait(false);
     }
 
-    private static AgenticModelValidationResult Validate(CharacterProfilePatchCompletion completion)
+    private static AgenticModelValidationResult Validate(CharacterProfileUpdateCompletion completion)
         => completion.Completed
             ? AgenticModelValidationResult.Valid
             : AgenticModelValidationResult.Invalid("completed must be true.");

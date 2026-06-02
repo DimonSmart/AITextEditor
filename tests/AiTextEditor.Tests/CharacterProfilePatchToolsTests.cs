@@ -5,80 +5,84 @@ using Xunit;
 
 namespace AiTextEditor.Tests;
 
-public sealed class CharacterProfilePatchToolsTests
+public sealed class CharacterProfileUpdateToolAdapterTests
 {
     [Fact]
-    public void SetProfileField_AppliesValidFieldUpdate()
+    public void ReplaceProfileField_AppliesValidFieldUpdate()
     {
         var (tools, session) = CreateTools();
 
-        var result = tools.SetProfileField(
+        var result = tools.ReplaceProfileField(
             CharacterBibleProfileField.Appearance,
             "Пахнет нафталином.",
-            ["1.1.1.p4"]);
+            ["1.1.1.p4"],
+            "New evidence adds a visible detail.");
 
-        Assert.Equal(SetProfileFieldResultStatus.Applied, result.Status);
+        Assert.Equal(ReplaceProfileFieldResultStatus.Applied, result.Status);
         Assert.Equal("Пахнет нафталином.", session.GetRequired("c1").Profile!.Appearance);
     }
 
     [Fact]
-    public void SetProfileField_RejectsEmptyValue()
+    public void ReplaceProfileField_RejectsEmptyValue()
     {
         var (tools, session) = CreateTools();
 
-        var result = tools.SetProfileField(CharacterBibleProfileField.Appearance, "", ["1.1.1.p4"]);
+        var result = tools.ReplaceProfileField(CharacterBibleProfileField.Appearance, "", ["1.1.1.p4"], "Reason.");
 
-        Assert.Equal(SetProfileFieldResultStatus.Rejected, result.Status);
+        Assert.Equal(ReplaceProfileFieldResultStatus.Rejected, result.Status);
         Assert.Null(session.GetRequired("c1").Profile!.Appearance);
     }
 
     [Fact]
-    public void SetProfileField_RejectsPointerOutsideCurrentEvidence()
+    public void ReplaceProfileField_RejectsPointerOutsideCurrentEvidence()
     {
         var (tools, session) = CreateTools();
 
-        var result = tools.SetProfileField(
+        var result = tools.ReplaceProfileField(
             CharacterBibleProfileField.Appearance,
             "Пахнет нафталином.",
-            ["1.1.1.p999"]);
+            ["1.1.1.p999"],
+            "New evidence adds a visible detail.");
 
-        Assert.Equal(SetProfileFieldResultStatus.Rejected, result.Status);
+        Assert.Equal(ReplaceProfileFieldResultStatus.Rejected, result.Status);
         Assert.Null(session.GetRequired("c1").Profile!.Appearance);
     }
 
     [Fact]
-    public void SetProfileField_ReturnsNoOpForSameValue()
+    public void ReplaceProfileField_ReturnsNoOpForSameValue()
     {
         var (tools, session) = CreateTools(new CharacterProfile(Appearance: "Пахнет нафталином."));
 
-        var result = tools.SetProfileField(
+        var result = tools.ReplaceProfileField(
             CharacterBibleProfileField.Appearance,
             "Пахнет нафталином.",
-            ["1.1.1.p4"]);
+            ["1.1.1.p4"],
+            "Evidence confirms the existing detail.");
 
-        Assert.Equal(SetProfileFieldResultStatus.NoOp, result.Status);
+        Assert.Equal(ReplaceProfileFieldResultStatus.NoOp, result.Status);
         Assert.Equal("Пахнет нафталином.", session.GetRequired("c1").Profile!.Appearance);
     }
 
     [Fact]
-    public void SetProfileField_ReturnsConflictForDifferentExistingValue()
+    public void ReplaceProfileField_ReplacesDifferentExistingValue()
     {
         var (tools, session) = CreateTools(new CharacterProfile(PsychologicalProfile: "Склонен к накопительству."));
 
-        var result = tools.SetProfileField(
+        var result = tools.ReplaceProfileField(
             CharacterBibleProfileField.PsychologicalProfile,
             "Любит порядок.",
-            ["1.1.1.p4"]);
+            ["1.1.1.p4"],
+            "New evidence changes the best current characterization.");
 
-        Assert.Equal(SetProfileFieldResultStatus.Conflict, result.Status);
-        Assert.Equal("Склонен к накопительству.", session.GetRequired("c1").Profile!.PsychologicalProfile);
+        Assert.Equal(ReplaceProfileFieldResultStatus.Applied, result.Status);
+        Assert.Equal("Любит порядок.", session.GetRequired("c1").Profile!.PsychologicalProfile);
     }
 
     [Fact]
-    public void SetProfileField_DoesNotExposeCharacterIdParameter()
+    public void ReplaceProfileField_DoesNotExposeCharacterIdParameter()
     {
-        var parameterNames = typeof(CharacterProfilePatchTools)
-            .GetMethod(nameof(CharacterProfilePatchTools.SetProfileField))!
+        var parameterNames = typeof(CharacterProfileUpdateToolAdapter)
+            .GetMethod(nameof(CharacterProfileUpdateToolAdapter.ReplaceProfileField))!
             .GetParameters()
             .Select(parameter => parameter.Name)
             .ToArray();
@@ -86,7 +90,7 @@ public sealed class CharacterProfilePatchToolsTests
         Assert.DoesNotContain("characterId", parameterNames);
     }
 
-    private static (CharacterProfilePatchTools Tools, CharacterDossierEditSession Session) CreateTools(
+    private static (CharacterProfileUpdateToolAdapter Tools, CharacterDossierEditSession Session) CreateTools(
         CharacterProfile? profile = null)
     {
         var dossier = new CharacterDossier(
@@ -100,16 +104,17 @@ public sealed class CharacterProfilePatchToolsTests
         {
             ["1.1.1.p4"] = "Пончик пахнет нафталином."
         };
-        var context = new CharacterProfilePatchContext(
+        var context = new CharacterProfileUpdateContext(
             profile,
             evidence.Keys.ToHashSet(StringComparer.Ordinal),
             evidence);
-        var tools = new CharacterProfilePatchTools(
+        var tools = new CharacterProfileUpdateToolAdapter(
             "c1",
             "Пончик",
             context,
             session,
-            new CharacterProfilePatchStatistics());
+            new CharacterProfileUpdateStatistics());
         return (tools, session);
     }
 }
+

@@ -20,10 +20,8 @@
   <ItemGroup>
     <EmbeddedResource Include="CharacterBible\Extraction\Prompts\character-extraction.system.md"
                       LogicalName="AiTextEditor.Agent.CharacterBible.Extraction.Prompts.character-extraction.system.md" />
-    <EmbeddedResource Include="CharacterBible\Patching\Prompts\dossier-patch-proposal.system.md"
-                      LogicalName="AiTextEditor.Agent.CharacterBible.Patching.Prompts.dossier-patch-proposal.system.md" />
-    <EmbeddedResource Include="CharacterBible\Patching\Prompts\dossier-consistency-reviewer.system.md"
-                      LogicalName="AiTextEditor.Agent.CharacterBible.Patching.Prompts.dossier-consistency-reviewer.system.md" />
+    <EmbeddedResource Include="CharacterBible\Patching\Prompts\profile-update.system.md"
+                      LogicalName="AiTextEditor.Agent.CharacterBible.Patching.Prompts.profile-update.system.md" />
     <EmbeddedResource Include="CharacterBible\Resolution\Prompts\character-identity-resolution.system.md"
                       LogicalName="AiTextEditor.Agent.CharacterBible.Resolution.Prompts.character-identity-resolution.system.md" />
     <EmbeddedResource Include="CharacterBible\Patching\Prompts\split-candidate.system.md"

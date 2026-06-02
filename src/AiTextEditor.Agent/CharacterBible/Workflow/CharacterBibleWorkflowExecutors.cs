@@ -205,30 +205,30 @@ internal sealed class PatchCharacterBibleDossiersExecutor : Executor<CharacterBi
         if (runState.Failure is not null)
         {
             CharacterBibleRunLogScope.Current?.Warning(
-                "patch.skipped",
+                "profile.update.skipped",
                 $"reason={LogValueFormatter.Quote("workflow failed")}");
             progress?.Report(new CharacterBibleWorkflowProgress(
                 "patch",
-                "Skipping dossier patching because the workflow failed.",
+                "Skipping profile updating because the workflow failed.",
                 IsError: true));
             return runState;
         }
 
         progress?.Report(new CharacterBibleWorkflowProgress(
             "patch",
-            $"Patching dossiers for {runState.Catalog.Decisions.Count} resolved decisions."));
+            $"Updating profiles for {runState.Catalog.Decisions.Count} resolved decisions."));
         CharacterBibleRunLogScope.Current?.Info(
-            "patch.start",
+            "profile.update.start",
             $"decisionCount={runState.Catalog.Decisions.Count}");
         var patchResult = await generator.ApplyDossierPatchesAsync(runState, progress, cancellationToken);
         var patchedRunState = patchResult.RunState;
         logger.LogInformation(
-            "character_bible_dossiers_patched: changed={Changed}, decisions={DecisionCount}",
+            "character_bible_profiles_updated: changed={Changed}, decisions={DecisionCount}",
             patchedRunState.Catalog.Changed,
             patchedRunState.Catalog.Decisions.Count);
         CharacterBibleRunLogScope.Current?.Info(
-            "patch.done",
-            $"charactersProcessed={patchResult.Statistics.CharactersProcessed} agentCalls={patchResult.Statistics.AgentCalls} toolCalls={patchResult.Statistics.ToolCalls} applied={patchResult.Statistics.Applied} noop={patchResult.Statistics.NoOp} rejected={patchResult.Statistics.Rejected} conflict={patchResult.Statistics.Conflict} profileFieldsChanged={patchResult.Statistics.ProfileFieldsChanged}");
+            "profile.update.done",
+            $"charactersProcessed={patchResult.Statistics.CharactersProcessed} agentCalls={patchResult.Statistics.AgentCalls} toolCalls={patchResult.Statistics.ToolCalls} applied={patchResult.Statistics.Applied} noop={patchResult.Statistics.NoOp} rejected={patchResult.Statistics.Rejected} profileFieldsChanged={patchResult.Statistics.ProfileFieldsChanged}");
         return patchedRunState;
     }
 }
