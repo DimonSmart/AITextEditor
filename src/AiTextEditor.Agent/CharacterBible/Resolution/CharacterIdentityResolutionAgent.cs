@@ -133,13 +133,13 @@ public sealed class CharacterIdentityResolutionPromptBuilder
             if (string.IsNullOrWhiteSpace(pointer))
             {
                 throw new InvalidOperationException(
-                    $"Character identity resolver evidence for candidate '{candidate.CandidateId}' has an empty pointer.");
+                    $"Character identity resolver evidence for candidate '{candidate.CanonicalName}' has an empty pointer.");
             }
 
             if (string.IsNullOrWhiteSpace(evidence.Excerpt))
             {
                 throw new InvalidOperationException(
-                    $"Character identity resolver evidence pointer '{pointer}' for candidate '{candidate.CandidateId}' has no materialized text.");
+                    $"Character identity resolver evidence pointer '{pointer}' for candidate '{candidate.CanonicalName}' has no materialized text.");
             }
 
             evidenceByPointer.TryAdd(pointer, new CharacterEvidenceText
@@ -152,7 +152,7 @@ public sealed class CharacterIdentityResolutionPromptBuilder
         if (evidenceByPointer.Count == 0)
         {
             throw new InvalidOperationException(
-                $"Character identity resolver candidate '{candidate.CandidateId}' has no materialized evidence.");
+                $"Character identity resolver candidate '{candidate.CanonicalName}' has no materialized evidence. Pointers: {string.Join(", ", candidate.Evidence.Select(evidence => evidence.Pointer).Where(pointer => !string.IsNullOrWhiteSpace(pointer)))}.");
         }
 
         return evidenceByPointer.Values

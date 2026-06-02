@@ -19,7 +19,7 @@ internal sealed class CharacterBibleCandidateResolutionApplier
         CharacterDossierEditSession session,
         int paragraphCount,
         IReadOnlyList<CharacterBibleCharacterCandidate> candidates,
-        Func<CharacterDossiers, CharacterBibleCharacterCandidate, CancellationToken, Task<IdentityResolutionDecision>> resolveIdentity,
+        Func<CharacterDossiers, CharacterBibleCharacterCandidate, int, CancellationToken, Task<IdentityResolutionDecision>> resolveIdentity,
         IProgress<CharacterBibleWorkflowProgress>? progress = null,
         CancellationToken cancellationToken = default)
     {
@@ -49,10 +49,11 @@ internal sealed class CharacterBibleCandidateResolutionApplier
         {
             cancellationToken.ThrowIfCancellationRequested();
             var candidate = candidates[index];
+            var candidateIndex = index + 1;
             CharacterBibleRunLogScope.Current?.Info(
                 "resolve.candidate.start",
-                $"index={index + 1} total={candidates.Count} candidateId={LogValueFormatter.ShortId(candidate.CandidateId)} name={LogValueFormatter.Quote(candidate.CanonicalName)} gender={LogValueFormatter.Quote(candidate.Gender)} aliases={LogValueFormatter.List(candidate.AliasExamples.Keys)} pointers={LogValueFormatter.List(candidate.Evidence.Select(evidence => evidence.Pointer))}");
-            var identityDecision = await resolveIdentity(session.Current, candidate, cancellationToken).ConfigureAwait(false);
+                $"candidateIndex={candidateIndex} total={candidates.Count} name={LogValueFormatter.Quote(candidate.CanonicalName)} gender={LogValueFormatter.Quote(candidate.Gender)} aliases={LogValueFormatter.List(candidate.AliasExamples.Keys)} pointers={LogValueFormatter.List(candidate.Evidence.Select(evidence => evidence.Pointer))}");
+            var identityDecision = await resolveIdentity(session.Current, candidate, candidateIndex, cancellationToken).ConfigureAwait(false);
 
             ApplyDecision(
                 session,
@@ -63,10 +64,10 @@ internal sealed class CharacterBibleCandidateResolutionApplier
             var decision = session.Decisions[^1];
             CharacterBibleRunLogScope.Current?.Info(
                 "resolve.decision",
-                $"candidateId={LogValueFormatter.ShortId(candidate.CandidateId)} name={LogValueFormatter.Quote(candidate.CanonicalName)} decision={decision.Kind.ToString().ToLowerInvariant()} entryId={LogValueFormatter.ShortId(decision.CharacterId)} entryIds={LogValueFormatter.List(decision.CandidateIds)} reason={LogValueFormatter.Quote(decision.Reason)}");
+                $"candidateIndex={candidateIndex} name={LogValueFormatter.Quote(candidate.CanonicalName)} decision={decision.Kind.ToString().ToLowerInvariant()} entryId={LogValueFormatter.ShortId(decision.CharacterId)} entryIds={LogValueFormatter.List(decision.CandidateIds)} reason={LogValueFormatter.Quote(decision.Reason)}");
             CharacterBibleRunLogScope.Current?.Info(
                 "resolve.apply",
-                $"candidateId={LogValueFormatter.ShortId(candidate.CandidateId)} characterId={LogValueFormatter.ShortId(decision.CharacterId)} decision={decision.Kind.ToString().ToLowerInvariant()} evidenceAdded={candidate.Evidence.Count}");
+                $"candidateIndex={candidateIndex} characterId={LogValueFormatter.ShortId(decision.CharacterId)} decision={decision.Kind.ToString().ToLowerInvariant()} evidenceAdded={candidate.Evidence.Count}");
             progress?.Report(new CharacterBibleWorkflowProgress(
                 "resolve",
                 $"Resolved candidate {index + 1}/{candidates.Count}: {candidate.CanonicalName} -> {session.Decisions[^1].Kind}."));
@@ -179,8 +180,7 @@ internal sealed class CharacterBibleCandidateResolutionApplier
             .Select(evidence => new CharacterEvidenceIndexEntry(
                 evidence.Pointer,
                 evidence.Excerpt,
-                decision.CharacterId,
-                candidate.CandidateId))
+                decision.CharacterId))
             .ToArray();
     }
 
@@ -189,14 +189,12 @@ internal sealed class CharacterBibleCandidateResolutionApplier
         string reason)
     {
         return new SuspectArchiveEntry(
-            candidate.CandidateId,
             candidate.CanonicalName,
             candidate.Gender,
             candidate.AliasExamples.Keys.ToArray(),
             candidate.Evidence.Select(evidence => new CharacterEvidenceIndexEntry(
                 evidence.Pointer,
-                evidence.Excerpt,
-                CandidateId: candidate.CandidateId)).ToArray(),
+                evidence.Excerpt)).ToArray(),
             reason);
     }
 
@@ -205,7 +203,6 @@ internal sealed class CharacterBibleCandidateResolutionApplier
         CharacterBibleResolverDecision decision)
     {
         return new IdentityConflictRecord(
-            candidate.CandidateId,
             candidate.CanonicalName,
             decision.CandidateIds,
             decision.Reason,

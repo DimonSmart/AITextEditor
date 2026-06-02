@@ -1,7 +1,9 @@
 using AiTextEditor.Agent.CharacterBible.Diagnostics;
 using AiTextEditor.Agent.CharacterBible.Extraction;
 using AiTextEditor.Agent.CharacterBible.Patching;
+using AiTextEditor.Agent.CharacterBible.Resolution;
 using AiTextEditor.Agent.CharacterBible;
+using AiTextEditor.Core.Model;
 using Xunit;
 
 namespace AiTextEditor.Tests;
@@ -72,6 +74,85 @@ public sealed class CharacterBibleLlmInputLoggerTests
         Assert.Contains("\"psychologicalProfile\": null", block.Body, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void CharacterBibleExtractedCandidateDiagnostics_DoNotExposeCandidateId()
+    {
+        Assert.Null(typeof(CharacterBibleCharacterCandidate).GetProperty("CandidateId"));
+        Assert.Null(typeof(SuspectArchiveEntry).GetProperty("CandidateId"));
+        Assert.Null(typeof(CharacterEvidenceIndexEntry).GetProperty("CandidateId"));
+        Assert.Null(typeof(IdentityConflictRecord).GetProperty("CandidateId"));
+    }
+
+    [Fact]
+    public async Task ResolveCandidateLogs_UseCandidateIndex()
+    {
+        var logger = new CapturingCharacterBibleRunLogger();
+        var applier = new CharacterBibleCandidateResolutionApplier(new CharacterBibleExtractionLimits());
+        var session = CharacterDossierEditSession.CreateFrom(new CharacterDossiers(
+            "test",
+            3,
+            [],
+            1));
+        var candidate = new CharacterBibleCharacterCandidate(
+            "Пончик",
+            "male",
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["Пончика"] = "Пончика позвали."
+            },
+            [new CharacterBibleCandidateEvidence("1.1.1.p3", "Пончика позвали.")]);
+
+        using (CharacterBibleRunLogScope.Push(logger))
+        {
+            await applier.ResolveAndUpdateCatalogAsync(
+                new CharacterBibleWorkflowInput(),
+                session,
+                1,
+                [candidate],
+                (_, _, _, _) => Task.FromResult(IdentityResolutionDecision.New("No archive match.")));
+        }
+
+        var messages = logger.InfoMessages.Select(message => message.Message).ToArray();
+        Assert.Contains(messages, message => message.Contains("candidateIndex=1", StringComparison.Ordinal));
+        Assert.DoesNotContain(messages, message => message.Contains("candidateId=", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public async Task DeferDecision_PreservesReadableSuspectDiagnostics()
+    {
+        var applier = new CharacterBibleCandidateResolutionApplier(new CharacterBibleExtractionLimits());
+        var session = CharacterDossierEditSession.CreateFrom(new CharacterDossiers(
+            "test",
+            3,
+            [],
+            1));
+        var candidate = new CharacterBibleCharacterCandidate(
+            "Пончик",
+            "male",
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["Пончика"] = "Пончика позвали."
+            },
+            [new CharacterBibleCandidateEvidence("1.1.1.p3", "Пончика позвали.")]);
+
+        await applier.ResolveAndUpdateCatalogAsync(
+            new CharacterBibleWorkflowInput(),
+            session,
+            1,
+            [candidate],
+            (_, _, _, _) => Task.FromResult(IdentityResolutionDecision.Defer([], "Needs more evidence.")));
+
+        var suspect = Assert.Single(session.Current.SuspectArchive!);
+        Assert.Equal("Пончик", suspect.CanonicalName);
+        Assert.Equal("male", suspect.Gender);
+        Assert.Equal(["Пончика"], suspect.Aliases);
+        Assert.Equal("Needs more evidence.", suspect.Reason);
+        var evidence = Assert.Single(suspect.Evidence);
+        Assert.Equal("1.1.1.p3", evidence.Pointer);
+        Assert.Equal("Пончика позвали.", evidence.Excerpt);
+        Assert.Null(evidence.CharacterId);
+    }
+
     private sealed class CapturingCharacterBibleRunLogger : ICharacterBibleRunLogger
     {
         public CharacterBibleRunLogContext Context { get; } = new(
@@ -83,8 +164,11 @@ public sealed class CharacterBibleLlmInputLoggerTests
 
         public List<(string EventName, string Message)> DebugMessages { get; } = [];
 
+        public List<(string EventName, string Message)> InfoMessages { get; } = [];
+
         public void Info(string eventName, string message)
         {
+            InfoMessages.Add((eventName, message));
         }
 
         public void Debug(string eventName, string message)

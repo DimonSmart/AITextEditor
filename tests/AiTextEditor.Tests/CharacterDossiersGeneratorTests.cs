@@ -128,10 +128,7 @@ public sealed class CharacterDossiersGeneratorTests
                 new CharacterBibleCandidateEvidence("1.1.1.p8", "Знайка ответил третьим."),
                 new CharacterBibleCandidateEvidence("1.1.1.p5", "Знайка вошел."),
                 new CharacterBibleCandidateEvidence("1.1.1.p6", "Знайка сказал.")
-            ])
-        {
-            CandidateId = "64b46ca7db6b"
-        };
+            ]);
 
         var input = builder.BuildPromptInput(candidate);
 
@@ -151,10 +148,7 @@ public sealed class CharacterDossiersGeneratorTests
             "Знайка",
             "unknown",
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
-            [new CharacterBibleCandidateEvidence("1.1.1.p5", "Знайка вошел.")])
-        {
-            CandidateId = "64b46ca7db6b"
-        };
+            [new CharacterBibleCandidateEvidence("1.1.1.p5", "Знайка вошел.")]);
 
         var userPrompt = builder.BuildUserPrompt(candidate);
 
@@ -181,10 +175,7 @@ public sealed class CharacterDossiersGeneratorTests
             [
                 new CharacterBibleCandidateEvidence("1.1.1.p5", "Знайка вошел."),
                 new CharacterBibleCandidateEvidence("1.1.1.p404", " ")
-            ])
-        {
-            CandidateId = "64b46ca7db6b"
-        };
+            ]);
 
         var exception = Assert.Throws<InvalidOperationException>(() => builder.BuildPromptInput(candidate));
         Assert.Contains("1.1.1.p404", exception.Message, StringComparison.Ordinal);

@@ -13,7 +13,6 @@ public sealed record CharacterDossiers(
     IReadOnlyList<CharacterBibleAuditEntry>? AuditTrail = null);
 
 public sealed record SuspectArchiveEntry(
-    string CandidateId,
     string CanonicalName,
     string Gender,
     IReadOnlyList<string> Aliases,
@@ -23,11 +22,9 @@ public sealed record SuspectArchiveEntry(
 public sealed record CharacterEvidenceIndexEntry(
     string Pointer,
     string Excerpt,
-    int? CharacterId = null,
-    string? CandidateId = null);
+    int? CharacterId = null);
 
 public sealed record IdentityConflictRecord(
-    string CandidateId,
     string CanonicalName,
     IReadOnlyList<int> AlternativeEntryIds,
     string Reason,

@@ -47,7 +47,7 @@ internal sealed class CharacterBibleCandidateExtractor
         }
 
         var candidates = new List<CharacterBibleCharacterCandidate>();
-        var seenCandidateIds = new HashSet<string>(StringComparer.Ordinal);
+        var seenCandidates = new HashSet<string>(StringComparer.Ordinal);
         var modelResponseErrors = new ModelResponseErrorStatisticsBuilder();
         var batchNumber = 0;
         foreach (var batch in paragraphBatcher.SplitParagraphs(paragraphs.Select(p => (p.Pointer, p.Text)).ToList()))
@@ -70,13 +70,13 @@ internal sealed class CharacterBibleCandidateExtractor
                     .Select(paragraph => new TextFragment(paragraph.Pointer, paragraph.Text))
                     .ToArray();
                 var batchCandidates = postProcessor.Process(hits, batchFragments, progress).ToList();
-                candidates.AddRange(batchCandidates.Where(candidate => seenCandidateIds.Add(candidate.CandidateId)));
+                candidates.AddRange(batchCandidates.Where(candidate => seenCandidates.Add(BuildCandidateDeduplicationKey(candidate))));
                 for (var candidateIndex = 0; candidateIndex < batchCandidates.Count; candidateIndex++)
                 {
                     var candidate = batchCandidates[candidateIndex];
                     CharacterBibleRunLogScope.Current?.Info(
                         "extract.candidate",
-                        $"batch={batchNumber} index={candidateIndex + 1} candidateId={LogValueFormatter.ShortId(candidate.CandidateId)} name={LogValueFormatter.Quote(candidate.CanonicalName)} gender={LogValueFormatter.Quote(candidate.Gender)} aliases={LogValueFormatter.List(candidate.AliasExamples.Keys)} pointers={LogValueFormatter.List(candidate.Evidence.Select(evidence => evidence.Pointer))}");
+                        $"batch={batchNumber} candidateIndex={candidateIndex + 1} name={LogValueFormatter.Quote(candidate.CanonicalName)} gender={LogValueFormatter.Quote(candidate.Gender)} aliases={LogValueFormatter.List(candidate.AliasExamples.Keys)} pointers={LogValueFormatter.List(candidate.Evidence.Select(evidence => evidence.Pointer))}");
                 }
 
                 CharacterBibleRunLogScope.Current?.Info(
@@ -163,6 +163,33 @@ internal sealed class CharacterBibleCandidateExtractor
             || (ex is InvalidOperationException invalidOperationException
                 && string.Equals(invalidOperationException.Message, CharacterExtractionInvalidContractError, StringComparison.Ordinal));
     }
+
+    private static string BuildCandidateDeduplicationKey(CharacterBibleCharacterCandidate candidate)
+    {
+        var aliases = string.Join(
+            "|",
+            candidate.AliasExamples.Keys
+                .Where(alias => !string.IsNullOrWhiteSpace(alias))
+                .Select(alias => alias.Trim().ToUpperInvariant())
+                .Order(StringComparer.Ordinal));
+        var pointers = string.Join(
+            "|",
+            candidate.Evidence
+                .Select(evidence => evidence.Pointer)
+                .Where(pointer => !string.IsNullOrWhiteSpace(pointer))
+                .Select(pointer => pointer.Trim())
+                .Order(StringComparer.Ordinal));
+
+        return string.Join(
+            "\u001f",
+            Normalize(candidate.CanonicalName),
+            Normalize(candidate.Gender),
+            aliases,
+            pointers);
+    }
+
+    private static string Normalize(string? value)
+        => string.IsNullOrWhiteSpace(value) ? string.Empty : value.Trim().ToUpperInvariant();
 
     private sealed class CharacterBibleModelDiagnosticProgress(
         IProgress<CharacterBibleWorkflowProgress>? progress,

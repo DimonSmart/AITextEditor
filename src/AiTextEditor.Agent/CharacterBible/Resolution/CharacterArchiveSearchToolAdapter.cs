@@ -11,19 +11,19 @@ internal sealed class CharacterArchiveSearchToolAdapter : ICharacterArchiveSearc
 
     private readonly CharacterDossiers currentArchive;
     private readonly ICharacterVectorSearchTool vectorSearchTool;
-    private readonly string? candidateId;
+    private readonly int? candidateIndex;
     private readonly string? candidateName;
     private readonly HashSet<int> observedEntryIds = [];
 
     public CharacterArchiveSearchToolAdapter(
         CharacterDossiers currentArchive,
         ICharacterVectorSearchTool vectorSearchTool,
-        string? candidateId = null,
+        int? candidateIndex = null,
         string? candidateName = null)
     {
         this.currentArchive = currentArchive ?? throw new ArgumentNullException(nameof(currentArchive));
         this.vectorSearchTool = vectorSearchTool ?? throw new ArgumentNullException(nameof(vectorSearchTool));
-        this.candidateId = candidateId;
+        this.candidateIndex = candidateIndex;
         this.candidateName = candidateName;
     }
 
@@ -39,7 +39,7 @@ internal sealed class CharacterArchiveSearchToolAdapter : ICharacterArchiveSearc
         var archiveSize = currentArchive.Characters.Count;
         CharacterBibleRunLogScope.Current?.Debug(
             "resolve.tool.search",
-            $"candidateId={LogValueFormatter.ShortId(candidateId)} name={LogValueFormatter.Quote(candidateName)} query={LogValueFormatter.Quote(query)} limit={effectiveLimit} archiveSize={archiveSize}");
+            $"candidateIndex={candidateIndex} name={LogValueFormatter.Quote(candidateName)} query={LogValueFormatter.Quote(query)} limit={effectiveLimit} archiveSize={archiveSize}");
         var hits = await vectorSearchTool.SearchAsync(
             currentArchive,
             query,
@@ -63,13 +63,13 @@ internal sealed class CharacterArchiveSearchToolAdapter : ICharacterArchiveSearc
             searchHits);
         CharacterBibleLlmInputLogger.DebugInput(
             "resolve.tool.search.result",
-            $"candidateId={LogValueFormatter.ShortId(candidateId)} returned={searchHits.Length} archiveSize={archiveSize} modelType={nameof(CharacterArchiveSearchResult)}",
+            $"candidateIndex={candidateIndex} name={LogValueFormatter.Quote(candidateName)} returned={searchHits.Length} archiveSize={archiveSize} modelType={nameof(CharacterArchiveSearchResult)}",
             result);
         foreach (var hit in searchHits)
         {
             CharacterBibleRunLogScope.Current?.Debug(
                 "resolve.search.hit",
-                $"candidateId={LogValueFormatter.ShortId(candidateId)} rank={hit.Rank} entryId={hit.EntryId} name={LogValueFormatter.Quote(hit.Name)} gender={LogValueFormatter.Quote(hit.Gender)} aliases={LogValueFormatter.List(hit.Aliases)} score={LogValueFormatter.Score(hit.Score)} summary={LogValueFormatter.Quote(LogValueFormatter.ShortText(hit.Identity))}");
+                $"candidateIndex={candidateIndex} rank={hit.Rank} entryId={hit.EntryId} name={LogValueFormatter.Quote(hit.Name)} gender={LogValueFormatter.Quote(hit.Gender)} aliases={LogValueFormatter.List(hit.Aliases)} score={LogValueFormatter.Score(hit.Score)} summary={LogValueFormatter.Quote(LogValueFormatter.ShortText(hit.Identity))}");
         }
 
         return result;

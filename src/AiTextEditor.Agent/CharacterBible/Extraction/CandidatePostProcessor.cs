@@ -1,6 +1,3 @@
-using System.Security.Cryptography;
-using System.Text;
-
 namespace AiTextEditor.Agent.CharacterBible.Extraction;
 
 internal sealed class CandidatePostProcessor
@@ -57,7 +54,7 @@ internal sealed class CandidatePostProcessor
             }
 
             var candidate = CharacterBibleExtractionMapper.ToCandidate(extractedCharacter, paragraphsByPointer);
-            candidates.Add(candidate with { CandidateId = BuildCandidateId(exactRepeatKey) });
+            candidates.Add(candidate);
         }
 
         return candidates;
@@ -84,11 +81,4 @@ internal sealed class CandidatePostProcessor
 
     private static string Normalize(string? value)
         => string.IsNullOrWhiteSpace(value) ? string.Empty : value.Trim().ToUpperInvariant();
-
-    private static string BuildCandidateId(string exactRepeatKey)
-    {
-        using var sha = SHA256.Create();
-        var bytes = sha.ComputeHash(Encoding.UTF8.GetBytes(exactRepeatKey));
-        return Convert.ToHexString(bytes)[..16].ToLowerInvariant();
-    }
 }

@@ -260,8 +260,7 @@ public sealed class CharacterDossierService
             .Select(entry => entry with
             {
                 Pointer = entry.Pointer.Trim(),
-                Excerpt = entry.Excerpt.Trim(),
-                CandidateId = string.IsNullOrWhiteSpace(entry.CandidateId) ? null : entry.CandidateId.Trim()
+                Excerpt = entry.Excerpt.Trim()
             })
             .ToList();
 

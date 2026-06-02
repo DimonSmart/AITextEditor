@@ -12,8 +12,7 @@ Each evidence item contains:
 - pointer: stable paragraph identifier;
 - text: paragraph text.
 
-Do not infer identity from omitted paragraphs or from candidateId.
-candidateId is an internal technical identifier and is not evidence.
+Do not infer identity from omitted paragraphs.
 
 You have a search tool:
 - search_characters(query, limit)

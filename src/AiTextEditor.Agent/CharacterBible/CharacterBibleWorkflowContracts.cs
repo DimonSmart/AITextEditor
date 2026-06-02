@@ -54,8 +54,6 @@ internal sealed record CharacterBibleCharacterCandidate(
     IReadOnlyDictionary<string, string> AliasExamples,
     IReadOnlyList<CharacterBibleCandidateEvidence> Evidence)
 {
-    public string CandidateId { get; init; } = string.Empty;
-
     public IReadOnlyDictionary<string, CharacterBibleCandidateEvidence> AliasEvidence { get; init; }
         = new Dictionary<string, CharacterBibleCandidateEvidence>(StringComparer.OrdinalIgnoreCase);
 }
