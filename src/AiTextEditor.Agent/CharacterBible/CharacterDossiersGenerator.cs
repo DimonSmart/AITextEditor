@@ -16,7 +16,7 @@ public sealed class CharacterDossiersGenerator
     private readonly CharacterBibleTextCollector textCollector;
     private readonly CharacterBibleCandidateExtractor candidateExtractor;
     private readonly CharacterBibleResolver resolver;
-    private readonly CharacterBibleDossierPatcher dossierPatcher;
+    private readonly CharacterBibleProfileUpdater profileUpdater;
     private readonly CharacterBibleExtractionLimits limits;
 
     public CharacterDossiersGenerator(
@@ -63,12 +63,12 @@ public sealed class CharacterDossiersGenerator
             splitCandidateModelClient,
             splitCandidatePromptBuilder,
             loggerFactory?.CreateLogger<CharacterBibleResolver>() ?? NullLogger<CharacterBibleResolver>.Instance);
-        dossierPatcher = new CharacterBibleDossierPatcher(
+        profileUpdater = new CharacterBibleProfileUpdater(
             characterProfileUpdateModelClient,
             characterProfileUpdatePromptBuilder,
             new CharacterBibleEvidenceContextExpander(documentContext),
             null,
-            loggerFactory?.CreateLogger<CharacterBibleDossierPatcher>() ?? NullLogger<CharacterBibleDossierPatcher>.Instance);
+            loggerFactory?.CreateLogger<CharacterBibleProfileUpdater>() ?? NullLogger<CharacterBibleProfileUpdater>.Instance);
     }
 
     internal IReadOnlyList<TextFragment> CollectParagraphs(
@@ -106,12 +106,12 @@ public sealed class CharacterDossiersGenerator
         return resolver.ResolveAndUpdateCatalogAsync(request, session, paragraphCount, candidates, progress, cancellationToken);
     }
 
-    internal Task<CharacterBibleDossierPatchResult> ApplyDossierPatchesAsync(
+    internal Task<CharacterBibleProfileUpdateResult> UpdateProfilesAsync(
         CharacterBibleRunState runState,
         IProgress<CharacterBibleWorkflowProgress>? progress = null,
         CancellationToken cancellationToken = default)
     {
-        return dossierPatcher.ApplyDossierPatchesAsync(runState, progress, cancellationToken);
+        return profileUpdater.UpdateProfilesAsync(runState, progress, cancellationToken);
     }
 
     internal CharacterDossiers FinishRun(CharacterBibleRunState runState)
@@ -131,7 +131,7 @@ public sealed class CharacterDossiersGenerator
         var extraction = await ExtractCandidatesAsync(paragraphs, cancellationToken: cancellationToken);
         var session = CreateEditSession();
         var runState = await ResolveCandidatesIntoCatalogAsync(new CharacterBibleWorkflowInput(), session, paragraphs.Count, extraction.Candidates, cancellationToken: cancellationToken);
-        runState = (await ApplyDossierPatchesAsync(runState, cancellationToken: cancellationToken)).RunState;
+        runState = (await UpdateProfilesAsync(runState, cancellationToken: cancellationToken)).RunState;
         return FinishRun(runState);
     }
 
@@ -155,7 +155,7 @@ public sealed class CharacterDossiersGenerator
         var extraction = await ExtractCandidatesAsync(paragraphs, cancellationToken: cancellationToken);
         var session = CreateEditSession();
         var runState = await ResolveCandidatesIntoCatalogAsync(new CharacterBibleWorkflowInput(changedPointers), session, paragraphs.Count, extraction.Candidates, cancellationToken: cancellationToken);
-        runState = (await ApplyDossierPatchesAsync(runState, cancellationToken: cancellationToken)).RunState;
+        runState = (await UpdateProfilesAsync(runState, cancellationToken: cancellationToken)).RunState;
         return FinishRun(runState);
     }
 
@@ -179,7 +179,7 @@ public sealed class CharacterDossiersGenerator
         var changedPointers = paragraphs.Select(paragraph => paragraph.Pointer).ToArray();
         var session = CreateEditSession();
         var runState = await ResolveCandidatesIntoCatalogAsync(new CharacterBibleWorkflowInput(changedPointers), session, paragraphs.Count, extraction.Candidates, cancellationToken: cancellationToken);
-        runState = (await ApplyDossierPatchesAsync(runState, cancellationToken: cancellationToken)).RunState;
+        runState = (await UpdateProfilesAsync(runState, cancellationToken: cancellationToken)).RunState;
         return FinishRun(runState);
     }
 }

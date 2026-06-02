@@ -95,6 +95,7 @@ public sealed class CharacterProfileUpdateToolAdapter
         this.context = context ?? throw new ArgumentNullException(nameof(context));
         this.store = store ?? throw new ArgumentNullException(nameof(store));
         this.statistics = statistics ?? throw new ArgumentNullException(nameof(statistics));
+        this.store.GetRequired(characterId);
     }
 
     [Description("Replaces one evidence-backed profile field for the current character.")]

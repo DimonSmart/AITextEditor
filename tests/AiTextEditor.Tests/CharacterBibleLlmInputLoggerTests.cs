@@ -32,21 +32,21 @@ public sealed class CharacterBibleLlmInputLoggerTests
     }
 
     [Fact]
-    public void DebugPatchProposalContract_ReportsExpectedShape()
+    public void DebugProfileUpdateContract_ReportsExpectedShape()
     {
         var logger = new CapturingCharacterBibleRunLogger();
-        var input = new CharacterBiblePatchProposalPromptInput(
-            new CharacterBiblePatchTarget("Пончик"),
-            new CharacterBiblePatchCurrentProfile(null, null, null, null),
-            [new CharacterBiblePatchEvidence("1.1.1.p3", "Пончик вошёл.")]);
+        var input = new CharacterProfileUpdatePromptInput(
+            new CharacterProfileUpdateTarget("Пончик"),
+            new CharacterProfileUpdateCurrentProfile(null, null, null, null),
+            [new CharacterProfileUpdateEvidence("1.1.1.p3", "Пончик вошёл.")]);
 
         using (CharacterBibleRunLogScope.Push(logger))
         {
-            CharacterBibleLlmInputLogger.DebugPatchProposalContract(input);
+            CharacterBibleLlmInputLogger.DebugProfileUpdateContract(input);
         }
 
         var diagnostic = Assert.Single(logger.DebugMessages);
-        Assert.Equal("patch.proposal.llm.input.contract", diagnostic.EventName);
+        Assert.Equal("profile.update.llm.input.contract", diagnostic.EventName);
         Assert.Contains("topLevelKeys=[\"target\", \"currentProfile\", \"newEvidence\"]", diagnostic.Message, StringComparison.Ordinal);
         Assert.Contains("forbiddenKeysFound=[]", diagnostic.Message, StringComparison.Ordinal);
         Assert.Contains("evidenceCount=1", diagnostic.Message, StringComparison.Ordinal);
@@ -57,66 +57,19 @@ public sealed class CharacterBibleLlmInputLoggerTests
     public void DebugInput_PreservesExplicitNullProfileFields()
     {
         var logger = new CapturingCharacterBibleRunLogger();
-        var input = new CharacterBiblePatchProposalPromptInput(
-            new CharacterBiblePatchTarget("Пончик"),
-            new CharacterBiblePatchCurrentProfile(null, null, null, null),
-            [new CharacterBiblePatchEvidence("1.1.1.p3", "Пончик вошёл.")]);
+        var input = new CharacterProfileUpdatePromptInput(
+            new CharacterProfileUpdateTarget("Пончик"),
+            new CharacterProfileUpdateCurrentProfile(null, null, null, null),
+            [new CharacterProfileUpdateEvidence("1.1.1.p3", "Пончик вошёл.")]);
 
         using (CharacterBibleRunLogScope.Push(logger))
         {
-            CharacterBibleLlmInputLogger.DebugInput("patch.proposal.llm.input", "characterId=c1", input);
+            CharacterBibleLlmInputLogger.DebugInput("profile.update.llm.input", "characterId=c1", input);
         }
 
         var block = Assert.Single(logger.Blocks);
         Assert.Contains("\"appearance\": null", block.Body, StringComparison.Ordinal);
         Assert.Contains("\"psychologicalProfile\": null", block.Body, StringComparison.Ordinal);
-    }
-
-    [Fact]
-    public void DossierReviewerInput_ContainsOnlyReferencedEvidence()
-    {
-        var dossier = new AiTextEditor.Core.Model.CharacterDossier(
-            "c1",
-            "Пончик",
-            [],
-            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
-            "unknown");
-        var proposal = new DossierProfileUpdateProposal
-        {
-            Status = CharacterBibleProfileUpdateStatus.Updated,
-            Profile = new CharacterBibleProfileUpdate("", "", "Боится остаться без еды.", ""),
-            Changes =
-            [
-                new CharacterBibleProfileChange(
-                    CharacterBibleProfileField.PsychologicalProfile,
-                    CharacterBibleProfileUpdateAction.Append,
-                    ["1.1.1.p4"],
-                    "Новое evidence описывает устойчивый страх.")
-            ]
-        };
-        var candidates =
-            new[]
-            {
-                new CharacterBibleDossierPatchCandidate(
-                    new CharacterBibleCharacterCandidate(
-                        "Пончик",
-                        "male",
-                        new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
-                        []),
-                    [
-                        new CharacterBibleEvidenceContext("1.1.1.p3", "", "Соседний текст.", "", []),
-                        new CharacterBibleEvidenceContext("1.1.1.p4", "", "Пончик боялся остаться без еды.", "", [])
-                    ])
-            };
-
-        var evidence = CharacterProfileUpdatePromptBuilder.BuildReferencedEvidence(candidates, proposal);
-        var input = DossierConsistencyReviewerPromptBuilder.BuildPromptInput(dossier, proposal, evidence);
-        var userPrompt = new DossierConsistencyReviewerPromptBuilder().BuildUserPrompt(input);
-
-        Assert.Single(input.Evidence);
-        Assert.Equal("1.1.1.p4", input.Evidence[0].Pointer);
-        Assert.Contains("Пончик боялся остаться без еды.", userPrompt, StringComparison.Ordinal);
-        Assert.DoesNotContain("Соседний текст.", userPrompt, StringComparison.Ordinal);
     }
 
     private sealed class CapturingCharacterBibleRunLogger : ICharacterBibleRunLogger

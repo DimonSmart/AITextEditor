@@ -167,7 +167,7 @@ public sealed class CharacterBibleWorkflowRunnerTests
     [Fact]
     public async Task RunAsync_AmbiguousCandidate_DoesNotCreateNewDossier()
     {
-        var patchClient = new CountingDossierPatchProposalModelClient();
+        var patchClient = new CountingCharacterProfileUpdateModelClient();
         var runner = CreateRunner(
             "Alex Prime arrived.",
             Response(Character(
@@ -361,7 +361,7 @@ public sealed class CharacterBibleWorkflowRunnerTests
             .ToArray();
     }
 
-    private static ICharacterProfileUpdateModelClient NoopPatchClient() => new NoopDossierPatchProposalModelClient();
+    private static ICharacterProfileUpdateModelClient NoopPatchClient() => new NoopCharacterProfileUpdateModelClient();
 
     private static ICharacterIdentityResolutionModelClient NewIdentityResolverClient()
         => new SearchBackedIdentityResolutionModelClient();
@@ -448,7 +448,7 @@ public sealed class CharacterBibleWorkflowRunnerTests
         }
     }
 
-    private sealed class NoopDossierPatchProposalModelClient : ICharacterProfileUpdateModelClient
+    private sealed class NoopCharacterProfileUpdateModelClient : ICharacterProfileUpdateModelClient
     {
         public Task<CharacterProfileUpdateCompletion> UpdateProfileAsync(
             CharacterProfileUpdateModelRequest request,
@@ -458,7 +458,7 @@ public sealed class CharacterBibleWorkflowRunnerTests
         }
     }
 
-    private sealed class CountingDossierPatchProposalModelClient : ICharacterProfileUpdateModelClient
+    private sealed class CountingCharacterProfileUpdateModelClient : ICharacterProfileUpdateModelClient
     {
         public int CallCount { get; private set; }
 
@@ -532,8 +532,4 @@ public sealed class CharacterBibleWorkflowRunnerTests
         }
     }
 }
-
-
-
-
 

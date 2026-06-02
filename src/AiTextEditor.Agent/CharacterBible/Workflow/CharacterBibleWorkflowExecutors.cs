@@ -220,7 +220,7 @@ internal sealed class PatchCharacterBibleDossiersExecutor : Executor<CharacterBi
         CharacterBibleRunLogScope.Current?.Info(
             "profile.update.start",
             $"decisionCount={runState.Catalog.Decisions.Count}");
-        var patchResult = await generator.ApplyDossierPatchesAsync(runState, progress, cancellationToken);
+        var patchResult = await generator.UpdateProfilesAsync(runState, progress, cancellationToken);
         var patchedRunState = patchResult.RunState;
         logger.LogInformation(
             "character_bible_profiles_updated: changed={Changed}, decisions={DecisionCount}",

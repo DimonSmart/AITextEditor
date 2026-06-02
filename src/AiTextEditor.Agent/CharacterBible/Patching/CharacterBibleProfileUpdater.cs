@@ -5,24 +5,24 @@ using Microsoft.Extensions.Logging;
 
 namespace AiTextEditor.Agent.CharacterBible.Patching;
 
-internal sealed record CharacterBibleDossierPatchResult(
+internal sealed record CharacterBibleProfileUpdateResult(
     CharacterBibleRunState RunState,
     CharacterProfileUpdateStatistics Statistics);
 
-internal sealed class CharacterBibleDossierPatcher
+internal sealed class CharacterBibleProfileUpdater
 {
     private readonly ICharacterProfileUpdateModelClient modelClient;
     private readonly CharacterProfileUpdatePromptBuilder promptBuilder;
     private readonly CharacterBibleEvidenceContextExpander evidenceContextExpander;
     private readonly CharacterBibleDossierPatchLimits patchLimits;
-    private readonly ILogger<CharacterBibleDossierPatcher> logger;
+    private readonly ILogger<CharacterBibleProfileUpdater> logger;
 
-    public CharacterBibleDossierPatcher(
+    public CharacterBibleProfileUpdater(
         ICharacterProfileUpdateModelClient modelClient,
         CharacterProfileUpdatePromptBuilder promptBuilder,
         CharacterBibleEvidenceContextExpander evidenceContextExpander,
         CharacterBibleDossierPatchLimits? patchLimits,
-        ILogger<CharacterBibleDossierPatcher> logger)
+        ILogger<CharacterBibleProfileUpdater> logger)
     {
         this.modelClient = modelClient ?? throw new ArgumentNullException(nameof(modelClient));
         this.promptBuilder = promptBuilder ?? throw new ArgumentNullException(nameof(promptBuilder));
@@ -31,7 +31,7 @@ internal sealed class CharacterBibleDossierPatcher
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<CharacterBibleDossierPatchResult> ApplyDossierPatchesAsync(
+    public async Task<CharacterBibleProfileUpdateResult> UpdateProfilesAsync(
         CharacterBibleRunState runState,
         IProgress<CharacterBibleWorkflowProgress>? progress = null,
         CancellationToken cancellationToken = default)
@@ -43,7 +43,7 @@ internal sealed class CharacterBibleDossierPatcher
         var processedCharacterIds = new HashSet<string>(StringComparer.Ordinal);
         if (runState.Failure is not null || runState.Candidates.Count == 0 || runState.Catalog.Decisions.Count == 0)
         {
-            return new CharacterBibleDossierPatchResult(runState, statistics);
+            return new CharacterBibleProfileUpdateResult(runState, statistics);
         }
 
         foreach (var patchGroup in BuildPatchGroups(runState))
@@ -130,7 +130,7 @@ internal sealed class CharacterBibleDossierPatcher
         progress?.Report(new CharacterBibleWorkflowProgress(
             "patch",
             $"Character profile updating finished: {statistics.ProfileFieldsChanged} field update(s) applied."));
-        return new CharacterBibleDossierPatchResult(runState, statistics);
+        return new CharacterBibleProfileUpdateResult(runState, statistics);
     }
 
     private IReadOnlyList<DossierPatchGroup> BuildPatchGroups(CharacterBibleRunState runState)

@@ -17,8 +17,6 @@ internal sealed class CharacterBibleAgentDiagnosticProgress(
         var eventPrefix = stage switch
         {
             "resolve" => "resolve",
-            "patch" when operationName.Contains("review", StringComparison.OrdinalIgnoreCase) => "patch.review",
-            "patch" when operationName.Contains("proposal", StringComparison.OrdinalIgnoreCase) => "patch.proposal",
             "split" => "split",
             _ => stage
         };
