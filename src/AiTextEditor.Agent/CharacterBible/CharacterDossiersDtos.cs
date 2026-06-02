@@ -17,7 +17,7 @@ public sealed record CharacterDossiersPayload(
     [property: JsonPropertyName("characters")] IReadOnlyList<CharacterDossierEntry> Characters);
 
 public sealed record CharacterDossierEntry(
-    [property: JsonPropertyName("id")] int Id,
+    [property: JsonPropertyName("characterId")] int CharacterId,
     [property: JsonPropertyName("name")] string Name,
     [property: JsonPropertyName("gender")] string Gender,
     [property: JsonPropertyName("importanceLevel")] int? ImportanceLevel,

@@ -122,6 +122,53 @@ public sealed class CharacterDossierIdTests
     }
 
     [Fact]
+    public void LoadFromJson_RejectsDuplicateCharacterIds()
+    {
+        var service = new CharacterDossierService("empty");
+
+        var exception = Assert.Throws<InvalidOperationException>(() => service.LoadFromJson(
+            """
+            {
+              "dossiersId": "d1",
+              "version": 3,
+              "nextCharacterId": 3,
+              "characters": [
+                {
+                  "characterId": 1,
+                  "name": "Alice",
+                  "aliases": [],
+                  "aliasExamples": {}
+                },
+                {
+                  "characterId": 1,
+                  "name": "Bob",
+                  "aliases": [],
+                  "aliasExamples": {}
+                }
+              ]
+            }
+            """));
+
+        Assert.Contains("duplicate CharacterId", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("1", exception.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void ReplaceDossiers_RejectsDuplicateCharacterIds()
+    {
+        var service = new CharacterDossierService("d1");
+
+        var exception = Assert.Throws<InvalidOperationException>(() => service.ReplaceDossiers(new CharacterDossiers(
+            "d1",
+            CharacterDossierService.CurrentVersion,
+            [Character(1, "Alice"), Character(1, "Bob")],
+            NextCharacterId: 3)));
+
+        Assert.Contains("duplicate CharacterId", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("1", exception.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void CharacterNameIndex_ReturnsEveryDuplicateNormalizedName()
     {
         var index = new CharacterNameIndex(

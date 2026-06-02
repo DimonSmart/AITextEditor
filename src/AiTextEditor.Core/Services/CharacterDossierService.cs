@@ -243,6 +243,7 @@ public sealed class CharacterDossierService
     private static CharacterDossiers NormalizeDossiers(CharacterDossiers source)
     {
         var characters = (source.Characters ?? []).Select(NormalizeDossier).ToList();
+        ValidateUniqueCharacterIds(characters);
         return source with
         {
             NextCharacterId = Math.Max(source.NextCharacterId, characters.Select(character => character.CharacterId).DefaultIfEmpty().Max() + 1),
@@ -263,6 +264,22 @@ public sealed class CharacterDossierService
                 Excerpt = entry.Excerpt.Trim()
             })
             .ToList();
+
+    private static void ValidateUniqueCharacterIds(IReadOnlyCollection<CharacterDossier> characters)
+    {
+        var duplicateIds = characters
+            .GroupBy(character => character.CharacterId)
+            .Where(group => group.Count() > 1)
+            .Select(group => group.Key)
+            .OrderBy(id => id)
+            .ToArray();
+
+        if (duplicateIds.Length > 0)
+        {
+            throw new InvalidOperationException(
+                $"Character dossiers contain duplicate CharacterId values: {string.Join(", ", duplicateIds)}.");
+        }
+    }
 
     private static CharacterDossier Merge(
         CharacterDossier existing,
