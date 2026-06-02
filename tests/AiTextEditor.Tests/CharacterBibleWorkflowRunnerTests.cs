@@ -458,14 +458,15 @@ public sealed class CharacterBibleWorkflowRunnerTests
 
     private sealed class NoopDossierPatchProposalModelClient : IDossierPatchProposalModelClient
     {
-        public Task<DossierPatchProposal> ProposePatchAsync(
+        public Task<DossierProfileUpdateProposal> ProposePatchAsync(
             DossierPatchProposalModelRequest request,
             CancellationToken cancellationToken = default)
         {
-            return Task.FromResult(new DossierPatchProposal
+            return Task.FromResult(new DossierProfileUpdateProposal
             {
-                Status = CharacterBiblePatchProposalStatus.NoUsefulChanges,
-                Additions = []
+                Status = CharacterBibleProfileUpdateStatus.NoUsefulChanges,
+                Profile = new CharacterBibleProfileUpdate("", "", "", ""),
+                Changes = []
             });
         }
     }
@@ -474,15 +475,16 @@ public sealed class CharacterBibleWorkflowRunnerTests
     {
         public int CallCount { get; private set; }
 
-        public Task<DossierPatchProposal> ProposePatchAsync(
+        public Task<DossierProfileUpdateProposal> ProposePatchAsync(
             DossierPatchProposalModelRequest request,
             CancellationToken cancellationToken = default)
         {
             CallCount++;
-            return Task.FromResult(new DossierPatchProposal
+            return Task.FromResult(new DossierProfileUpdateProposal
             {
-                Status = CharacterBiblePatchProposalStatus.NoUsefulChanges,
-                Additions = []
+                Status = CharacterBibleProfileUpdateStatus.NoUsefulChanges,
+                Profile = new CharacterBibleProfileUpdate("", "", "", ""),
+                Changes = []
             });
         }
     }

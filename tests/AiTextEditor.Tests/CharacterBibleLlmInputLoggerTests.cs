@@ -81,15 +81,17 @@ public sealed class CharacterBibleLlmInputLoggerTests
             [],
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
             "unknown");
-        var proposal = new DossierPatchProposal
+        var proposal = new DossierProfileUpdateProposal
         {
-            Status = CharacterBiblePatchProposalStatus.Ready,
-            Additions =
+            Status = CharacterBibleProfileUpdateStatus.Updated,
+            Profile = new CharacterBibleProfileUpdate("", "", "Боится остаться без еды.", ""),
+            Changes =
             [
-                new CharacterBibleProfileAddition(
+                new CharacterBibleProfileChange(
                     CharacterBibleProfileField.PsychologicalProfile,
-                    "Боится остаться без еды.",
-                    ["1.1.1.p4"])
+                    CharacterBibleProfileUpdateAction.Append,
+                    ["1.1.1.p4"],
+                    "Новое evidence описывает устойчивый страх.")
             ]
         };
         var candidates =

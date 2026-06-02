@@ -40,8 +40,8 @@ If this index conflicts with a numbered document, trust the numbered document.
 | 0036 | spec | Search character candidate result metadata | Make `search_characters` expose vector results as comparison candidates with archive metadata and ranked hits. | 0032, 0033, 0034, 0035 |
 | 0037 | spec | LLM contract rules | Define practical rules for minimal typed LLM input/output contracts, projection models, nullable fields, IDs, and schema strictness. | 0006, 0021, 0033, 0036 |
 | 0038 | spec | Resolver evidence prompt contract | Make the identity resolver prompt expose one materialized `evidence` list and remove candidate-level `pointers`. | 0029, 0037 |
-| 0039 | spec | Compact dossier patch contract | Make dossier patch proposal and review prompts use compact evidence-backed contracts and apply profile facts as atomic additions. | 0026, 0029, 0037, 0038 |
 | 0040 | spec | LLM-facing input diagnostics | Log dynamic Character Bible LLM input DTOs without full prompts or static instruction noise. | 0035, 0037, 0038, 0039 |
+| 0041 | spec | Dossier profile update contract | Make dossier patch proposals return and apply a concise current four-field profile with evidence-backed update explanations. | 0026, 0029, 0037, 0038, 0040 |
 
 ## Archived documents
 
@@ -58,6 +58,7 @@ Read archived documents only when a current document references them through `Re
 | 0025 | spec | Character candidate extraction contract | Earlier pointer-backed local candidate extraction contract before compact extraction replaced it. | 0033 |
 | 0027 | spec | Character Bible resolver split | Earlier deterministic resolver split before the tool-based resolver replaced the active path. | 0033 |
 | 0028 | spec | Character Bible full agent pipeline | Earlier full agent pipeline shape before compact extraction and tool resolution replaced it. | 0033 |
+| 0039 | spec | Compact dossier patch contract | Earlier compact additions-only dossier patch contract before full profile updates replaced append-only apply. | 0041 |
 
 ## Maintenance
 

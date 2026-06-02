@@ -71,7 +71,7 @@ internal sealed class CharacterBibleDossierPatcher
                 "patch",
                 $"Proposing dossier patch for {dossier.Name} from {patchGroup.Candidates.Count} candidate evidence group(s)."));
 
-            DossierPatchProposal proposal;
+            DossierProfileUpdateProposal proposal;
             try
             {
                 var promptInput = DossierPatchPromptBuilder.BuildPromptInput(patchGroup.Candidates, dossier);
@@ -110,9 +110,9 @@ internal sealed class CharacterBibleDossierPatcher
 
             CharacterBibleRunLogScope.Current?.Info(
                 "patch.proposal.result",
-                $"characterId={dossier.CharacterId} status={LogValueFormatter.Quote(proposal.Status?.ToString())} additions={proposal.Additions?.Count ?? 0} changedFields={LogValueFormatter.List(GetChangedProfileFields(proposal.Additions))}");
+                $"characterId={dossier.CharacterId} status={LogValueFormatter.Quote(proposal.Status?.ToString())} changes={proposal.Changes?.Count ?? 0} changedFields={LogValueFormatter.List(GetChangedProfileFields(proposal.Changes))}");
             var newEvidence = DossierPatchPromptBuilder.BuildEvidence(patchGroup.Candidates);
-            var validationIssues = ValidateProposal(proposal, newEvidence);
+            var validationIssues = ValidateProposal(dossier.Profile, proposal, newEvidence);
             if (validationIssues.Count > 0)
             {
                 CharacterBibleRunLogScope.Current?.Warning(
@@ -124,7 +124,7 @@ internal sealed class CharacterBibleDossierPatcher
                 continue;
             }
 
-            if (proposal.Status != CharacterBiblePatchProposalStatus.Ready)
+            if (proposal.Status != CharacterBibleProfileUpdateStatus.Updated)
             {
                 CharacterBibleRunLogScope.Current?.Info(
                     "patch.apply.skipped",
@@ -137,7 +137,7 @@ internal sealed class CharacterBibleDossierPatcher
 
             progress?.Report(new CharacterBibleWorkflowProgress(
                 "patch",
-                $"Patch proposal for {dossier.Name}: ready. Reviewing patch."));
+                $"Patch proposal for {dossier.Name}: updated. Reviewing patch."));
             var review = await ReviewPatchAsync(dossier, patchGroup.Candidates, proposal, progress, cancellationToken);
             CharacterBibleRunLogScope.Current?.Info(
                 "patch.review.result",
@@ -153,7 +153,7 @@ internal sealed class CharacterBibleDossierPatcher
                 continue;
             }
 
-            var mergedProfile = MergeProfileAdditions(dossier.Profile, proposal.Additions ?? []);
+            var mergedProfile = ToCharacterProfile(proposal.Profile!);
             var profileChanged = !CharacterProfile.HasSameContent(dossier.Profile, mergedProfile);
             if (!profileChanged)
             {
@@ -162,7 +162,7 @@ internal sealed class CharacterBibleDossierPatcher
                     $"characterId={dossier.CharacterId} name={LogValueFormatter.Quote(dossier.Name)}");
                 progress?.Report(new CharacterBibleWorkflowProgress(
                     "patch",
-                    $"Patch review for {dossier.Name}: approved; no local changes after merge."));
+                    $"Patch review for {dossier.Name}: approved; no local profile changes."));
                 continue;
             }
 
@@ -173,7 +173,7 @@ internal sealed class CharacterBibleDossierPatcher
             appliedCount++;
             CharacterBibleRunLogScope.Current?.Info(
                 "patch.apply",
-                $"characterId={dossier.CharacterId} name={LogValueFormatter.Quote(dossier.Name)} profileFieldsUpdated={LogValueFormatter.List(GetChangedProfileFields(proposal.Additions))}");
+                $"characterId={dossier.CharacterId} name={LogValueFormatter.Quote(dossier.Name)} profileFieldsUpdated={LogValueFormatter.List(GetChangedProfileFields(proposal.Changes))}");
             progress?.Report(new CharacterBibleWorkflowProgress(
                 "patch",
                 $"Patch applied for {dossier.Name}."));
@@ -192,7 +192,7 @@ internal sealed class CharacterBibleDossierPatcher
     private async Task<DossierReviewResult> ReviewPatchAsync(
         CharacterDossier dossier,
         IReadOnlyList<CharacterBibleDossierPatchCandidate> candidates,
-        DossierPatchProposal proposal,
+        DossierProfileUpdateProposal proposal,
         IProgress<CharacterBibleWorkflowProgress>? progress,
         CancellationToken cancellationToken)
     {
@@ -337,128 +337,84 @@ internal sealed class CharacterBibleDossierPatcher
     private static int GetUtf8ByteCount(string? value)
         => string.IsNullOrEmpty(value) ? 0 : Encoding.UTF8.GetByteCount(value);
 
-    private static IReadOnlyList<string> GetChangedProfileFields(IReadOnlyList<CharacterBibleProfileAddition>? additions)
+    private static IReadOnlyList<string> GetChangedProfileFields(IReadOnlyList<CharacterBibleProfileChange>? changes)
     {
-        if (additions is null || additions.Count == 0)
+        if (changes is null || changes.Count == 0)
         {
             return [];
         }
 
-        return additions
-            .Where(addition => addition.Field is not null)
-            .Select(addition => ToProfileFieldName(addition.Field!.Value))
+        return changes
+            .Where(change => change.Field is not null)
+            .Select(change => ToProfileFieldName(change.Field!.Value))
             .Distinct(StringComparer.Ordinal)
             .ToArray();
     }
 
-    private static CharacterProfile MergeProfileAdditions(
-        CharacterProfile? existing,
-        IReadOnlyList<CharacterBibleProfileAddition> additions)
-    {
-        var normalizedExisting = CharacterProfile.Normalize(existing);
-        var appearance = normalizedExisting.Appearance;
-        var statusAndCompetence = normalizedExisting.StatusAndCompetence;
-        var psychologicalProfile = normalizedExisting.PsychologicalProfile;
-        var speechAndCommunication = normalizedExisting.SpeechAndCommunication;
-
-        foreach (var addition in additions)
-        {
-            var text = NullIfWhiteSpace(addition.Text);
-            if (text is null || addition.Field is null)
-            {
-                continue;
-            }
-
-            switch (addition.Field.Value)
-            {
-                case CharacterBibleProfileField.Appearance:
-                    appearance = MergeProfileField(appearance, text);
-                    break;
-                case CharacterBibleProfileField.StatusAndCompetence:
-                    statusAndCompetence = MergeProfileField(statusAndCompetence, text);
-                    break;
-                case CharacterBibleProfileField.PsychologicalProfile:
-                    psychologicalProfile = MergeProfileField(psychologicalProfile, text);
-                    break;
-                case CharacterBibleProfileField.SpeechAndCommunication:
-                    speechAndCommunication = MergeProfileField(speechAndCommunication, text);
-                    break;
-                default:
-                    throw new InvalidOperationException($"Unsupported profile field '{addition.Field}'.");
-            }
-        }
-
-        return CharacterProfile.Normalize(new CharacterProfile(
-            appearance,
-            statusAndCompetence,
-            psychologicalProfile,
-            speechAndCommunication));
-    }
-
-    private static string MergeProfileField(string existing, string? addition)
-    {
-        var normalizedAddition = NullIfWhiteSpace(addition);
-        if (normalizedAddition is null)
-        {
-            return existing;
-        }
-
-        if (string.IsNullOrWhiteSpace(existing))
-        {
-            return normalizedAddition;
-        }
-
-        if (ContainsProfileText(existing, normalizedAddition))
-        {
-            return existing;
-        }
-
-        if (ContainsProfileText(normalizedAddition, existing))
-        {
-            return normalizedAddition;
-        }
-
-        var separator = EndsWithSentencePunctuation(existing) ? " " : "; ";
-        return existing + separator + normalizedAddition;
-    }
-
-    private static string? NullIfWhiteSpace(string? value)
-        => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
-
-    private static bool ContainsProfileText(string text, string fragment)
-        => text.IndexOf(fragment, StringComparison.OrdinalIgnoreCase) >= 0;
-
-    private static bool EndsWithSentencePunctuation(string value)
-        => value.Length > 0 && value[^1] is '.' or '!' or '?';
-
     private static IReadOnlyList<string> ValidateProposal(
-        DossierPatchProposal proposal,
+        CharacterProfile? currentProfile,
+        DossierProfileUpdateProposal proposal,
         IReadOnlyList<CharacterBiblePatchEvidence> newEvidence)
     {
         var issues = new List<string>();
+        var proposedProfile = proposal.Profile is null ? null : ToCharacterProfile(proposal.Profile);
         var allowedPointers = newEvidence
             .Select(evidence => evidence.Pointer)
             .ToHashSet(StringComparer.Ordinal);
 
-        if (proposal.Status == CharacterBiblePatchProposalStatus.Ready && proposal.Additions?.Count == 0)
+        if (proposal.Profile is null)
         {
-            issues.Add("ready proposal has no additions");
+            issues.Add("proposal has no profile");
+        }
+        else if (proposal.Status == CharacterBibleProfileUpdateStatus.NoUsefulChanges
+                 && !CharacterProfile.HasSameContent(currentProfile, proposedProfile))
+        {
+            issues.Add("noUsefulChanges proposal changes the profile");
+        }
+        else if (proposal.Status == CharacterBibleProfileUpdateStatus.Updated
+                 && CharacterProfile.HasSameContent(currentProfile, proposedProfile))
+        {
+            issues.Add("updated proposal does not change the profile");
         }
 
-        if (proposal.Status == CharacterBiblePatchProposalStatus.NoUsefulChanges && proposal.Additions?.Count > 0)
+        if (proposedProfile is not null)
         {
-            issues.Add("noUsefulChanges proposal has additions");
-        }
+            var changedFields = GetChangedProfileFields(currentProfile, proposedProfile);
+            var describedFields = (proposal.Changes ?? [])
+                .Where(change => change.Field is not null)
+                .Select(change => change.Field!.Value)
+                .ToHashSet();
 
-        foreach (var addition in proposal.Additions ?? [])
-        {
-            if (addition.EvidencePointers is null || addition.EvidencePointers.Count == 0)
+            foreach (var field in changedFields.Except(describedFields))
             {
-                issues.Add("addition is missing evidence pointers");
+                issues.Add($"changed profile field is not described: {field}");
+            }
+
+            foreach (var field in describedFields.Except(changedFields))
+            {
+                issues.Add($"change describes unchanged profile field: {field}");
+            }
+        }
+
+        if (proposal.Status == CharacterBibleProfileUpdateStatus.Updated && proposal.Changes?.Count == 0)
+        {
+            issues.Add("updated proposal has no changes");
+        }
+
+        if (proposal.Status == CharacterBibleProfileUpdateStatus.NoUsefulChanges && proposal.Changes?.Count > 0)
+        {
+            issues.Add("noUsefulChanges proposal has changes");
+        }
+
+        foreach (var change in proposal.Changes ?? [])
+        {
+            if (change.EvidencePointers is null || change.EvidencePointers.Count == 0)
+            {
+                issues.Add("change is missing evidence pointers");
                 continue;
             }
 
-            foreach (var pointer in addition.EvidencePointers)
+            foreach (var pointer in change.EvidencePointers)
             {
                 if (!allowedPointers.Contains(pointer))
                 {
@@ -468,6 +424,40 @@ internal sealed class CharacterBibleDossierPatcher
         }
 
         return issues;
+    }
+
+    private static CharacterProfile ToCharacterProfile(CharacterBibleProfileUpdate profile)
+        => CharacterProfile.Normalize(new CharacterProfile(
+            profile.Appearance ?? string.Empty,
+            profile.StatusAndCompetence ?? string.Empty,
+            profile.PsychologicalProfile ?? string.Empty,
+            profile.SpeechAndCommunication ?? string.Empty));
+
+    private static IReadOnlySet<CharacterBibleProfileField> GetChangedProfileFields(
+        CharacterProfile? currentProfile,
+        CharacterProfile proposedProfile)
+    {
+        var current = CharacterProfile.Normalize(currentProfile);
+        var fields = new HashSet<CharacterBibleProfileField>();
+
+        AddChangedField(fields, CharacterBibleProfileField.Appearance, current.Appearance, proposedProfile.Appearance);
+        AddChangedField(fields, CharacterBibleProfileField.StatusAndCompetence, current.StatusAndCompetence, proposedProfile.StatusAndCompetence);
+        AddChangedField(fields, CharacterBibleProfileField.PsychologicalProfile, current.PsychologicalProfile, proposedProfile.PsychologicalProfile);
+        AddChangedField(fields, CharacterBibleProfileField.SpeechAndCommunication, current.SpeechAndCommunication, proposedProfile.SpeechAndCommunication);
+
+        return fields;
+    }
+
+    private static void AddChangedField(
+        ISet<CharacterBibleProfileField> fields,
+        CharacterBibleProfileField field,
+        string currentValue,
+        string proposedValue)
+    {
+        if (!string.Equals(currentValue, proposedValue, StringComparison.Ordinal))
+        {
+            fields.Add(field);
+        }
     }
 
     private static IReadOnlyList<string> FormatReviewIssues(IReadOnlyList<CharacterBiblePatchReviewIssue> issues)

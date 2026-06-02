@@ -72,13 +72,13 @@ public sealed class DossierPatchPromptBuilder
 
     internal static IReadOnlyList<CharacterBiblePatchEvidence> BuildReferencedEvidence(
         IReadOnlyList<CharacterBibleDossierPatchCandidate> candidates,
-        DossierPatchProposal proposal)
+        DossierProfileUpdateProposal proposal)
     {
         ArgumentNullException.ThrowIfNull(candidates);
         ArgumentNullException.ThrowIfNull(proposal);
 
-        var referencedPointers = (proposal.Additions ?? [])
-            .SelectMany(addition => addition.EvidencePointers ?? [])
+        var referencedPointers = (proposal.Changes ?? [])
+            .SelectMany(change => change.EvidencePointers ?? [])
             .Where(pointer => !string.IsNullOrWhiteSpace(pointer))
             .ToHashSet(StringComparer.Ordinal);
 

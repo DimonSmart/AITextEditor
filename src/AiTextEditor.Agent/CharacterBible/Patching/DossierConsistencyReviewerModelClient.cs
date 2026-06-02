@@ -48,7 +48,7 @@ public enum CharacterBiblePatchReviewIssueCode
     PointerNotInEvidence,
     DuplicatesExistingFact,
     WrongCharacter,
-    AttemptsToReplaceExistingField
+    ChangesUnaffectedField
 }
 
 public sealed record CharacterBiblePatchReviewIssue(
@@ -76,7 +76,7 @@ public sealed class DossierConsistencyReviewerPromptBuilder
 
     internal string BuildUserPrompt(
         CharacterDossier dossierBefore,
-        DossierPatchProposal patchProposal,
+        DossierProfileUpdateProposal patchProposal,
         IReadOnlyList<CharacterBiblePatchEvidence> evidence)
     {
         ArgumentNullException.ThrowIfNull(dossierBefore);
@@ -95,7 +95,7 @@ public sealed class DossierConsistencyReviewerPromptBuilder
 
     internal static DossierReviewPromptInput BuildPromptInput(
         CharacterDossier dossierBefore,
-        DossierPatchProposal patchProposal,
+        DossierProfileUpdateProposal patchProposal,
         IReadOnlyList<CharacterBiblePatchEvidence> evidence)
     {
         ArgumentNullException.ThrowIfNull(dossierBefore);
@@ -140,7 +140,7 @@ public sealed class DossierConsistencyReviewerPromptBuilder
 internal sealed record DossierReviewPromptInput(
     CharacterBiblePatchTarget Target,
     CharacterBiblePatchCurrentProfile CurrentProfile,
-    DossierPatchProposal Proposal,
+    DossierProfileUpdateProposal Proposal,
     IReadOnlyList<CharacterBiblePatchEvidence> Evidence);
 
 public sealed class AgenticDossierConsistencyReviewerModelClient : IDossierConsistencyReviewerModelClient

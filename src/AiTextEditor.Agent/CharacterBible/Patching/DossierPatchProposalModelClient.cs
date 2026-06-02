@@ -7,7 +7,7 @@ namespace AiTextEditor.Agent.CharacterBible.Patching;
 
 public interface IDossierPatchProposalModelClient
 {
-    Task<DossierPatchProposal> ProposePatchAsync(
+    Task<DossierProfileUpdateProposal> ProposePatchAsync(
         DossierPatchProposalModelRequest request,
         CancellationToken cancellationToken = default);
 }
@@ -17,14 +17,14 @@ public sealed record DossierPatchProposalModelRequest(
     string UserPrompt,
     IProgress<AgenticModelDiagnostic>? Diagnostics = null);
 
-[JsonConverter(typeof(JsonStringEnumConverter<CharacterBiblePatchProposalStatus>))]
-public enum CharacterBiblePatchProposalStatus
+[JsonConverter(typeof(JsonStringEnumConverter<CharacterBibleProfileUpdateStatus>))]
+public enum CharacterBibleProfileUpdateStatus
 {
-    [JsonStringEnumMemberName("ready")]
-    Ready,
-
     [JsonStringEnumMemberName("noUsefulChanges")]
-    NoUsefulChanges
+    NoUsefulChanges,
+
+    [JsonStringEnumMemberName("updated")]
+    Updated
 }
 
 [JsonConverter(typeof(JsonStringEnumConverter<CharacterBibleProfileField>))]
@@ -36,24 +36,50 @@ public enum CharacterBibleProfileField
     SpeechAndCommunication
 }
 
-public sealed class DossierPatchProposal
+[JsonConverter(typeof(JsonStringEnumConverter<CharacterBibleProfileUpdateAction>))]
+public enum CharacterBibleProfileUpdateAction
+{
+    [JsonStringEnumMemberName("append")]
+    Append,
+
+    [JsonStringEnumMemberName("replace")]
+    Replace
+}
+
+public sealed class DossierProfileUpdateProposal
 {
     [JsonRequired]
     [JsonPropertyName("status")]
-    public CharacterBiblePatchProposalStatus? Status { get; init; }
+    public CharacterBibleProfileUpdateStatus? Status { get; init; }
 
     [JsonRequired]
-    [JsonPropertyName("additions")]
-    public List<CharacterBibleProfileAddition>? Additions { get; init; }
+    [JsonPropertyName("profile")]
+    public CharacterBibleProfileUpdate? Profile { get; init; }
+
+    [JsonRequired]
+    [JsonPropertyName("changes")]
+    public List<CharacterBibleProfileChange>? Changes { get; init; }
 }
 
-public sealed record CharacterBibleProfileAddition(
+public sealed record CharacterBibleProfileUpdate(
+    [property: JsonRequired]
+    [property: JsonPropertyName("appearance")] string? Appearance,
+    [property: JsonRequired]
+    [property: JsonPropertyName("statusAndCompetence")] string? StatusAndCompetence,
+    [property: JsonRequired]
+    [property: JsonPropertyName("psychologicalProfile")] string? PsychologicalProfile,
+    [property: JsonRequired]
+    [property: JsonPropertyName("speechAndCommunication")] string? SpeechAndCommunication);
+
+public sealed record CharacterBibleProfileChange(
     [property: JsonRequired]
     [property: JsonPropertyName("field")] CharacterBibleProfileField? Field,
     [property: JsonRequired]
-    [property: JsonPropertyName("text")] string? Text,
+    [property: JsonPropertyName("action")] CharacterBibleProfileUpdateAction? Action,
     [property: JsonRequired]
-    [property: JsonPropertyName("evidencePointers")] List<string>? EvidencePointers);
+    [property: JsonPropertyName("evidencePointers")] List<string>? EvidencePointers,
+    [property: JsonRequired]
+    [property: JsonPropertyName("reason")] string? Reason);
 
 public sealed class AgenticDossierPatchProposalModelClient : IDossierPatchProposalModelClient
 {
@@ -68,7 +94,7 @@ public sealed class AgenticDossierPatchProposalModelClient : IDossierPatchPropos
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<DossierPatchProposal> ProposePatchAsync(
+    public async Task<DossierProfileUpdateProposal> ProposePatchAsync(
         DossierPatchProposalModelRequest request,
         CancellationToken cancellationToken = default)
     {
@@ -76,8 +102,8 @@ public sealed class AgenticDossierPatchProposalModelClient : IDossierPatchPropos
         ArgumentException.ThrowIfNullOrWhiteSpace(request.SystemPrompt);
         ArgumentException.ThrowIfNullOrWhiteSpace(request.UserPrompt);
 
-        var proposal = await modelClient.RunAsync<DossierPatchProposal>(
-            new AgenticModelRequest<DossierPatchProposal>(
+        var proposal = await modelClient.RunAsync<DossierProfileUpdateProposal>(
+            new AgenticModelRequest<DossierProfileUpdateProposal>(
                 [
                     new ChatMessage(ChatRole.System, request.SystemPrompt),
                     new ChatMessage(ChatRole.User, request.UserPrompt)
@@ -90,14 +116,14 @@ public sealed class AgenticDossierPatchProposalModelClient : IDossierPatchPropos
         return proposal;
     }
 
-    private static AgenticModelValidationResult ValidateResponseContract(DossierPatchProposal proposal)
+    private static AgenticModelValidationResult ValidateResponseContract(DossierProfileUpdateProposal proposal)
     {
         return IsValidResponseContract(proposal, out var error)
             ? AgenticModelValidationResult.Valid
             : AgenticModelValidationResult.Invalid(error);
     }
 
-    private static bool IsValidResponseContract(DossierPatchProposal proposal, out string error)
+    private static bool IsValidResponseContract(DossierProfileUpdateProposal proposal, out string error)
     {
         if (proposal.Status is null)
         {
@@ -105,54 +131,75 @@ public sealed class AgenticDossierPatchProposalModelClient : IDossierPatchPropos
             return false;
         }
 
-        if (proposal.Additions is null)
+        if (proposal.Profile is null)
         {
-            error = "additions is required.";
+            error = "profile is required.";
             return false;
         }
 
-        if (proposal.Status == CharacterBiblePatchProposalStatus.NoUsefulChanges && proposal.Additions.Count > 0)
+        if (proposal.Profile.Appearance is null
+            || proposal.Profile.StatusAndCompetence is null
+            || proposal.Profile.PsychologicalProfile is null
+            || proposal.Profile.SpeechAndCommunication is null)
         {
-            error = "additions must be empty when status is noUsefulChanges.";
+            error = "profile must contain all four fields.";
             return false;
         }
 
-        if (proposal.Status == CharacterBiblePatchProposalStatus.Ready && proposal.Additions.Count == 0)
+        if (proposal.Changes is null)
         {
-            error = "additions must not be empty when status is ready.";
+            error = "changes is required.";
             return false;
         }
 
-        for (var index = 0; index < proposal.Additions.Count; index++)
+        if (proposal.Status == CharacterBibleProfileUpdateStatus.NoUsefulChanges && proposal.Changes.Count > 0)
         {
-            var addition = proposal.Additions[index];
-            if (addition.Field is null)
+            error = "changes must be empty when status is noUsefulChanges.";
+            return false;
+        }
+
+        if (proposal.Status == CharacterBibleProfileUpdateStatus.Updated && proposal.Changes.Count == 0)
+        {
+            error = "changes must not be empty when status is updated.";
+            return false;
+        }
+
+        for (var index = 0; index < proposal.Changes.Count; index++)
+        {
+            var change = proposal.Changes[index];
+            if (change.Field is null)
             {
-                error = $"additions[{index}].field is required.";
+                error = $"changes[{index}].field is required.";
                 return false;
             }
 
-            if (string.IsNullOrWhiteSpace(addition.Text))
+            if (change.Action is null)
             {
-                error = $"additions[{index}].text is required.";
+                error = $"changes[{index}].action is required.";
                 return false;
             }
 
-            if (addition.EvidencePointers is null)
+            if (change.EvidencePointers is null)
             {
-                error = $"additions[{index}].evidencePointers is required.";
+                error = $"changes[{index}].evidencePointers is required.";
                 return false;
             }
 
-            if (addition.EvidencePointers.Count == 0)
+            if (change.EvidencePointers.Count == 0)
             {
-                error = $"additions[{index}].evidencePointers must not be empty.";
+                error = $"changes[{index}].evidencePointers must not be empty.";
                 return false;
             }
 
-            if (addition.EvidencePointers.Any(string.IsNullOrWhiteSpace))
+            if (change.EvidencePointers.Any(string.IsNullOrWhiteSpace))
             {
-                error = $"additions[{index}].evidencePointers must not contain empty values.";
+                error = $"changes[{index}].evidencePointers must not contain empty values.";
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(change.Reason))
+            {
+                error = $"changes[{index}].reason is required.";
                 return false;
             }
         }
