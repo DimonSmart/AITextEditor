@@ -36,8 +36,6 @@ internal static class CharacterBibleLlmInputLogger
                 "characterId",
                 "identityDecision",
                 "candidateIds",
-                "entryId",
-                "entryIds",
                 "aliases"
             ],
             StringComparer.OrdinalIgnoreCase);

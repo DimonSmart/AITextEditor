@@ -62,6 +62,6 @@ Do not invent facts.
 
 Return JSON object:
 - decision: "existing", "new", "ambiguous", "identity_conflict", or "defer".
-- entryId: required only for "existing".
-- entryIds: required for "ambiguous" and "identity_conflict".
+- characterId: required only for "existing".
+- characterIds: required for "ambiguous" and "identity_conflict".
 - reason: optional short diagnostic text.

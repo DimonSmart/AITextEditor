@@ -87,20 +87,63 @@ public sealed class CharacterDossierIdTests
     }
 
     [Fact]
-    public void LoadFromJson_RejectsMissingNextCharacterId()
+    public void LoadFromJson_MissingNextCharacterId_MigratesFromMaxCharacterId()
     {
         var service = new CharacterDossierService("empty");
 
-        var exception = Assert.Throws<InvalidOperationException>(() => service.LoadFromJson(
+        service.LoadFromJson(
+            """
+            {
+              "dossiersId": "d1",
+              "version": 3,
+              "characters": [
+                {
+                  "characterId": 5,
+                  "name": "Alice",
+                  "aliases": [],
+                  "aliasExamples": {}
+                }
+              ]
+            }
+            """);
+
+        Assert.Equal(6, service.GetDossiers().NextCharacterId);
+    }
+
+    [Fact]
+    public void LoadFromJson_MissingNextCharacterId_UsesOneForEmptyArchive()
+    {
+        var service = new CharacterDossierService("empty");
+
+        service.LoadFromJson(
             """
             {
               "dossiersId": "d1",
               "version": 3,
               "characters": []
             }
-            """));
+            """);
 
-        Assert.Equal("Character dossiers JSON must contain nextCharacterId.", exception.Message);
+        Assert.Equal(1, service.GetDossiers().NextCharacterId);
+    }
+
+    [Fact]
+    public void SaveToJson_LoadFromJson_PreservesAdvancedNextCharacterId()
+    {
+        var source = new CharacterDossierService("d1");
+        source.ReplaceDossiers(new CharacterDossiers(
+            "d1",
+            CharacterDossierService.CurrentVersion,
+            [Character(1, "Alice"), Character(2, "Bob"), Character(3, "Charlie")],
+            NextCharacterId: 6));
+
+        var character = source.CreateCharacter(Draft("Dora"));
+        var target = new CharacterDossierService("empty");
+        target.LoadFromJson(source.SaveToJson());
+
+        Assert.Equal(6, character.CharacterId);
+        Assert.Equal(7, source.GetDossiers().NextCharacterId);
+        Assert.Equal(7, target.GetDossiers().NextCharacterId);
     }
 
     [Fact]

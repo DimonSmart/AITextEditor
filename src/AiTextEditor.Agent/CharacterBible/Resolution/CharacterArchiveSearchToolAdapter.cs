@@ -13,7 +13,7 @@ internal sealed class CharacterArchiveSearchToolAdapter : ICharacterArchiveSearc
     private readonly ICharacterVectorSearchTool vectorSearchTool;
     private readonly int? candidateIndex;
     private readonly string? candidateName;
-    private readonly HashSet<int> observedEntryIds = [];
+    private readonly HashSet<int> observedCharacterIds = [];
 
     public CharacterArchiveSearchToolAdapter(
         CharacterDossiers currentArchive,
@@ -27,7 +27,7 @@ internal sealed class CharacterArchiveSearchToolAdapter : ICharacterArchiveSearc
         this.candidateName = candidateName;
     }
 
-    public IReadOnlySet<int> ObservedEntryIds => observedEntryIds;
+    public IReadOnlySet<int> ObservedCharacterIds => observedCharacterIds;
 
     [Description(CharacterArchiveSearchToolDescriptions.Tool)]
     public async Task<CharacterArchiveSearchResult> SearchCharactersAsync(
@@ -51,7 +51,7 @@ internal sealed class CharacterArchiveSearchToolAdapter : ICharacterArchiveSearc
             .ToArray();
         foreach (var hit in searchHits)
         {
-            observedEntryIds.Add(hit.EntryId);
+            observedCharacterIds.Add(hit.CharacterId);
         }
 
         var result = new CharacterArchiveSearchResult(
@@ -69,7 +69,7 @@ internal sealed class CharacterArchiveSearchToolAdapter : ICharacterArchiveSearc
         {
             CharacterBibleRunLogScope.Current?.Debug(
                 "resolve.search.hit",
-                $"candidateIndex={candidateIndex} rank={hit.Rank} entryId={hit.EntryId} name={LogValueFormatter.Quote(hit.Name)} gender={LogValueFormatter.Quote(hit.Gender)} aliases={LogValueFormatter.List(hit.Aliases)} score={LogValueFormatter.Score(hit.Score)} summary={LogValueFormatter.Quote(LogValueFormatter.ShortText(hit.Identity))}");
+                $"candidateIndex={candidateIndex} rank={hit.Rank} characterId={hit.CharacterId} name={LogValueFormatter.Quote(hit.Name)} gender={LogValueFormatter.Quote(hit.Gender)} aliases={LogValueFormatter.List(hit.Aliases)} score={LogValueFormatter.Score(hit.Score)} summary={LogValueFormatter.Quote(LogValueFormatter.ShortText(hit.Identity))}");
         }
 
         return result;
@@ -81,7 +81,7 @@ internal sealed class CharacterArchiveSearchToolAdapter : ICharacterArchiveSearc
     {
         return new CharacterArchiveSearchHit(
             rank,
-            hit.Card.EntryId,
+            hit.Card.CharacterId,
             hit.Card.Name,
             hit.Card.Gender,
             hit.Card.Aliases,

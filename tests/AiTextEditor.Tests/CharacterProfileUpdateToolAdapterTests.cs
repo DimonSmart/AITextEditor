@@ -1,4 +1,5 @@
 using AiTextEditor.Agent.CharacterBible;
+using AiTextEditor.Agent.CharacterBible.Diagnostics;
 using AiTextEditor.Agent.CharacterBible.Patching;
 using AiTextEditor.Core.Model;
 using Xunit;
@@ -90,6 +91,33 @@ public sealed class CharacterProfileUpdateToolAdapterTests
         Assert.DoesNotContain("characterId", parameterNames);
     }
 
+    [Fact]
+    public void ReplaceProfileField_LogsCharacterIdForCharacterScopedToolCalls()
+    {
+        var logger = new CapturingCharacterBibleRunLogger();
+        var (tools, _) = CreateTools();
+
+        using (CharacterBibleRunLogScope.Push(logger))
+        {
+            tools.ReplaceProfileField(
+                CharacterBibleProfileField.StatusAndCompetence,
+                "Умеет считать.",
+                ["1.1.1.p4"],
+                "Evidence adds competence.");
+        }
+
+        Assert.Contains(logger.InfoMessages, message =>
+            message.EventName == "profile.update.tool.call"
+            && message.Message.Contains("characterId=1", StringComparison.Ordinal)
+            && message.Message.Contains("name=\"Пончик\"", StringComparison.Ordinal));
+        Assert.Contains(logger.DebugMessages, message =>
+            message.EventName == "profile.update.tool.value"
+            && message.Message.Contains("characterId=1", StringComparison.Ordinal)
+            && message.Message.Contains("name=\"Пончик\"", StringComparison.Ordinal));
+        Assert.DoesNotContain(logger.InfoMessages.Concat(logger.DebugMessages), message =>
+            message.Message.Contains("character=\"", StringComparison.Ordinal));
+    }
+
     private static (CharacterProfileUpdateToolAdapter Tools, CharacterDossierEditSession Session) CreateTools(
         CharacterProfile? profile = null)
     {
@@ -115,6 +143,40 @@ public sealed class CharacterProfileUpdateToolAdapterTests
             session,
             new CharacterProfileUpdateStatistics());
         return (tools, session);
+    }
+
+    private sealed class CapturingCharacterBibleRunLogger : ICharacterBibleRunLogger
+    {
+        public CharacterBibleRunLogContext Context { get; } = new(
+            "test",
+            "test.log",
+            DateTimeOffset.UnixEpoch);
+
+        public List<(string EventName, string Message)> InfoMessages { get; } = [];
+
+        public List<(string EventName, string Message)> DebugMessages { get; } = [];
+
+        public void Info(string eventName, string message)
+        {
+            InfoMessages.Add((eventName, message));
+        }
+
+        public void Debug(string eventName, string message)
+        {
+            DebugMessages.Add((eventName, message));
+        }
+
+        public void DebugBlock(string eventName, string header, string block)
+        {
+        }
+
+        public void Warning(string eventName, string message)
+        {
+        }
+
+        public void Error(string eventName, string message, Exception? exception = null)
+        {
+        }
     }
 }
 

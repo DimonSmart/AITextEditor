@@ -195,7 +195,7 @@
                 CancellationToken.None);
 
             semanticResultIds = hits
-                .Select(hit => hit.Card.EntryId)
+                .Select(hit => hit.Card.CharacterId)
                 .ToList();
         }
         catch (Exception ex)

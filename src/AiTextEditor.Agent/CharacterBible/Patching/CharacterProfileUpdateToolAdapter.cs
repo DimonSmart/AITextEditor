@@ -110,10 +110,10 @@ public sealed class CharacterProfileUpdateToolAdapter
         Increment(result.Status);
         CharacterBibleRunLogScope.Current?.Info(
             "profile.update.tool.call",
-            $"character={LogValueFormatter.Quote(characterName)} field={field} status={result.Status} evidencePointers={LogValueFormatter.List(evidencePointers ?? [])} valueLength={value?.Length ?? 0} reason={LogValueFormatter.Quote(reason)}");
+            $"characterId={characterId} name={LogValueFormatter.Quote(characterName)} field={field} status={result.Status} evidencePointers={LogValueFormatter.List(evidencePointers ?? [])} valueLength={value?.Length ?? 0} reason={LogValueFormatter.Quote(reason)}");
         CharacterBibleRunLogScope.Current?.Debug(
             "profile.update.tool.value",
-            $"character={LogValueFormatter.Quote(characterName)} field={field} value={LogValueFormatter.Quote(value)}");
+            $"characterId={characterId} name={LogValueFormatter.Quote(characterName)} field={field} value={LogValueFormatter.Quote(value)}");
         return result;
     }
 

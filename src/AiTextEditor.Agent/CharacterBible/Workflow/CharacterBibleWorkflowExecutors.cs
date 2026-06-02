@@ -289,6 +289,9 @@ internal sealed class FinishCharacterBibleWorkflowExecutor : Executor<CharacterB
             "finish.start",
             $"decisionCount={runState.Catalog.Decisions.Count}");
         var dossiers = generator.FinishRun(runState);
+        CharacterBibleRunLogScope.Current?.Info(
+            "archive.saved",
+            $"version={dossiers.Version} characterCount={dossiers.Characters.Count} nextCharacterId={dossiers.NextCharacterId}");
         var changedPointerCount = NormalizePointers(runState.Request.ChangedPointers).Count;
         var status = runState.Request.ChangedPointers is null ? "generated" : "refreshed";
 

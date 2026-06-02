@@ -204,13 +204,11 @@ public sealed class CharacterDossierService
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(payload);
         using var document = JsonDocument.Parse(payload);
-        if (!document.RootElement.TryGetProperty("nextCharacterId", out _))
-        {
-            throw new InvalidOperationException("Character dossiers JSON must contain nextCharacterId.");
-        }
+        var hasNextCharacterId = document.RootElement.TryGetProperty("nextCharacterId", out _);
 
         var parsed = JsonSerializer.Deserialize<CharacterDossiers>(payload, DossierJsonOptions);
-        ApplyLoaded(parsed ?? throw new InvalidOperationException("Failed to deserialize character dossiers from JSON."));
+        var loaded = parsed ?? throw new InvalidOperationException("Failed to deserialize character dossiers from JSON.");
+        ApplyLoaded(hasNextCharacterId ? loaded : MigrateMissingNextCharacterId(loaded));
     }
 
     private void ApplyLoaded(CharacterDossiers loaded)
@@ -252,6 +250,18 @@ public sealed class CharacterDossierService
             EvidenceIndex = NormalizeEvidenceIndex(source.EvidenceIndex),
             IdentityConflicts = source.IdentityConflicts ?? [],
             AuditTrail = source.AuditTrail ?? []
+        };
+    }
+
+    private static CharacterDossiers MigrateMissingNextCharacterId(CharacterDossiers source)
+    {
+        var characters = source.Characters ?? [];
+        return source with
+        {
+            NextCharacterId = characters
+                .Select(character => character.CharacterId)
+                .DefaultIfEmpty()
+                .Max() + 1
         };
     }
 

@@ -40,7 +40,7 @@ public sealed class CharacterVectorSearchToolTests
 
         var result = await tool.SearchAsync(dossierService.GetDossiers(), "толстый коротышка, любит есть, иногда трусит", 2, CancellationToken.None);
 
-        Assert.Equal(1, result[0].Card.EntryId);
+        Assert.Equal(1, result[0].Card.CharacterId);
         Assert.DoesNotContain("Пончик", "толстый коротышка, любит есть, иногда трусит", StringComparison.OrdinalIgnoreCase);
     }
 
@@ -94,12 +94,12 @@ public sealed class CharacterVectorSearchToolTests
 
         var result = await tool.SearchAsync(dossierService.GetDossiers(), "query", 2, CancellationToken.None);
 
-        Assert.Equal(2, result[0].Card.EntryId);
+        Assert.Equal(2, result[0].Card.CharacterId);
         Assert.True(result[0].Score > result[1].Score);
     }
 
     [Fact]
-    public async Task SearchAsync_EqualScoresSortedByNameThenEntryId()
+    public async Task SearchAsync_EqualScoresSortedByNameThenCharacterId()
     {
         var dossierService = new CharacterDossierService();
         dossierService.UpsertDossier(Character(3, "Bob"));
@@ -109,7 +109,7 @@ public sealed class CharacterVectorSearchToolTests
 
         var result = await tool.SearchAsync(dossierService.GetDossiers(), "same", 3, CancellationToken.None);
 
-        Assert.Equal([1, 2, 3], result.Select(hit => hit.Card.EntryId).ToArray());
+        Assert.Equal([1, 2, 3], result.Select(hit => hit.Card.CharacterId).ToArray());
     }
 
     [Fact]
@@ -125,8 +125,8 @@ public sealed class CharacterVectorSearchToolTests
 
         var result = await tool.SearchAsync(dossierService.GetDossiers(), "second", 5, CancellationToken.None);
 
-        Assert.Contains(result, hit => hit.Card.EntryId == 2);
-        Assert.Equal(2, result[0].Card.EntryId);
+        Assert.Contains(result, hit => hit.Card.CharacterId == 2);
+        Assert.Equal(2, result[0].Card.CharacterId);
     }
 
     [Fact]
@@ -174,8 +174,8 @@ public sealed class CharacterVectorSearchToolTests
 
         var result = await tool.SearchAsync(dossierService.GetDossiers(), "query", 5, CancellationToken.None);
 
-        Assert.DoesNotContain(result, hit => hit.Card.EntryId == 2);
-        Assert.Contains(result, hit => hit.Card.EntryId == 1);
+        Assert.DoesNotContain(result, hit => hit.Card.CharacterId == 2);
+        Assert.Contains(result, hit => hit.Card.CharacterId == 1);
     }
 
     [Fact]
@@ -212,7 +212,7 @@ public sealed class CharacterVectorSearchToolTests
         var result = await tool.SearchAsync(dossierService.GetDossiers(), "query", 1, CancellationToken.None);
         var card = result[0].Card;
 
-        Assert.Equal(["Aliases", "EntryId", "Gender", "Name", "Summary"], PropertyNames(card));
+        Assert.Equal(["Aliases", "CharacterId", "Gender", "Name", "Summary"], PropertyNames(card));
         Assert.Equal(["Card", "Score"], PropertyNames(result[0]));
     }
 
@@ -239,7 +239,7 @@ public sealed class CharacterVectorSearchToolTests
 
         var result = await tool.SearchAsync(dossierService.GetDossiers(), "Pony", 2, CancellationToken.None);
 
-        Assert.Equal(2, result[0].Card.EntryId);
+        Assert.Equal(2, result[0].Card.CharacterId);
     }
 
     private static CharacterVectorSearchTool CreateTool(

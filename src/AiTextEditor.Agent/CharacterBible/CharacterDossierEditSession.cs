@@ -330,7 +330,7 @@ internal sealed class CharacterDossierEditSession
     {
         return conflict with
         {
-            AlternativeEntryIds = conflict.AlternativeEntryIds.ToArray(),
+            AlternativeCharacterIds = conflict.AlternativeCharacterIds.ToArray(),
             SplitShardNames = conflict.SplitShardNames?.ToArray()
         };
     }

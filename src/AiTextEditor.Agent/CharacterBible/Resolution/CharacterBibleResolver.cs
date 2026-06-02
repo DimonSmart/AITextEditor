@@ -104,7 +104,7 @@ internal sealed class CharacterBibleResolver
                     $"candidateIndex={candidateIndex} name={LogValueFormatter.Quote(candidate.CanonicalName)}")),
             cancellationToken).ConfigureAwait(false);
 
-        LogProtocolDiagnostics(candidate, candidateIndex, response, currentArchive, searchTool.ObservedEntryIds);
+        LogProtocolDiagnostics(candidate, candidateIndex, response, currentArchive, searchTool.ObservedCharacterIds);
         var decision = ToIdentityDecision(response, currentArchive);
         if (decision.Kind == IdentityResolutionKind.IdentityConflict)
         {
@@ -146,7 +146,7 @@ internal sealed class CharacterBibleResolver
                 $"Proposing split for identity conflict: {candidate.CanonicalName}."));
             CharacterBibleRunLogScope.Current?.Info(
                 "split.start",
-                $"candidateIndex={candidateIndex} name={LogValueFormatter.Quote(candidate.CanonicalName)} entryIds={LogValueFormatter.List(decision.AlternativeEntryIds)}");
+                $"candidateIndex={candidateIndex} name={LogValueFormatter.Quote(candidate.CanonicalName)} characterIds={LogValueFormatter.List(decision.CharacterIds)}");
             var proposal = await splitCandidateModelClient.ProposeSplitAsync(
                 new SplitCandidateModelRequest(
                     splitCandidatePromptBuilder.BuildSystemPrompt(),
@@ -193,16 +193,16 @@ internal sealed class CharacterBibleResolver
 
         return response.Decision switch
         {
-            CharacterIdentityDecision.Existing => ResolveExisting(response.EntryId, currentArchive, reason),
+            CharacterIdentityDecision.Existing => ResolveExisting(response.CharacterId, currentArchive, reason),
             CharacterIdentityDecision.New => IdentityResolutionDecision.New(reason),
             CharacterIdentityDecision.Ambiguous => IdentityResolutionDecision.Ambiguous(
-                ResolveExistingEntryIds(response.EntryIds, currentArchive),
+                ResolveExistingCharacterIds(response.CharacterIds, currentArchive),
                 reason),
             CharacterIdentityDecision.IdentityConflict => IdentityResolutionDecision.IdentityConflict(
-                ResolveExistingEntryIds(response.EntryIds, currentArchive),
+                ResolveExistingCharacterIds(response.CharacterIds, currentArchive),
                 reason),
             CharacterIdentityDecision.Defer => IdentityResolutionDecision.Defer(
-                NormalizeEntryIds(response.EntryIds),
+                NormalizeCharacterIds(response.CharacterIds),
                 reason),
             _ => IdentityResolutionDecision.Defer([], "Identity resolver agent returned unsupported decision.")
         };
@@ -213,7 +213,7 @@ internal sealed class CharacterBibleResolver
         int candidateIndex,
         CharacterIdentityResolutionResponse response,
         CharacterDossiers currentArchive,
-        IReadOnlySet<int> observedEntryIds)
+        IReadOnlySet<int> observedCharacterIds)
     {
         var logger = CharacterBibleRunLogScope.Current;
         if (logger is null)
@@ -223,26 +223,26 @@ internal sealed class CharacterBibleResolver
 
         if (response.Decision == CharacterIdentityDecision.Existing)
         {
-            if (response.EntryId is null)
+            if (response.CharacterId is null)
             {
                 logger.Warning(
                     "resolve.protocol.error",
-                    $"candidateIndex={candidateIndex} name={LogValueFormatter.Quote(candidate.CanonicalName)} decision=existing message={LogValueFormatter.Quote("entryId is missing")}");
+                    $"candidateIndex={candidateIndex} name={LogValueFormatter.Quote(candidate.CanonicalName)} decision=existing message={LogValueFormatter.Quote("characterId is missing")}");
                 logger.Warning(
                     "resolve.protocol.defer",
-                    $"candidateIndex={candidateIndex} name={LogValueFormatter.Quote(candidate.CanonicalName)} reason={LogValueFormatter.Quote("resolver returned missing entryId for existing decision")}");
+                    $"candidateIndex={candidateIndex} name={LogValueFormatter.Quote(candidate.CanonicalName)} reason={LogValueFormatter.Quote("resolver returned missing characterId for existing decision")}");
                 return;
             }
 
-            var entryId = response.EntryId.Value;
-            if (!observedEntryIds.Contains(entryId))
+            var characterId = response.CharacterId.Value;
+            if (!observedCharacterIds.Contains(characterId))
             {
                 logger.Warning(
                     "resolve.protocol.warning",
-                    $"candidateIndex={candidateIndex} name={LogValueFormatter.Quote(candidate.CanonicalName)} decision=existing entryId={entryId} message={LogValueFormatter.Quote("entryId was not present in observed search hits")}");
+                    $"candidateIndex={candidateIndex} name={LogValueFormatter.Quote(candidate.CanonicalName)} decision=existing characterId={characterId} message={LogValueFormatter.Quote("characterId was not present in observed search hits")}");
             }
 
-            if (!currentArchive.Characters.Any(character => character.CharacterId == entryId))
+            if (!currentArchive.Characters.Any(character => character.CharacterId == characterId))
             {
                 logger.Warning(
                     "resolve.protocol.defer",
@@ -252,38 +252,38 @@ internal sealed class CharacterBibleResolver
     }
 
     private static IdentityResolutionDecision ResolveExisting(
-        int? entryId,
+        int? characterId,
         CharacterDossiers currentArchive,
         string reason)
     {
-        if (entryId is null)
+        if (characterId is null)
         {
-            return IdentityResolutionDecision.Defer([], "Identity resolver did not return entryId for existing decision.");
+            return IdentityResolutionDecision.Defer([], "Identity resolver did not return characterId for existing decision.");
         }
 
-        var normalizedEntryId = entryId.Value;
-        if (!currentArchive.Characters.Any(character => character.CharacterId == normalizedEntryId))
+        var normalizedCharacterId = characterId.Value;
+        if (!currentArchive.Characters.Any(character => character.CharacterId == normalizedCharacterId))
         {
             return IdentityResolutionDecision.Defer(
-                [normalizedEntryId],
-                "Identity resolver targeted a missing archive entry.");
+                [normalizedCharacterId],
+                "Identity resolver targeted a missing archive character.");
         }
 
-        return IdentityResolutionDecision.Existing(normalizedEntryId, reason);
+        return IdentityResolutionDecision.Existing(normalizedCharacterId, reason);
     }
 
-    private static IReadOnlyList<int> ResolveExistingEntryIds(
-        IReadOnlyList<int>? entryIds,
+    private static IReadOnlyList<int> ResolveExistingCharacterIds(
+        IReadOnlyList<int>? characterIds,
         CharacterDossiers currentArchive)
     {
-        return NormalizeEntryIds(entryIds)
-            .Where(entryId => currentArchive.Characters.Any(character => character.CharacterId == entryId))
+        return NormalizeCharacterIds(characterIds)
+            .Where(characterId => currentArchive.Characters.Any(character => character.CharacterId == characterId))
             .ToArray();
     }
 
-    private static IReadOnlyList<int> NormalizeEntryIds(IReadOnlyList<int>? entryIds)
+    private static IReadOnlyList<int> NormalizeCharacterIds(IReadOnlyList<int>? characterIds)
     {
-        return entryIds?
+        return characterIds?
             .Where(id => id > 0)
             .Distinct()
             .ToArray() ?? [];

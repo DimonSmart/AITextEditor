@@ -24,7 +24,7 @@ public sealed record CharacterArchiveSearchResult(
 
 public sealed record CharacterArchiveSearchHit(
     int Rank,
-    int EntryId,
+    int CharacterId,
     string Name,
     string Gender,
     IReadOnlyList<string> Aliases,
@@ -68,56 +68,56 @@ internal enum IdentityResolutionKind
 
 internal sealed record IdentityResolutionDecision(
     IdentityResolutionKind Kind,
-    int? TargetEntryId,
-    IReadOnlyList<int> AlternativeEntryIds,
+    int? CharacterId,
+    IReadOnlyList<int> CharacterIds,
     string Reason,
     bool ExactNameMatch)
 {
     public SplitProposal? SplitProposal { get; init; }
 
     public static IdentityResolutionDecision Ambiguous(
-        IReadOnlyList<int> alternativeEntryIds,
+        IReadOnlyList<int> characterIds,
         string reason)
     {
         return new IdentityResolutionDecision(
             IdentityResolutionKind.Ambiguous,
             null,
-            alternativeEntryIds,
+            characterIds,
             reason,
             ExactNameMatch: false);
     }
 
     public static IdentityResolutionDecision Defer(
-        IReadOnlyList<int> alternativeEntryIds,
+        IReadOnlyList<int> characterIds,
         string reason)
     {
         return new IdentityResolutionDecision(
             IdentityResolutionKind.Defer,
             null,
-            alternativeEntryIds,
+            characterIds,
             reason,
             ExactNameMatch: false);
     }
 
     public static IdentityResolutionDecision IdentityConflict(
-        IReadOnlyList<int> alternativeEntryIds,
+        IReadOnlyList<int> characterIds,
         string reason)
     {
         return new IdentityResolutionDecision(
             IdentityResolutionKind.IdentityConflict,
             null,
-            alternativeEntryIds,
+            characterIds,
             reason,
             ExactNameMatch: false);
     }
 
     public static IdentityResolutionDecision Existing(
-        int targetEntryId,
+        int characterId,
         string reason)
     {
         return new IdentityResolutionDecision(
             IdentityResolutionKind.Existing,
-            targetEntryId,
+            characterId,
             [],
             reason,
             ExactNameMatch: true);

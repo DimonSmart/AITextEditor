@@ -26,7 +26,7 @@ public sealed record CharacterEvidenceIndexEntry(
 
 public sealed record IdentityConflictRecord(
     string CanonicalName,
-    IReadOnlyList<int> AlternativeEntryIds,
+    IReadOnlyList<int> AlternativeCharacterIds,
     string Reason,
     string? SplitProposalKind = null,
     IReadOnlyList<string>? SplitShardNames = null,

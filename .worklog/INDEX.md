@@ -42,7 +42,7 @@ If this index conflicts with a numbered document, trust the numbered document.
 | 0038 | spec | Resolver evidence prompt contract | Make the identity resolver prompt expose one materialized `evidence` list and remove candidate-level `pointers`. | 0029, 0037 |
 | 0040 | spec | LLM-facing input diagnostics | Log dynamic Character Bible LLM input DTOs without full prompts or static instruction noise. | 0035, 0037, 0038, 0039 |
 | 0043 | spec | Character profile replacement tool | Replace complete profile field values through a scoped tool when new evidence changes the best current characterization. | 0026, 0029, 0035, 0037, 0040 |
-| 0044 | spec | Integer character ID | Replace name-derived string dossier IDs with archive-issued auto-incremented integer IDs and strict version 3 JSON storage. | 0012, 0033, 0034, 0036, 0043 |
+| 0045 | spec | Character ID contract cleanup | Make numeric `CharacterId` the only stable character identifier in Character Bible contracts, logs, and persisted ID generation. | 0035, 0036, 0037, 0040, 0043 |
 
 ## Archived documents
 
@@ -62,6 +62,7 @@ Read archived documents only when a current document references them through `Re
 | 0039 | spec | Compact dossier patch contract | Earlier compact additions-only dossier patch contract before full profile updates replaced append-only apply. | 0041 |
 | 0041 | spec | Dossier profile update contract | Earlier full-profile patch proposal and reviewer contract before scoped tool updates replaced it. | 0042 |
 | 0042 | spec | Scoped character profile patch tool | Earlier missing-field-only scoped tool requirement before complete field replacement was allowed. | 0043 |
+| 0044 | spec | Integer character ID | Earlier strict integer ID storage requirement before character ID terminology cleanup and missing-`nextCharacterId` migration were added. | 0045 |
 
 ## Maintenance
 

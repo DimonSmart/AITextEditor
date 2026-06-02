@@ -67,7 +67,7 @@ internal static class LogValueFormatter
 
         return FormatHits(hits.Select((hit, index) => new HitValue(
             hit.Rank > 0 ? hit.Rank : index + 1,
-            hit.EntryId,
+            hit.CharacterId,
             hit.Name,
             hit.Score)), maxItems);
     }
@@ -81,7 +81,7 @@ internal static class LogValueFormatter
 
         return FormatHits(hits.Select((hit, index) => new HitValue(
             index + 1,
-            hit.Card.EntryId,
+            hit.Card.CharacterId,
             hit.Card.Name,
             hit.Score)), maxItems);
     }
@@ -99,6 +99,9 @@ internal static class LogValueFormatter
 
     public static string ShortId(int? value)
         => value?.ToString(CultureInfo.InvariantCulture) ?? "empty";
+
+    public static string NullableId(int? value)
+        => value?.ToString(CultureInfo.InvariantCulture) ?? "null";
 
     public static string ShortText(string? value, int maxChars = 300)
     {
@@ -145,7 +148,7 @@ internal static class LogValueFormatter
             builder
                 .Append(hit.Rank)
                 .Append(':')
-                .Append(hit.EntryId)
+                .Append(hit.CharacterId)
                 .Append(':')
                 .Append(Quote(hit.Name))
                 .Append(':')
@@ -163,7 +166,7 @@ internal static class LogValueFormatter
 
     private sealed record HitValue(
         int Rank,
-        int EntryId,
+        int CharacterId,
         string Name,
         double Score);
 }

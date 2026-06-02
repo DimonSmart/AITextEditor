@@ -489,10 +489,10 @@ public sealed class CharacterBibleWorkflowRunnerTests
             return searchResult.Hits.Count switch
             {
                 0 => new CharacterIdentityResolutionResponse(CharacterIdentityDecision.New, Reason: "No test search hit."),
-                1 => new CharacterIdentityResolutionResponse(CharacterIdentityDecision.Existing, searchResult.Hits[0].EntryId, Reason: "Matched by test search."),
+                1 => new CharacterIdentityResolutionResponse(CharacterIdentityDecision.Existing, searchResult.Hits[0].CharacterId, Reason: "Matched by test search."),
                 _ => new CharacterIdentityResolutionResponse(
                     CharacterIdentityDecision.Ambiguous,
-                    EntryIds: searchResult.Hits.Select(hit => hit.EntryId).ToArray(),
+                    CharacterIds: searchResult.Hits.Select(hit => hit.CharacterId).ToArray(),
                     Reason: "Multiple test search hits.")
             };
         }

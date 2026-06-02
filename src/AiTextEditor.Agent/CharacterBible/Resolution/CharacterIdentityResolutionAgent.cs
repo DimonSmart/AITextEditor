@@ -55,8 +55,8 @@ public sealed record CharacterEvidenceText
 public sealed record CharacterIdentityResolutionResponse(
     [property: JsonRequired]
     [property: JsonPropertyName("decision")] CharacterIdentityDecision Decision,
-    [property: JsonPropertyName("entryId")] int? EntryId = null,
-    [property: JsonPropertyName("entryIds")] IReadOnlyList<int>? EntryIds = null,
+    [property: JsonPropertyName("characterId")] int? CharacterId = null,
+    [property: JsonPropertyName("characterIds")] IReadOnlyList<int>? CharacterIds = null,
     [property: JsonPropertyName("reason")] string? Reason = null);
 
 [JsonConverter(typeof(JsonStringEnumConverter<CharacterIdentityDecision>))]
@@ -299,18 +299,18 @@ public sealed class AgenticCharacterIdentityResolutionModelClient : ICharacterId
         switch (response.Decision)
         {
             case CharacterIdentityDecision.Existing:
-                if (response.EntryId is null)
+                if (response.CharacterId is null)
                 {
-                    error = "entryId is required for existing decision.";
+                    error = "characterId is required for existing decision.";
                     return false;
                 }
 
                 break;
             case CharacterIdentityDecision.Ambiguous:
             case CharacterIdentityDecision.IdentityConflict:
-                if (response.EntryIds is null || response.EntryIds.Count == 0)
+                if (response.CharacterIds is null || response.CharacterIds.Count == 0)
                 {
-                    error = "entryIds is required for ambiguous and identity_conflict decisions.";
+                    error = "characterIds is required for ambiguous and identity_conflict decisions.";
                     return false;
                 }
 

@@ -44,6 +44,10 @@ public sealed class CharacterBibleWorkflowRunner
         runLogger.Info(
             "workflow.start",
             $"run={runLogger.Context.RunId} documentItems={generator.DocumentItemCount} changedPointersCount={NormalizePointers(request.ChangedPointers).Count} fullScanMaxItems={generator.Limits.FullScanMaxItems} maxParagraphsPerBatch={generator.Limits.MaxParagraphsPerBatch} maxBatchBytes={generator.Limits.MaxBatchBytes} overlapParagraphs={generator.Limits.OverlapParagraphs}");
+        var loadedDossiers = generator.GetCurrentDossiers();
+        runLogger.Info(
+            "archive.loaded",
+            $"version={loadedDossiers.Version} characterCount={loadedDossiers.Characters.Count} nextCharacterId={loadedDossiers.NextCharacterId}");
 
         var traversalExecutor = new CollectTextFragmentsExecutor(
             generator,
@@ -98,7 +102,7 @@ public sealed class CharacterBibleWorkflowRunner
 
                 runLogger.Info(
                     "workflow.finish",
-                    $"status={result.Status} dossiersCount={result.Dossiers.Characters.Count} version={result.Dossiers.Version} candidateCount={result.CandidateCount} decisionCount={result.DecisionCount} ambiguousCount={result.AmbiguousDecisionCount} durationMs={(DateTimeOffset.Now - runLogger.Context.StartedAt).TotalMilliseconds:0}");
+                    $"status={result.Status} dossiersCount={result.Dossiers.Characters.Count} version={result.Dossiers.Version} nextCharacterId={result.Dossiers.NextCharacterId} candidateCount={result.CandidateCount} decisionCount={result.DecisionCount} ambiguousCount={result.AmbiguousDecisionCount} durationMs={(DateTimeOffset.Now - runLogger.Context.StartedAt).TotalMilliseconds:0}");
                 return result;
             }
         }

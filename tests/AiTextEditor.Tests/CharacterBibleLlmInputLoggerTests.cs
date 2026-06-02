@@ -118,6 +118,88 @@ public sealed class CharacterBibleLlmInputLoggerTests
     }
 
     [Fact]
+    public async Task NewDecision_DoesNotContainCharacterIdUntilApplyCreatesCharacter()
+    {
+        var logger = new CapturingCharacterBibleRunLogger();
+        var applier = new CharacterBibleCandidateResolutionApplier(new CharacterBibleExtractionLimits());
+        var session = CharacterDossierEditSession.CreateFrom(new CharacterDossiers(
+            "test",
+            3,
+            [],
+            1));
+        var candidate = new CharacterBibleCharacterCandidate(
+            "Пончик",
+            "unknown",
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
+            [new CharacterBibleCandidateEvidence("1.1.1.p3", "Пончик вошёл.")]);
+        var identityDecision = IdentityResolutionDecision.New("No archive match.");
+
+        Assert.Equal(IdentityResolutionKind.New, identityDecision.Kind);
+        Assert.Null(identityDecision.CharacterId);
+        Assert.Empty(identityDecision.CharacterIds);
+
+        using (CharacterBibleRunLogScope.Push(logger))
+        {
+            await applier.ResolveAndUpdateCatalogAsync(
+                new CharacterBibleWorkflowInput(),
+                session,
+                1,
+                [candidate],
+                (_, _, _, _) => Task.FromResult(identityDecision));
+        }
+
+        var created = Assert.Single(session.Current.Characters);
+        Assert.Equal(1, created.CharacterId);
+        Assert.Equal(2, session.Current.NextCharacterId);
+        Assert.Contains(logger.InfoMessages, message =>
+            message.EventName == "resolve.decision"
+            && message.Message.Contains("decision=new", StringComparison.Ordinal)
+            && message.Message.Contains("characterId=null", StringComparison.Ordinal));
+        Assert.Contains(logger.InfoMessages, message =>
+            message.EventName == "resolve.apply"
+            && message.Message.Contains("characterId=1", StringComparison.Ordinal));
+        Assert.Contains(logger.InfoMessages, message =>
+            message.EventName == "archive.character.created"
+            && message.Message.Contains("characterId=1", StringComparison.Ordinal)
+            && message.Message.Contains("nextCharacterId=2", StringComparison.Ordinal));
+        Assert.DoesNotContain(logger.InfoMessages, message =>
+            message.Message.Contains("entryId", StringComparison.OrdinalIgnoreCase)
+            || message.Message.Contains("entryIds", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
+    public async Task ExistingDecision_ContainsCharacterId()
+    {
+        var applier = new CharacterBibleCandidateResolutionApplier(new CharacterBibleExtractionLimits());
+        var session = CharacterDossierEditSession.CreateFrom(new CharacterDossiers(
+            "test",
+            3,
+            [new CharacterDossier(6, "Пончик", [], new Dictionary<string, string>())],
+            7));
+        var candidate = new CharacterBibleCharacterCandidate(
+            "Пончик",
+            "unknown",
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
+            [new CharacterBibleCandidateEvidence("1.1.1.p3", "Пончик вошёл.")]);
+        var identityDecision = IdentityResolutionDecision.Existing(6, "Matched by name.");
+
+        Assert.Equal(IdentityResolutionKind.Existing, identityDecision.Kind);
+        Assert.Equal(6, identityDecision.CharacterId);
+
+        await applier.ResolveAndUpdateCatalogAsync(
+            new CharacterBibleWorkflowInput(),
+            session,
+            1,
+            [candidate],
+            (_, _, _, _) => Task.FromResult(identityDecision));
+
+        var decision = Assert.Single(session.Decisions);
+        Assert.Equal(CharacterBibleDecisionKind.Existing, decision.Kind);
+        Assert.Equal(6, decision.CharacterId);
+        Assert.Equal(7, session.Current.NextCharacterId);
+    }
+
+    [Fact]
     public async Task DeferDecision_PreservesReadableSuspectDiagnostics()
     {
         var applier = new CharacterBibleCandidateResolutionApplier(new CharacterBibleExtractionLimits());
