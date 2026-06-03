@@ -48,9 +48,7 @@ public sealed class CharacterBibleWorkflowClient : ICharacterBibleWorkflowClient
         var extractionClient = new AgenticCharacterExtractionModelClient(
             modelClient,
             loggerFactory.CreateLogger<AgenticCharacterExtractionModelClient>());
-        var patchClient = new AgenticCharacterProfileUpdateModelClient(
-            modelClient,
-            loggerFactory.CreateLogger<AgenticCharacterProfileUpdateModelClient>());
+        var patchClient = new AgenticCharacterProfileUpdateModelClient(modelClient);
         var identityResolverClient = new AgenticCharacterIdentityResolutionModelClient(
             modelClient,
             loggerFactory.CreateLogger<AgenticCharacterIdentityResolutionModelClient>());

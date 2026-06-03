@@ -43,6 +43,8 @@ If this index conflicts with a numbered document, trust the numbered document.
 | 0040 | spec | LLM-facing input diagnostics | Log dynamic Character Bible LLM input DTOs without full prompts or static instruction noise. | 0035, 0037, 0038, 0039 |
 | 0043 | spec | Character profile replacement tool | Replace complete profile field values through a scoped tool when new evidence changes the best current characterization. | 0026, 0029, 0035, 0037, 0040 |
 | 0045 | spec | Character ID contract cleanup | Make numeric `CharacterId` the only stable character identifier in Character Bible contracts, logs, and persisted ID generation. | 0035, 0036, 0037, 0040, 0043 |
+| 0046 | spec | Minimal character profile update tool | Make the profile update tool carry only the field and replacement value while keeping no-tool calls as no change. | 0035, 0037, 0040 |
+| 0047 | spec | Profile update tool-only stage | Make profile update ignore final model text and derive group results from tool calls or real failures. | 0030, 0031, 0046 |
 
 ## Archived documents
 

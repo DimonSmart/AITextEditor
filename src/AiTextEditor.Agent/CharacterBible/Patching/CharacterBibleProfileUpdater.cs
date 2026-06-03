@@ -95,8 +95,9 @@ internal sealed class CharacterBibleProfileUpdater
                     $"characterId={dossier.CharacterId} modelKeys={LogValueFormatter.List(["target", "currentProfile", "newEvidence"])} modelType={nameof(CharacterProfileUpdatePromptInput)}",
                     promptInput);
                 var appliedBefore = statistics.Applied;
+                var rejectedBefore = statistics.Rejected;
                 var appliedFieldsBefore = statistics.AppliedFields.Count;
-                await modelClient.UpdateProfileAsync(
+                var modelResult = await modelClient.UpdateProfileAsync(
                     new CharacterProfileUpdateModelRequest(
                         promptBuilder.BuildSystemPrompt(),
                         promptBuilder.BuildUserPrompt(promptInput),
@@ -108,13 +109,11 @@ internal sealed class CharacterBibleProfileUpdater
                             $"characterId={dossier.CharacterId} name={LogValueFormatter.Quote(dossier.Name)}")),
                     cancellationToken).ConfigureAwait(false);
                 var applied = statistics.Applied - appliedBefore;
-                if (applied == 0)
-                {
-                    CharacterBibleRunLogScope.Current?.Info(
-                        "profile.update.no_change",
-                        $"characterId={dossier.CharacterId} name={LogValueFormatter.Quote(dossier.Name)}");
-                }
-                else
+                var rejected = statistics.Rejected - rejectedBefore;
+                CharacterBibleRunLogScope.Current?.Debug(
+                    "profile.update.final_response_ignored",
+                    $"characterId={dossier.CharacterId} name={LogValueFormatter.Quote(dossier.Name)} raw={LogValueFormatter.Quote(LogValueFormatter.ShortText(modelResult.FinalResponseText))}");
+                if (applied > 0)
                 {
                     var appliedFields = statistics.AppliedFields
                         .Skip(appliedFieldsBefore)
@@ -122,12 +121,34 @@ internal sealed class CharacterBibleProfileUpdater
                     CharacterBibleRunLogScope.Current?.Info(
                         "profile.update.applied",
                         $"characterId={dossier.CharacterId} name={LogValueFormatter.Quote(dossier.Name)} applied={applied} fields={LogValueFormatter.List(appliedFields)}");
+                    CharacterBibleRunLogScope.Current?.Info(
+                        "profile.update.group.done",
+                        $"characterId={dossier.CharacterId} name={LogValueFormatter.Quote(dossier.Name)} status=updated applied={applied} rejected={rejected}");
+                }
+                else if (rejected > 0)
+                {
+                    CharacterBibleRunLogScope.Current?.Error(
+                        "profile.update.group.failed",
+                        $"characterId={dossier.CharacterId} name={LogValueFormatter.Quote(dossier.Name)} reason={LogValueFormatter.Quote("tool validation failed")} applied={applied} rejected={rejected}");
+                    progress?.Report(new CharacterBibleWorkflowProgress(
+                        "patch",
+                        $"Profile update failed for {dossier.Name}: tool validation failed.",
+                        IsError: true));
+                }
+                else
+                {
+                    CharacterBibleRunLogScope.Current?.Info(
+                        "profile.update.no_change",
+                        $"characterId={dossier.CharacterId} name={LogValueFormatter.Quote(dossier.Name)}");
+                    CharacterBibleRunLogScope.Current?.Info(
+                        "profile.update.group.done",
+                        $"characterId={dossier.CharacterId} name={LogValueFormatter.Quote(dossier.Name)} status=no_change applied=0 rejected=0");
                 }
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
                 CharacterBibleRunLogScope.Current?.Error(
-                    "profile.update.failed",
+                    "profile.update.group.failed",
                     $"characterId={dossier.CharacterId} name={LogValueFormatter.Quote(dossier.Name)} message={LogValueFormatter.Quote(ex.Message)}",
                     ex);
                 logger.LogError(ex, "Character profile update failed for character {CharacterId}. Applied tool updates were preserved.", dossier.CharacterId);

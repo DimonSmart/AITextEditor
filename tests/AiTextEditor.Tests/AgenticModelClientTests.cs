@@ -160,6 +160,71 @@ public sealed class AgenticModelClientTests
         Assert.Contains(diagnostics, item => item.Kind == AgenticModelDiagnosticKind.RetrySucceeded);
     }
 
+    [Theory]
+    [InlineData("The profile has been updated.")]
+    [InlineData("")]
+    public async Task AgenticFrameworkModelClient_ToolOnlyCall_IgnoresFinalText(string finalText)
+    {
+        var chatClient = new CapturingChatClient(finalText);
+        var agent = new ChatClientAgent(
+            chatClient,
+            new ChatClientAgentOptions
+            {
+                Name = "test_agent",
+                UseProvidedChatClientAsIs = true
+            },
+            NullLoggerFactory.Instance);
+        var client = new AgenticFrameworkModelClient(
+            agent,
+            NullLogger<AgenticFrameworkModelClient>.Instance);
+        var diagnostics = new List<AgenticModelDiagnostic>();
+
+        var result = await client.RunToolOnlyAsync(
+            new AgenticToolOnlyModelRequest(
+                [new ChatMessage(ChatRole.User, "update profile")],
+                OperationName: "CharacterProfileUpdate",
+                ModelCallError: "model_call_failed",
+                Diagnostics: new ListProgress<AgenticModelDiagnostic>(diagnostics)));
+
+        Assert.Equal(finalText, result.Text);
+        Assert.Equal(1, chatClient.CallCount);
+        Assert.DoesNotContain(diagnostics, item => item.Kind == AgenticModelDiagnosticKind.MalformedResponse);
+        Assert.DoesNotContain(diagnostics, item => item.Kind == AgenticModelDiagnosticKind.Retry);
+    }
+
+    [Fact]
+    public async Task AgenticFrameworkModelClient_ToolOnlyCall_RetriesWhenModelCallFails()
+    {
+        var chatClient = new CapturingChatClient(
+            new InvalidOperationException("temporary model error"),
+            "No updates needed.");
+        var agent = new ChatClientAgent(
+            chatClient,
+            new ChatClientAgentOptions
+            {
+                Name = "test_agent",
+                UseProvidedChatClientAsIs = true
+            },
+            NullLoggerFactory.Instance);
+        var client = new AgenticFrameworkModelClient(
+            agent,
+            NullLogger<AgenticFrameworkModelClient>.Instance);
+        var diagnostics = new List<AgenticModelDiagnostic>();
+
+        var result = await client.RunToolOnlyAsync(
+            new AgenticToolOnlyModelRequest(
+                [new ChatMessage(ChatRole.User, "update profile")],
+                OperationName: "CharacterProfileUpdate",
+                ModelCallError: "model_call_failed",
+                Diagnostics: new ListProgress<AgenticModelDiagnostic>(diagnostics)));
+
+        Assert.Equal("No updates needed.", result.Text);
+        Assert.Equal(2, chatClient.CallCount);
+        Assert.Contains(diagnostics, item => item.Kind == AgenticModelDiagnosticKind.ModelCallFailed);
+        Assert.Contains(diagnostics, item => item.Kind == AgenticModelDiagnosticKind.Retry);
+        Assert.Contains(diagnostics, item => item.Kind == AgenticModelDiagnosticKind.RetrySucceeded);
+    }
+
     [Fact]
     public async Task AgenticFrameworkModelClient_RetriesWhenResponseContractIsInvalid()
     {
@@ -393,6 +458,13 @@ public sealed class AgenticModelClientTests
 
     private sealed class StubAgenticModelClient(CharacterExtractionResponse response) : IAgenticModelClient
     {
+        public Task<AgenticModelCompletion> RunToolOnlyAsync(
+            AgenticToolOnlyModelRequest request,
+            CancellationToken cancellationToken = default)
+        {
+            return Task.FromResult(new AgenticModelCompletion(string.Empty));
+        }
+
         public Task<TResponse> RunAsync<TResponse>(
             AgenticModelRequest<TResponse> request,
             CancellationToken cancellationToken = default)

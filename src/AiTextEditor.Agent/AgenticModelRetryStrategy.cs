@@ -186,6 +186,76 @@ internal sealed class AgenticModelRetryStrategy
         throw new InvalidOperationException(request.InvalidContractError);
     }
 
+    public async Task<AgentResponse> RunToolOnlyAsync(
+        AgenticToolOnlyModelRequest request,
+        Func<IReadOnlyList<ChatMessage>, CancellationToken, Task<AgentResponse>> runAgentAsync,
+        CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        ArgumentNullException.ThrowIfNull(runAgentAsync);
+
+        var messages = request.Messages;
+        for (var attempt = 1; attempt <= MaxStructuredResponseAttempts; attempt++)
+        {
+            try
+            {
+                var response = await runAgentAsync(messages, cancellationToken).ConfigureAwait(false);
+                if (attempt > 1)
+                {
+                    request.Diagnostics?.Report(new AgenticModelDiagnostic(
+                        AgenticModelDiagnosticKind.RetrySucceeded,
+                        request.OperationName,
+                        attempt,
+                        MaxStructuredResponseAttempts,
+                        $"Model call retry succeeded on attempt {attempt}/{MaxStructuredResponseAttempts}.",
+                        null));
+                }
+
+                return response;
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                if (attempt >= MaxStructuredResponseAttempts)
+                {
+                    logger.LogError(
+                        ex,
+                        "Agent Framework tool-only model call failed for {OperationName}. Attempt={Attempt}, MaxAttempts={MaxAttempts}.",
+                        request.OperationName,
+                        attempt,
+                        MaxStructuredResponseAttempts);
+                    throw new InvalidOperationException(request.ModelCallError, ex);
+                }
+
+                var nextAttempt = attempt + 1;
+                request.Diagnostics?.Report(new AgenticModelDiagnostic(
+                    AgenticModelDiagnosticKind.ModelCallFailed,
+                    request.OperationName,
+                    attempt,
+                    MaxStructuredResponseAttempts,
+                    "Agent Framework model call failed before completion.",
+                    null,
+                    Error: ex.Message));
+                request.Diagnostics?.Report(new AgenticModelDiagnostic(
+                    AgenticModelDiagnosticKind.Retry,
+                    request.OperationName,
+                    nextAttempt,
+                    MaxStructuredResponseAttempts,
+                    $"Retrying model call after Agent Framework error (attempt {nextAttempt}/{MaxStructuredResponseAttempts}).",
+                    null,
+                    Error: ex.Message));
+                logger.LogWarning(
+                    ex,
+                    "Agent Framework tool-only model call failed for {OperationName}. Retrying attempt {Attempt}/{MaxAttempts}.",
+                    request.OperationName,
+                    nextAttempt,
+                    MaxStructuredResponseAttempts);
+                messages = BuildToolOnlyRetryMessages(request.Messages, request.OperationName, ex.Message);
+            }
+        }
+
+        throw new InvalidOperationException(request.ModelCallError);
+    }
+
     private static string Truncate(string value, int maxLength)
     {
         return value.Length <= maxLength ? value : value[..maxLength];
@@ -205,6 +275,23 @@ internal sealed class AgenticModelRetryStrategy
             new ChatMessage(
                 ChatRole.System,
                 $"The previous response was invalid for the {responseTypeName} schema.{errorText} Return exactly one structured response that matches the requested schema.")
+        ];
+    }
+
+    private static IReadOnlyList<ChatMessage> BuildToolOnlyRetryMessages(
+        IReadOnlyList<ChatMessage> originalMessages,
+        string operationName,
+        string? previousError)
+    {
+        var errorText = string.IsNullOrWhiteSpace(previousError)
+            ? string.Empty
+            : $" Previous error: {previousError.Trim()}";
+        return
+        [
+            .. originalMessages,
+            new ChatMessage(
+                ChatRole.System,
+                $"The previous {operationName} tool-only model call failed before completion.{errorText} Run the operation again. Use tools when changes are needed; otherwise call no tools.")
         ];
     }
 }

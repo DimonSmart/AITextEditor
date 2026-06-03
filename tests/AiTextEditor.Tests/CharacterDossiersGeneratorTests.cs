@@ -1314,11 +1314,11 @@ public sealed class CharacterDossiersGeneratorTests
 
     private sealed class NoopCharacterProfileUpdateModelClient : ICharacterProfileUpdateModelClient
     {
-        public Task<CharacterProfileUpdateCompletion> UpdateProfileAsync(
+        public Task<CharacterProfileUpdateModelResult> UpdateProfileAsync(
             CharacterProfileUpdateModelRequest request,
             CancellationToken cancellationToken = default)
         {
-            return Task.FromResult(new CharacterProfileUpdateCompletion());
+            return Task.FromResult(new CharacterProfileUpdateModelResult(string.Empty));
         }
     }
 
@@ -1331,7 +1331,7 @@ public sealed class CharacterDossiersGeneratorTests
 
         public List<CharacterProfileUpdateModelRequest> Requests { get; } = [];
 
-        public Task<CharacterProfileUpdateCompletion> UpdateProfileAsync(
+        public Task<CharacterProfileUpdateModelResult> UpdateProfileAsync(
             CharacterProfileUpdateModelRequest request,
             CancellationToken cancellationToken = default)
         {
@@ -1345,7 +1345,7 @@ public sealed class CharacterDossiersGeneratorTests
                     replacement.Value);
             }
 
-            return Task.FromResult(new CharacterProfileUpdateCompletion());
+            return Task.FromResult(new CharacterProfileUpdateModelResult(string.Empty));
         }
 
     }

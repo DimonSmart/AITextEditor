@@ -32,6 +32,9 @@ internal sealed class CharacterBibleAgentDiagnosticProgress(
             case AgenticModelDiagnosticKind.RetrySucceeded:
                 logger?.Info($"{eventPrefix}.retry.succeeded", message);
                 break;
+            case AgenticModelDiagnosticKind.ModelCallFailed:
+                logger?.Warning($"{eventPrefix}.model_call_failed", message);
+                break;
             case AgenticModelDiagnosticKind.MalformedResponse:
                 logger?.Warning($"{eventPrefix}.malformed_response", message);
                 break;
@@ -46,6 +49,8 @@ internal sealed class CharacterBibleAgentDiagnosticProgress(
             value.RawResponse,
             value.RawResponse is null ? null : "Copy raw response",
             AlwaysVisible: true,
-            IsError: value.Kind is AgenticModelDiagnosticKind.MalformedResponse or AgenticModelDiagnosticKind.InvalidContract));
+            IsError: value.Kind is AgenticModelDiagnosticKind.MalformedResponse
+                or AgenticModelDiagnosticKind.ModelCallFailed
+                or AgenticModelDiagnosticKind.InvalidContract));
     }
 }

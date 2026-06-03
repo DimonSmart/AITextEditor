@@ -450,11 +450,11 @@ public sealed class CharacterBibleWorkflowRunnerTests
 
     private sealed class NoopCharacterProfileUpdateModelClient : ICharacterProfileUpdateModelClient
     {
-        public Task<CharacterProfileUpdateCompletion> UpdateProfileAsync(
+        public Task<CharacterProfileUpdateModelResult> UpdateProfileAsync(
             CharacterProfileUpdateModelRequest request,
             CancellationToken cancellationToken = default)
         {
-            return Task.FromResult(new CharacterProfileUpdateCompletion());
+            return Task.FromResult(new CharacterProfileUpdateModelResult(string.Empty));
         }
     }
 
@@ -462,12 +462,12 @@ public sealed class CharacterBibleWorkflowRunnerTests
     {
         public int CallCount { get; private set; }
 
-        public Task<CharacterProfileUpdateCompletion> UpdateProfileAsync(
+        public Task<CharacterProfileUpdateModelResult> UpdateProfileAsync(
             CharacterProfileUpdateModelRequest request,
             CancellationToken cancellationToken = default)
         {
             CallCount++;
-            return Task.FromResult(new CharacterProfileUpdateCompletion());
+            return Task.FromResult(new CharacterProfileUpdateModelResult(string.Empty));
         }
     }
 

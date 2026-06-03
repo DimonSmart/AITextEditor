@@ -2,13 +2,12 @@ using System.Reflection;
 using System.Text.Json;
 using AiTextEditor.Agent;
 using Microsoft.Extensions.AI;
-using Microsoft.Extensions.Logging;
 
 namespace AiTextEditor.Agent.CharacterBible.Patching;
 
 public interface ICharacterProfileUpdateModelClient
 {
-    Task<CharacterProfileUpdateCompletion> UpdateProfileAsync(
+    Task<CharacterProfileUpdateModelResult> UpdateProfileAsync(
         CharacterProfileUpdateModelRequest request,
         CancellationToken cancellationToken = default);
 }
@@ -19,9 +18,7 @@ public sealed record CharacterProfileUpdateModelRequest(
     CharacterProfileUpdateToolAdapter Tool,
     IProgress<AgenticModelDiagnostic>? Diagnostics = null);
 
-public sealed class CharacterProfileUpdateCompletion
-{
-}
+public sealed record CharacterProfileUpdateModelResult(string FinalResponseText);
 
 public sealed class AgenticCharacterProfileUpdateModelClient : ICharacterProfileUpdateModelClient
 {
@@ -30,17 +27,13 @@ public sealed class AgenticCharacterProfileUpdateModelClient : ICharacterProfile
         ?? throw new InvalidOperationException("Replace profile field tool method was not found.");
 
     private readonly IAgenticModelClient modelClient;
-    private readonly ILogger<AgenticCharacterProfileUpdateModelClient> logger;
 
-    public AgenticCharacterProfileUpdateModelClient(
-        IAgenticModelClient modelClient,
-        ILogger<AgenticCharacterProfileUpdateModelClient> logger)
+    public AgenticCharacterProfileUpdateModelClient(IAgenticModelClient modelClient)
     {
         this.modelClient = modelClient ?? throw new ArgumentNullException(nameof(modelClient));
-        this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<CharacterProfileUpdateCompletion> UpdateProfileAsync(
+    public async Task<CharacterProfileUpdateModelResult> UpdateProfileAsync(
         CharacterProfileUpdateModelRequest request,
         CancellationToken cancellationToken = default)
     {
@@ -56,15 +49,17 @@ public sealed class AgenticCharacterProfileUpdateModelClient : ICharacterProfile
             "Replaces one profile field for the current character.",
             JsonSerializerOptions.Web);
 
-        return await modelClient.RunAsync<CharacterProfileUpdateCompletion>(
-            new AgenticModelRequest<CharacterProfileUpdateCompletion>(
+        var completion = await modelClient.RunToolOnlyAsync(
+            new AgenticToolOnlyModelRequest(
                 [
                     new ChatMessage(ChatRole.System, request.SystemPrompt),
                     new ChatMessage(ChatRole.User, request.UserPrompt)
                 ],
-                InvalidContractError: "character_profile_patch_completion_contract_invalid",
+                OperationName: "CharacterProfileUpdate",
+                ModelCallError: "character_profile_update_model_call_failed",
                 Tools: [replaceProfileFieldFunction],
                 Diagnostics: request.Diagnostics),
             cancellationToken).ConfigureAwait(false);
+        return new CharacterProfileUpdateModelResult(completion.Text);
     }
 }

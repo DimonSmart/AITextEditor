@@ -10,6 +10,10 @@ namespace AiTextEditor.Agent;
 
 public interface IAgenticModelClient
 {
+    Task<AgenticModelCompletion> RunToolOnlyAsync(
+        AgenticToolOnlyModelRequest request,
+        CancellationToken cancellationToken = default);
+
     Task<TResponse> RunAsync<TResponse>(
         AgenticModelRequest request,
         CancellationToken cancellationToken = default)
@@ -45,6 +49,15 @@ public sealed record AgenticModelRequest<TResponse>(
     IReadOnlyList<AITool>? Tools = null,
     IProgress<AgenticModelDiagnostic>? Diagnostics = null)
     where TResponse : class;
+
+public sealed record AgenticToolOnlyModelRequest(
+    IReadOnlyList<ChatMessage> Messages,
+    string OperationName,
+    string ModelCallError,
+    IReadOnlyList<AITool>? Tools = null,
+    IProgress<AgenticModelDiagnostic>? Diagnostics = null);
+
+public sealed record AgenticModelCompletion(string Text);
 
 public sealed record AgenticModelValidationResult(bool IsValid, string Error)
 {
@@ -162,6 +175,30 @@ public sealed class AgenticFrameworkModelClient : IAgenticModelClient
                 BuildRunOptions(request.Tools),
                 token).ConfigureAwait(false),
             cancellationToken).ConfigureAwait(false);
+    }
+
+    public async Task<AgenticModelCompletion> RunToolOnlyAsync(
+        AgenticToolOnlyModelRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        ArgumentException.ThrowIfNullOrWhiteSpace(request.OperationName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(request.ModelCallError);
+
+        if (request.Messages.Count == 0)
+        {
+            throw new ArgumentException("At least one chat message is required.", nameof(request));
+        }
+
+        var response = await retryStrategy.RunToolOnlyAsync(
+            request,
+            async (messages, token) => await agent.RunAsync(
+                messages,
+                null,
+                BuildRunOptions(request.Tools),
+                token).ConfigureAwait(false),
+            cancellationToken).ConfigureAwait(false);
+        return new AgenticModelCompletion(response.Text ?? string.Empty);
     }
 
     private static ChatClientAgentRunOptions? BuildRunOptions(IReadOnlyList<AITool>? tools)

@@ -211,6 +211,9 @@ internal sealed class CharacterBibleCandidateExtractor
                 case AgenticModelDiagnosticKind.RetrySucceeded:
                     logger?.Info("extract.retry.succeeded", $"batch={batchNumber} {message}");
                     break;
+                case AgenticModelDiagnosticKind.ModelCallFailed:
+                    logger?.Warning("extract.model_call_failed", $"batch={batchNumber} {message}");
+                    break;
                 case AgenticModelDiagnosticKind.MalformedResponse:
                     logger?.Warning("extract.malformed_response", $"batch={batchNumber} {message}");
                     break;
@@ -225,7 +228,9 @@ internal sealed class CharacterBibleCandidateExtractor
                 value.RawResponse,
                 value.RawResponse is null ? null : "Copy raw response",
                 AlwaysVisible: true,
-                IsError: value.Kind is AgenticModelDiagnosticKind.MalformedResponse or AgenticModelDiagnosticKind.InvalidContract));
+                IsError: value.Kind is AgenticModelDiagnosticKind.MalformedResponse
+                    or AgenticModelDiagnosticKind.ModelCallFailed
+                    or AgenticModelDiagnosticKind.InvalidContract));
         }
     }
 
@@ -247,6 +252,8 @@ internal sealed class CharacterBibleCandidateExtractor
                     break;
                 case AgenticModelDiagnosticKind.InvalidContract:
                     contractErrorCount++;
+                    break;
+                case AgenticModelDiagnosticKind.ModelCallFailed:
                     break;
                 case AgenticModelDiagnosticKind.Retry:
                     retryCount++;

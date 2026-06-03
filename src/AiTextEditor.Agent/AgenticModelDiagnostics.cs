@@ -3,6 +3,7 @@ namespace AiTextEditor.Agent;
 public enum AgenticModelDiagnosticKind
 {
     MalformedResponse,
+    ModelCallFailed,
     InvalidContract,
     Retry,
     RetrySucceeded
