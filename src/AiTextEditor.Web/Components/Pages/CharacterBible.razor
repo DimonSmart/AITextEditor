@@ -382,8 +382,11 @@
 
     private void OnWorkspaceChanged()
     {
-        RefreshCards();
-        _ = InvokeAsync(StateHasChanged);
+        _ = InvokeAsync(() =>
+        {
+            RefreshCards();
+            StateHasChanged();
+        });
     }
 
     public void Dispose()

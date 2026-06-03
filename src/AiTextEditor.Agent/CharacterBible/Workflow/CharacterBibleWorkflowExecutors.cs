@@ -168,7 +168,8 @@ internal sealed class ResolveCharacterBibleCandidatesExecutor : Executor<Charact
             runState.Catalog.Changed);
         progress?.Report(new CharacterBibleWorkflowProgress(
             "resolve",
-            $"Resolved {runState.Catalog.Decisions.Count} decisions; ambiguous: {runState.Catalog.Decisions.Count(decision => decision.Kind == CharacterBibleDecisionKind.Ambiguous)}."));
+            $"Resolved {runState.Catalog.Decisions.Count} decisions; ambiguous: {runState.Catalog.Decisions.Count(decision => decision.Kind == CharacterBibleDecisionKind.Ambiguous)}.",
+            DossiersSnapshot: runState.Catalog.Current));
         CharacterBibleRunLogScope.Current?.Info(
             "resolve.done",
             $"candidateCount={runState.Candidates.Count} decisionCount={runState.Catalog.Decisions.Count} ambiguousCount={runState.Catalog.Decisions.Count(decision => decision.Kind == CharacterBibleDecisionKind.Ambiguous)}");
@@ -229,6 +230,10 @@ internal sealed class PatchCharacterBibleDossiersExecutor : Executor<CharacterBi
         CharacterBibleRunLogScope.Current?.Info(
             "profile.update.done",
             $"charactersProcessed={patchResult.Statistics.CharactersProcessed} agentCalls={patchResult.Statistics.AgentCalls} toolCalls={patchResult.Statistics.ToolCalls} applied={patchResult.Statistics.Applied} noop={patchResult.Statistics.NoOp} rejected={patchResult.Statistics.Rejected} profileFieldsChanged={patchResult.Statistics.ProfileFieldsChanged}");
+        progress?.Report(new CharacterBibleWorkflowProgress(
+            "patch",
+            $"Character bible profiles updated: {patchedRunState.Catalog.Current.Characters.Count} dossiers.",
+            DossiersSnapshot: patchedRunState.Catalog.Current));
         return patchedRunState;
     }
 }

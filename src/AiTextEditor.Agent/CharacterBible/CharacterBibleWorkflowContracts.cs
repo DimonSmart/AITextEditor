@@ -25,7 +25,8 @@ public sealed record CharacterBibleWorkflowProgress(
     string? CopyText = null,
     string? CopyLabel = null,
     bool AlwaysVisible = false,
-    bool IsError = false);
+    bool IsError = false,
+    CharacterDossiers? DossiersSnapshot = null);
 
 public sealed record CharacterBibleModelResponseErrorStatistics(
     int ParseErrorCount = 0,

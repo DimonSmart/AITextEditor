@@ -10,3 +10,4 @@
 - Display operation log errors with explicit red styling. Keep raw malformed-response copy actions visually quiet, closer to a text link than a primary button.
 - Character vector embedding clients receive their embedding model through construction/options. Do not add embedding model parameters to per-call embedding generation methods.
 - Do not add migrations, legacy format readers, compatibility wrappers, or fallback loading paths unless the user explicitly requests compatibility.
+- Character Bible live UI updates must update the page data source and recompute the filtered view without a full page reload or ViewModel reset.

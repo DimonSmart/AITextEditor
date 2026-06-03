@@ -649,6 +649,52 @@ public sealed class WebCharacterBibleServiceTests
     }
 
     [Fact]
+    public async Task OperationRunner_AppliesWorkflowDossierSnapshotsBeforeCompletion()
+    {
+        var output = CreateOutput("generated", "Alicia Final");
+        var releaseWorkflow = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var workspace = new EditorWorkspaceState();
+        var runner = new CharacterBibleOperationRunner(
+            workspace,
+            new BlockingWorkflowClient(
+                releaseWorkflow.Task,
+                output,
+                [
+                    new CharacterBibleWorkflowProgress(
+                        "resolve",
+                        "Resolved snapshot.",
+                        DossiersSnapshot: CreateDossiers("Alice")),
+                    new CharacterBibleWorkflowProgress(
+                        "patch",
+                        "Patched snapshot.",
+                        DossiersSnapshot: CreateDossiers("Alicia"))
+                ]));
+
+        var collectTask = CollectAsync(runner.RunAsync(
+            new CharacterBibleOperationRequest("Generate character bible", null),
+            CancellationToken.None));
+
+        await WaitUntilAsync(() =>
+        {
+            var dossier = workspace.CharacterDossiers.GetDossiers().Characters.SingleOrDefault();
+            return workspace.IsReadOnly && dossier?.Name == "Alicia";
+        });
+
+        var liveDossier = Assert.Single(workspace.CharacterDossiers.GetDossiers().Characters);
+        Assert.Equal(1, liveDossier.CharacterId);
+        Assert.Equal("Alicia", liveDossier.Name);
+
+        releaseWorkflow.SetResult();
+        var events = await collectTask;
+
+        Assert.Contains(events, item => item.Message == "Resolved snapshot.");
+        Assert.Contains(events, item => item.Message == "Patched snapshot.");
+        var finalDossier = Assert.Single(workspace.CharacterDossiers.GetDossiers().Characters);
+        Assert.Equal(1, finalDossier.CharacterId);
+        Assert.Equal("Alicia Final", finalDossier.Name);
+    }
+
+    [Fact]
     public async Task OperationRunner_SavesGeneratedCharacterBibleWhenBookPathIsKnown()
     {
         var directory = Path.Combine(Path.GetTempPath(), "AiTextEditorTests", Guid.NewGuid().ToString("N"));
@@ -752,15 +798,20 @@ public sealed class WebCharacterBibleServiceTests
             item => item.Type == CharacterBibleOperationEventType.Completed && ReferenceEquals(output, item.Output));
     }
 
-    private static CharacterBibleWorkflowOutput CreateOutput(string status)
+    private static CharacterBibleWorkflowOutput CreateOutput(string status, string name = "Alice")
     {
-        var dossiers = new CharacterDossiers(
+        return new CharacterBibleWorkflowOutput(CreateDossiers(name), status, 0, 1, 0, 0, 0, []);
+    }
+
+    private static CharacterDossiers CreateDossiers(string name)
+    {
+        return new CharacterDossiers(
             "d1",
             1,
             [
                 new CharacterDossier(
                     1,
-                    "Alice",
+                    name,
                     ["Al"],
                     new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
                     {
@@ -768,7 +819,6 @@ public sealed class WebCharacterBibleServiceTests
                     },
                     "female")
             ]);
-        return new CharacterBibleWorkflowOutput(dossiers, status, 0, 1, 0, 0, 0, []);
     }
 
     private static CharacterProfile FullProfile()
@@ -845,11 +895,16 @@ public sealed class WebCharacterBibleServiceTests
     {
         private readonly Task releaseWorkflow;
         private readonly CharacterBibleWorkflowOutput output;
+        private readonly IReadOnlyList<CharacterBibleWorkflowProgress> progressEvents;
 
-        public BlockingWorkflowClient(Task releaseWorkflow, CharacterBibleWorkflowOutput output)
+        public BlockingWorkflowClient(
+            Task releaseWorkflow,
+            CharacterBibleWorkflowOutput output,
+            IReadOnlyList<CharacterBibleWorkflowProgress>? progressEvents = null)
         {
             this.releaseWorkflow = releaseWorkflow;
             this.output = output;
+            this.progressEvents = progressEvents ?? [];
         }
 
         public async Task<CharacterBibleWorkflowOutput> RunAsync(
@@ -858,6 +913,11 @@ public sealed class WebCharacterBibleServiceTests
             IProgress<CharacterBibleWorkflowProgress>? progress,
             CancellationToken cancellationToken)
         {
+            foreach (var progressEvent in progressEvents)
+            {
+                progress?.Report(progressEvent);
+            }
+
             await releaseWorkflow.WaitAsync(cancellationToken);
             return output;
         }

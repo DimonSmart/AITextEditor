@@ -75,7 +75,7 @@ public sealed class CharacterBibleOperationRunner : ICharacterBibleOperationRunn
                 SingleReader = true,
                 SingleWriter = false
             });
-        var workflowProgress = new CharacterBibleOperationProgress(progressChannel.Writer);
+        var workflowProgress = new CharacterBibleOperationProgress(workspace, progressChannel.Writer);
 
         Task<CharacterBibleWorkflowOutput>? workflowTask = null;
         CharacterBibleOperationEvent? immediateFailure = null;
@@ -161,16 +161,25 @@ public sealed class CharacterBibleOperationRunner : ICharacterBibleOperationRunn
 
     private sealed class CharacterBibleOperationProgress : IProgress<CharacterBibleWorkflowProgress>
     {
+        private readonly EditorWorkspaceState workspace;
         private readonly ChannelWriter<CharacterBibleOperationEvent> writer;
 
-        public CharacterBibleOperationProgress(ChannelWriter<CharacterBibleOperationEvent> writer)
+        public CharacterBibleOperationProgress(
+            EditorWorkspaceState workspace,
+            ChannelWriter<CharacterBibleOperationEvent> writer)
         {
+            this.workspace = workspace ?? throw new ArgumentNullException(nameof(workspace));
             this.writer = writer ?? throw new ArgumentNullException(nameof(writer));
         }
 
         public void Report(CharacterBibleWorkflowProgress value)
         {
             ArgumentNullException.ThrowIfNull(value);
+
+            if (value.DossiersSnapshot is not null)
+            {
+                workspace.ReplaceCharacterDossiers(value.DossiersSnapshot);
+            }
 
             writer.TryWrite(new CharacterBibleOperationEvent(
                 CharacterBibleOperationEventType.Progress,
