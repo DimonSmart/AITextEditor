@@ -66,6 +66,14 @@ internal sealed class CharacterBibleResolver
         IProgress<CharacterBibleWorkflowProgress>? progress,
         CancellationToken cancellationToken)
     {
+        if (currentArchive.Characters.Count == 0)
+        {
+            CharacterBibleRunLogScope.Current?.Info(
+                "resolve.fast_path.empty_archive",
+                $"candidateIndex={candidateIndex} name={LogValueFormatter.Quote(candidate.CanonicalName)} decision=new reason={LogValueFormatter.Quote("archive is empty")}");
+            return IdentityResolutionDecision.New("Archive is empty; candidate cannot match an existing character.");
+        }
+
         var searchTool = new CharacterArchiveSearchToolAdapter(
             currentArchive,
             characterVectorSearchTool,

@@ -29,6 +29,12 @@ internal sealed class CharacterArchiveSearchToolAdapter : ICharacterArchiveSearc
 
     public IReadOnlySet<int> ObservedCharacterIds => observedCharacterIds;
 
+    internal int ArchiveSize => currentArchive.Characters.Count;
+
+    internal int? CandidateIndex => candidateIndex;
+
+    internal string? CandidateName => candidateName;
+
     [Description(CharacterArchiveSearchToolDescriptions.Tool)]
     public async Task<CharacterArchiveSearchResult> SearchCharactersAsync(
         [Description(CharacterArchiveSearchToolDescriptions.QueryParameter)] string query,
@@ -40,6 +46,25 @@ internal sealed class CharacterArchiveSearchToolAdapter : ICharacterArchiveSearc
         CharacterBibleRunLogScope.Current?.Debug(
             "resolve.tool.search",
             $"candidateIndex={candidateIndex} name={LogValueFormatter.Quote(candidateName)} query={LogValueFormatter.Quote(query)} limit={effectiveLimit} archiveSize={archiveSize}");
+        if (archiveSize == 0)
+        {
+            CharacterBibleRunLogScope.Current?.Info(
+                "resolve.fast_path.search_empty_archive",
+                $"candidateIndex={candidateIndex} name={LogValueFormatter.Quote(candidateName)} decision=new returned=0 archiveSize=0");
+            var emptyResult = new CharacterArchiveSearchResult(
+                query,
+                effectiveLimit,
+                archiveSize,
+                0,
+                CharacterArchiveSearchResultNotes.EmptyArchive,
+                []);
+            CharacterBibleLlmInputLogger.DebugInput(
+                "resolve.tool.search.result",
+                $"candidateIndex={candidateIndex} name={LogValueFormatter.Quote(candidateName)} returned=0 archiveSize=0 modelType={nameof(CharacterArchiveSearchResult)}",
+                emptyResult);
+            return emptyResult;
+        }
+
         var hits = await vectorSearchTool.SearchAsync(
             currentArchive,
             query,

@@ -1,6 +1,9 @@
 using AiTextEditor.Agent;
 using AiTextEditor.Agent.CharacterBible;
 using AiTextEditor.Agent.CharacterBible.Extraction;
+using AiTextEditor.Agent.CharacterBible.Resolution;
+using AiTextEditor.Agent.CharacterBible.VectorSearch;
+using AiTextEditor.Core.Model;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -226,6 +229,41 @@ public sealed class AgenticModelClientTests
     }
 
     [Fact]
+    public async Task CharacterIdentityResolutionClient_WhenArchiveSearchIsEmpty_ReturnsNewWithoutModelCall()
+    {
+        var chatClient = new CapturingChatClient();
+        var agent = new ChatClientAgent(
+            chatClient,
+            new ChatClientAgentOptions
+            {
+                Name = "test_agent",
+                UseProvidedChatClientAsIs = true
+            },
+            NullLoggerFactory.Instance);
+        var modelClient = new AgenticFrameworkModelClient(
+            agent,
+            NullLogger<AgenticFrameworkModelClient>.Instance);
+        var resolutionClient = new AgenticCharacterIdentityResolutionModelClient(
+            modelClient,
+            NullLogger<AgenticCharacterIdentityResolutionModelClient>.Instance);
+        var searchTool = new CharacterArchiveSearchToolAdapter(
+            new CharacterDossiers("test", 1, [], 1),
+            new ThrowingCharacterVectorSearchTool(),
+            candidateIndex: 1,
+            candidateName: "Незнайка");
+
+        var result = await resolutionClient.ResolveAsync(
+            new CharacterIdentityResolutionModelRequest(
+                "system",
+                "user",
+                searchTool));
+
+        Assert.Equal(CharacterIdentityDecision.New, result.Decision);
+        Assert.Equal("Archive search returned empty archive; candidate cannot match an existing character.", result.Reason);
+        Assert.Equal(0, chatClient.CallCount);
+    }
+
+    [Fact]
     public async Task AgenticFrameworkModelClient_RetriesWhenResponseContractIsInvalid()
     {
         var chatClient = new CapturingChatClient(
@@ -337,6 +375,52 @@ public sealed class AgenticModelClientTests
         Assert.Equal("John", character.Name);
         Assert.Equal("Johnny", Assert.Single(character.Aliases!));
         Assert.Equal("p1", Assert.Single(character.Pointers!));
+    }
+
+    [Fact]
+    public async Task CharacterExtractionClient_WhenAliasesAreMissing_NormalizesToEmptyListWithoutRetry()
+    {
+        var chatClient = new CapturingChatClient(
+            """
+            {
+              "characters": [
+                {
+                  "name": "John",
+                  "gender": "unknown",
+                  "pointers": [ "p1" ]
+                }
+              ]
+            }
+            """);
+        var agent = new ChatClientAgent(
+            chatClient,
+            new ChatClientAgentOptions
+            {
+                Name = "test_agent",
+                UseProvidedChatClientAsIs = true
+            },
+            NullLoggerFactory.Instance);
+        var modelClient = new AgenticFrameworkModelClient(
+            agent,
+            NullLogger<AgenticFrameworkModelClient>.Instance);
+        var extractionClient = new AgenticCharacterExtractionModelClient(
+            modelClient,
+            NullLogger<AgenticCharacterExtractionModelClient>.Instance);
+        var diagnostics = new List<AgenticModelDiagnostic>();
+
+        var result = await extractionClient.ExtractCharactersAsync(
+            new CharacterExtractionModelRequest(
+                "system",
+                "user",
+                new ListProgress<AgenticModelDiagnostic>(diagnostics)));
+
+        var character = Assert.Single(result.Characters);
+        Assert.Equal("John", character.Name);
+        Assert.Empty(character.Aliases!);
+        Assert.Equal(1, chatClient.CallCount);
+        Assert.DoesNotContain(diagnostics, item => item.Kind == AgenticModelDiagnosticKind.InvalidContract);
+        Assert.DoesNotContain(diagnostics, item => item.Kind == AgenticModelDiagnosticKind.Retry);
+        Assert.DoesNotContain(diagnostics, item => item.Kind == AgenticModelDiagnosticKind.MalformedResponse);
     }
 
 
@@ -478,6 +562,18 @@ public sealed class AgenticModelClientTests
             }
 
             return Task.FromResult(typedResponse);
+        }
+    }
+
+    private sealed class ThrowingCharacterVectorSearchTool : ICharacterVectorSearchTool
+    {
+        public Task<IReadOnlyList<CharacterVectorSearchHit>> SearchAsync(
+            CharacterDossiers dossiers,
+            string query,
+            int limit,
+            CancellationToken cancellationToken)
+        {
+            throw new InvalidOperationException("Vector search should not be called for an empty archive.");
         }
     }
 

@@ -2,6 +2,7 @@ using AiTextEditor.Agent.CharacterBible.Diagnostics;
 using AiTextEditor.Agent.CharacterBible.Extraction;
 using AiTextEditor.Agent.CharacterBible.Patching;
 using AiTextEditor.Agent.CharacterBible.Resolution;
+using AiTextEditor.Agent.CharacterBible.VectorSearch;
 using AiTextEditor.Agent.CharacterBible;
 using AiTextEditor.Core.Model;
 using Xunit;
@@ -168,6 +169,51 @@ public sealed class CharacterBibleLlmInputLoggerTests
     }
 
     [Fact]
+    public async Task Resolver_WhenArchiveIsEmpty_CreatesNewCharacterWithoutLlmOrVectorSearch()
+    {
+        var logger = new CapturingCharacterBibleRunLogger();
+        var resolver = new CharacterBibleResolver(
+            new CharacterBibleExtractionLimits(),
+            new ThrowingIdentityResolutionModelClient(),
+            new ThrowingCharacterVectorSearchTool());
+        var session = CharacterDossierEditSession.CreateFrom(new CharacterDossiers(
+            "test",
+            3,
+            [],
+            1));
+        var candidate = new CharacterBibleCharacterCandidate(
+            "Незнайка",
+            "unknown",
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
+            [new CharacterBibleCandidateEvidence("1.1.1.p1", "Незнайка вошёл.")]);
+
+        using (CharacterBibleRunLogScope.Push(logger))
+        {
+            await resolver.ResolveAndUpdateCatalogAsync(
+                new CharacterBibleWorkflowInput(),
+                session,
+                1,
+                [candidate]);
+        }
+
+        var created = Assert.Single(session.Current.Characters);
+        Assert.Equal(1, created.CharacterId);
+        Assert.Equal("Незнайка", created.Name);
+        var decision = Assert.Single(session.Decisions);
+        Assert.Equal(CharacterBibleDecisionKind.New, decision.Kind);
+        Assert.Equal(1, decision.CharacterId);
+        Assert.Contains(logger.InfoMessages, message =>
+            message.EventName == "resolve.fast_path.empty_archive"
+            && message.Message.Contains("candidateIndex=1", StringComparison.Ordinal)
+            && message.Message.Contains("decision=new", StringComparison.Ordinal));
+        Assert.Contains(logger.InfoMessages, message => message.EventName == "archive.character.created");
+        Assert.Contains(logger.InfoMessages, message =>
+            message.EventName == "resolve.apply"
+            && message.Message.Contains("decision=new", StringComparison.Ordinal));
+        Assert.DoesNotContain(logger.Blocks, block => block.EventName == "resolve.llm.input");
+    }
+
+    [Fact]
     public async Task ExistingDecision_ContainsCharacterId()
     {
         var applier = new CharacterBibleCandidateResolutionApplier(new CharacterBibleExtractionLimits());
@@ -269,6 +315,28 @@ public sealed class CharacterBibleLlmInputLoggerTests
 
         public void Error(string eventName, string message, Exception? exception = null)
         {
+        }
+    }
+
+    private sealed class ThrowingIdentityResolutionModelClient : ICharacterIdentityResolutionModelClient
+    {
+        public Task<CharacterIdentityResolutionResponse> ResolveAsync(
+            CharacterIdentityResolutionModelRequest request,
+            CancellationToken cancellationToken = default)
+        {
+            throw new InvalidOperationException("Identity resolver should not be called for an empty archive.");
+        }
+    }
+
+    private sealed class ThrowingCharacterVectorSearchTool : ICharacterVectorSearchTool
+    {
+        public Task<IReadOnlyList<CharacterVectorSearchHit>> SearchAsync(
+            CharacterDossiers dossiers,
+            string query,
+            int limit,
+            CancellationToken cancellationToken)
+        {
+            throw new InvalidOperationException("Vector search should not be called for an empty archive.");
         }
     }
 }

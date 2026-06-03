@@ -89,6 +89,23 @@ public sealed class CharacterArchiveSearchToolAdapterTests
         Assert.Equal(20, vectorSearchTool.RequestedLimits[1]);
     }
 
+    [Fact]
+    public async Task SearchCharactersAsync_WhenArchiveIsEmpty_ReturnsNewCandidateMetadataWithoutVectorSearch()
+    {
+        var archive = new CharacterDossiers("test", 1, [], 1);
+        var vectorSearchTool = new ThrowingCharacterVectorSearchTool();
+        var adapter = new CharacterArchiveSearchToolAdapter(archive, vectorSearchTool);
+
+        var result = await adapter.SearchCharactersAsync("Незнайка", 5, CancellationToken.None);
+
+        Assert.Equal("Незнайка", result.Query);
+        Assert.Equal(5, result.Limit);
+        Assert.Equal(0, result.ArchiveSize);
+        Assert.Equal(0, result.ReturnedCount);
+        Assert.Equal(CharacterArchiveSearchResultNotes.EmptyArchive, result.Note);
+        Assert.Empty(result.Hits);
+    }
+
     private static CharacterDossier Character(
         int characterId,
         string name,
@@ -131,6 +148,18 @@ public sealed class CharacterArchiveSearchToolAdapterTests
         {
             RequestedLimits.Add(limit);
             return Task.FromResult<IReadOnlyList<CharacterVectorSearchHit>>(hits.Take(limit).ToArray());
+        }
+    }
+
+    private sealed class ThrowingCharacterVectorSearchTool : ICharacterVectorSearchTool
+    {
+        public Task<IReadOnlyList<CharacterVectorSearchHit>> SearchAsync(
+            CharacterDossiers dossiers,
+            string query,
+            int limit,
+            CancellationToken cancellationToken)
+        {
+            throw new InvalidOperationException("Vector search should not be called for an empty archive.");
         }
     }
 }

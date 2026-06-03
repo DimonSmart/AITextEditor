@@ -26,7 +26,6 @@ public sealed record ExtractedLocalCharacter(
     [property: JsonPropertyName("name")] string? Name,
     [property: JsonRequired]
     [property: JsonPropertyName("gender")] string? Gender,
-    [property: JsonRequired]
     [property: JsonPropertyName("aliases")] IReadOnlyList<string>? Aliases,
     [property: JsonRequired]
     [property: JsonPropertyName("pointers")] IReadOnlyList<string>? Pointers);
@@ -63,7 +62,7 @@ public sealed class AgenticCharacterExtractionModelClient : ICharacterExtraction
                 Diagnostics: request.Diagnostics),
             cancellationToken).ConfigureAwait(false);
 
-        return extractionResponse;
+        return NormalizeResponse(extractionResponse);
     }
 
     private static AgenticModelValidationResult ValidateResponseContract(CharacterExtractionResponse response)
@@ -98,12 +97,6 @@ public sealed class AgenticCharacterExtractionModelClient : ICharacterExtraction
                 return false;
             }
 
-            if (character.Aliases is null)
-            {
-                error = $"characters[{characterIndex}].aliases is required.";
-                return false;
-            }
-
             if (character.Pointers is null)
             {
                 error = $"characters[{characterIndex}].pointers is required.";
@@ -128,5 +121,13 @@ public sealed class AgenticCharacterExtractionModelClient : ICharacterExtraction
 
         error = string.Empty;
         return true;
+    }
+
+    private static CharacterExtractionResponse NormalizeResponse(CharacterExtractionResponse response)
+    {
+        return new CharacterExtractionResponse(
+            response.Characters
+                .Select(character => character with { Aliases = character.Aliases ?? [] })
+                .ToArray());
     }
 }

@@ -35,6 +35,9 @@ public static class CharacterArchiveSearchResultNotes
 {
     public const string ClosestEntriesMayBeUnrelated =
         "Returned entries are the closest available archive entries. They may all be unrelated when the archive is small. Score is vector similarity, not identity confidence.";
+
+    public const string EmptyArchive =
+        "The archive is empty. The candidate cannot match an existing archive character.";
 }
 
 internal static class CharacterArchiveSearchToolDescriptions

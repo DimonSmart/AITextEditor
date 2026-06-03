@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using AiTextEditor.Agent;
+using AiTextEditor.Agent.CharacterBible.Diagnostics;
 using AiTextEditor.Core.Model;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
@@ -266,6 +267,16 @@ public sealed class AgenticCharacterIdentityResolutionModelClient : ICharacterId
         ArgumentException.ThrowIfNullOrWhiteSpace(request.SystemPrompt);
         ArgumentException.ThrowIfNullOrWhiteSpace(request.UserPrompt);
         ArgumentNullException.ThrowIfNull(request.SearchTool);
+
+        if (request.SearchTool is CharacterArchiveSearchToolAdapter { ArchiveSize: 0 } searchAdapter)
+        {
+            CharacterBibleRunLogScope.Current?.Info(
+                "resolve.fast_path.search_empty_archive",
+                $"candidateIndex={searchAdapter.CandidateIndex} name={LogValueFormatter.Quote(searchAdapter.CandidateName)} decision=new returned=0 archiveSize=0");
+            return new CharacterIdentityResolutionResponse(
+                CharacterIdentityDecision.New,
+                Reason: "Archive search returned empty archive; candidate cannot match an existing character.");
+        }
 
         var searchFunction = AIFunctionFactory.Create(
             SearchMethod,
