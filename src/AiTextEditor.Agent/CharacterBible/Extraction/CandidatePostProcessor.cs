@@ -62,9 +62,9 @@ internal sealed class CandidatePostProcessor
 
     private static string BuildExactRepeatKey(ExtractedLocalCharacter character)
     {
-        var aliases = string.Join(
+        var observedNameForms = string.Join(
             "|",
-            CharacterBibleExtractionMapper.NormalizeAliases(character.Aliases)
+            CharacterBibleExtractionMapper.NormalizeObservedNameForms(character.ObservedNameForms)
                 .Order(StringComparer.Ordinal));
         var pointers = string.Join(
             "|",
@@ -75,7 +75,7 @@ internal sealed class CandidatePostProcessor
             "\u001f",
             Normalize(character.Name),
             Normalize(character.Gender),
-            aliases,
+            observedNameForms,
             pointers);
     }
 

@@ -1,4 +1,5 @@
 using AiTextEditor.Agent.CharacterBible.Extraction;
+using AiTextEditor.Agent.CharacterBible.Normalization;
 using AiTextEditor.Agent.CharacterBible.Patching;
 using AiTextEditor.Agent.CharacterBible.Resolution;
 using AiTextEditor.Agent.CharacterBible.VectorSearch;
@@ -16,6 +17,7 @@ public sealed class CharacterDossiersGenerator
     private readonly CharacterBibleTextCollector textCollector;
     private readonly CharacterBibleCandidateExtractor candidateExtractor;
     private readonly CharacterBibleResolver resolver;
+    private readonly CharacterCanonicalNameNormalizer canonicalNameNormalizer;
     private readonly CharacterBibleProfileUpdater profileUpdater;
     private readonly CharacterBibleExtractionLimits limits;
 
@@ -29,6 +31,8 @@ public sealed class CharacterDossiersGenerator
         ICharacterProfileUpdateModelClient characterProfileUpdateModelClient,
         CharacterProfileUpdatePromptBuilder characterProfileUpdatePromptBuilder,
         ICharacterIdentityResolutionModelClient identityResolutionModelClient,
+        ICharacterCanonicalNameNormalizationModelClient canonicalNameNormalizationModelClient,
+        CharacterCanonicalNameNormalizationPromptBuilder canonicalNameNormalizationPromptBuilder,
         ICharacterVectorSearchTool characterVectorSearchTool,
         ILoggerFactory? loggerFactory = null,
         CharacterIdentityResolutionPromptBuilder? identityResolutionPromptBuilder = null,
@@ -44,6 +48,8 @@ public sealed class CharacterDossiersGenerator
         ArgumentNullException.ThrowIfNull(characterProfileUpdateModelClient);
         ArgumentNullException.ThrowIfNull(characterProfileUpdatePromptBuilder);
         ArgumentNullException.ThrowIfNull(identityResolutionModelClient);
+        ArgumentNullException.ThrowIfNull(canonicalNameNormalizationModelClient);
+        ArgumentNullException.ThrowIfNull(canonicalNameNormalizationPromptBuilder);
         ArgumentNullException.ThrowIfNull(characterVectorSearchTool);
 
         this.dossierService = dossierService;
@@ -63,6 +69,10 @@ public sealed class CharacterDossiersGenerator
             splitCandidateModelClient,
             splitCandidatePromptBuilder,
             loggerFactory?.CreateLogger<CharacterBibleResolver>() ?? NullLogger<CharacterBibleResolver>.Instance);
+        canonicalNameNormalizer = new CharacterCanonicalNameNormalizer(
+            canonicalNameNormalizationModelClient,
+            canonicalNameNormalizationPromptBuilder,
+            loggerFactory?.CreateLogger<CharacterCanonicalNameNormalizer>() ?? NullLogger<CharacterCanonicalNameNormalizer>.Instance);
         profileUpdater = new CharacterBibleProfileUpdater(
             characterProfileUpdateModelClient,
             characterProfileUpdatePromptBuilder,
@@ -106,6 +116,14 @@ public sealed class CharacterDossiersGenerator
         return resolver.ResolveAndUpdateCatalogAsync(request, session, paragraphCount, candidates, progress, cancellationToken);
     }
 
+    internal Task<CharacterBibleRunState> NormalizeCanonicalNamesAsync(
+        CharacterBibleRunState runState,
+        IProgress<CharacterBibleWorkflowProgress>? progress = null,
+        CancellationToken cancellationToken = default)
+    {
+        return canonicalNameNormalizer.NormalizePendingAsync(runState, progress, cancellationToken);
+    }
+
     internal Task<CharacterBibleProfileUpdateResult> UpdateProfilesAsync(
         CharacterBibleRunState runState,
         IProgress<CharacterBibleWorkflowProgress>? progress = null,
@@ -131,6 +149,7 @@ public sealed class CharacterDossiersGenerator
         var extraction = await ExtractCandidatesAsync(paragraphs, cancellationToken: cancellationToken);
         var session = CreateEditSession();
         var runState = await ResolveCandidatesIntoCatalogAsync(new CharacterBibleWorkflowInput(), session, paragraphs.Count, extraction.Candidates, cancellationToken: cancellationToken);
+        runState = await NormalizeCanonicalNamesAsync(runState, cancellationToken: cancellationToken);
         runState = (await UpdateProfilesAsync(runState, cancellationToken: cancellationToken)).RunState;
         return FinishRun(runState);
     }
@@ -155,6 +174,7 @@ public sealed class CharacterDossiersGenerator
         var extraction = await ExtractCandidatesAsync(paragraphs, cancellationToken: cancellationToken);
         var session = CreateEditSession();
         var runState = await ResolveCandidatesIntoCatalogAsync(new CharacterBibleWorkflowInput(changedPointers), session, paragraphs.Count, extraction.Candidates, cancellationToken: cancellationToken);
+        runState = await NormalizeCanonicalNamesAsync(runState, cancellationToken: cancellationToken);
         runState = (await UpdateProfilesAsync(runState, cancellationToken: cancellationToken)).RunState;
         return FinishRun(runState);
     }
@@ -179,6 +199,7 @@ public sealed class CharacterDossiersGenerator
         var changedPointers = paragraphs.Select(paragraph => paragraph.Pointer).ToArray();
         var session = CreateEditSession();
         var runState = await ResolveCandidatesIntoCatalogAsync(new CharacterBibleWorkflowInput(changedPointers), session, paragraphs.Count, extraction.Candidates, cancellationToken: cancellationToken);
+        runState = await NormalizeCanonicalNamesAsync(runState, cancellationToken: cancellationToken);
         runState = (await UpdateProfilesAsync(runState, cancellationToken: cancellationToken)).RunState;
         return FinishRun(runState);
     }

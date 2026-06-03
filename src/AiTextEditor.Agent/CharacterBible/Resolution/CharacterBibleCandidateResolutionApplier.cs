@@ -44,6 +44,7 @@ internal sealed class CharacterBibleCandidateResolutionApplier
 
         var importanceAccumulator = new CharacterImportanceAccumulator();
         var createdCharacterIds = new HashSet<int>();
+        var pendingCanonicalNameNormalization = new HashSet<int>();
 
         for (var index = 0; index < candidates.Count; index++)
         {
@@ -52,7 +53,7 @@ internal sealed class CharacterBibleCandidateResolutionApplier
             var candidateIndex = index + 1;
             CharacterBibleRunLogScope.Current?.Info(
                 "resolve.candidate.start",
-                $"candidateIndex={candidateIndex} total={candidates.Count} name={LogValueFormatter.Quote(candidate.CanonicalName)} gender={LogValueFormatter.Quote(candidate.Gender)} aliases={LogValueFormatter.List(candidate.AliasExamples.Keys)} pointers={LogValueFormatter.List(candidate.Evidence.Select(evidence => evidence.Pointer))}");
+                $"candidateIndex={candidateIndex} total={candidates.Count} name={LogValueFormatter.Quote(candidate.CanonicalName)} gender={LogValueFormatter.Quote(candidate.Gender)} observedNameForms={LogValueFormatter.List(candidate.ObservedNameFormExamples.Keys)} pointers={LogValueFormatter.List(candidate.Evidence.Select(evidence => evidence.Pointer))}");
             var identityDecision = await resolveIdentity(session.Current, candidate, candidateIndex, cancellationToken).ConfigureAwait(false);
 
             CharacterBibleRunLogScope.Current?.Info(
@@ -63,7 +64,8 @@ internal sealed class CharacterBibleCandidateResolutionApplier
                 candidate,
                 identityDecision,
                 importanceAccumulator,
-                createdCharacterIds);
+                createdCharacterIds,
+                pendingCanonicalNameNormalization);
             var decision = session.Decisions[^1];
             CharacterBibleRunLogScope.Current?.Info(
                 "resolve.apply",
@@ -86,7 +88,8 @@ internal sealed class CharacterBibleCandidateResolutionApplier
             session,
             paragraphCount,
             candidates,
-            CharacterBibleModelResponseErrorStatistics.Empty);
+            CharacterBibleModelResponseErrorStatistics.Empty,
+            pendingCanonicalNameNormalization);
     }
 
     private static void ApplyDecision(
@@ -94,7 +97,8 @@ internal sealed class CharacterBibleCandidateResolutionApplier
         CharacterBibleCharacterCandidate candidate,
         IdentityResolutionDecision identityDecision,
         CharacterImportanceAccumulator importanceAccumulator,
-        ISet<int> createdCharacterIds)
+        ISet<int> createdCharacterIds,
+        ISet<int> pendingCanonicalNameNormalization)
     {
         var canonicalName = candidate.CanonicalName.Trim();
         CharacterBibleResolverDecision resolverDecision;
@@ -156,13 +160,17 @@ internal sealed class CharacterBibleCandidateResolutionApplier
         if (created)
         {
             createdCharacterIds.Add(dossier.CharacterId);
+            pendingCanonicalNameNormalization.Add(dossier.CharacterId);
             CharacterBibleRunLogScope.Current?.Info(
                 "archive.character.created",
                 $"characterId={dossier.CharacterId} nextCharacterId={session.Current.NextCharacterId} name={LogValueFormatter.Quote(dossier.Name)}");
         }
 
-        session.RefineCanonicalName(dossier.CharacterId, candidate, identityDecision.ExactNameMatch);
-        session.MergeAliases(dossier.CharacterId, candidate, identityDecision.ExactNameMatch);
+        if (session.MergeObservedNameForms(dossier.CharacterId, candidate, identityDecision.ExactNameMatch))
+        {
+            pendingCanonicalNameNormalization.Add(dossier.CharacterId);
+        }
+
         session.SetGenderIfUnknown(dossier.CharacterId, candidate.Gender);
 
         resolverDecision = new CharacterBibleResolverDecision(
@@ -194,7 +202,7 @@ internal sealed class CharacterBibleCandidateResolutionApplier
         return new SuspectArchiveEntry(
             candidate.CanonicalName,
             candidate.Gender,
-            candidate.AliasExamples.Keys.ToArray(),
+            candidate.ObservedNameFormExamples.Keys.ToArray(),
             candidate.Evidence.Select(evidence => new CharacterEvidenceIndexEntry(
                 evidence.Pointer,
                 evidence.Excerpt)).ToArray(),

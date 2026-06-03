@@ -24,6 +24,8 @@
                       LogicalName="AiTextEditor.Agent.CharacterBible.Patching.Prompts.profile-update.system.md" />
     <EmbeddedResource Include="CharacterBible\Resolution\Prompts\character-identity-resolution.system.md"
                       LogicalName="AiTextEditor.Agent.CharacterBible.Resolution.Prompts.character-identity-resolution.system.md" />
+    <EmbeddedResource Include="CharacterBible\Normalization\Prompts\normalize-character-canonical-name.system.md"
+                      LogicalName="AiTextEditor.Agent.CharacterBible.Normalization.Prompts.normalize-character-canonical-name.system.md" />
     <EmbeddedResource Include="CharacterBible\Patching\Prompts\split-candidate.system.md"
                       LogicalName="AiTextEditor.Agent.CharacterBible.Patching.Prompts.split-candidate.system.md" />
   </ItemGroup>

@@ -7,7 +7,7 @@ namespace AiTextEditor.Core.Services;
 
 public sealed class CharacterDossierService
 {
-    public const int CurrentVersion = 3;
+    public const int CurrentVersion = 4;
 
     private static readonly JsonSerializerOptions DossierJsonOptions = new(SerializationOptions.RelaxedCompact)
     {
@@ -39,12 +39,12 @@ public sealed class CharacterDossierService
         lock (syncRoot)
         {
             var characterId = dossiers.NextCharacterId;
-            var aliasExamples = NormalizeAliasExamples(draft.AliasExamples);
+            var observedNameFormExamples = NormalizeObservedNameFormExamples(draft.ObservedNameFormExamples);
             var character = NormalizeDossier(new CharacterDossier(
                 characterId,
                 draft.Name,
-                BuildAliases(aliasExamples),
-                aliasExamples,
+                BuildObservedNameForms(observedNameFormExamples),
+                observedNameFormExamples,
                 NormalizeGender(draft.Gender),
                 CharacterImportance.NormalizeLevel(draft.ImportanceLevel),
                 CharacterProfile.Normalize(draft.Profile)));
@@ -85,12 +85,12 @@ public sealed class CharacterDossierService
         }
     }
 
-    public IReadOnlyCollection<CharacterDossier> FindByNameOrAlias(string nameOrAlias)
+    public IReadOnlyCollection<CharacterDossier> FindByNameOrObservedNameForm(string nameOrObservedNameForm)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(nameOrAlias);
+        ArgumentException.ThrowIfNullOrWhiteSpace(nameOrObservedNameForm);
         lock (syncRoot)
         {
-            var matches = new CharacterNameIndex(dossiers.Characters).FindByName(nameOrAlias).ToHashSet();
+            var matches = new CharacterNameIndex(dossiers.Characters).FindByName(nameOrObservedNameForm).ToHashSet();
             return dossiers.Characters.Where(character => matches.Contains(character.CharacterId)).ToList();
         }
     }
@@ -99,7 +99,7 @@ public sealed class CharacterDossierService
         int characterId,
         string? name,
         string? gender,
-        IReadOnlyDictionary<string, string>? aliasExamples,
+        IReadOnlyDictionary<string, string>? observedNameFormExamples,
         CharacterProfile? profile = null)
     {
         ValidateCharacterId(characterId);
@@ -107,24 +107,24 @@ public sealed class CharacterDossierService
         {
             var existing = TryGetDossier(characterId)
                 ?? throw new InvalidOperationException($"character_not_found: {characterId}");
-            return UpsertDossier(Merge(existing, name, gender, aliasExamples, profile));
+            return UpsertDossier(Merge(existing, name, gender, observedNameFormExamples, profile));
         }
     }
 
     public ResolveAndUpsertResult ResolveAndUpsertDossier(
         string name,
         string? gender,
-        IReadOnlyDictionary<string, string>? aliasExamples,
+        IReadOnlyDictionary<string, string>? observedNameFormExamples,
         CharacterProfile? profile = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         var canonicalName = name.Trim();
         var keys = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { canonicalName };
-        if (aliasExamples is not null)
+        if (observedNameFormExamples is not null)
         {
-            foreach (var alias in aliasExamples.Keys.Where(alias => !string.IsNullOrWhiteSpace(alias)))
+            foreach (var observedNameForm in observedNameFormExamples.Keys.Where(observedNameForm => !string.IsNullOrWhiteSpace(observedNameForm)))
             {
-                keys.Add(alias.Trim());
+                keys.Add(observedNameForm.Trim());
             }
         }
 
@@ -135,20 +135,20 @@ public sealed class CharacterDossierService
             var candidates = dossiers.Characters.Where(character => candidateIds.Contains(character.CharacterId)).ToList();
             if (candidates.Count == 0)
             {
-                var created = CreateCharacter(new NewCharacterDraft(canonicalName, aliasExamples ?? new Dictionary<string, string>(), gender ?? "unknown", Profile: profile));
+                var created = CreateCharacter(new NewCharacterDraft(canonicalName, observedNameFormExamples ?? new Dictionary<string, string>(), gender ?? "unknown", Profile: profile));
                 return ResolveAndUpsertResult.Created(created.CharacterId, dossiers.DossiersId, dossiers.Version);
             }
 
             if (candidates.Count == 1)
             {
-                var saved = UpsertDossier(Merge(candidates[0], null, gender, aliasExamples, profile));
+                var saved = UpsertDossier(Merge(candidates[0], null, gender, observedNameFormExamples, profile));
                 return ResolveAndUpsertResult.Updated(saved.CharacterId, dossiers.DossiersId, dossiers.Version);
             }
 
             var exactByName = candidates.Where(character => string.Equals(character.Name, canonicalName, StringComparison.OrdinalIgnoreCase)).ToList();
             if (exactByName.Count == 1)
             {
-                var saved = UpsertDossier(Merge(exactByName[0], null, gender, aliasExamples, profile));
+                var saved = UpsertDossier(Merge(exactByName[0], null, gender, observedNameFormExamples, profile));
                 return ResolveAndUpsertResult.Updated(saved.CharacterId, dossiers.DossiersId, dossiers.Version);
             }
 
@@ -295,13 +295,13 @@ public sealed class CharacterDossierService
         CharacterDossier existing,
         string? name,
         string? gender,
-        IReadOnlyDictionary<string, string>? aliasExamples,
+        IReadOnlyDictionary<string, string>? observedNameFormExamples,
         CharacterProfile? profile)
     {
-        var mergedAliases = NormalizeAliasExamples(existing.AliasExamples);
-        foreach (var (alias, example) in NormalizeAliasExamples(aliasExamples))
+        var mergedObservedNameForms = NormalizeObservedNameFormExamples(existing.ObservedNameFormExamples);
+        foreach (var (observedNameForm, example) in NormalizeObservedNameFormExamples(observedNameFormExamples))
         {
-            mergedAliases.TryAdd(alias, example);
+            mergedObservedNameForms.TryAdd(observedNameForm, example);
         }
 
         var resolvedGender = NormalizeGender(existing.Gender);
@@ -314,8 +314,8 @@ public sealed class CharacterDossierService
         return existing with
         {
             Name = string.IsNullOrWhiteSpace(name) ? existing.Name : name.Trim(),
-            Aliases = BuildAliases(mergedAliases),
-            AliasExamples = mergedAliases,
+            ObservedNameForms = BuildObservedNameForms(mergedObservedNameForms),
+            ObservedNameFormExamples = mergedObservedNameForms,
             Gender = resolvedGender,
             Profile = CharacterProfile.MergeMissing(existing.Profile, profile)
         };
@@ -325,39 +325,39 @@ public sealed class CharacterDossierService
     {
         ValidateCharacterId(dossier.CharacterId);
         ArgumentException.ThrowIfNullOrWhiteSpace(dossier.Name);
-        var aliasExamples = NormalizeAliasExamples(dossier.AliasExamples);
+        var observedNameFormExamples = NormalizeObservedNameFormExamples(dossier.ObservedNameFormExamples);
         return dossier with
         {
             Name = dossier.Name.Trim(),
-            Aliases = BuildAliases(aliasExamples),
-            AliasExamples = aliasExamples,
+            ObservedNameForms = BuildObservedNameForms(observedNameFormExamples),
+            ObservedNameFormExamples = observedNameFormExamples,
             Gender = NormalizeGender(dossier.Gender),
             ImportanceLevel = CharacterImportance.NormalizeLevel(dossier.ImportanceLevel),
             Profile = CharacterProfile.Normalize(dossier.Profile)
         };
     }
 
-    private static Dictionary<string, string> NormalizeAliasExamples(IReadOnlyDictionary<string, string>? aliasExamples)
+    private static Dictionary<string, string> NormalizeObservedNameFormExamples(IReadOnlyDictionary<string, string>? observedNameFormExamples)
     {
         var normalized = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        if (aliasExamples is null)
+        if (observedNameFormExamples is null)
         {
             return normalized;
         }
 
-        foreach (var (alias, example) in aliasExamples)
+        foreach (var (observedNameForm, example) in observedNameFormExamples)
         {
-            if (!string.IsNullOrWhiteSpace(alias) && !string.IsNullOrWhiteSpace(example))
+            if (!string.IsNullOrWhiteSpace(observedNameForm) && !string.IsNullOrWhiteSpace(example))
             {
-                normalized.TryAdd(alias.Trim(), example.Trim());
+                normalized.TryAdd(observedNameForm.Trim(), example.Trim());
             }
         }
 
         return normalized;
     }
 
-    private static IReadOnlyList<string> BuildAliases(IReadOnlyDictionary<string, string> aliasExamples)
-        => aliasExamples.Keys.OrderBy(alias => alias, StringComparer.OrdinalIgnoreCase).ToList();
+    private static IReadOnlyList<string> BuildObservedNameForms(IReadOnlyDictionary<string, string> observedNameFormExamples)
+        => observedNameFormExamples.Keys.OrderBy(observedNameForm => observedNameForm, StringComparer.OrdinalIgnoreCase).ToList();
 
     private static string NormalizeGender(string? raw)
         => raw?.Trim().ToLowerInvariant() switch

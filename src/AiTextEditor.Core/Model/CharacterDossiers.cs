@@ -15,7 +15,7 @@ public sealed record CharacterDossiers(
 public sealed record SuspectArchiveEntry(
     string CanonicalName,
     string Gender,
-    IReadOnlyList<string> Aliases,
+    IReadOnlyList<string> ObservedNameForms,
     IReadOnlyList<CharacterEvidenceIndexEntry> Evidence,
     string Reason);
 

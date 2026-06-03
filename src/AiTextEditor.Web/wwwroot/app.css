@@ -776,7 +776,7 @@ a, .btn-link {
     font-style: italic;
 }
 
-.character-aliases {
+.character-name-forms {
     display: grid;
     gap: 0.45rem;
     min-width: 0;
@@ -789,14 +789,14 @@ a, .btn-link {
     text-transform: uppercase;
 }
 
-.character-alias-chip-row {
+.character-name-form-chip-row {
     display: flex;
     flex-wrap: wrap;
     gap: 0.4rem;
     min-width: 0;
 }
 
-.character-alias-chip {
+.character-name-form-chip {
     display: inline-block;
     max-width: 100%;
     overflow: hidden;
@@ -811,7 +811,7 @@ a, .btn-link {
     white-space: nowrap;
 }
 
-.character-alias-more {
+.character-name-form-more {
     border-color: #c7d5e2;
     background: #eef6fb;
     color: #315d80;
@@ -872,7 +872,7 @@ a, .btn-link {
     min-width: 0;
 }
 
-.character-alias-example-table {
+.character-name-form-example-table {
     border: 1px solid #e3e8ef;
     border-radius: 6px;
     overflow: hidden;

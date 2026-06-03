@@ -4,6 +4,9 @@ namespace AiTextEditor.Agent.CharacterBible.Extraction;
 
 internal static class CharacterBibleExtractionMapper
 {
+    private const int MaxObservedNameFormExampleLength = 160;
+    private const int ContextWordsPerSide = 5;
+
     public static CharacterBibleCharacterCandidate ToCandidate(
         ExtractedLocalCharacter character,
         IReadOnlyDictionary<string, TextFragment> paragraphsByPointer)
@@ -15,34 +18,33 @@ internal static class CharacterBibleExtractionMapper
         var evidence = pointers
             .Select(pointer => new CharacterBibleCandidateEvidence(pointer, paragraphsByPointer[pointer].Text.Trim()))
             .ToArray();
-        var firstEvidence = evidence[0];
-        var aliases = NormalizeAliases(character.Aliases)
+        var observedNameFormExamples = NormalizeObservedNameForms(character.ObservedNameForms)
             .ToDictionary(
-                alias => alias,
-                _ => firstEvidence.Excerpt,
+                observedNameForm => observedNameForm,
+                observedNameForm => BuildObservedNameFormExample(observedNameForm, evidence),
                 StringComparer.OrdinalIgnoreCase);
-        var aliasEvidence = aliases.Keys.ToDictionary(
-            alias => alias,
-            _ => firstEvidence,
+        var observedNameFormEvidence = observedNameFormExamples.Keys.ToDictionary(
+            observedNameForm => observedNameForm,
+            observedNameForm => FindEvidenceContaining(observedNameForm, evidence) ?? evidence[0],
             StringComparer.OrdinalIgnoreCase);
 
         return new CharacterBibleCharacterCandidate(
             character.Name?.Trim() ?? string.Empty,
             CharacterNameNormalizer.NormalizeGender(character.Gender),
-            aliases,
+            observedNameFormExamples,
             evidence)
         {
-            AliasEvidence = aliasEvidence
+            ObservedNameFormEvidence = observedNameFormEvidence
         };
     }
 
-    public static IReadOnlyList<string> NormalizeAliases(IReadOnlyList<string>? aliases)
+    public static IReadOnlyList<string> NormalizeObservedNameForms(IReadOnlyList<string>? observedNameForms)
     {
-        return (aliases ?? [])
-            .Where(alias => !string.IsNullOrWhiteSpace(alias))
-            .Select(alias => alias.Trim())
+        return (observedNameForms ?? [])
+            .Where(observedNameForm => !string.IsNullOrWhiteSpace(observedNameForm))
+            .Select(observedNameForm => observedNameForm.Trim())
             .Distinct(StringComparer.Ordinal)
-            .OrderBy(alias => alias, StringComparer.Ordinal)
+            .OrderBy(observedNameForm => observedNameForm, StringComparer.Ordinal)
             .ToArray();
     }
 
@@ -54,5 +56,89 @@ internal static class CharacterBibleExtractionMapper
             .Distinct(StringComparer.Ordinal)
             .OrderBy(pointer => pointer, StringComparer.Ordinal)
             .ToArray();
+    }
+
+    internal static string BuildObservedNameFormExample(
+        string observedNameForm,
+        IReadOnlyList<CharacterBibleCandidateEvidence> evidenceItems)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(observedNameForm);
+        ArgumentNullException.ThrowIfNull(evidenceItems);
+
+        var evidence = FindEvidenceContaining(observedNameForm, evidenceItems);
+        if (evidence is null)
+        {
+            return TrimToMaxLength(evidenceItems.FirstOrDefault()?.Excerpt ?? string.Empty, MaxObservedNameFormExampleLength);
+        }
+
+        return BuildShortContext(evidence.Excerpt, observedNameForm);
+    }
+
+    private static CharacterBibleCandidateEvidence? FindEvidenceContaining(
+        string observedNameForm,
+        IReadOnlyList<CharacterBibleCandidateEvidence> evidenceItems)
+    {
+        return evidenceItems.FirstOrDefault(evidence =>
+            !string.IsNullOrWhiteSpace(evidence.Excerpt) &&
+            evidence.Excerpt.Contains(observedNameForm, StringComparison.Ordinal));
+    }
+
+    private static string BuildShortContext(string text, string observedNameForm)
+    {
+        var index = text.IndexOf(observedNameForm, StringComparison.Ordinal);
+        if (index < 0)
+        {
+            return TrimToMaxLength(text.Trim(), MaxObservedNameFormExampleLength);
+        }
+
+        var before = text[..index];
+        var afterStart = index + observedNameForm.Length;
+        var after = afterStart >= text.Length ? string.Empty : text[afterStart..];
+        var beforeWords = TakeLastWords(before, ContextWordsPerSide, out var trimmedStart);
+        var afterWords = TakeFirstWords(after, ContextWordsPerSide, out var trimmedEnd);
+
+        var result = string.Join(
+            ' ',
+            new[]
+            {
+                trimmedStart ? "..." : string.Empty,
+                beforeWords,
+                observedNameForm,
+                afterWords,
+                trimmedEnd ? "..." : string.Empty
+            }.Where(part => !string.IsNullOrWhiteSpace(part)));
+
+        return TrimToMaxLength(result, MaxObservedNameFormExampleLength);
+    }
+
+    private static string TakeLastWords(string text, int count, out bool trimmed)
+    {
+        var words = SplitWords(text);
+        trimmed = words.Length > count;
+        return string.Join(' ', words.TakeLast(count));
+    }
+
+    private static string TakeFirstWords(string text, int count, out bool trimmed)
+    {
+        var words = SplitWords(text);
+        trimmed = words.Length > count;
+        return string.Join(' ', words.Take(count));
+    }
+
+    private static string[] SplitWords(string text)
+    {
+        return text
+            .Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+    }
+
+    private static string TrimToMaxLength(string value, int maxLength)
+    {
+        var trimmed = value.Trim();
+        if (trimmed.Length <= maxLength)
+        {
+            return trimmed;
+        }
+
+        return trimmed[..maxLength].TrimEnd();
     }
 }

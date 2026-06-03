@@ -52,10 +52,10 @@ internal sealed record CharacterBibleTraversalResult(
 internal sealed record CharacterBibleCharacterCandidate(
     string CanonicalName,
     string Gender,
-    IReadOnlyDictionary<string, string> AliasExamples,
+    IReadOnlyDictionary<string, string> ObservedNameFormExamples,
     IReadOnlyList<CharacterBibleCandidateEvidence> Evidence)
 {
-    public IReadOnlyDictionary<string, CharacterBibleCandidateEvidence> AliasEvidence { get; init; }
+    public IReadOnlyDictionary<string, CharacterBibleCandidateEvidence> ObservedNameFormEvidence { get; init; }
         = new Dictionary<string, CharacterBibleCandidateEvidence>(StringComparer.OrdinalIgnoreCase);
 }
 
@@ -95,6 +95,7 @@ internal sealed record CharacterBibleRunState(
     int ParagraphCount,
     IReadOnlyList<CharacterBibleCharacterCandidate> Candidates,
     CharacterBibleModelResponseErrorStatistics ModelResponseErrors,
+    IReadOnlySet<int>? PendingCanonicalNameNormalization = null,
     Exception? Failure = null);
 
 internal sealed record CharacterBibleCandidateExtractionResult(

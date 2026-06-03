@@ -26,7 +26,7 @@ public sealed record ExtractedLocalCharacter(
     [property: JsonPropertyName("name")] string? Name,
     [property: JsonRequired]
     [property: JsonPropertyName("gender")] string? Gender,
-    [property: JsonPropertyName("aliases")] IReadOnlyList<string>? Aliases,
+    [property: JsonPropertyName("observedNameForms")] IReadOnlyList<string>? ObservedNameForms,
     [property: JsonRequired]
     [property: JsonPropertyName("pointers")] IReadOnlyList<string>? Pointers);
 
@@ -127,7 +127,7 @@ public sealed class AgenticCharacterExtractionModelClient : ICharacterExtraction
     {
         return new CharacterExtractionResponse(
             response.Characters
-                .Select(character => character with { Aliases = character.Aliases ?? [] })
+                .Select(character => character with { ObservedNameForms = character.ObservedNameForms ?? [] })
                 .ToArray());
     }
 }

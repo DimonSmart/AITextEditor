@@ -27,7 +27,7 @@ public sealed record CharacterArchiveSearchHit(
     int CharacterId,
     string Name,
     string Gender,
-    IReadOnlyList<string> Aliases,
+    IReadOnlyList<string> ObservedNameForms,
     string Identity,
     double Score);
 
@@ -54,7 +54,7 @@ internal static class CharacterArchiveSearchToolDescriptions
         + "- If none of the returned entries clearly represents the same character, return \"new\" or \"defer\".";
 
     public const string QueryParameter =
-        "Plain text query built primarily from the candidate name and observed aliases. Do not add generic words such as character, book, story, персонаж, книга. Do not add names from previous search hits.";
+        "Plain text query built primarily from the candidate name and observed name forms. Do not add generic words such as character, book, story, персонаж, книга. Do not add names from previous search hits.";
 
     public const string LimitParameter =
         "Maximum number of retrieval candidates to return. More results do not imply higher identity confidence.";

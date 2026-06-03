@@ -155,8 +155,8 @@ public sealed class WebCharacterBibleServiceTests
         var dossier = Assert.Single(target.GetDossiers().Characters);
         Assert.Equal("Alice", dossier.Name);
         Assert.Equal("female", dossier.Gender);
-        Assert.Equal(["Al"], dossier.Aliases);
-        Assert.Equal("Al opened the notebook.", dossier.AliasExamples["Al"]);
+        Assert.Equal(["Al"], dossier.ObservedNameForms);
+        Assert.Equal("Al opened the notebook.", dossier.ObservedNameFormExamples["Al"]);
     }
 
     [Fact]
@@ -260,9 +260,9 @@ public sealed class WebCharacterBibleServiceTests
         Assert.Equal("Archivist with formal training.", dossier.Profile.StatusAndCompetence);
         Assert.Equal("Careful under pressure.", dossier.Profile.PsychologicalProfile);
         Assert.Equal("Dry, precise questions.", dossier.Profile.SpeechAndCommunication);
-        Assert.Equal(["Al", "alice"], dossier.Aliases);
-        Assert.Equal("Al opened the notebook.", dossier.AliasExamples["Al"]);
-        Assert.Equal("alice checked the facts.", dossier.AliasExamples["alice"]);
+        Assert.Equal(["Al", "alice"], dossier.ObservedNameForms);
+        Assert.Equal("Al opened the notebook.", dossier.ObservedNameFormExamples["Al"]);
+        Assert.Equal("alice checked the facts.", dossier.ObservedNameFormExamples["alice"]);
     }
 
     [Fact]
@@ -274,14 +274,14 @@ public sealed class WebCharacterBibleServiceTests
             """
             {
               "dossiersId": "d1",
-              "version": 3,
+              "version": 4,
               "nextCharacterId": 2,
               "characters": [
                 {
                   "characterId": 1,
                   "name": "Alice",
-                  "aliases": [],
-                  "aliasExamples": {},
+                  "observedNameForms": [],
+                  "observedNameFormExamples": {},
                   "facts": [],
                   "gender": "female"
                 }
@@ -302,14 +302,14 @@ public sealed class WebCharacterBibleServiceTests
             """
             {
               "dossiersId": "d1",
-              "version": 3,
+              "version": 4,
               "nextCharacterId": 2,
               "characters": [
                 {
                   "characterId": 1,
                   "name": "Alice",
-                  "aliases": [],
-                  "aliasExamples": {},
+                  "observedNameForms": [],
+                  "observedNameFormExamples": {},
                   "facts": [],
                   "gender": "female"
                 }

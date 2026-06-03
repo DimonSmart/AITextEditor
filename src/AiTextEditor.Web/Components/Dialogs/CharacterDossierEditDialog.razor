@@ -34,14 +34,14 @@
                                  Immediate="true" />
 
                 <MudExpansionPanels MultiExpansion="true" Elevation="0">
-                    <MudExpansionPanel Text="@($"Aliases ({aliasRows.Count})")" Expanded="true">
+                    <MudExpansionPanel Text="@($"Name forms ({nameFormRows.Count})")" Expanded="true">
                         <MudStack Spacing="2">
-                            @foreach (var row in aliasRows)
+                            @foreach (var row in nameFormRows)
                             {
                                 <MudGrid Spacing="2" Class="character-edit-row">
                                     <MudItem xs="12" sm="4">
-                                        <MudTextField @bind-Value="row.Alias"
-                                                      Label="Alias"
+                                        <MudTextField @bind-Value="row.Form"
+                                                      Label="Form"
                                                       Variant="MudBlazor.Variant.Outlined"
                                                       Margin="MudBlazor.Margin.Dense"
                                                       Immediate="true" />
@@ -54,12 +54,12 @@
                                                       Immediate="true" />
                                     </MudItem>
                                     <MudItem xs="12" sm="1" Class="character-edit-row-action">
-                                        <MudTooltip Text="Remove alias">
+                                        <MudTooltip Text="Remove name form">
                                             <MudIconButton Icon="@Icons.Material.Filled.Delete"
                                                            Color="MudBlazor.Color.Error"
                                                            Size="MudBlazor.Size.Small"
-                                                           OnClick="@(() => RemoveAlias(row))"
-                                                           aria-label="Remove alias" />
+                                                           OnClick="@(() => RemoveNameForm(row))"
+                                                           aria-label="Remove name form" />
                                         </MudTooltip>
                                     </MudItem>
                                 </MudGrid>
@@ -68,8 +68,8 @@
                             <MudButton Variant="MudBlazor.Variant.Outlined"
                                        Color="MudBlazor.Color.Primary"
                                        StartIcon="@Icons.Material.Filled.Add"
-                                       OnClick="AddAlias">
-                                Add alias
+                                       OnClick="AddNameForm">
+                                Add name form
                             </MudButton>
                         </MudStack>
                     </MudExpansionPanel>
@@ -130,7 +130,7 @@
 
     private MudForm? form;
     private EditableCharacterDossier model = new();
-    private readonly List<AliasRow> aliasRows = [];
+    private readonly List<NameFormRow> nameFormRows = [];
 
     [CascadingParameter]
     private IMudDialogInstance MudDialog { get; set; } = null!;
@@ -141,18 +141,18 @@
     protected override void OnInitialized()
     {
         model = EditableCharacterDossier.From(Dossier);
-        aliasRows.Clear();
-        aliasRows.AddRange(model.AliasExamples.Select(item => new AliasRow(item.Key, item.Value)));
+        nameFormRows.Clear();
+        nameFormRows.AddRange(model.ObservedNameFormExamples.Select(item => new NameFormRow(item.Key, item.Value)));
     }
 
-    private void AddAlias()
+    private void AddNameForm()
     {
-        aliasRows.Add(new AliasRow());
+        nameFormRows.Add(new NameFormRow());
     }
 
-    private void RemoveAlias(AliasRow row)
+    private void RemoveNameForm(NameFormRow row)
     {
-        aliasRows.Remove(row);
+        nameFormRows.Remove(row);
     }
 
     private async Task SaveAsync()
@@ -181,18 +181,18 @@
 
     private object ToResult()
     {
-        var aliasExamples = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        foreach (var row in aliasRows)
+        var observedNameFormExamples = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var row in nameFormRows)
         {
-            if (string.IsNullOrWhiteSpace(row.Alias) || string.IsNullOrWhiteSpace(row.Example))
+            if (string.IsNullOrWhiteSpace(row.Form) || string.IsNullOrWhiteSpace(row.Example))
             {
                 continue;
             }
 
-            var alias = row.Alias.Trim();
-            if (!aliasExamples.ContainsKey(alias))
+            var form = row.Form.Trim();
+            if (!observedNameFormExamples.ContainsKey(form))
             {
-                aliasExamples[alias] = row.Example.Trim();
+                observedNameFormExamples[form] = row.Example.Trim();
             }
         }
 
@@ -205,15 +205,15 @@
         return model.CharacterId is null
             ? new NewCharacterDraft(
                 model.Name.Trim(),
-                aliasExamples,
+                observedNameFormExamples,
                 model.Gender,
                 CharacterImportance.NormalizeLevel(model.ImportanceLevel),
                 profile)
             : new CharacterDossier(
                 model.CharacterId.Value,
                 model.Name.Trim(),
-                aliasExamples.Keys.OrderBy(alias => alias, StringComparer.OrdinalIgnoreCase).ToList(),
-                aliasExamples,
+                observedNameFormExamples.Keys.OrderBy(form => form, StringComparer.OrdinalIgnoreCase).ToList(),
+                observedNameFormExamples,
                 model.Gender,
                 CharacterImportance.NormalizeLevel(model.ImportanceLevel),
                 profile);
@@ -244,7 +244,7 @@
 
         public CharacterProfile Profile { get; private set; } = CharacterProfile.Empty;
 
-        public IReadOnlyDictionary<string, string> AliasExamples { get; private set; } =
+        public IReadOnlyDictionary<string, string> ObservedNameFormExamples { get; private set; } =
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         public static EditableCharacterDossier From(CharacterDossier? dossier)
@@ -266,14 +266,14 @@
                 PsychologicalProfile = profile.PsychologicalProfile ?? string.Empty,
                 SpeechAndCommunication = profile.SpeechAndCommunication ?? string.Empty,
                 Profile = profile,
-                AliasExamples = new Dictionary<string, string>(dossier.AliasExamples, StringComparer.OrdinalIgnoreCase),
+                ObservedNameFormExamples = new Dictionary<string, string>(dossier.ObservedNameFormExamples, StringComparer.OrdinalIgnoreCase),
             };
         }
     }
 
-    private sealed class AliasRow(string alias = "", string example = "")
+    private sealed class NameFormRow(string form = "", string example = "")
     {
-        public string Alias { get; set; } = alias;
+        public string Form { get; set; } = form;
 
         public string Example { get; set; } = example;
     }

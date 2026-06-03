@@ -136,13 +136,13 @@ internal sealed class CharacterBibleResolver
             return decision;
         }
 
-        var archiveSearchResult = await new CharacterArchiveSearchToolAdapter(
+            var archiveSearchResult = await new CharacterArchiveSearchToolAdapter(
                 currentArchive,
                 characterVectorSearchTool,
                 candidateIndex,
                 candidate.CanonicalName)
             .SearchCharactersAsync(
-                string.Join(' ', candidate.CanonicalName, string.Join(' ', candidate.AliasExamples.Keys)),
+                string.Join(' ', candidate.CanonicalName, string.Join(' ', candidate.ObservedNameFormExamples.Keys)),
                 limit: 10,
                 cancellationToken)
             .ConfigureAwait(false);

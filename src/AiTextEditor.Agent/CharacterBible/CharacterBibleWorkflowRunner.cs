@@ -61,6 +61,10 @@ public sealed class CharacterBibleWorkflowRunner
             generator,
             loggerFactory.CreateLogger<ResolveCharacterBibleCandidatesExecutor>(),
             progress);
+        var canonicalNameNormalizationExecutor = new NormalizeCharacterCanonicalNamesExecutor(
+            generator,
+            loggerFactory.CreateLogger<NormalizeCharacterCanonicalNamesExecutor>(),
+            progress);
         var patchExecutor = new PatchCharacterBibleDossiersExecutor(
             generator,
             loggerFactory.CreateLogger<PatchCharacterBibleDossiersExecutor>(),
@@ -73,6 +77,7 @@ public sealed class CharacterBibleWorkflowRunner
         ExecutorBinding traversalBinding = traversalExecutor;
         ExecutorBinding extractionBinding = extractionExecutor;
         ExecutorBinding resolutionBinding = resolutionExecutor;
+        ExecutorBinding canonicalNameNormalizationBinding = canonicalNameNormalizationExecutor;
         ExecutorBinding patchBinding = patchExecutor;
         ExecutorBinding finishBinding = finishExecutor;
 
@@ -80,7 +85,8 @@ public sealed class CharacterBibleWorkflowRunner
             .WithName("CharacterBibleWorkflow")
             .AddEdge(traversalBinding, extractionBinding)
             .AddEdge(extractionBinding, resolutionBinding)
-            .AddEdge(resolutionBinding, patchBinding)
+            .AddEdge(resolutionBinding, canonicalNameNormalizationBinding)
+            .AddEdge(canonicalNameNormalizationBinding, patchBinding)
             .AddEdge(patchBinding, finishBinding)
             .WithOutputFrom(finishBinding)
             .Build();

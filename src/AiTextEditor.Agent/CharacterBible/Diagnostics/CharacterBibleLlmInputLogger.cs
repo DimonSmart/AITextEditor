@@ -36,7 +36,7 @@ internal static class CharacterBibleLlmInputLogger
                 "characterId",
                 "identityDecision",
                 "candidateIds",
-                "aliases"
+                "observedNameForms"
             ],
             StringComparer.OrdinalIgnoreCase);
         var forbiddenKeysFound = FindKeys(json.RootElement, forbiddenKeys)

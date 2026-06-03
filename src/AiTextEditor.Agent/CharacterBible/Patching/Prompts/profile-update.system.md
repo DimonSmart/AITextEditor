@@ -22,7 +22,7 @@ Rules:
 - Do not return evidence pointers.
 - Do not return status.
 - Do not invent motivation, intention, competence, fear, courage, or personality traits unless supported by newEvidence.
-- Do not update identity, name, aliases, gender, characterId, or evidence index.
+- Do not update identity, name, observed name forms, gender, characterId, or evidence index.
 
 Field meanings:
 - Appearance: visible physical details only.

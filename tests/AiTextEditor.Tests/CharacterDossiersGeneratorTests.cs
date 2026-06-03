@@ -2,10 +2,12 @@ using System.Text;
 using System.Text.Json;
 using AiTextEditor.Core.Services;
 using AiTextEditor.Core.Model;
+using AiTextEditor.Core.Interfaces;
 using AiTextEditor.Agent;
 using AiTextEditor.Agent.CharacterBible;
 using AiTextEditor.Agent.CharacterBible.Diagnostics;
 using AiTextEditor.Agent.CharacterBible.Extraction;
+using AiTextEditor.Agent.CharacterBible.Normalization;
 using AiTextEditor.Agent.CharacterBible.Patching;
 using AiTextEditor.Agent.CharacterBible.Resolution;
 using AiTextEditor.Agent.CharacterBible.VectorSearch;
@@ -28,10 +30,10 @@ public sealed class CharacterDossiersGeneratorTests
                 ("p2", "Борис ответил.")
             ]);
 
-        Assert.Contains("Pronouns are NEVER aliases", systemPrompt, StringComparison.Ordinal);
-        Assert.Contains("exact observed name forms", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("Pronouns are NEVER observedNameForms", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("exact observed character name forms", systemPrompt, StringComparison.Ordinal);
         Assert.Contains("Do not return excerpts", systemPrompt, StringComparison.Ordinal);
-        Assert.Contains("Do not return alias-level evidence", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("Do not return observed-name-form-level evidence", systemPrompt, StringComparison.Ordinal);
         Assert.Contains("Do not return character-level evidence", systemPrompt, StringComparison.Ordinal);
         Assert.DoesNotContain("character.profile", systemPrompt, StringComparison.Ordinal);
 
@@ -42,6 +44,170 @@ public sealed class CharacterDossiersGeneratorTests
         Assert.Equal("Анна вошла.", paragraphs[0].GetProperty("text").GetString());
         Assert.Equal("p2", paragraphs[1].GetProperty("pointer").GetString());
         Assert.Equal("Борис ответил.", paragraphs[1].GetProperty("text").GetString());
+    }
+
+    [Fact]
+    public void BuildObservedNameFormExample_ReturnsShortContextContainingExactForm()
+    {
+        var paragraph = "Незнайка долго спорил с профессором Звездочкиным, потому что не понимал, как устроен космический аппарат.";
+        var evidence = new CharacterBibleCandidateEvidence("p1", paragraph);
+
+        var example = CharacterBibleExtractionMapper.BuildObservedNameFormExample(
+            "профессором Звездочкиным",
+            [evidence]);
+
+        Assert.Contains("профессором Звездочкиным", example, StringComparison.Ordinal);
+        Assert.True(example.Length < paragraph.Length);
+        Assert.True(example.Length <= 160);
+        Assert.Equal(paragraph, evidence.Excerpt);
+    }
+
+    [Fact]
+    public void BuildObservedNameFormExample_HandlesStartEndAndRepeatedForm()
+    {
+        var start = CharacterBibleExtractionMapper.BuildObservedNameFormExample(
+            "Пончик",
+            [new CharacterBibleCandidateEvidence("p1", "Пончик быстро вошёл в комнату и сразу начал спорить с Незнайкой.")]);
+        var end = CharacterBibleExtractionMapper.BuildObservedNameFormExample(
+            "Пончика",
+            [new CharacterBibleCandidateEvidence("p1", "Незнайка долго искал в толпе именно Пончика")]);
+        var repeated = CharacterBibleExtractionMapper.BuildObservedNameFormExample(
+            "Пончик",
+            [new CharacterBibleCandidateEvidence("p1", "Пончик сначала молчал. Потом Пончик громко рассмеялся.")]);
+
+        Assert.StartsWith("Пончик", start, StringComparison.Ordinal);
+        Assert.EndsWith("Пончика", end, StringComparison.Ordinal);
+        Assert.StartsWith("Пончик", repeated, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task GenerateDossiers_NormalizerUpdatesCanonicalNameForNewCharacter()
+    {
+        var dossierService = new CharacterDossierService();
+        var repository = new MarkdownDocumentRepository();
+        var document = repository.LoadFromMarkdown("Незнайка подошёл к профессору Звездочкину. Потом спросил профессора Звездочкина.");
+        var documentContext = new DocumentContext(document, dossierService);
+        var extractionModelClient = new ScriptedCharacterExtractionModelClient(
+            Response(Character(
+                "профессора Звездочкина",
+                NameForm("профессора Звездочкина", "Потом спросил профессора Звездочкина."),
+                NameForm("профессору Звездочкину", "Незнайка подошёл к профессору Звездочкину."))));
+        var normalizer = new ScriptedCanonicalNameNormalizationModelClient(
+            new CharacterCanonicalNameNormalizationResponse(
+                "normalized",
+                "профессор Звездочкин",
+                "Observed forms support the nominative base form."));
+
+        var generator = CreateGenerator(documentContext, dossierService, extractionModelClient, normalizer);
+
+        var dossier = Assert.Single((await generator.GenerateAsync()).Characters);
+
+        Assert.Equal("профессор Звездочкин", dossier.Name);
+        Assert.Equal(1, normalizer.CallCount);
+    }
+
+    [Fact]
+    public async Task GenerateDossiers_NormalizerInsufficientEvidencePreservesCurrentName()
+    {
+        var dossierService = new CharacterDossierService();
+        var repository = new MarkdownDocumentRepository();
+        var document = repository.LoadFromMarkdown("Пончика позвали первым.");
+        var documentContext = new DocumentContext(document, dossierService);
+        var extractionModelClient = new ScriptedCharacterExtractionModelClient(
+            Response(Character("Пончика", NameForm("Пончика", "Пончика позвали первым."))));
+        var normalizer = new ScriptedCanonicalNameNormalizationModelClient(
+            new CharacterCanonicalNameNormalizationResponse(
+                "insufficient_evidence",
+                null,
+                "No safe base form."));
+
+        var generator = CreateGenerator(documentContext, dossierService, extractionModelClient, normalizer);
+
+        var dossier = Assert.Single((await generator.GenerateAsync()).Characters);
+
+        Assert.Equal("Пончика", dossier.Name);
+        Assert.Equal(1, normalizer.CallCount);
+    }
+
+    [Fact]
+    public async Task GenerateDossiers_NormalizerIsNotCalledForUnchangedExistingCharacter()
+    {
+        var dossierService = new CharacterDossierService();
+        dossierService.UpsertDossier(new CharacterDossier(
+            1,
+            "John",
+            ["John"],
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["John"] = "John arrived."
+            }));
+        var repository = new MarkdownDocumentRepository();
+        var document = repository.LoadFromMarkdown("John arrived.");
+        var documentContext = new DocumentContext(document, dossierService);
+        var extractionModelClient = new ScriptedCharacterExtractionModelClient(
+            Response(Character("John", NameForm("John", "John arrived."))));
+        var normalizer = new ScriptedCanonicalNameNormalizationModelClient();
+
+        var generator = CreateGenerator(documentContext, dossierService, extractionModelClient, normalizer);
+
+        var dossier = Assert.Single((await generator.GenerateAsync()).Characters);
+
+        Assert.Equal("John", dossier.Name);
+        Assert.Equal(0, normalizer.CallCount);
+    }
+
+    [Fact]
+    public async Task GenerateDossiers_NormalizerIsCalledWhenObservedNameFormsAreMerged()
+    {
+        var dossierService = new CharacterDossierService();
+        dossierService.UpsertDossier(new CharacterDossier(
+            1,
+            "John",
+            ["John"],
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["John"] = "John arrived."
+            }));
+        var repository = new MarkdownDocumentRepository();
+        var document = repository.LoadFromMarkdown("Johnny laughed.");
+        var documentContext = new DocumentContext(document, dossierService);
+        var extractionModelClient = new ScriptedCharacterExtractionModelClient(
+            Response(Character("John", NameForm("Johnny", "Johnny laughed."))));
+        var normalizer = new ScriptedCanonicalNameNormalizationModelClient(
+            new CharacterCanonicalNameNormalizationResponse(
+                "insufficient_evidence",
+                null,
+                "No rename."));
+
+        var generator = CreateGenerator(documentContext, dossierService, extractionModelClient, normalizer);
+
+        var dossier = Assert.Single((await generator.GenerateAsync()).Characters);
+
+        Assert.Contains("Johnny", dossier.ObservedNameForms, StringComparer.OrdinalIgnoreCase);
+        Assert.Equal(1, normalizer.CallCount);
+    }
+
+    [Fact]
+    public async Task GenerateDossiers_InvalidNormalizerResponseDoesNotModifyDossier()
+    {
+        var dossierService = new CharacterDossierService();
+        var repository = new MarkdownDocumentRepository();
+        var document = repository.LoadFromMarkdown("Пончика позвали первым.");
+        var documentContext = new DocumentContext(document, dossierService);
+        var extractionModelClient = new ScriptedCharacterExtractionModelClient(
+            Response(Character("Пончика", NameForm("Пончика", "Пончика позвали первым."))));
+        var normalizer = new ScriptedCanonicalNameNormalizationModelClient(
+            new CharacterCanonicalNameNormalizationResponse(
+                "unsupported",
+                "Пончик",
+                "Invalid test response."));
+
+        var generator = CreateGenerator(documentContext, dossierService, extractionModelClient, normalizer);
+
+        var dossier = Assert.Single((await generator.GenerateAsync()).Characters);
+
+        Assert.Equal("Пончика", dossier.Name);
+        Assert.Equal(1, normalizer.CallCount);
     }
 
     [Fact]
@@ -103,7 +269,7 @@ public sealed class CharacterDossiersGeneratorTests
         Assert.DoesNotContain("identityDecision", userPrompt, StringComparison.Ordinal);
         Assert.DoesNotContain("candidateIds", userPrompt, StringComparison.Ordinal);
         Assert.DoesNotContain("evidenceContexts", userPrompt, StringComparison.Ordinal);
-        Assert.DoesNotContain("aliases", userPrompt, StringComparison.Ordinal);
+        Assert.DoesNotContain("observedNameForms", userPrompt, StringComparison.Ordinal);
         Assert.DoesNotContain("additions", userPrompt, StringComparison.Ordinal);
         Assert.False(json.RootElement.TryGetProperty("proposal", out _));
     }
@@ -237,6 +403,8 @@ public sealed class CharacterDossiersGeneratorTests
             NoopPatchClient(),
             new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
+            NoopCanonicalNameNormalizationClient(),
+            new CharacterCanonicalNameNormalizationPromptBuilder(),
             NewVectorSearchTool());
 
         var dossiers = await generator.GenerateAsync();
@@ -275,6 +443,8 @@ public sealed class CharacterDossiersGeneratorTests
             NoopPatchClient(),
             new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
+            NoopCanonicalNameNormalizationClient(),
+            new CharacterCanonicalNameNormalizationPromptBuilder(),
             NewVectorSearchTool());
         var runner = new CharacterBibleWorkflowRunner(generator, NullLoggerFactory.Instance);
 
@@ -388,8 +558,8 @@ public sealed class CharacterDossiersGeneratorTests
         dossierService.UpsertDossier(new AiTextEditor.Core.Model.CharacterDossier(
             CharacterId: 1,
             Name: "John",
-            Aliases: ["John"],
-            AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            ObservedNameForms: ["John"],
+            ObservedNameFormExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
                 ["John"] = "John arrived."
             },
@@ -404,7 +574,7 @@ public sealed class CharacterDossiersGeneratorTests
         var extractionModelClient = new ScriptedCharacterExtractionModelClient(
             Response(Character(
                 "John",
-                Alias("John", "John and Mary met Bob."))));
+                NameForm("John", "John and Mary met Bob."))));
 
         var generator = new CharacterDossiersGenerator(
             documentContext,
@@ -416,6 +586,8 @@ public sealed class CharacterDossiersGeneratorTests
             NoopPatchClient(),
             new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
+            NoopCanonicalNameNormalizationClient(),
+            new CharacterCanonicalNameNormalizationPromptBuilder(),
             NewVectorSearchTool());
 
         var dossiers = await generator.GenerateAsync();
@@ -425,7 +597,7 @@ public sealed class CharacterDossiersGeneratorTests
         Assert.Null(dossier.Profile.StatusAndCompetence);
         Assert.Equal("Manual psychological profile.", dossier.Profile.PsychologicalProfile);
         Assert.Null(dossier.Profile.SpeechAndCommunication);
-        Assert.Equal("John arrived.", dossier.AliasExamples["John"]);
+        Assert.Equal("John arrived.", dossier.ObservedNameFormExamples["John"]);
     }
 
     [Fact]
@@ -435,8 +607,8 @@ public sealed class CharacterDossiersGeneratorTests
         dossierService.UpsertDossier(new AiTextEditor.Core.Model.CharacterDossier(
             CharacterId: 1,
             Name: "John",
-            Aliases: ["John"],
-            AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
+            ObservedNameForms: ["John"],
+            ObservedNameFormExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
             Gender: "unknown",
             Profile: new AiTextEditor.Core.Model.CharacterProfile(
                 PsychologicalProfile: "Проявляет храбрость.")));
@@ -446,7 +618,7 @@ public sealed class CharacterDossiersGeneratorTests
         var documentContext = new DocumentContext(document, dossierService);
         var limits = new CharacterBibleExtractionLimits { MaxParagraphsPerBatch = 256, MaxBatchBytes = 1024 * 128 };
         var extractionModelClient = new ScriptedCharacterExtractionModelClient(
-            Response(Character("John", Alias("John", "John вошёл."))));
+            Response(Character("John", NameForm("John", "John вошёл."))));
         var patchClient = new ScriptedCharacterProfileUpdateModelClient();
 
         var generator = new CharacterDossiersGenerator(
@@ -459,6 +631,8 @@ public sealed class CharacterDossiersGeneratorTests
             patchClient,
             new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
+            NoopCanonicalNameNormalizationClient(),
+            new CharacterCanonicalNameNormalizationPromptBuilder(),
             NewVectorSearchTool());
 
         var dossiers = await generator.GenerateAsync();
@@ -475,7 +649,7 @@ public sealed class CharacterDossiersGeneratorTests
         var documentContext = new DocumentContext(document, dossierService);
         var limits = new CharacterBibleExtractionLimits { MaxParagraphsPerBatch = 256, MaxBatchBytes = 1024 * 128 };
         var extractionModelClient = new ScriptedCharacterExtractionModelClient(
-            Response(Character("John", Alias("John", "John один раз открыл дверь."))));
+            Response(Character("John", NameForm("John", "John один раз открыл дверь."))));
 
         var generator = new CharacterDossiersGenerator(
             documentContext,
@@ -487,6 +661,8 @@ public sealed class CharacterDossiersGeneratorTests
             NoopPatchClient(),
             new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
+            NoopCanonicalNameNormalizationClient(),
+            new CharacterCanonicalNameNormalizationPromptBuilder(),
             NewVectorSearchTool());
 
         var dossier = Assert.Single((await generator.GenerateAsync()).Characters);
@@ -534,8 +710,8 @@ public sealed class CharacterDossiersGeneratorTests
         dossierService.UpsertDossier(new AiTextEditor.Core.Model.CharacterDossier(
             CharacterId: 1,
             Name: "John",
-            Aliases: ["John"],
-            AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            ObservedNameForms: ["John"],
+            ObservedNameFormExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
                 ["John"] = "John arrived."
             },
@@ -550,7 +726,7 @@ public sealed class CharacterDossiersGeneratorTests
         var extractionModelClient = new ScriptedCharacterExtractionModelClient(
             Response(Character(
                 "John",
-                Alias("John", "John stood tall and answered briefly."))));
+                NameForm("John", "John stood tall and answered briefly."))));
         var patchClient = new ScriptedCharacterProfileUpdateModelClient(
             ReadyPatch(
                 appearance: "Высокая спокойная фигура.",
@@ -574,6 +750,8 @@ public sealed class CharacterDossiersGeneratorTests
             patchClient,
             new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
+            NoopCanonicalNameNormalizationClient(),
+            new CharacterCanonicalNameNormalizationPromptBuilder(),
             NewVectorSearchTool());
 
         var dossiers = await generator.GenerateAsync();
@@ -593,8 +771,8 @@ public sealed class CharacterDossiersGeneratorTests
         dossierService.UpsertDossier(new AiTextEditor.Core.Model.CharacterDossier(
             CharacterId: 1,
             Name: "John",
-            Aliases: ["John"],
-            AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            ObservedNameForms: ["John"],
+            ObservedNameFormExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
                 ["John"] = "John arrived."
             },
@@ -609,7 +787,7 @@ public sealed class CharacterDossiersGeneratorTests
         var extractionModelClient = new ScriptedCharacterExtractionModelClient(
             Response(Character(
                 "John",
-                Alias("John", "Позже выяснилось: прежняя смелость John была случайным впечатлением, а при реальной опасности он растерялся."))));
+                NameForm("John", "Позже выяснилось: прежняя смелость John была случайным впечатлением, а при реальной опасности он растерялся."))));
         var patchClient = new ScriptedCharacterProfileUpdateModelClient(
             ReadyPatch(psychologicalProfile: "Не обладает устойчивой храбростью: может выглядеть смелым из-за обстоятельств, но при реальной опасности склонен теряться."));
 
@@ -623,6 +801,8 @@ public sealed class CharacterDossiersGeneratorTests
             patchClient,
             new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
+            NoopCanonicalNameNormalizationClient(),
+            new CharacterCanonicalNameNormalizationPromptBuilder(),
             NewVectorSearchTool());
 
         var dossiers = await generator.GenerateAsync();
@@ -642,7 +822,7 @@ public sealed class CharacterDossiersGeneratorTests
         var extractionModelClient = new ScriptedCharacterExtractionModelClient(
             Response(Character(
                 "John",
-                Alias("John", "John wore old clothes that smelled of naphthalene."))));
+                NameForm("John", "John wore old clothes that smelled of naphthalene."))));
         var patchClient = new ScriptedCharacterProfileUpdateModelClient(
             ReadyPatch(statusAndCompetence: "Пытался улучшить гардероб."));
 
@@ -656,6 +836,8 @@ public sealed class CharacterDossiersGeneratorTests
             patchClient,
             new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
+            NoopCanonicalNameNormalizationClient(),
+            new CharacterCanonicalNameNormalizationPromptBuilder(),
             NewVectorSearchTool());
 
         var dossiers = await generator.GenerateAsync();
@@ -676,7 +858,7 @@ public sealed class CharacterDossiersGeneratorTests
         var extractionModelClient = new ScriptedCharacterExtractionModelClient(
             Response(Character(
                 "John",
-                Alias("John", "John hid behind the chair."))));
+                NameForm("John", "John hid behind the chair."))));
         var patchClient = new ScriptedCharacterProfileUpdateModelClient(
             new ProfileFieldReplacement(
                 CharacterBibleProfileField.PsychologicalProfile,
@@ -692,6 +874,8 @@ public sealed class CharacterDossiersGeneratorTests
             patchClient,
             new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
+            NoopCanonicalNameNormalizationClient(),
+            new CharacterCanonicalNameNormalizationPromptBuilder(),
             NewVectorSearchTool());
 
         using (CharacterBibleRunLogScope.Push(logger))
@@ -740,6 +924,8 @@ public sealed class CharacterDossiersGeneratorTests
             patchClient,
             new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
+            NoopCanonicalNameNormalizationClient(),
+            new CharacterCanonicalNameNormalizationPromptBuilder(),
             NewVectorSearchTool());
 
         await generator.GenerateAsync();
@@ -786,6 +972,8 @@ public sealed class CharacterDossiersGeneratorTests
             patchClient,
             new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
+            NoopCanonicalNameNormalizationClient(),
+            new CharacterCanonicalNameNormalizationPromptBuilder(),
             NewVectorSearchTool());
 
         await generator.GenerateAsync();
@@ -836,6 +1024,8 @@ public sealed class CharacterDossiersGeneratorTests
             patchClient,
             new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
+            NoopCanonicalNameNormalizationClient(),
+            new CharacterCanonicalNameNormalizationPromptBuilder(),
             NewVectorSearchTool());
 
         await generator.GenerateAsync();
@@ -849,14 +1039,14 @@ public sealed class CharacterDossiersGeneratorTests
     }
 
     [Fact]
-    public async Task GenerateDossiers_PatchPromptIncludesCurrentAliases()
+    public async Task GenerateDossiers_PatchPromptIncludesCurrentObservedNameForms()
     {
         var dossierService = new CharacterDossierService();
         dossierService.UpsertDossier(new AiTextEditor.Core.Model.CharacterDossier(
             CharacterId: 1,
             Name: "John",
-            Aliases: ["John"],
-            AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            ObservedNameForms: ["John"],
+            ObservedNameFormExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
                 ["John"] = "John arrived."
             },
@@ -869,7 +1059,7 @@ public sealed class CharacterDossiersGeneratorTests
         var extractionModelClient = new ScriptedCharacterExtractionModelClient(
             Response(Character(
                 "John",
-                Alias("Johnny", "Johnny stood tall."))));
+                NameForm("Johnny", "Johnny stood tall."))));
         var patchClient = new ScriptedCharacterProfileUpdateModelClient(
             ReadyPatch(statusAndCompetence: "Стоит прямо."));
 
@@ -883,19 +1073,21 @@ public sealed class CharacterDossiersGeneratorTests
             patchClient,
             new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
+            NoopCanonicalNameNormalizationClient(),
+            new CharacterCanonicalNameNormalizationPromptBuilder(),
             NewVectorSearchTool());
 
         var dossiers = await generator.GenerateAsync();
 
         var dossier = Assert.Single(dossiers.Characters);
-        Assert.Contains("Johnny", dossier.Aliases, StringComparer.OrdinalIgnoreCase);
-        Assert.Equal("Johnny stood tall.", dossier.AliasExamples["Johnny"]);
+        Assert.Contains("Johnny", dossier.ObservedNameForms, StringComparer.OrdinalIgnoreCase);
+        Assert.Equal("Johnny stood tall.", dossier.ObservedNameFormExamples["Johnny"]);
         Assert.Equal(1, patchClient.CallCount);
-        Assert.DoesNotContain("\"aliases\"", patchClient.Requests.Single().UserPrompt, StringComparison.Ordinal);
+        Assert.DoesNotContain("\"observedNameForms\"", patchClient.Requests.Single().UserPrompt, StringComparison.Ordinal);
     }
 
     [Fact]
-    public async Task GenerateDossiers_PromptForbidsPronounAliases()
+    public async Task GenerateDossiers_PromptForbidsPronounObservedNameForms()
     {
         var dossierService = new CharacterDossierService();
         var repository = new MarkdownDocumentRepository();
@@ -914,12 +1106,14 @@ public sealed class CharacterDossiersGeneratorTests
             NoopPatchClient(),
             new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
+            NoopCanonicalNameNormalizationClient(),
+            new CharacterCanonicalNameNormalizationPromptBuilder(),
             NewVectorSearchTool());
 
         await generator.GenerateAsync();
 
         Assert.NotNull(extractionModelClient.LastRequest);
-        Assert.Contains("Pronouns are NEVER aliases", extractionModelClient.LastRequest!.SystemPrompt, StringComparison.Ordinal);
+        Assert.Contains("Pronouns are NEVER observedNameForms", extractionModelClient.LastRequest!.SystemPrompt, StringComparison.Ordinal);
         Assert.Contains("он", extractionModelClient.LastRequest.SystemPrompt, StringComparison.Ordinal);
         Assert.Contains("она", extractionModelClient.LastRequest.SystemPrompt, StringComparison.Ordinal);
     }
@@ -944,6 +1138,8 @@ public sealed class CharacterDossiersGeneratorTests
             NoopPatchClient(),
             new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
+            NoopCanonicalNameNormalizationClient(),
+            new CharacterCanonicalNameNormalizationPromptBuilder(),
             NewVectorSearchTool());
 
         await generator.GenerateAsync();
@@ -975,6 +1171,8 @@ public sealed class CharacterDossiersGeneratorTests
             NoopPatchClient(),
             new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
+            NoopCanonicalNameNormalizationClient(),
+            new CharacterCanonicalNameNormalizationPromptBuilder(),
             NewVectorSearchTool());
 
         await generator.GenerateAsync();
@@ -996,8 +1194,8 @@ public sealed class CharacterDossiersGeneratorTests
         dossierService.UpsertDossier(new AiTextEditor.Core.Model.CharacterDossier(
             CharacterId: 1,
             Name: "John",
-            Aliases: ["Johnny"],
-            AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            ObservedNameForms: ["Johnny"],
+            ObservedNameFormExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
                 ["Johnny"] = "Johnny waved."
             },
@@ -1011,7 +1209,7 @@ public sealed class CharacterDossiersGeneratorTests
         var extractionModelClient = new ScriptedCharacterExtractionModelClient(
             Response(Character(
                 "John",
-                Alias("Johnny", "Johnny laughed."))));
+                NameForm("Johnny", "Johnny laughed."))));
 
         var generator = new CharacterDossiersGenerator(
             documentContext,
@@ -1023,6 +1221,8 @@ public sealed class CharacterDossiersGeneratorTests
             NoopPatchClient(),
             new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
+            NoopCanonicalNameNormalizationClient(),
+            new CharacterCanonicalNameNormalizationPromptBuilder(),
             NewVectorSearchTool());
 
         var evidence = new[] { new AiTextEditor.Core.Model.EvidenceItem("1.p1", "Johnny laughed.", null) };
@@ -1030,7 +1230,7 @@ public sealed class CharacterDossiersGeneratorTests
 
         var updated = dossierService.TryGetDossier(1);
         Assert.NotNull(updated);
-        Assert.Equal("Johnny waved.", updated!.AliasExamples["Johnny"]);
+        Assert.Equal("Johnny waved.", updated!.ObservedNameFormExamples["Johnny"]);
     }
 
     [Fact]
@@ -1045,7 +1245,7 @@ public sealed class CharacterDossiersGeneratorTests
         var extractionModelClient = new ScriptedCharacterExtractionModelClient(
             Response(Character(
                 "John",
-                Alias("John's", "John's hat was on the table."))));
+                NameForm("John's", "John's hat was on the table."))));
 
         var generator = new CharacterDossiersGenerator(
             documentContext,
@@ -1057,6 +1257,8 @@ public sealed class CharacterDossiersGeneratorTests
             NoopPatchClient(),
             new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
+            NoopCanonicalNameNormalizationClient(),
+            new CharacterCanonicalNameNormalizationPromptBuilder(),
             NewVectorSearchTool());
 
         var evidence = new[] { new AiTextEditor.Core.Model.EvidenceItem("p1", "John's hat was on the table.", null) };
@@ -1064,8 +1266,8 @@ public sealed class CharacterDossiersGeneratorTests
 
         Assert.Single(dossiers.Characters);
         var character = dossiers.Characters[0];
-        Assert.Contains("John's", character.AliasExamples.Keys, StringComparer.OrdinalIgnoreCase);
-        Assert.DoesNotContain("John", character.AliasExamples.Keys, StringComparer.OrdinalIgnoreCase);
+        Assert.Contains("John's", character.ObservedNameFormExamples.Keys, StringComparer.OrdinalIgnoreCase);
+        Assert.DoesNotContain("John", character.ObservedNameFormExamples.Keys, StringComparer.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -1088,6 +1290,8 @@ public sealed class CharacterDossiersGeneratorTests
             NoopPatchClient(),
             new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
+            NoopCanonicalNameNormalizationClient(),
+            new CharacterCanonicalNameNormalizationPromptBuilder(),
             NewVectorSearchTool());
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => generator.GenerateAsync());
@@ -1137,6 +1341,8 @@ public sealed class CharacterDossiersGeneratorTests
             NoopPatchClient(),
             new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
+            NoopCanonicalNameNormalizationClient(),
+            new CharacterCanonicalNameNormalizationPromptBuilder(),
             NewVectorSearchTool());
         var runner = new CharacterBibleWorkflowRunner(generator, NullLoggerFactory.Instance);
 
@@ -1150,19 +1356,44 @@ public sealed class CharacterDossiersGeneratorTests
 
     private static ExtractedLocalCharacter Character(
         string canonicalName,
-        params string[] aliases)
+        params string[] observedNameForms)
         => new(
             canonicalName,
             "unknown",
-            aliases,
+            observedNameForms,
             ["p1"]);
 
-    private static string Alias(string form, string excerpt) => form;
+    private static string NameForm(string form, string excerpt) => form;
+
+    private static CharacterDossiersGenerator CreateGenerator(
+        IDocumentContext documentContext,
+        CharacterDossierService dossierService,
+        ICharacterExtractionModelClient extractionModelClient,
+        ICharacterCanonicalNameNormalizationModelClient canonicalNameNormalizationModelClient,
+        ICharacterProfileUpdateModelClient? patchModelClient = null)
+    {
+        return new CharacterDossiersGenerator(
+            documentContext,
+            dossierService,
+            new CharacterBibleExtractionLimits { MaxParagraphsPerBatch = 256, MaxBatchBytes = 1024 * 128 },
+            NullLogger<CharacterDossiersGenerator>.Instance,
+            extractionModelClient,
+            new CharacterExtractionPromptBuilder(),
+            patchModelClient ?? NoopPatchClient(),
+            new CharacterProfileUpdatePromptBuilder(),
+            NewIdentityResolverClient(),
+            canonicalNameNormalizationModelClient,
+            new CharacterCanonicalNameNormalizationPromptBuilder(),
+            NewVectorSearchTool());
+    }
 
     private static ICharacterProfileUpdateModelClient NoopPatchClient() => new NoopCharacterProfileUpdateModelClient();
 
     private static ICharacterIdentityResolutionModelClient NewIdentityResolverClient()
         => new SearchBackedIdentityResolutionModelClient();
+
+    private static ICharacterCanonicalNameNormalizationModelClient NoopCanonicalNameNormalizationClient()
+        => new NoopCharacterCanonicalNameNormalizationModelClient();
 
     private static ICharacterVectorSearchTool NewVectorSearchTool()
         => new TestCharacterVectorSearchTool();
@@ -1175,8 +1406,8 @@ public sealed class CharacterDossiersGeneratorTests
         dossierService.UpsertDossier(new AiTextEditor.Core.Model.CharacterDossier(
             CharacterId: 1,
             Name: "John",
-            Aliases: ["John"],
-            AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            ObservedNameForms: ["John"],
+            ObservedNameFormExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
                 ["John"] = "John changed."
             },
@@ -1188,7 +1419,7 @@ public sealed class CharacterDossiersGeneratorTests
         var documentContext = new DocumentContext(document, dossierService);
         var limits = new CharacterBibleExtractionLimits { MaxParagraphsPerBatch = 256, MaxBatchBytes = 1024 * 128 };
         var extractionModelClient = new ScriptedCharacterExtractionModelClient(
-            Response(Character("John", Alias("John", "John changed."))));
+            Response(Character("John", NameForm("John", "John changed."))));
         var patchClient = new ScriptedCharacterProfileUpdateModelClient(replacements);
         var generator = new CharacterDossiersGenerator(
             documentContext,
@@ -1200,6 +1431,8 @@ public sealed class CharacterDossiersGeneratorTests
             patchClient,
             new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
+            NoopCanonicalNameNormalizationClient(),
+            new CharacterCanonicalNameNormalizationPromptBuilder(),
             NewVectorSearchTool());
 
         var dossier = Assert.Single((await generator.GenerateAsync()).Characters);
@@ -1373,6 +1606,44 @@ public sealed class CharacterDossiersGeneratorTests
         }
     }
 
+    private sealed class NoopCharacterCanonicalNameNormalizationModelClient : ICharacterCanonicalNameNormalizationModelClient
+    {
+        public Task<CharacterCanonicalNameNormalizationResponse> NormalizeAsync(
+            CharacterCanonicalNameNormalizationModelRequest request,
+            CancellationToken cancellationToken = default)
+        {
+            return Task.FromResult(new CharacterCanonicalNameNormalizationResponse(
+                "insufficient_evidence",
+                null,
+                "No test normalization."));
+        }
+    }
+
+    private sealed class ScriptedCanonicalNameNormalizationModelClient(params CharacterCanonicalNameNormalizationResponse[] responses)
+        : ICharacterCanonicalNameNormalizationModelClient
+    {
+        private readonly Queue<CharacterCanonicalNameNormalizationResponse> responses = new(responses);
+
+        public int CallCount { get; private set; }
+
+        public List<CharacterCanonicalNameNormalizationModelRequest> Requests { get; } = [];
+
+        public Task<CharacterCanonicalNameNormalizationResponse> NormalizeAsync(
+            CharacterCanonicalNameNormalizationModelRequest request,
+            CancellationToken cancellationToken = default)
+        {
+            CallCount++;
+            Requests.Add(request);
+            var response = responses.Count > 0
+                ? responses.Dequeue()
+                : new CharacterCanonicalNameNormalizationResponse(
+                    "insufficient_evidence",
+                    null,
+                    "No scripted response.");
+            return Task.FromResult(response);
+        }
+    }
+
     private sealed class ScriptedCharacterProfileUpdateModelClient(params ProfileFieldReplacement[] replacements)
         : ICharacterProfileUpdateModelClient
     {
@@ -1451,11 +1722,11 @@ public sealed class CharacterDossiersGeneratorTests
             using var json = JsonDocument.Parse(request.UserPrompt);
             var candidate = json.RootElement.GetProperty("candidate");
             var name = candidate.GetProperty("name").GetString() ?? string.Empty;
-            var aliases = candidate.GetProperty("aliases")
+            var observedNameForms = candidate.GetProperty("observedNameForms")
                 .EnumerateArray()
-                .Select(alias => alias.GetString())
-                .Where(alias => !string.IsNullOrWhiteSpace(alias));
-            var query = string.Join(' ', new[] { name }.Concat(aliases!));
+                .Select(form => form.GetString())
+                .Where(form => !string.IsNullOrWhiteSpace(form));
+            var query = string.Join(' ', new[] { name }.Concat(observedNameForms!));
             var searchResult = await request.SearchTool.SearchCharactersAsync(query, 5, cancellationToken);
             return searchResult.Hits.Count switch
             {
@@ -1486,14 +1757,14 @@ public sealed class CharacterDossiersGeneratorTests
             var hits = dossiers.Characters
                 .Where(dossier =>
                     string.Equals(dossier.Name, normalizedQuery, StringComparison.OrdinalIgnoreCase) ||
-                    dossier.Aliases.Any(alias => normalizedQuery.Contains(alias, StringComparison.OrdinalIgnoreCase)) ||
+                    dossier.ObservedNameForms.Any(form => normalizedQuery.Contains(form, StringComparison.OrdinalIgnoreCase)) ||
                     normalizedQuery.Contains(dossier.Name, StringComparison.OrdinalIgnoreCase))
                 .Select(dossier => new CharacterVectorSearchHit(
                     new CharacterVectorSearchCard(
                         dossier.CharacterId,
                         dossier.Name,
                         dossier.Gender,
-                        dossier.Aliases,
+                        dossier.ObservedNameForms,
                         string.Empty),
                     1d))
                 .Take(limit)

@@ -37,8 +37,8 @@ public sealed record CharacterCandidateIdentityInput
     [JsonPropertyName("gender")]
     public required string Gender { get; init; }
 
-    [JsonPropertyName("aliases")]
-    public required IReadOnlyList<string> Aliases { get; init; }
+    [JsonPropertyName("observedNameForms")]
+    public required IReadOnlyList<string> ObservedNameForms { get; init; }
 
     [JsonPropertyName("evidence")]
     public required IReadOnlyList<CharacterEvidenceText> Evidence { get; init; }
@@ -119,7 +119,7 @@ public sealed class CharacterIdentityResolutionPromptBuilder
             {
                 Name = candidate.CanonicalName,
                 Gender = candidate.Gender,
-                Aliases = candidate.AliasExamples.Keys.ToArray(),
+                ObservedNameForms = candidate.ObservedNameFormExamples.Keys.ToArray(),
                 Evidence = evidence
             }
         };

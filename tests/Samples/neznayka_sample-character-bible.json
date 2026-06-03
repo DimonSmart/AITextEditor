@@ -1,15 +1,15 @@
 {
   "dossiersId": "edca9389dbc64f60b4c80c5cdfb3eb3b",
-  "version": 3,
+  "version": 4,
   "nextCharacterId": 12,
   "characters": [
     {
       "characterId": 1,
       "name": "Вертибутылкина",
-      "aliases": [
+      "observedNameForms": [
         "Вертибутылкина"
       ],
-      "aliasExamples": {
+      "observedNameFormExamples": {
         "Вертибутылкина": "по проекту архитектора Вертибутылкина"
       },
       "gender": "male",
@@ -23,11 +23,11 @@
     {
       "characterId": 2,
       "name": "Звёздочкин",
-      "aliases": [
+      "observedNameForms": [
         "Звёздочкин",
         "профессор Звёздочкин"
       ],
-      "aliasExamples": {
+      "observedNameFormExamples": {
         "Звёздочкин": "профессор Звёздочкин",
         "профессор Звёздочкин": "профессор Звёздочкин, которому тоже случилось прочитать Знайкину книжку"
       },
@@ -42,14 +42,14 @@
     {
       "characterId": 3,
       "name": "Знайка",
-      "aliases": [
+      "observedNameForms": [
         "Знайка",
         "Знайкина",
         "Знайкиной",
         "космический исследователь Знайка",
         "учёный Знайка"
       ],
-      "aliasExamples": {
+      "observedNameFormExamples": {
         "Знайка": "Знайка тоже побывал в Солнечном городе",
         "Знайкина": "смеились над этой Знайкиной теорией.",
         "Знайкиной": "обсуждение Знайкиной книги",
@@ -67,11 +67,11 @@
     {
       "characterId": 4,
       "name": "Клёпки",
-      "aliases": [
+      "observedNameForms": [
         "инженер Клёпки",
         "Клёпки"
       ],
-      "aliasExamples": {
+      "observedNameFormExamples": {
         "Клёпки": "по проекту инженера Клёпки",
         "инженер Клёпки": "по проекту инженера Клёпки"
       },
@@ -86,10 +86,10 @@
     {
       "characterId": 5,
       "name": "Кнопочки",
-      "aliases": [
+      "observedNameForms": [
         "Кнопочки"
       ],
-      "aliasExamples": {
+      "observedNameFormExamples": {
         "Кнопочки": "Незнайка, Кнопочки и Пачкули Пёстренького"
       },
       "gender": "unknown",
@@ -103,10 +103,10 @@
     {
       "characterId": 6,
       "name": "Незнайка",
-      "aliases": [
+      "observedNameForms": [
         "Незнайка"
       ],
-      "aliasExamples": {
+      "observedNameFormExamples": {
         "Незнайка": "Незнайка совершил путешествие"
       },
       "gender": "unknown",
@@ -120,10 +120,10 @@
     {
       "characterId": 7,
       "name": "Пачкули Пёстренького",
-      "aliases": [
+      "observedNameForms": [
         "Пачкули Пёстренького"
       ],
-      "aliasExamples": {
+      "observedNameFormExamples": {
         "Пачкули Пёстренького": "Незнайка, Кнопочки и Пачкули Пёстренького"
       },
       "gender": "unknown",
@@ -137,12 +137,12 @@
     {
       "characterId": 8,
       "name": "Пончик",
-      "aliases": [
+      "observedNameForms": [
         "Пончик",
         "Пончика",
         "Пончику"
       ],
-      "aliasExamples": {
+      "observedNameFormExamples": {
         "Пончик": "Пончик увидел",
         "Пончика": "Пончику трудно было",
         "Пончику": "Пончику приходилось"
@@ -158,10 +158,10 @@
     {
       "characterId": 9,
       "name": "Селёдочка",
-      "aliases": [
+      "observedNameForms": [
         "Селёдочка"
       ],
-      "aliasExamples": {
+      "observedNameFormExamples": {
         "Селёдочка": "с Селёдочкой"
       },
       "gender": "female",
@@ -175,12 +175,12 @@
     {
       "characterId": 10,
       "name": "Стекляшкин",
-      "aliases": [
+      "observedNameForms": [
         "астроном Стекляшкин",
         "Стекляшкин",
         "Стекляшкина"
       ],
-      "aliasExamples": {
+      "observedNameFormExamples": {
         "Стекляшкина": "астронома Стекляшкина",
         "астроном Стекляшкин": "астроном Стекляшкин наблюдал луну",
         "Стекляшкин": "Стекляшкин записывал наблюдения"
@@ -196,10 +196,10 @@
     {
       "characterId": 11,
       "name": "Фуксия",
-      "aliases": [
+      "observedNameForms": [
         "Фуксия"
       ],
-      "aliasExamples": {
+      "observedNameFormExamples": {
         "Фуксия": "с Фуксией"
       },
       "gender": "female",

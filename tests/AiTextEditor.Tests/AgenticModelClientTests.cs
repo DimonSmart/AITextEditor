@@ -348,7 +348,7 @@ public sealed class AgenticModelClientTests
                 {
                   "name": "John",
                   "gender": "unknown",
-                  "aliases": [ "Johnny" ],
+                  "observedNameForms": [ "Johnny" ],
                   "pointers": [ "p1" ]
                 }
               ]
@@ -373,12 +373,12 @@ public sealed class AgenticModelClientTests
 
         var character = Assert.Single(result.Characters);
         Assert.Equal("John", character.Name);
-        Assert.Equal("Johnny", Assert.Single(character.Aliases!));
+        Assert.Equal("Johnny", Assert.Single(character.ObservedNameForms!));
         Assert.Equal("p1", Assert.Single(character.Pointers!));
     }
 
     [Fact]
-    public async Task CharacterExtractionClient_WhenAliasesAreMissing_NormalizesToEmptyListWithoutRetry()
+    public async Task CharacterExtractionClient_WhenObservedNameFormsAreMissing_NormalizesToEmptyListWithoutRetry()
     {
         var chatClient = new CapturingChatClient(
             """
@@ -416,7 +416,7 @@ public sealed class AgenticModelClientTests
 
         var character = Assert.Single(result.Characters);
         Assert.Equal("John", character.Name);
-        Assert.Empty(character.Aliases!);
+        Assert.Empty(character.ObservedNameForms!);
         Assert.Equal(1, chatClient.CallCount);
         Assert.DoesNotContain(diagnostics, item => item.Kind == AgenticModelDiagnosticKind.InvalidContract);
         Assert.DoesNotContain(diagnostics, item => item.Kind == AgenticModelDiagnosticKind.Retry);

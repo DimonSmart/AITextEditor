@@ -15,7 +15,7 @@
             <div class="character-card-summary">
                 <span class="@GenderBadgeClass">@GenderLabel</span>
                 <span>@ImportanceLabel</span>
-                <span>@AliasesSummary</span>
+                <span>@NameFormsSummary</span>
                 <span>@ProfileCompletenessText</span>
             </div>
         </div>
@@ -85,22 +85,22 @@
             </MudItem>
         }
 
-        @if (Dossier.Aliases.Count > 0)
+        @if (Dossier.ObservedNameForms.Count > 0)
         {
-            <MudItem xs="12" md="@(AliasExampleRows.Count > 0 ? 4 : 12)">
+            <MudItem xs="12" md="@(NameFormExampleRows.Count > 0 ? 4 : 12)">
                 <section class="character-full-section">
                     <div class="character-full-section-title">
                         <MudIcon Icon="@Icons.Material.Filled.LocalOffer" Size="MudBlazor.Size.Small" />
-                        <span>Aliases (@Dossier.Aliases.Count)</span>
+                        <span>Name forms (@Dossier.ObservedNameForms.Count)</span>
                     </div>
                     <div class="character-full-chip-row">
-                        @foreach (var alias in Dossier.Aliases)
+                        @foreach (var form in Dossier.ObservedNameForms)
                         {
                             <MudChip T="string"
                                      Variant="MudBlazor.Variant.Outlined"
                                      Color="MudBlazor.Color.Primary"
                                      Size="MudBlazor.Size.Small">
-                                @alias
+                                @form
                             </MudChip>
                         }
                     </div>
@@ -108,26 +108,26 @@
             </MudItem>
         }
 
-        @if (AliasExampleRows.Count > 0)
+        @if (NameFormExampleRows.Count > 0)
         {
             <MudItem xs="12" md="8">
                 <section class="character-full-section">
                     <div class="character-full-section-title">
                         <MudIcon Icon="@Icons.Material.Filled.FormatQuote" Size="MudBlazor.Size.Small" />
-                        <span>Alias examples</span>
+                        <span>Name form examples</span>
                     </div>
-                    <MudTable T="AliasExampleView"
-                              Items="@AliasExampleRows"
+                    <MudTable T="NameFormExampleView"
+                              Items="@NameFormExampleRows"
                               Dense="true"
                               Hover="false"
                               Elevation="0"
-                              Class="character-alias-example-table">
+                              Class="character-name-form-example-table">
                         <HeaderContent>
-                            <MudTh>Alias</MudTh>
+                            <MudTh>Form</MudTh>
                             <MudTh>Example</MudTh>
                         </HeaderContent>
                         <RowTemplate>
-                            <MudTd DataLabel="Alias">@context.Alias</MudTd>
+                            <MudTd DataLabel="Form">@context.Form</MudTd>
                             <MudTd DataLabel="Example">@context.Example</MudTd>
                         </RowTemplate>
                     </MudTable>
@@ -156,7 +156,7 @@
         ? "?"
         : char.ToUpperInvariant(Dossier.Name.Trim()[0]).ToString();
 
-    private string AliasesSummary => CountText(Dossier.Aliases.Count, "alias", "aliases");
+    private string NameFormsSummary => CountText(Dossier.ObservedNameForms.Count, "name form", "name forms");
 
     private string ProfileCompletenessText => $"Профиль {CompletedProfileSections}/4";
 
@@ -180,10 +180,10 @@
 
     private string GenderBadgeClass => $"character-gender-badge character-gender-{GenderClass}";
 
-    private IReadOnlyList<AliasExampleView> AliasExampleRows => Dossier.AliasExamples
+    private IReadOnlyList<NameFormExampleView> NameFormExampleRows => Dossier.ObservedNameFormExamples
         .Where(item => !string.IsNullOrWhiteSpace(item.Key) && !string.IsNullOrWhiteSpace(item.Value))
         .OrderBy(item => item.Key, StringComparer.OrdinalIgnoreCase)
-        .Select(item => new AliasExampleView(item.Key.Trim(), item.Value.Trim()))
+        .Select(item => new NameFormExampleView(item.Key.Trim(), item.Value.Trim()))
         .ToList();
 
     private Task ToggleExpandedAsync()
@@ -196,5 +196,5 @@
         return count == 1 ? $"1 {singular}" : $"{count} {plural}";
     }
 
-    private sealed record AliasExampleView(string Alias, string Example);
+    private sealed record NameFormExampleView(string Form, string Example);
 }

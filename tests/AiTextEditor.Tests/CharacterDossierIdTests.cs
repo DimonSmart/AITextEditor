@@ -78,8 +78,8 @@ public sealed class CharacterDossierIdTests
                 {
                   "characterId": "old-a",
                   "name": "Alice",
-                  "aliases": [],
-                  "aliasExamples": {}
+                  "observedNameForms": [],
+                  "observedNameFormExamples": {}
                 }
               ]
             }
@@ -95,13 +95,13 @@ public sealed class CharacterDossierIdTests
             """
             {
               "dossiersId": "d1",
-              "version": 3,
+              "version": 4,
               "characters": [
                 {
                   "characterId": 5,
                   "name": "Alice",
-                  "aliases": [],
-                  "aliasExamples": {}
+                  "observedNameForms": [],
+                  "observedNameFormExamples": {}
                 }
               ]
             }
@@ -119,7 +119,7 @@ public sealed class CharacterDossierIdTests
             """
             {
               "dossiersId": "d1",
-              "version": 3,
+              "version": 4,
               "characters": []
             }
             """);
@@ -161,7 +161,7 @@ public sealed class CharacterDossierIdTests
             }
             """));
 
-        Assert.Equal("Character dossiers version must be 3.", exception.Message);
+        Assert.Equal("Character dossiers version must be 4.", exception.Message);
     }
 
     [Fact]
@@ -173,20 +173,20 @@ public sealed class CharacterDossierIdTests
             """
             {
               "dossiersId": "d1",
-              "version": 3,
+              "version": 4,
               "nextCharacterId": 3,
               "characters": [
                 {
                   "characterId": 1,
                   "name": "Alice",
-                  "aliases": [],
-                  "aliasExamples": {}
+                  "observedNameForms": [],
+                  "observedNameFormExamples": {}
                 },
                 {
                   "characterId": 1,
                   "name": "Bob",
-                  "aliases": [],
-                  "aliasExamples": {}
+                  "observedNameForms": [],
+                  "observedNameFormExamples": {}
                 }
               ]
             }

@@ -94,7 +94,7 @@ internal sealed class CharacterArchiveSearchToolAdapter : ICharacterArchiveSearc
         {
             CharacterBibleRunLogScope.Current?.Debug(
                 "resolve.search.hit",
-                $"candidateIndex={candidateIndex} rank={hit.Rank} characterId={hit.CharacterId} name={LogValueFormatter.Quote(hit.Name)} gender={LogValueFormatter.Quote(hit.Gender)} aliases={LogValueFormatter.List(hit.Aliases)} score={LogValueFormatter.Score(hit.Score)} summary={LogValueFormatter.Quote(LogValueFormatter.ShortText(hit.Identity))}");
+                $"candidateIndex={candidateIndex} rank={hit.Rank} characterId={hit.CharacterId} name={LogValueFormatter.Quote(hit.Name)} gender={LogValueFormatter.Quote(hit.Gender)} observedNameForms={LogValueFormatter.List(hit.ObservedNameForms)} score={LogValueFormatter.Score(hit.Score)} summary={LogValueFormatter.Quote(LogValueFormatter.ShortText(hit.Identity))}");
         }
 
         return result;
@@ -109,7 +109,7 @@ internal sealed class CharacterArchiveSearchToolAdapter : ICharacterArchiveSearc
             hit.Card.CharacterId,
             hit.Card.Name,
             hit.Card.Gender,
-            hit.Card.Aliases,
+            hit.Card.ObservedNameForms,
             hit.Card.Summary,
             hit.Score);
     }

@@ -55,83 +55,62 @@ internal sealed class CharacterDossierEditSession
                ?? throw new InvalidOperationException($"character_dossier_not_found: {characterId}");
     }
 
-    public bool RefineCanonicalName(
-        int characterId,
-        CharacterBibleCharacterCandidate candidate,
-        bool exactNameMatch)
+    public bool RenameCharacter(int characterId, string canonicalName)
     {
-        ArgumentNullException.ThrowIfNull(candidate);
-        if (exactNameMatch)
-        {
-            return false;
-        }
+        ArgumentException.ThrowIfNullOrWhiteSpace(canonicalName);
 
         var dossier = GetRequired(characterId);
-        var canonicalName = candidate.CanonicalName.Trim();
-        if (string.IsNullOrWhiteSpace(canonicalName) ||
-            string.Equals(dossier.Name, canonicalName, StringComparison.OrdinalIgnoreCase) ||
-            !IsGenderCompatible(dossier.Gender, candidate.Gender) ||
-            !TryFindExampleFor(dossier.Name, candidate.AliasExamples, out var currentNameExample))
+        var normalizedName = canonicalName.Trim();
+        if (string.Equals(dossier.Name, normalizedName, StringComparison.Ordinal))
         {
             return false;
         }
 
-        var aliasExamples = NormalizeAliasExamples(dossier.AliasExamples);
-        if (!aliasExamples.ContainsKey(dossier.Name))
-        {
-            aliasExamples[dossier.Name] = currentNameExample;
-        }
-
-        return ReplaceDossier(dossier with
-        {
-            Name = canonicalName,
-            AliasExamples = aliasExamples,
-            Aliases = BuildAliases(aliasExamples)
-        });
+        return ReplaceDossier(dossier with { Name = normalizedName });
     }
 
-    public bool MergeAliases(
+    public bool MergeObservedNameForms(
         int characterId,
         CharacterBibleCharacterCandidate candidate,
         bool exactNameMatch)
     {
         ArgumentNullException.ThrowIfNull(candidate);
 
-        var aliasExamples = NormalizeAliasExamples(candidate.AliasExamples);
+        var observedNameFormExamples = NormalizeObservedNameFormExamples(candidate.ObservedNameFormExamples);
         if (exactNameMatch &&
             !string.IsNullOrWhiteSpace(candidate.CanonicalName) &&
-            TryFindExampleFor(candidate.CanonicalName, candidate.AliasExamples, out var canonicalExample))
+            TryFindExampleFor(candidate.CanonicalName, candidate.ObservedNameFormExamples, out var canonicalExample))
         {
-            aliasExamples[candidate.CanonicalName.Trim()] = canonicalExample;
+            observedNameFormExamples[candidate.CanonicalName.Trim()] = canonicalExample;
         }
 
-        return MergeAliasExamples(characterId, aliasExamples);
+        return MergeObservedNameFormExamples(characterId, observedNameFormExamples);
     }
 
-    public bool MergeAliasExamples(
+    public bool MergeObservedNameFormExamples(
         int characterId,
-        IReadOnlyDictionary<string, string> aliasExamples)
+        IReadOnlyDictionary<string, string> observedNameFormExamples)
     {
-        ArgumentNullException.ThrowIfNull(aliasExamples);
+        ArgumentNullException.ThrowIfNull(observedNameFormExamples);
 
         var dossier = GetRequired(characterId);
-        var merged = NormalizeAliasExamples(dossier.AliasExamples);
+        var merged = NormalizeObservedNameFormExamples(dossier.ObservedNameFormExamples);
         var changed = false;
-        foreach (var (alias, example) in NormalizeAliasExamples(aliasExamples))
+        foreach (var (observedNameForm, example) in NormalizeObservedNameFormExamples(observedNameFormExamples))
         {
-            if (merged.ContainsKey(alias))
+            if (merged.ContainsKey(observedNameForm))
             {
                 continue;
             }
 
-            merged[alias] = example;
+            merged[observedNameForm] = example;
             changed = true;
         }
 
         return changed && ReplaceDossier(dossier with
         {
-            AliasExamples = merged,
-            Aliases = BuildAliases(merged)
+            ObservedNameFormExamples = merged,
+            ObservedNameForms = BuildObservedNameForms(merged)
         });
     }
 
@@ -276,13 +255,13 @@ internal sealed class CharacterDossierEditSession
         CharacterBibleCharacterCandidate candidate)
     {
         var name = candidate.CanonicalName.Trim();
-        var aliasExamples = NormalizeAliasExamples(candidate.AliasExamples);
+        var observedNameFormExamples = NormalizeObservedNameFormExamples(candidate.ObservedNameFormExamples);
 
         return new CharacterDossier(
             characterId,
             name,
-            BuildAliases(aliasExamples),
-            aliasExamples,
+            BuildObservedNameForms(observedNameFormExamples),
+            observedNameFormExamples,
             NormalizeGender(candidate.Gender),
             ImportanceLevel: null,
             CharacterProfile.Empty);
@@ -302,11 +281,11 @@ internal sealed class CharacterDossierEditSession
 
     private static CharacterDossier CloneDossier(CharacterDossier dossier)
     {
-        var aliasExamples = NormalizeAliasExamples(dossier.AliasExamples);
+        var observedNameFormExamples = NormalizeObservedNameFormExamples(dossier.ObservedNameFormExamples);
         return dossier with
         {
-            Aliases = BuildAliases(aliasExamples),
-            AliasExamples = aliasExamples,
+            ObservedNameForms = BuildObservedNameForms(observedNameFormExamples),
+            ObservedNameFormExamples = observedNameFormExamples,
             Gender = NormalizeGender(dossier.Gender),
             Profile = CharacterProfile.Normalize(dossier.Profile)
         };
@@ -316,7 +295,7 @@ internal sealed class CharacterDossierEditSession
     {
         return entry with
         {
-            Aliases = entry.Aliases.ToArray(),
+            ObservedNameForms = entry.ObservedNameForms.ToArray(),
             Evidence = entry.Evidence.Select(CloneEvidence).ToArray()
         };
     }
@@ -335,54 +314,54 @@ internal sealed class CharacterDossierEditSession
         };
     }
 
-    private static Dictionary<string, string> NormalizeAliasExamples(
-        IReadOnlyDictionary<string, string>? aliasExamples)
+    private static Dictionary<string, string> NormalizeObservedNameFormExamples(
+        IReadOnlyDictionary<string, string>? observedNameFormExamples)
     {
         var normalized = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        if (aliasExamples is null)
+        if (observedNameFormExamples is null)
         {
             return normalized;
         }
 
-        foreach (var (alias, example) in aliasExamples)
+        foreach (var (observedNameForm, example) in observedNameFormExamples)
         {
-            if (string.IsNullOrWhiteSpace(alias) || string.IsNullOrWhiteSpace(example))
+            if (string.IsNullOrWhiteSpace(observedNameForm) || string.IsNullOrWhiteSpace(example))
             {
                 continue;
             }
 
-            var trimmedAlias = alias.Trim();
-            if (!normalized.ContainsKey(trimmedAlias))
+            var trimmedObservedNameForm = observedNameForm.Trim();
+            if (!normalized.ContainsKey(trimmedObservedNameForm))
             {
-                normalized[trimmedAlias] = example.Trim();
+                normalized[trimmedObservedNameForm] = example.Trim();
             }
         }
 
         return normalized;
     }
 
-    private static IReadOnlyList<string> BuildAliases(IReadOnlyDictionary<string, string> aliasExamples)
+    private static IReadOnlyList<string> BuildObservedNameForms(IReadOnlyDictionary<string, string> observedNameFormExamples)
     {
-        return aliasExamples.Keys
-            .Where(alias => !string.IsNullOrWhiteSpace(alias))
-            .Select(alias => alias.Trim())
+        return observedNameFormExamples.Keys
+            .Where(observedNameForm => !string.IsNullOrWhiteSpace(observedNameForm))
+            .Select(observedNameForm => observedNameForm.Trim())
             .Distinct(StringComparer.OrdinalIgnoreCase)
-            .OrderBy(alias => alias, StringComparer.OrdinalIgnoreCase)
+            .OrderBy(observedNameForm => observedNameForm, StringComparer.OrdinalIgnoreCase)
             .ToArray();
     }
 
     private static bool TryFindExampleFor(
         string name,
-        IReadOnlyDictionary<string, string> aliases,
+        IReadOnlyDictionary<string, string> observedNameFormExamples,
         out string example)
     {
         example = string.Empty;
-        if (aliases.Count == 0)
+        if (observedNameFormExamples.Count == 0)
         {
             return false;
         }
 
-        var match = aliases.FirstOrDefault(alias => string.Equals(alias.Key, name, StringComparison.OrdinalIgnoreCase));
+        var match = observedNameFormExamples.FirstOrDefault(item => string.Equals(item.Key, name, StringComparison.OrdinalIgnoreCase));
         if (string.IsNullOrWhiteSpace(match.Value))
         {
             return false;

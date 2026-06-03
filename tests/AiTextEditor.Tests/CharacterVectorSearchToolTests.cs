@@ -212,7 +212,7 @@ public sealed class CharacterVectorSearchToolTests
         var result = await tool.SearchAsync(dossierService.GetDossiers(), "query", 1, CancellationToken.None);
         var card = result[0].Card;
 
-        Assert.Equal(["Aliases", "CharacterId", "Gender", "Name", "Summary"], PropertyNames(card));
+        Assert.Equal(["CharacterId", "Gender", "Name", "ObservedNameForms", "Summary"], PropertyNames(card));
         Assert.Equal(["Card", "Score"], PropertyNames(result[0]));
     }
 
@@ -256,18 +256,18 @@ public sealed class CharacterVectorSearchToolTests
         int characterId,
         string name,
         string gender = "unknown",
-        IReadOnlyDictionary<string, string>? aliasExamples = null,
+        IReadOnlyDictionary<string, string>? observedNameFormExamples = null,
         string appearance = "",
         string status = "",
         string traits = "",
         string speech = "")
     {
-        var aliases = aliasExamples?.Keys.ToArray() ?? [];
+        var observedNameForms = observedNameFormExamples?.Keys.ToArray() ?? [];
         return new CharacterDossier(
             characterId,
             name,
-            aliases,
-            aliasExamples ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
+            observedNameForms,
+            observedNameFormExamples ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
             gender,
             Profile: new CharacterProfile(
                 appearance,

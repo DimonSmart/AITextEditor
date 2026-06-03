@@ -105,8 +105,8 @@ public sealed class CharacterDossiersPlugin
                 c.Gender,
                 c.ImportanceLevel,
                 CharacterProfile.Normalize(c.Profile),
-                c.Aliases,
-                c.AliasExamples))
+                c.ObservedNameForms,
+                c.ObservedNameFormExamples))
             .ToList();
 
         return new CharacterDossiersPayload(dossiers.DossiersId, dossiers.Version, characters);
@@ -139,11 +139,11 @@ public sealed class CharacterDossiersPlugin
         return new CharacterDossiersCommandResult(refreshed.Dossiers.DossiersId, refreshed.Dossiers.Version, Status: "updated");
     }
 
-    [Description("Manually create/update a character dossier. If characterId is omitted, resolves by name/aliases; ambiguous does not auto-merge.")]
+    [Description("Manually create/update a character dossier. If characterId is omitted, resolves by name/name forms; ambiguous does not auto-merge.")]
     public CharacterDossiersCommandResult UpsertCharacterDossier(
         string name,
         string gender = "unknown",
-        Dictionary<string, string>? aliasExamples = null,
+        Dictionary<string, string>? observedNameFormExamples = null,
         int? characterId = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
@@ -154,7 +154,7 @@ public sealed class CharacterDossiersPlugin
                 characterId.Value,
                 name: name.Trim(),
                 gender: gender,
-                aliasExamples: aliasExamples,
+                observedNameFormExamples: observedNameFormExamples,
                 profile: null);
 
             var dossiers = dossierService.GetDossiers();
@@ -165,7 +165,7 @@ public sealed class CharacterDossiersPlugin
         var result = dossierService.ResolveAndUpsertDossier(
             name.Trim(),
             gender,
-            aliasExamples,
+            observedNameFormExamples,
             profile: null);
 
         return new CharacterDossiersCommandResult(

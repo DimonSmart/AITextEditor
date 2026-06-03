@@ -40,8 +40,8 @@ public static class CharacterDossierSearch
         var profile = CharacterProfile.Normalize(dossier.Profile);
 
         return Contains(dossier.Name, query)
-            || dossier.Aliases.Any(alias => Contains(alias, query))
-            || dossier.AliasExamples.Any(item => Contains(item.Key, query) || Contains(item.Value, query))
+            || dossier.ObservedNameForms.Any(form => Contains(form, query))
+            || dossier.ObservedNameFormExamples.Any(item => Contains(item.Key, query) || Contains(item.Value, query))
             || Contains(profile.Appearance, query)
             || Contains(profile.StatusAndCompetence, query)
             || Contains(profile.PsychologicalProfile, query)

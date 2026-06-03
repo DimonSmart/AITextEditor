@@ -40,21 +40,21 @@ public sealed class CharacterBibleMarkdownRenderer : ICharacterBibleMarkdownRend
         AppendTextSection(builder, "Status and competence", profile.StatusAndCompetence);
         AppendTextSection(builder, "Psychological profile", profile.PsychologicalProfile);
         AppendTextSection(builder, "Speech and communication", profile.SpeechAndCommunication);
-        builder.AppendLine("### Aliases");
+        builder.AppendLine("### Observed name forms");
         builder.AppendLine();
 
-        if (dossier.AliasExamples.Count == 0)
+        if (dossier.ObservedNameFormExamples.Count == 0)
         {
             builder.AppendLine("- none");
         }
         else
         {
-            foreach (var alias in dossier.AliasExamples.OrderBy(alias => alias.Key, StringComparer.OrdinalIgnoreCase))
+            foreach (var form in dossier.ObservedNameFormExamples.OrderBy(form => form.Key, StringComparer.OrdinalIgnoreCase))
             {
                 builder.Append("- ");
-                builder.Append(NormalizeMarkdownLine(alias.Key));
+                builder.Append(NormalizeMarkdownLine(form.Key));
                 builder.Append(": ");
-                builder.AppendLine(NormalizeMarkdownLine(alias.Value));
+                builder.AppendLine(NormalizeMarkdownLine(form.Value));
             }
         }
 

@@ -273,7 +273,7 @@ public sealed class CharacterBibleLlmInputLoggerTests
         var suspect = Assert.Single(session.Current.SuspectArchive!);
         Assert.Equal("Пончик", suspect.CanonicalName);
         Assert.Equal("male", suspect.Gender);
-        Assert.Equal(["Пончика"], suspect.Aliases);
+        Assert.Equal(["Пончика"], suspect.ObservedNameForms);
         Assert.Equal("Needs more evidence.", suspect.Reason);
         var evidence = Assert.Single(suspect.Evidence);
         Assert.Equal("1.1.1.p3", evidence.Pointer);

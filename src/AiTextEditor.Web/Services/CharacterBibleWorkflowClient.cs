@@ -1,6 +1,7 @@
 using AiTextEditor.Agent;
 using AiTextEditor.Agent.CharacterBible;
 using AiTextEditor.Agent.CharacterBible.Extraction;
+using AiTextEditor.Agent.CharacterBible.Normalization;
 using AiTextEditor.Agent.CharacterBible.Patching;
 using AiTextEditor.Agent.CharacterBible.Resolution;
 using AiTextEditor.Agent.CharacterBible.VectorSearch;
@@ -52,6 +53,7 @@ public sealed class CharacterBibleWorkflowClient : ICharacterBibleWorkflowClient
         var identityResolverClient = new AgenticCharacterIdentityResolutionModelClient(
             modelClient,
             loggerFactory.CreateLogger<AgenticCharacterIdentityResolutionModelClient>());
+        var canonicalNameNormalizationClient = new AgenticCharacterCanonicalNameNormalizationModelClient(modelClient);
         var splitCandidateClient = new AgenticSplitCandidateModelClient(
             modelClient,
             loggerFactory.CreateLogger<AgenticSplitCandidateModelClient>());
@@ -66,6 +68,8 @@ public sealed class CharacterBibleWorkflowClient : ICharacterBibleWorkflowClient
             patchClient,
             new CharacterProfileUpdatePromptBuilder(),
             identityResolverClient,
+            canonicalNameNormalizationClient,
+            new CharacterCanonicalNameNormalizationPromptBuilder(),
             characterVectorSearchTool,
             loggerFactory,
             new CharacterIdentityResolutionPromptBuilder(),

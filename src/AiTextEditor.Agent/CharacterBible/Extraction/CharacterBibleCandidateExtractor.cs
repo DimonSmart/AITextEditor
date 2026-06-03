@@ -76,7 +76,7 @@ internal sealed class CharacterBibleCandidateExtractor
                     var candidate = batchCandidates[candidateIndex];
                     CharacterBibleRunLogScope.Current?.Info(
                         "extract.candidate",
-                        $"batch={batchNumber} candidateIndex={candidateIndex + 1} name={LogValueFormatter.Quote(candidate.CanonicalName)} gender={LogValueFormatter.Quote(candidate.Gender)} aliases={LogValueFormatter.List(candidate.AliasExamples.Keys)} pointers={LogValueFormatter.List(candidate.Evidence.Select(evidence => evidence.Pointer))}");
+                        $"batch={batchNumber} candidateIndex={candidateIndex + 1} name={LogValueFormatter.Quote(candidate.CanonicalName)} gender={LogValueFormatter.Quote(candidate.Gender)} observedNameForms={LogValueFormatter.List(candidate.ObservedNameFormExamples.Keys)} pointers={LogValueFormatter.List(candidate.Evidence.Select(evidence => evidence.Pointer))}");
                 }
 
                 CharacterBibleRunLogScope.Current?.Info(
@@ -166,11 +166,11 @@ internal sealed class CharacterBibleCandidateExtractor
 
     private static string BuildCandidateDeduplicationKey(CharacterBibleCharacterCandidate candidate)
     {
-        var aliases = string.Join(
+        var observedNameForms = string.Join(
             "|",
-            candidate.AliasExamples.Keys
-                .Where(alias => !string.IsNullOrWhiteSpace(alias))
-                .Select(alias => alias.Trim().ToUpperInvariant())
+            candidate.ObservedNameFormExamples.Keys
+                .Where(observedNameForm => !string.IsNullOrWhiteSpace(observedNameForm))
+                .Select(observedNameForm => observedNameForm.Trim().ToUpperInvariant())
                 .Order(StringComparer.Ordinal));
         var pointers = string.Join(
             "|",
@@ -184,7 +184,7 @@ internal sealed class CharacterBibleCandidateExtractor
             "\u001f",
             Normalize(candidate.CanonicalName),
             Normalize(candidate.Gender),
-            aliases,
+            observedNameForms,
             pointers);
     }
 

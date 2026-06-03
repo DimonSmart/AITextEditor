@@ -11,7 +11,7 @@ public sealed class CharacterNameIndex
         ArgumentNullException.ThrowIfNull(characters);
 
         byName = characters
-            .SelectMany(character => character.Aliases
+            .SelectMany(character => character.ObservedNameForms
                 .Append(character.Name)
                 .Where(name => !string.IsNullOrWhiteSpace(name))
                 .Select(name => new KeyValuePair<string, int>(NormalizeName(name), character.CharacterId)))

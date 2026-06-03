@@ -46,6 +46,7 @@ If this index conflicts with a numbered document, trust the numbered document.
 | 0046 | spec | Minimal character profile update tool | Make the profile update tool carry only the field and replacement value while keeping no-tool calls as no change. | 0035, 0037, 0040 |
 | 0047 | spec | Profile update tool-only stage | Make profile update ignore final model text and derive group results from tool calls or real failures. | 0030, 0031, 0046 |
 | 0048 | spec | Character Bible live updates | Update `/character-bible` from background generation snapshots without reloading the page or resetting UI filters and expanded state. | 0011, 0012, 0013, 0016 |
+| 0049 | spec | Observed name forms and canonical name normalization | Rename aliases to observed name forms and add a dedicated LLM stage for canonical display-name normalization. | 0021, 0032, 0033, 0034, 0035, 0037, 0045, 0048 |
 
 ## Archived documents
 

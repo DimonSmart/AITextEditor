@@ -24,7 +24,7 @@ public sealed record CharacterVectorSearchCard(
     int CharacterId,
     string Name,
     string Gender,
-    IReadOnlyList<string> Aliases,
+    IReadOnlyList<string> ObservedNameForms,
     string Summary);
 
 internal interface ICharacterVectorEmbeddingClient
@@ -203,28 +203,28 @@ public sealed partial class CharacterVectorSearchTool : ICharacterVectorSearchTo
         CharacterDossier dossier,
         CharacterProfile profile)
     {
-        var aliases = dossier.Aliases
-            .Where(alias => !string.IsNullOrWhiteSpace(alias))
-            .Select(alias => alias.Trim())
+        var observedNameForms = dossier.ObservedNameForms
+            .Where(observedNameForm => !string.IsNullOrWhiteSpace(observedNameForm))
+            .Select(observedNameForm => observedNameForm.Trim())
             .ToList();
 
         return new CharacterVectorSearchCard(
             dossier.CharacterId,
             dossier.Name.Trim(),
             NormalizeValue(dossier.Gender),
-            aliases,
-            BuildSummary(dossier, profile, aliases));
+            observedNameForms,
+            BuildSummary(dossier, profile, observedNameForms));
     }
 
     private static string BuildSummary(
         CharacterDossier dossier,
         CharacterProfile profile,
-        IReadOnlyList<string> aliases)
+        IReadOnlyList<string> observedNameForms)
     {
         var lines = new List<string>();
         AddLine(lines, "Name", dossier.Name);
         AddLine(lines, "Gender", dossier.Gender);
-        AddLine(lines, "Aliases", string.Join(", ", aliases));
+        AddLine(lines, "Observed name forms", string.Join(", ", observedNameForms));
         AddLine(lines, "Profile", string.Join(
             " ",
             new[]
@@ -243,7 +243,7 @@ public sealed partial class CharacterVectorSearchTool : ICharacterVectorSearchTo
         var lines = new List<string>();
         AddLine(lines, "Character", dossier.Name);
         AddLine(lines, "Gender", dossier.Gender);
-        AddLine(lines, "Aliases", string.Join(", ", dossier.Aliases));
+        AddLine(lines, "Observed name forms", string.Join(", ", dossier.ObservedNameForms));
         AddLine(lines, "Status", profile.StatusAndCompetence);
         AddLine(lines, "Appearance", profile.Appearance);
         AddLine(lines, "Traits", profile.PsychologicalProfile);

@@ -2,6 +2,7 @@ using AiTextEditor.Agent;
 using System.Text.Json;
 using AiTextEditor.Agent.CharacterBible;
 using AiTextEditor.Agent.CharacterBible.Extraction;
+using AiTextEditor.Agent.CharacterBible.Normalization;
 using AiTextEditor.Agent.CharacterBible.Patching;
 using AiTextEditor.Agent.CharacterBible.Resolution;
 using AiTextEditor.Agent.CharacterBible.VectorSearch;
@@ -44,15 +45,15 @@ public sealed class CharacterBibleWorkflowRunnerTests
             "John arrived.\n\nJohnny smiled.",
             Response(Character(
                 "John",
-                Alias("Johnny", "Johnny smiled."))),
+                NameForm("Johnny", "Johnny smiled."))),
             out var dossierService,
             out _);
 
         dossierService.UpsertDossier(new CharacterDossier(
             CharacterId: 1,
             Name: "John",
-            Aliases: ["John"],
-            AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            ObservedNameForms: ["John"],
+            ObservedNameFormExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
                 ["John"] = "John arrived."
             },
@@ -68,8 +69,8 @@ public sealed class CharacterBibleWorkflowRunnerTests
 
         var updated = Assert.Single(result.Dossiers.Characters);
         Assert.Equal(1, updated.CharacterId);
-        Assert.Contains("Johnny", updated.AliasExamples.Keys, StringComparer.OrdinalIgnoreCase);
-        Assert.DoesNotContain("Johnny", dossierService.TryGetDossier(1)!.AliasExamples.Keys, StringComparer.OrdinalIgnoreCase);
+        Assert.Contains("Johnny", updated.ObservedNameFormExamples.Keys, StringComparer.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Johnny", dossierService.TryGetDossier(1)!.ObservedNameFormExamples.Keys, StringComparer.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -84,8 +85,8 @@ public sealed class CharacterBibleWorkflowRunnerTests
         dossierService.UpsertDossier(new CharacterDossier(
             CharacterId: 1,
             Name: "John",
-            Aliases: [],
-            AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
+            ObservedNameForms: [],
+            ObservedNameFormExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
             Gender: "unknown"));
 
         var result = await runner.RunAsync();
@@ -108,8 +109,8 @@ public sealed class CharacterBibleWorkflowRunnerTests
         dossierService.UpsertDossier(new CharacterDossier(
             CharacterId: 1,
             Name: "John",
-            Aliases: [],
-            AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
+            ObservedNameForms: [],
+            ObservedNameFormExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
             Gender: "unknown",
             ImportanceLevel: 8));
 
@@ -132,8 +133,8 @@ public sealed class CharacterBibleWorkflowRunnerTests
         dossierService.UpsertDossier(new CharacterDossier(
             CharacterId: 1,
             Name: "John",
-            Aliases: [],
-            AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
+            ObservedNameForms: [],
+            ObservedNameFormExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
             Gender: "unknown",
             ImportanceLevel: 9));
 
@@ -172,7 +173,7 @@ public sealed class CharacterBibleWorkflowRunnerTests
             "Alex Prime arrived.",
             Response(Character(
                 "Alex Prime",
-                Alias("Alex Prime", "Alex Prime arrived."))),
+                NameForm("Alex Prime", "Alex Prime arrived."))),
             out var dossierService,
             out _,
             patchModelClient: patchClient);
@@ -180,8 +181,8 @@ public sealed class CharacterBibleWorkflowRunnerTests
         dossierService.UpsertDossier(new CharacterDossier(
             CharacterId: 1,
             Name: "Alexander Reed",
-            Aliases: ["Alex Prime"],
-            AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            ObservedNameForms: ["Alex Prime"],
+            ObservedNameFormExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
                 ["Alex Prime"] = "Alex Prime opened the door."
             },
@@ -190,8 +191,8 @@ public sealed class CharacterBibleWorkflowRunnerTests
         dossierService.UpsertDossier(new CharacterDossier(
             CharacterId: 2,
             Name: "Alexandra Stone",
-            Aliases: ["Alex Prime"],
-            AliasExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            ObservedNameForms: ["Alex Prime"],
+            ObservedNameFormExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
                 ["Alex Prime"] = "Alex Prime closed the window."
             },
@@ -209,7 +210,7 @@ public sealed class CharacterBibleWorkflowRunnerTests
         Assert.Equal([1, 2], decision.CandidateIds.OrderBy(id => id).ToArray());
 
         Assert.Equal(2, dossierService.GetDossiers().Characters.Count);
-        Assert.DoesNotContain(dossierService.FindByNameOrAlias("Alex Prime"), dossier => dossier.Name == "Alex Prime");
+        Assert.DoesNotContain(dossierService.FindByNameOrObservedNameForm("Alex Prime"), dossier => dossier.Name == "Alex Prime");
         Assert.All(dossierService.GetDossiers().Characters, dossier => Assert.Null(dossier.ImportanceLevel));
         Assert.Equal(0, patchClient.CallCount);
     }
@@ -261,6 +262,8 @@ public sealed class CharacterBibleWorkflowRunnerTests
             NoopPatchClient(),
             new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
+            NoopCanonicalNameNormalizationClient(),
+            new CharacterCanonicalNameNormalizationPromptBuilder(),
             NewVectorSearchTool());
         var runner = new CharacterBibleWorkflowRunner(generator, NullLoggerFactory.Instance);
         var progress = new List<CharacterBibleWorkflowProgress>();
@@ -300,6 +303,8 @@ public sealed class CharacterBibleWorkflowRunnerTests
             NoopPatchClient(),
             new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
+            NoopCanonicalNameNormalizationClient(),
+            new CharacterCanonicalNameNormalizationPromptBuilder(),
             NewVectorSearchTool());
         var runner = new CharacterBibleWorkflowRunner(generator, NullLoggerFactory.Instance);
 
@@ -332,6 +337,8 @@ public sealed class CharacterBibleWorkflowRunnerTests
             patchModelClient ?? NoopPatchClient(),
             new CharacterProfileUpdatePromptBuilder(),
             NewIdentityResolverClient(),
+            NoopCanonicalNameNormalizationClient(),
+            new CharacterCanonicalNameNormalizationPromptBuilder(),
             NewVectorSearchTool());
 
         return new CharacterBibleWorkflowRunner(generator, NullLoggerFactory.Instance);
@@ -342,14 +349,14 @@ public sealed class CharacterBibleWorkflowRunnerTests
 
     private static ExtractedLocalCharacter Character(
         string canonicalName,
-        params string[] aliases)
+        params string[] observedNameForms)
         => new(
             canonicalName,
             "unknown",
-            aliases,
+            observedNameForms,
             ["p1"]);
 
-    private static string Alias(string form, string excerpt) => form;
+    private static string NameForm(string form, string excerpt) => form;
 
     private static string[] ReadPromptPointers(CharacterExtractionModelRequest request)
     {
@@ -365,6 +372,9 @@ public sealed class CharacterBibleWorkflowRunnerTests
 
     private static ICharacterIdentityResolutionModelClient NewIdentityResolverClient()
         => new SearchBackedIdentityResolutionModelClient();
+
+    private static ICharacterCanonicalNameNormalizationModelClient NoopCanonicalNameNormalizationClient()
+        => new NoopCharacterCanonicalNameNormalizationModelClient();
 
     private static ICharacterVectorSearchTool NewVectorSearchTool()
         => new TestCharacterVectorSearchTool();
@@ -458,6 +468,19 @@ public sealed class CharacterBibleWorkflowRunnerTests
         }
     }
 
+    private sealed class NoopCharacterCanonicalNameNormalizationModelClient : ICharacterCanonicalNameNormalizationModelClient
+    {
+        public Task<CharacterCanonicalNameNormalizationResponse> NormalizeAsync(
+            CharacterCanonicalNameNormalizationModelRequest request,
+            CancellationToken cancellationToken = default)
+        {
+            return Task.FromResult(new CharacterCanonicalNameNormalizationResponse(
+                "insufficient_evidence",
+                null,
+                "No test normalization."));
+        }
+    }
+
     private sealed class CountingCharacterProfileUpdateModelClient : ICharacterProfileUpdateModelClient
     {
         public int CallCount { get; private set; }
@@ -480,11 +503,11 @@ public sealed class CharacterBibleWorkflowRunnerTests
             using var json = JsonDocument.Parse(request.UserPrompt);
             var candidate = json.RootElement.GetProperty("candidate");
             var name = candidate.GetProperty("name").GetString() ?? string.Empty;
-            var aliases = candidate.GetProperty("aliases")
+            var observedNameForms = candidate.GetProperty("observedNameForms")
                 .EnumerateArray()
-                .Select(alias => alias.GetString())
-                .Where(alias => !string.IsNullOrWhiteSpace(alias));
-            var query = string.Join(' ', new[] { name }.Concat(aliases!));
+                .Select(form => form.GetString())
+                .Where(form => !string.IsNullOrWhiteSpace(form));
+            var query = string.Join(' ', new[] { name }.Concat(observedNameForms!));
             var searchResult = await request.SearchTool.SearchCharactersAsync(query, 5, cancellationToken);
             return searchResult.Hits.Count switch
             {
@@ -515,14 +538,14 @@ public sealed class CharacterBibleWorkflowRunnerTests
             var hits = dossiers.Characters
                 .Where(dossier =>
                     string.Equals(dossier.Name, normalizedQuery, StringComparison.OrdinalIgnoreCase) ||
-                    dossier.Aliases.Any(alias => normalizedQuery.Contains(alias, StringComparison.OrdinalIgnoreCase)) ||
+                    dossier.ObservedNameForms.Any(form => normalizedQuery.Contains(form, StringComparison.OrdinalIgnoreCase)) ||
                     normalizedQuery.Contains(dossier.Name, StringComparison.OrdinalIgnoreCase))
                 .Select(dossier => new CharacterVectorSearchHit(
                     new CharacterVectorSearchCard(
                         dossier.CharacterId,
                         dossier.Name,
                         dossier.Gender,
-                        dossier.Aliases,
+                        dossier.ObservedNameForms,
                         string.Empty),
                     1d))
                 .Take(limit)

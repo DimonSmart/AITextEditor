@@ -15,7 +15,7 @@
             <div class="character-card-summary">
                 <span class="@GenderBadgeClass">@GenderLabel</span>
                 <span>@ImportanceLabel</span>
-                <span>@AliasesSummary</span>
+                <span>@NameFormsSummary</span>
                 <span>@ProfileCompletenessText</span>
             </div>
         </div>
@@ -44,23 +44,23 @@
         </div>
     </section>
 
-    <section class="character-aliases" aria-label="Aliases">
-        <div class="character-card-section-title">Aliases</div>
-        <div class="character-alias-chip-row">
-            @if (Dossier.Aliases.Count == 0)
+    <section class="character-name-forms" aria-label="Name forms">
+        <div class="character-card-section-title">Name forms</div>
+        <div class="character-name-form-chip-row">
+            @if (Dossier.ObservedNameForms.Count == 0)
             {
-                <span class="character-empty-note">No aliases</span>
+                <span class="character-empty-note">No name forms</span>
             }
             else
             {
-                @foreach (var alias in Dossier.Aliases.Take(MaxVisibleAliases))
+                @foreach (var form in Dossier.ObservedNameForms.Take(MaxVisibleNameForms))
                 {
-                    <span class="character-alias-chip" title="@alias">@alias</span>
+                    <span class="character-name-form-chip" title="@form">@form</span>
                 }
 
-                @if (HiddenAliasCount > 0)
+                @if (HiddenNameFormCount > 0)
                 {
-                    <span class="character-alias-chip character-alias-more">+@HiddenAliasCount more</span>
+                    <span class="character-name-form-chip character-name-form-more">+@HiddenNameFormCount more</span>
                 }
             }
         </div>
@@ -68,7 +68,7 @@
 </div>
 
 @code {
-    private const int MaxVisibleAliases = 3;
+    private const int MaxVisibleNameForms = 3;
 
     [Parameter, EditorRequired]
     public CharacterDossier Dossier { get; set; } = null!;
@@ -82,7 +82,7 @@
 
     private int CompletedProfileSections => CharacterProfile.CountCompletedSections(Profile);
 
-    private int HiddenAliasCount => Math.Max(0, Dossier.Aliases.Count - MaxVisibleAliases);
+    private int HiddenNameFormCount => Math.Max(0, Dossier.ObservedNameForms.Count - MaxVisibleNameForms);
 
     private string DisplayName => string.IsNullOrWhiteSpace(Dossier.Name) ? "Unnamed character" : Dossier.Name.Trim();
 
@@ -90,7 +90,7 @@
         ? "?"
         : char.ToUpperInvariant(Dossier.Name.Trim()[0]).ToString();
 
-    private string AliasesSummary => CountText(Dossier.Aliases.Count, "alias", "aliases");
+    private string NameFormsSummary => CountText(Dossier.ObservedNameForms.Count, "name form", "name forms");
 
     private string ProfileCompletenessText => $"Профиль {CompletedProfileSections}/4";
 

@@ -22,9 +22,9 @@ public sealed record CharacterDossierEntry(
     [property: JsonPropertyName("gender")] string Gender,
     [property: JsonPropertyName("importanceLevel")] int? ImportanceLevel,
     [property: JsonPropertyName("profile")] CharacterProfile Profile,
-    [property: JsonPropertyName("aliases")] IReadOnlyList<string> Aliases,
-    [property: JsonPropertyName("aliasExamples")] IReadOnlyDictionary<string, string> AliasExamples);
+    [property: JsonPropertyName("observedNameForms")] IReadOnlyList<string> ObservedNameForms,
+    [property: JsonPropertyName("observedNameFormExamples")] IReadOnlyDictionary<string, string> ObservedNameFormExamples);
 
-public sealed record CharacterAliasExampleEntry(
+public sealed record CharacterObservedNameFormExampleEntry(
     [property: JsonPropertyName("form")] string Form,
     [property: JsonPropertyName("example")] string Example);

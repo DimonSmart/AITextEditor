@@ -147,7 +147,7 @@ internal sealed class ResolveCharacterBibleCandidatesExecutor : Executor<Charact
                 input.Paragraphs.Count,
                 input.Candidates,
                 input.ModelResponseErrors,
-                input.Failure);
+                Failure: input.Failure);
         }
 
         progress?.Report(new CharacterBibleWorkflowProgress(
@@ -235,6 +235,51 @@ internal sealed class PatchCharacterBibleDossiersExecutor : Executor<CharacterBi
             $"Character bible profiles updated: {patchedRunState.Catalog.Current.Characters.Count} dossiers.",
             DossiersSnapshot: patchedRunState.Catalog.Current));
         return patchedRunState;
+    }
+}
+
+internal sealed class NormalizeCharacterCanonicalNamesExecutor : Executor<CharacterBibleRunState, CharacterBibleRunState>
+{
+    private readonly CharacterDossiersGenerator generator;
+    private readonly ILogger<NormalizeCharacterCanonicalNamesExecutor> logger;
+    private readonly IProgress<CharacterBibleWorkflowProgress>? progress;
+
+    public NormalizeCharacterCanonicalNamesExecutor(
+        CharacterDossiersGenerator generator,
+        ILogger<NormalizeCharacterCanonicalNamesExecutor> logger,
+        IProgress<CharacterBibleWorkflowProgress>? progress)
+        : base("normalize_character_canonical_name", ExecutorOptions.Default, declareCrossRunShareable: false)
+    {
+        this.generator = generator ?? throw new ArgumentNullException(nameof(generator));
+        this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        this.progress = progress;
+    }
+
+    public override async ValueTask<CharacterBibleRunState> HandleAsync(
+        CharacterBibleRunState runState,
+        IWorkflowContext context,
+        CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(runState);
+        cancellationToken.ThrowIfCancellationRequested();
+
+        if (runState.Failure is not null)
+        {
+            CharacterBibleRunLogScope.Current?.Warning(
+                "canonical_name_normalization.skipped",
+                $"reason={LogValueFormatter.Quote("workflow failed")}");
+            return runState;
+        }
+
+        var normalizedRunState = await generator.NormalizeCanonicalNamesAsync(runState, progress, cancellationToken);
+        logger.LogInformation(
+            "character_bible_canonical_names_normalized: changed={Changed}",
+            normalizedRunState.Catalog.Changed);
+        progress?.Report(new CharacterBibleWorkflowProgress(
+            "normalize_character_canonical_name",
+            "Canonical name normalization finished.",
+            DossiersSnapshot: normalizedRunState.Catalog.Current));
+        return normalizedRunState;
     }
 }
 
