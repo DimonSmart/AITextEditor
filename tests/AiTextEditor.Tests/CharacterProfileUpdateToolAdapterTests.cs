@@ -29,6 +29,7 @@ public sealed class CharacterProfileUpdateToolAdapterTests
         var result = tools.ReplaceProfileField(CharacterBibleProfileField.Appearance, "");
 
         Assert.Equal(ReplaceProfileFieldResultStatus.Rejected, result.Status);
+        Assert.Equal("Value is empty.", result.Message);
         Assert.Null(session.GetRequired(1).Profile!.Appearance);
     }
 
@@ -38,7 +39,7 @@ public sealed class CharacterProfileUpdateToolAdapterTests
         var parameterNames = typeof(CharacterProfileUpdateToolAdapter)
             .GetMethod(nameof(CharacterProfileUpdateToolAdapter.ReplaceProfileField))!
             .GetParameters()
-            .Select(parameter => parameter.Name)
+            .Select(parameter => parameter.Name ?? string.Empty)
             .ToArray();
 
         Assert.Equal(["field", "value"], parameterNames);
@@ -79,7 +80,7 @@ public sealed class CharacterProfileUpdateToolAdapterTests
         var parameterNames = typeof(CharacterProfileUpdateToolAdapter)
             .GetMethod(nameof(CharacterProfileUpdateToolAdapter.ReplaceProfileField))!
             .GetParameters()
-            .Select(parameter => parameter.Name)
+            .Select(parameter => parameter.Name ?? string.Empty)
             .ToArray();
 
         Assert.DoesNotContain("characterId", parameterNames);
@@ -115,6 +116,31 @@ public sealed class CharacterProfileUpdateToolAdapterTests
                 || message.Message.Contains("evidencePointers=", StringComparison.Ordinal)));
     }
 
+    [Fact]
+    public void ReplaceProfileField_LogsRejectedToolCallDetails()
+    {
+        var logger = new CapturingCharacterBibleRunLogger();
+        var (tools, _) = CreateTools();
+
+        using (CharacterBibleRunLogScope.Push(logger))
+        {
+            tools.ReplaceProfileField(
+                CharacterBibleProfileField.PsychologicalProfile,
+                "## Bad markdown");
+        }
+
+        var rejected = Assert.Single(logger.WarningMessages, message =>
+            message.EventName == "profile.update.tool.rejected");
+        Assert.Contains("characterId=1", rejected.Message, StringComparison.Ordinal);
+        Assert.Contains("name=\"Пончик\"", rejected.Message, StringComparison.Ordinal);
+        Assert.Contains("tool=\"replace_profile_field\"", rejected.Message, StringComparison.Ordinal);
+        Assert.Contains("field=\"PsychologicalProfile\"", rejected.Message, StringComparison.Ordinal);
+        Assert.Contains("rule=\"contains_prompt_artifact\"", rejected.Message, StringComparison.Ordinal);
+        Assert.Contains("message=\"Markdown is not allowed.\"", rejected.Message, StringComparison.Ordinal);
+        Assert.Contains("valuePreview=\"## Bad markdown\"", rejected.Message, StringComparison.Ordinal);
+        Assert.Contains("evidencePointers=[\"p1\"]", rejected.Message, StringComparison.Ordinal);
+    }
+
     private static (CharacterProfileUpdateToolAdapter Tools, CharacterDossierEditSession Session) CreateTools(
         CharacterProfile? profile = null)
     {
@@ -130,6 +156,7 @@ public sealed class CharacterProfileUpdateToolAdapterTests
             1,
             "Пончик",
             context,
+            ["p1"],
             session,
             new CharacterProfileUpdateStatistics());
         return (tools, session);
@@ -145,6 +172,8 @@ public sealed class CharacterProfileUpdateToolAdapterTests
         public List<(string EventName, string Message)> InfoMessages { get; } = [];
 
         public List<(string EventName, string Message)> DebugMessages { get; } = [];
+
+        public List<(string EventName, string Message)> WarningMessages { get; } = [];
 
         public void Info(string eventName, string message)
         {
@@ -162,6 +191,7 @@ public sealed class CharacterProfileUpdateToolAdapterTests
 
         public void Warning(string eventName, string message)
         {
+            WarningMessages.Add((eventName, message));
         }
 
         public void Error(string eventName, string message, Exception? exception = null)

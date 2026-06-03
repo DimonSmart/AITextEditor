@@ -84,6 +84,7 @@ internal sealed class CharacterBibleProfileUpdater
                 dossier.CharacterId,
                 dossier.Name,
                 context,
+                evidence.Select(item => item.Pointer).ToArray(),
                 runState.Catalog,
                 statistics);
             var promptInput = CharacterProfileUpdatePromptBuilder.BuildPromptInput(patchGroup.Candidates, dossier);
@@ -97,6 +98,7 @@ internal sealed class CharacterBibleProfileUpdater
                 var appliedBefore = statistics.Applied;
                 var rejectedBefore = statistics.Rejected;
                 var appliedFieldsBefore = statistics.AppliedFields.Count;
+                var rejectedToolCallsBefore = statistics.RejectedToolCalls.Count;
                 var modelResult = await modelClient.UpdateProfileAsync(
                     new CharacterProfileUpdateModelRequest(
                         promptBuilder.BuildSystemPrompt(),
@@ -127,9 +129,18 @@ internal sealed class CharacterBibleProfileUpdater
                 }
                 else if (rejected > 0)
                 {
+                    var rejectedToolCalls = statistics.RejectedToolCalls
+                        .Skip(rejectedToolCallsBefore)
+                        .ToArray();
+                    var rejectedFields = rejectedToolCalls
+                        .Select(rejectedToolCall => rejectedToolCall.Field)
+                        .Distinct(StringComparer.Ordinal);
+                    var rejectedRules = rejectedToolCalls
+                        .Select(rejectedToolCall => rejectedToolCall.RuleCode)
+                        .Distinct(StringComparer.Ordinal);
                     CharacterBibleRunLogScope.Current?.Error(
                         "profile.update.group.failed",
-                        $"characterId={dossier.CharacterId} name={LogValueFormatter.Quote(dossier.Name)} reason={LogValueFormatter.Quote("tool validation failed")} applied={applied} rejected={rejected}");
+                        $"characterId={dossier.CharacterId} name={LogValueFormatter.Quote(dossier.Name)} reason={LogValueFormatter.Quote("tool validation failed")} applied={applied} rejected={rejected} rejectedFields={LogValueFormatter.List(rejectedFields)} rejectedRules={LogValueFormatter.List(rejectedRules)}");
                     progress?.Report(new CharacterBibleWorkflowProgress(
                         "patch",
                         $"Profile update failed for {dossier.Name}: tool validation failed.",

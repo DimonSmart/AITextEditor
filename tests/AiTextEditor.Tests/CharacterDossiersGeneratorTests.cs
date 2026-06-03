@@ -4,6 +4,7 @@ using AiTextEditor.Core.Services;
 using AiTextEditor.Core.Model;
 using AiTextEditor.Agent;
 using AiTextEditor.Agent.CharacterBible;
+using AiTextEditor.Agent.CharacterBible.Diagnostics;
 using AiTextEditor.Agent.CharacterBible.Extraction;
 using AiTextEditor.Agent.CharacterBible.Patching;
 using AiTextEditor.Agent.CharacterBible.Resolution;
@@ -661,6 +662,56 @@ public sealed class CharacterDossiersGeneratorTests
 
         var dossier = Assert.Single(dossiers.Characters);
         Assert.Equal("Пытался улучшить гардероб.", dossier.Profile!.StatusAndCompetence);
+    }
+
+    [Fact]
+    public async Task GenerateDossiers_ProfileUpdateValidationRejectLogsGroupDetails()
+    {
+        var logger = new CapturingCharacterBibleRunLogger();
+        var dossierService = new CharacterDossierService();
+        var repository = new MarkdownDocumentRepository();
+        var document = repository.LoadFromMarkdown("John hid behind the chair.");
+        var documentContext = new DocumentContext(document, dossierService);
+        var limits = new CharacterBibleExtractionLimits { MaxParagraphsPerBatch = 256, MaxBatchBytes = 1024 * 128 };
+        var extractionModelClient = new ScriptedCharacterExtractionModelClient(
+            Response(Character(
+                "John",
+                Alias("John", "John hid behind the chair."))));
+        var patchClient = new ScriptedCharacterProfileUpdateModelClient(
+            new ProfileFieldReplacement(
+                CharacterBibleProfileField.PsychologicalProfile,
+                "## Невалидное markdown-значение"));
+
+        var generator = new CharacterDossiersGenerator(
+            documentContext,
+            dossierService,
+            limits,
+            NullLogger<CharacterDossiersGenerator>.Instance,
+            extractionModelClient,
+            new CharacterExtractionPromptBuilder(),
+            patchClient,
+            new CharacterProfileUpdatePromptBuilder(),
+            NewIdentityResolverClient(),
+            NewVectorSearchTool());
+
+        using (CharacterBibleRunLogScope.Push(logger))
+        {
+            await generator.GenerateAsync();
+        }
+
+        var rejectedToolCall = Assert.Single(logger.WarningMessages, message =>
+            message.EventName == "profile.update.tool.rejected");
+        Assert.Contains("field=\"PsychologicalProfile\"", rejectedToolCall.Message, StringComparison.Ordinal);
+        Assert.Contains("rule=\"contains_prompt_artifact\"", rejectedToolCall.Message, StringComparison.Ordinal);
+        Assert.Contains("evidencePointers=[\"p1\"]", rejectedToolCall.Message, StringComparison.Ordinal);
+
+        var groupFailed = Assert.Single(logger.ErrorMessages, message =>
+            message.EventName == "profile.update.group.failed");
+        Assert.Contains("reason=\"tool validation failed\"", groupFailed.Message, StringComparison.Ordinal);
+        Assert.Contains("applied=0", groupFailed.Message, StringComparison.Ordinal);
+        Assert.Contains("rejected=1", groupFailed.Message, StringComparison.Ordinal);
+        Assert.Contains("rejectedFields=[\"PsychologicalProfile\"]", groupFailed.Message, StringComparison.Ordinal);
+        Assert.Contains("rejectedRules=[\"contains_prompt_artifact\"]", groupFailed.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -1348,6 +1399,40 @@ public sealed class CharacterDossiersGeneratorTests
             return Task.FromResult(new CharacterProfileUpdateModelResult(string.Empty));
         }
 
+    }
+
+    private sealed class CapturingCharacterBibleRunLogger : ICharacterBibleRunLogger
+    {
+        public CharacterBibleRunLogContext Context { get; } = new(
+            "test",
+            "test.log",
+            DateTimeOffset.UnixEpoch);
+
+        public List<(string EventName, string Message)> WarningMessages { get; } = [];
+
+        public List<(string EventName, string Message)> ErrorMessages { get; } = [];
+
+        public void Info(string eventName, string message)
+        {
+        }
+
+        public void Debug(string eventName, string message)
+        {
+        }
+
+        public void DebugBlock(string eventName, string header, string block)
+        {
+        }
+
+        public void Warning(string eventName, string message)
+        {
+            WarningMessages.Add((eventName, message));
+        }
+
+        public void Error(string eventName, string message, Exception? exception = null)
+        {
+            ErrorMessages.Add((eventName, message));
+        }
     }
 
     private sealed record ProfileUpdateTestResult(

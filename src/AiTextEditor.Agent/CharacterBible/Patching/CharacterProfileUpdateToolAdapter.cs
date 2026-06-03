@@ -57,12 +57,27 @@ internal sealed class CharacterProfileUpdateStatistics
 
     public List<CharacterBibleProfileField> AppliedFields { get; } = [];
 
+    public List<CharacterProfileUpdateRejectedToolCall> RejectedToolCalls { get; } = [];
+
     public int ProfileFieldsChanged => Applied;
 }
+
+internal sealed record CharacterProfileUpdateRejectedToolCall(
+    string ToolName,
+    string Field,
+    string RuleCode,
+    string Message,
+    string RejectedValuePreview,
+    IReadOnlyList<string> EvidencePointers);
 
 public sealed class CharacterProfileUpdateToolAdapter
 {
     private const int MaxProfileFieldLength = 500;
+    private const string ReplaceProfileFieldToolName = "replace_profile_field";
+
+    private sealed record CharacterProfileUpdateToolOperationResult(
+        ReplaceProfileFieldResult Result,
+        CharacterProfileUpdateRejectedToolCall? RejectedToolCall);
 
     private static readonly Regex Whitespace = new(@"\s+", RegexOptions.Compiled);
     private static readonly Regex Markdown = new(@"(^|\s)(#{1,6}\s|[-*+]\s|>\s|```)|(\[[^\]]+\]\([^)]+\))|(\*\*|__|`)", RegexOptions.Compiled);
@@ -70,6 +85,7 @@ public sealed class CharacterProfileUpdateToolAdapter
     private readonly int characterId;
     private readonly string characterName;
     private readonly CharacterProfileUpdateContext context;
+    private readonly IReadOnlyList<string> evidencePointers;
     private readonly CharacterDossierEditSession store;
     private readonly CharacterProfileUpdateStatistics statistics;
 
@@ -77,6 +93,7 @@ public sealed class CharacterProfileUpdateToolAdapter
         int characterId,
         string characterName,
         CharacterProfileUpdateContext context,
+        IReadOnlyList<string> evidencePointers,
         CharacterDossierEditSession store,
         CharacterProfileUpdateStatistics statistics)
     {
@@ -84,6 +101,7 @@ public sealed class CharacterProfileUpdateToolAdapter
         this.characterId = characterId;
         this.characterName = characterName;
         this.context = context ?? throw new ArgumentNullException(nameof(context));
+        this.evidencePointers = evidencePointers ?? throw new ArgumentNullException(nameof(evidencePointers));
         this.store = store ?? throw new ArgumentNullException(nameof(store));
         this.statistics = statistics ?? throw new ArgumentNullException(nameof(statistics));
         this.store.GetRequired(characterId);
@@ -96,8 +114,10 @@ public sealed class CharacterProfileUpdateToolAdapter
     {
         statistics.ToolCalls++;
 
-        var result = ValidateAndApply(field, value);
+        var operationResult = ValidateAndApply(field, value);
+        var result = operationResult.Result;
         Increment(field, result.Status);
+        LogRejectedToolCall(operationResult.RejectedToolCall);
         CharacterBibleRunLogScope.Current?.Info(
             "profile.update.tool.call",
             $"characterId={characterId} name={LogValueFormatter.Quote(characterName)} field={field} valueLength={value?.Length ?? 0}");
@@ -107,48 +127,48 @@ public sealed class CharacterProfileUpdateToolAdapter
         return result;
     }
 
-    private ReplaceProfileFieldResult ValidateAndApply(
+    private CharacterProfileUpdateToolOperationResult ValidateAndApply(
         CharacterBibleProfileField field,
         string value)
     {
         if (string.IsNullOrWhiteSpace(value))
         {
-            return Rejected("Value is empty.");
+            return Rejected(field, value, "empty_value", "Value is empty.");
         }
 
         if (!Enum.IsDefined(field))
         {
-            return Rejected("Profile field is unsupported.");
+            return Rejected(field, value, "unknown_profile_field", "Profile field is unsupported.");
         }
 
         var normalizedValue = NormalizeWhitespace(value);
         if (normalizedValue.Length > MaxProfileFieldLength)
         {
-            return Rejected("Value is too long.");
+            return Rejected(field, normalizedValue, "value_too_long", "Value is too long.");
         }
 
         if (Markdown.IsMatch(normalizedValue))
         {
-            return Rejected("Markdown is not allowed.");
+            return Rejected(field, normalizedValue, "contains_prompt_artifact", "Markdown is not allowed.");
         }
 
         var currentValue = GetField(context.CurrentProfile, field);
         if (string.Equals(NormalizeWhitespace(currentValue), normalizedValue, StringComparison.Ordinal))
         {
-            return new ReplaceProfileFieldResult
+            return Completed(new ReplaceProfileFieldResult
             {
                 Status = ReplaceProfileFieldResultStatus.NoOp,
                 CurrentValue = currentValue
-            };
+            });
         }
 
         context.CurrentProfile = SetField(context.CurrentProfile, field, normalizedValue);
         store.UpdateProfile(characterId, context.CurrentProfile);
-        return new ReplaceProfileFieldResult
+        return Completed(new ReplaceProfileFieldResult
         {
             Status = ReplaceProfileFieldResultStatus.Applied,
             CurrentValue = normalizedValue
-        };
+        });
     }
 
     private static string? GetField(CharacterProfile profile, CharacterBibleProfileField field)
@@ -174,12 +194,30 @@ public sealed class CharacterProfileUpdateToolAdapter
     private static string NormalizeWhitespace(string? value)
         => string.IsNullOrWhiteSpace(value) ? string.Empty : Whitespace.Replace(value.Trim(), " ");
 
-    private static ReplaceProfileFieldResult Rejected(string message)
-        => new()
-        {
-            Status = ReplaceProfileFieldResultStatus.Rejected,
-            Message = message
-        };
+    private CharacterProfileUpdateToolOperationResult Rejected(
+        CharacterBibleProfileField field,
+        string? value,
+        string ruleCode,
+        string message)
+    {
+        var rejected = new CharacterProfileUpdateRejectedToolCall(
+            ReplaceProfileFieldToolName,
+            field.ToString(),
+            ruleCode,
+            message,
+            LogValueFormatter.ShortText(value),
+            evidencePointers);
+        return new CharacterProfileUpdateToolOperationResult(
+            new ReplaceProfileFieldResult
+            {
+                Status = ReplaceProfileFieldResultStatus.Rejected,
+                Message = message
+            },
+            rejected);
+    }
+
+    private static CharacterProfileUpdateToolOperationResult Completed(ReplaceProfileFieldResult result)
+        => new(result, null);
 
     private void Increment(CharacterBibleProfileField field, ReplaceProfileFieldResultStatus status)
     {
@@ -196,5 +234,18 @@ public sealed class CharacterProfileUpdateToolAdapter
                 statistics.Rejected++;
                 break;
         }
+    }
+
+    private void LogRejectedToolCall(CharacterProfileUpdateRejectedToolCall? rejected)
+    {
+        if (rejected is null)
+        {
+            return;
+        }
+
+        statistics.RejectedToolCalls.Add(rejected);
+        CharacterBibleRunLogScope.Current?.Warning(
+            "profile.update.tool.rejected",
+            $"characterId={characterId} name={LogValueFormatter.Quote(characterName)} tool={LogValueFormatter.Quote(rejected.ToolName)} field={LogValueFormatter.Quote(rejected.Field)} rule={LogValueFormatter.Quote(rejected.RuleCode)} message={LogValueFormatter.Quote(rejected.Message)} valuePreview={LogValueFormatter.Quote(rejected.RejectedValuePreview)} evidencePointers={LogValueFormatter.List(rejected.EvidencePointers)}");
     }
 }
