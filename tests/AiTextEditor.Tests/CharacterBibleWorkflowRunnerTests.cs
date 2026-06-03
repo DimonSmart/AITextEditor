@@ -454,7 +454,7 @@ public sealed class CharacterBibleWorkflowRunnerTests
             CharacterProfileUpdateModelRequest request,
             CancellationToken cancellationToken = default)
         {
-            return Task.FromResult(new CharacterProfileUpdateCompletion(true));
+            return Task.FromResult(new CharacterProfileUpdateCompletion());
         }
     }
 
@@ -467,7 +467,7 @@ public sealed class CharacterBibleWorkflowRunnerTests
             CancellationToken cancellationToken = default)
         {
             CallCount++;
-            return Task.FromResult(new CharacterProfileUpdateCompletion(true));
+            return Task.FromResult(new CharacterProfileUpdateCompletion());
         }
     }
 

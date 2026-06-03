@@ -1,6 +1,5 @@
 using System.Reflection;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using AiTextEditor.Agent;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
@@ -20,9 +19,9 @@ public sealed record CharacterProfileUpdateModelRequest(
     CharacterProfileUpdateToolAdapter Tool,
     IProgress<AgenticModelDiagnostic>? Diagnostics = null);
 
-public sealed record CharacterProfileUpdateCompletion(
-    [property: JsonRequired]
-    [property: JsonPropertyName("completed")] bool Completed);
+public sealed class CharacterProfileUpdateCompletion
+{
+}
 
 public sealed class AgenticCharacterProfileUpdateModelClient : ICharacterProfileUpdateModelClient
 {
@@ -54,7 +53,7 @@ public sealed class AgenticCharacterProfileUpdateModelClient : ICharacterProfile
             ReplaceProfileFieldMethod,
             request.Tool,
             "replace_profile_field",
-            "Replaces one evidence-backed profile field for the current character.",
+            "Replaces one profile field for the current character.",
             JsonSerializerOptions.Web);
 
         return await modelClient.RunAsync<CharacterProfileUpdateCompletion>(
@@ -64,14 +63,8 @@ public sealed class AgenticCharacterProfileUpdateModelClient : ICharacterProfile
                     new ChatMessage(ChatRole.User, request.UserPrompt)
                 ],
                 InvalidContractError: "character_profile_patch_completion_contract_invalid",
-                ValidateResponse: Validate,
                 Tools: [replaceProfileFieldFunction],
                 Diagnostics: request.Diagnostics),
             cancellationToken).ConfigureAwait(false);
     }
-
-    private static AgenticModelValidationResult Validate(CharacterProfileUpdateCompletion completion)
-        => completion.Completed
-            ? AgenticModelValidationResult.Valid
-            : AgenticModelValidationResult.Invalid("completed must be true.");
 }

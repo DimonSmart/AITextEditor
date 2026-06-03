@@ -15,9 +15,7 @@ public sealed class CharacterProfileUpdateToolAdapterTests
 
         var result = tools.ReplaceProfileField(
             CharacterBibleProfileField.Appearance,
-            "Пахнет нафталином.",
-            ["1.1.1.p4"],
-            "New evidence adds a visible detail.");
+            "Пахнет нафталином.");
 
         Assert.Equal(ReplaceProfileFieldResultStatus.Applied, result.Status);
         Assert.Equal("Пахнет нафталином.", session.GetRequired(1).Profile!.Appearance);
@@ -28,25 +26,25 @@ public sealed class CharacterProfileUpdateToolAdapterTests
     {
         var (tools, session) = CreateTools();
 
-        var result = tools.ReplaceProfileField(CharacterBibleProfileField.Appearance, "", ["1.1.1.p4"], "Reason.");
+        var result = tools.ReplaceProfileField(CharacterBibleProfileField.Appearance, "");
 
         Assert.Equal(ReplaceProfileFieldResultStatus.Rejected, result.Status);
         Assert.Null(session.GetRequired(1).Profile!.Appearance);
     }
 
     [Fact]
-    public void ReplaceProfileField_RejectsPointerOutsideCurrentEvidence()
+    public void ReplaceProfileField_ExposesOnlyFieldAndValueParameters()
     {
-        var (tools, session) = CreateTools();
+        var parameterNames = typeof(CharacterProfileUpdateToolAdapter)
+            .GetMethod(nameof(CharacterProfileUpdateToolAdapter.ReplaceProfileField))!
+            .GetParameters()
+            .Select(parameter => parameter.Name)
+            .ToArray();
 
-        var result = tools.ReplaceProfileField(
-            CharacterBibleProfileField.Appearance,
-            "Пахнет нафталином.",
-            ["1.1.1.p999"],
-            "New evidence adds a visible detail.");
-
-        Assert.Equal(ReplaceProfileFieldResultStatus.Rejected, result.Status);
-        Assert.Null(session.GetRequired(1).Profile!.Appearance);
+        Assert.Equal(["field", "value"], parameterNames);
+        Assert.DoesNotContain("reason", parameterNames);
+        Assert.DoesNotContain("status", parameterNames);
+        Assert.DoesNotContain("evidencePointers", parameterNames);
     }
 
     [Fact]
@@ -56,9 +54,7 @@ public sealed class CharacterProfileUpdateToolAdapterTests
 
         var result = tools.ReplaceProfileField(
             CharacterBibleProfileField.Appearance,
-            "Пахнет нафталином.",
-            ["1.1.1.p4"],
-            "Evidence confirms the existing detail.");
+            "Пахнет нафталином.");
 
         Assert.Equal(ReplaceProfileFieldResultStatus.NoOp, result.Status);
         Assert.Equal("Пахнет нафталином.", session.GetRequired(1).Profile!.Appearance);
@@ -71,9 +67,7 @@ public sealed class CharacterProfileUpdateToolAdapterTests
 
         var result = tools.ReplaceProfileField(
             CharacterBibleProfileField.PsychologicalProfile,
-            "Любит порядок.",
-            ["1.1.1.p4"],
-            "New evidence changes the best current characterization.");
+            "Любит порядок.");
 
         Assert.Equal(ReplaceProfileFieldResultStatus.Applied, result.Status);
         Assert.Equal("Любит порядок.", session.GetRequired(1).Profile!.PsychologicalProfile);
@@ -101,9 +95,7 @@ public sealed class CharacterProfileUpdateToolAdapterTests
         {
             tools.ReplaceProfileField(
                 CharacterBibleProfileField.StatusAndCompetence,
-                "Умеет считать.",
-                ["1.1.1.p4"],
-                "Evidence adds competence.");
+                "Умеет считать.");
         }
 
         Assert.Contains(logger.InfoMessages, message =>
@@ -116,6 +108,11 @@ public sealed class CharacterProfileUpdateToolAdapterTests
             && message.Message.Contains("name=\"Пончик\"", StringComparison.Ordinal));
         Assert.DoesNotContain(logger.InfoMessages.Concat(logger.DebugMessages), message =>
             message.Message.Contains("character=\"", StringComparison.Ordinal));
+        Assert.DoesNotContain(logger.InfoMessages, message =>
+            message.EventName == "profile.update.tool.call"
+            && (message.Message.Contains("reason=", StringComparison.Ordinal)
+                || message.Message.Contains("status=", StringComparison.Ordinal)
+                || message.Message.Contains("evidencePointers=", StringComparison.Ordinal)));
     }
 
     private static (CharacterProfileUpdateToolAdapter Tools, CharacterDossierEditSession Session) CreateTools(
@@ -128,14 +125,7 @@ public sealed class CharacterProfileUpdateToolAdapterTests
             new Dictionary<string, string>(),
             Profile: profile ?? CharacterProfile.Empty);
         var session = CharacterDossierEditSession.CreateFrom(new CharacterDossiers("d1", 1, [dossier]));
-        var evidence = new Dictionary<string, string>(StringComparer.Ordinal)
-        {
-            ["1.1.1.p4"] = "Пончик пахнет нафталином."
-        };
-        var context = new CharacterProfileUpdateContext(
-            profile,
-            evidence.Keys.ToHashSet(StringComparer.Ordinal),
-            evidence);
+        var context = new CharacterProfileUpdateContext(profile);
         var tools = new CharacterProfileUpdateToolAdapter(
             1,
             "Пончик",

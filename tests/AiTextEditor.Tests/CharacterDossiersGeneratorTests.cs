@@ -81,7 +81,12 @@ public sealed class CharacterDossiersGeneratorTests
         Assert.Contains("If newEvidence does not change the profile, call no tools", systemPrompt, StringComparison.Ordinal);
         Assert.Contains("If newEvidence only confirms the current profile, call no tools", systemPrompt, StringComparison.Ordinal);
         Assert.Contains("If newEvidence only describes a one-time action", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("Each tool call must contain only field and value", systemPrompt, StringComparison.Ordinal);
         Assert.Contains("replace_profile_field.value is the full new value", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("Do not return reasons", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("Do not return evidence pointers", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("Do not return status", systemPrompt, StringComparison.Ordinal);
+        Assert.DoesNotContain("completed", systemPrompt, StringComparison.Ordinal);
 
         using var json = JsonDocument.Parse(userPrompt);
         Assert.Equal("John", json.RootElement.GetProperty("target").GetProperty("name").GetString());
@@ -499,9 +504,7 @@ public sealed class CharacterDossiersGeneratorTests
             currentProfile,
             new ProfileFieldReplacement(
                 CharacterBibleProfileField.PsychologicalProfile,
-                proposedPsychologicalProfile,
-                ["p1"],
-                "Новое evidence ослабляет прежнюю характеристику храбрости."));
+                proposedPsychologicalProfile));
 
         Assert.Equal("Старое описание внешности.", result.Dossier.Profile!.Appearance);
         Assert.Equal(proposedPsychologicalProfile, result.Dossier.Profile.PsychologicalProfile);
@@ -509,7 +512,7 @@ public sealed class CharacterDossiersGeneratorTests
     }
 
     [Fact]
-    public async Task GenerateDossiers_InvalidProfileUpdatePointerDoesNotChangeProfile()
+    public async Task GenerateDossiers_ProfileUpdateUsesFieldAndValueOnly()
     {
         var currentProfile = new AiTextEditor.Core.Model.CharacterProfile(
             Appearance: "Старое описание внешности.",
@@ -518,11 +521,9 @@ public sealed class CharacterDossiersGeneratorTests
             currentProfile,
             new ProfileFieldReplacement(
                 CharacterBibleProfileField.PsychologicalProfile,
-                "При реальной опасности склонен теряться.",
-                ["missing"],
-                "Новое evidence ослабляет прежнюю характеристику храбрости."));
+                "При реальной опасности склонен теряться."));
 
-        Assert.True(AiTextEditor.Core.Model.CharacterProfile.HasSameContent(currentProfile, result.Dossier.Profile));
+        Assert.Equal("При реальной опасности склонен теряться.", result.Dossier.Profile!.PsychologicalProfile);
     }
 
     [Fact]
@@ -1183,9 +1184,7 @@ public sealed class CharacterDossiersGeneratorTests
 
         changes.Add(new ProfileFieldReplacement(
             field,
-            text,
-            ["p1"],
-            "Test updater replaces the profile field."));
+            text));
     }
 
     private sealed class CapturingCharacterExtractionModelClient : ICharacterExtractionModelClient
@@ -1319,7 +1318,7 @@ public sealed class CharacterDossiersGeneratorTests
             CharacterProfileUpdateModelRequest request,
             CancellationToken cancellationToken = default)
         {
-            return Task.FromResult(new CharacterProfileUpdateCompletion(true));
+            return Task.FromResult(new CharacterProfileUpdateCompletion());
         }
     }
 
@@ -1343,12 +1342,10 @@ public sealed class CharacterDossiersGeneratorTests
                 var replacement = replacements.Dequeue();
                 request.Tool.ReplaceProfileField(
                     replacement.Field,
-                    replacement.Value,
-                    replacement.EvidencePointers,
-                    replacement.Reason);
+                    replacement.Value);
             }
 
-            return Task.FromResult(new CharacterProfileUpdateCompletion(true));
+            return Task.FromResult(new CharacterProfileUpdateCompletion());
         }
 
     }
@@ -1358,9 +1355,7 @@ public sealed class CharacterDossiersGeneratorTests
 
     private sealed record ProfileFieldReplacement(
         CharacterBibleProfileField Field,
-        string Value,
-        IReadOnlyList<string> EvidencePointers,
-        string Reason);
+        string Value);
 
     private sealed class SearchBackedIdentityResolutionModelClient : ICharacterIdentityResolutionModelClient
     {

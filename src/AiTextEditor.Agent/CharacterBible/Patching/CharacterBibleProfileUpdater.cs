@@ -79,10 +79,7 @@ internal sealed class CharacterBibleProfileUpdater
                 "patch",
                 $"Updating profile for {dossier.Name} from {evidence.Count} evidence paragraph(s)."));
 
-            var context = new CharacterProfileUpdateContext(
-                dossier.Profile,
-                evidence.Select(item => item.Pointer).ToHashSet(StringComparer.Ordinal),
-                evidence.ToDictionary(item => item.Pointer, item => item.Text, StringComparer.Ordinal));
+            var context = new CharacterProfileUpdateContext(dossier.Profile);
             var tool = new CharacterProfileUpdateToolAdapter(
                 dossier.CharacterId,
                 dossier.Name,
@@ -98,6 +95,7 @@ internal sealed class CharacterBibleProfileUpdater
                     $"characterId={dossier.CharacterId} modelKeys={LogValueFormatter.List(["target", "currentProfile", "newEvidence"])} modelType={nameof(CharacterProfileUpdatePromptInput)}",
                     promptInput);
                 var appliedBefore = statistics.Applied;
+                var appliedFieldsBefore = statistics.AppliedFields.Count;
                 await modelClient.UpdateProfileAsync(
                     new CharacterProfileUpdateModelRequest(
                         promptBuilder.BuildSystemPrompt(),
@@ -109,9 +107,22 @@ internal sealed class CharacterBibleProfileUpdater
                             $"Profile update for {dossier.Name}",
                             $"characterId={dossier.CharacterId} name={LogValueFormatter.Quote(dossier.Name)}")),
                     cancellationToken).ConfigureAwait(false);
-                CharacterBibleRunLogScope.Current?.Info(
-                    statistics.Applied == appliedBefore ? "profile.update.no_change" : "profile.update.applied",
-                    $"characterId={dossier.CharacterId} name={LogValueFormatter.Quote(dossier.Name)} applied={statistics.Applied - appliedBefore}");
+                var applied = statistics.Applied - appliedBefore;
+                if (applied == 0)
+                {
+                    CharacterBibleRunLogScope.Current?.Info(
+                        "profile.update.no_change",
+                        $"characterId={dossier.CharacterId} name={LogValueFormatter.Quote(dossier.Name)}");
+                }
+                else
+                {
+                    var appliedFields = statistics.AppliedFields
+                        .Skip(appliedFieldsBefore)
+                        .Select(field => field.ToString());
+                    CharacterBibleRunLogScope.Current?.Info(
+                        "profile.update.applied",
+                        $"characterId={dossier.CharacterId} name={LogValueFormatter.Quote(dossier.Name)} applied={applied} fields={LogValueFormatter.List(appliedFields)}");
+                }
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {

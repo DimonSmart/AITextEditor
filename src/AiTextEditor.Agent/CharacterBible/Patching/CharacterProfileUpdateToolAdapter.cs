@@ -33,21 +33,12 @@ public sealed record ReplaceProfileFieldResult
 
 internal sealed class CharacterProfileUpdateContext
 {
-    public CharacterProfileUpdateContext(
-        CharacterProfile? currentProfile,
-        IReadOnlySet<string> allowedEvidencePointers,
-        IReadOnlyDictionary<string, string> evidenceTextByPointer)
+    public CharacterProfileUpdateContext(CharacterProfile? currentProfile)
     {
         CurrentProfile = CharacterProfile.Normalize(currentProfile);
-        AllowedEvidencePointers = allowedEvidencePointers ?? throw new ArgumentNullException(nameof(allowedEvidencePointers));
-        EvidenceTextByPointer = evidenceTextByPointer ?? throw new ArgumentNullException(nameof(evidenceTextByPointer));
     }
 
     public CharacterProfile CurrentProfile { get; set; }
-
-    public IReadOnlySet<string> AllowedEvidencePointers { get; }
-
-    public IReadOnlyDictionary<string, string> EvidenceTextByPointer { get; }
 }
 
 internal sealed class CharacterProfileUpdateStatistics
@@ -64,13 +55,14 @@ internal sealed class CharacterProfileUpdateStatistics
 
     public int Rejected { get; set; }
 
+    public List<CharacterBibleProfileField> AppliedFields { get; } = [];
+
     public int ProfileFieldsChanged => Applied;
 }
 
 public sealed class CharacterProfileUpdateToolAdapter
 {
     private const int MaxProfileFieldLength = 500;
-    private const int LongParagraphLength = 240;
 
     private static readonly Regex Whitespace = new(@"\s+", RegexOptions.Compiled);
     private static readonly Regex Markdown = new(@"(^|\s)(#{1,6}\s|[-*+]\s|>\s|```)|(\[[^\]]+\]\([^)]+\))|(\*\*|__|`)", RegexOptions.Compiled);
@@ -97,20 +89,18 @@ public sealed class CharacterProfileUpdateToolAdapter
         this.store.GetRequired(characterId);
     }
 
-    [Description("Replaces one evidence-backed profile field for the current character.")]
+    [Description("Replaces one profile field for the current character.")]
     public ReplaceProfileFieldResult ReplaceProfileField(
         [Description("Profile field to replace: Appearance, StatusAndCompetence, PsychologicalProfile, or SpeechAndCommunication.")] CharacterBibleProfileField field,
-        [Description("Complete new value of the profile field. This is a replacement, not text to append. Do not use Markdown.")] string value,
-        [Description("One or more pointers from the evidence supplied for the current character.")] IReadOnlyList<string> evidencePointers,
-        [Description("Short diagnostic explanation of why the evidence changes this profile field.")] string reason)
+        [Description("Complete new value of the profile field. This is a replacement, not text to append. Do not use Markdown.")] string value)
     {
         statistics.ToolCalls++;
 
-        var result = ValidateAndApply(field, value, evidencePointers, reason);
-        Increment(result.Status);
+        var result = ValidateAndApply(field, value);
+        Increment(field, result.Status);
         CharacterBibleRunLogScope.Current?.Info(
             "profile.update.tool.call",
-            $"characterId={characterId} name={LogValueFormatter.Quote(characterName)} field={field} status={result.Status} evidencePointers={LogValueFormatter.List(evidencePointers ?? [])} valueLength={value?.Length ?? 0} reason={LogValueFormatter.Quote(reason)}");
+            $"characterId={characterId} name={LogValueFormatter.Quote(characterName)} field={field} valueLength={value?.Length ?? 0}");
         CharacterBibleRunLogScope.Current?.Debug(
             "profile.update.tool.value",
             $"characterId={characterId} name={LogValueFormatter.Quote(characterName)} field={field} value={LogValueFormatter.Quote(value)}");
@@ -119,9 +109,7 @@ public sealed class CharacterProfileUpdateToolAdapter
 
     private ReplaceProfileFieldResult ValidateAndApply(
         CharacterBibleProfileField field,
-        string value,
-        IReadOnlyList<string> evidencePointers,
-        string reason)
+        string value)
     {
         if (string.IsNullOrWhiteSpace(value))
         {
@@ -133,11 +121,6 @@ public sealed class CharacterProfileUpdateToolAdapter
             return Rejected("Profile field is unsupported.");
         }
 
-        if (string.IsNullOrWhiteSpace(reason))
-        {
-            return Rejected("Reason is empty.");
-        }
-
         var normalizedValue = NormalizeWhitespace(value);
         if (normalizedValue.Length > MaxProfileFieldLength)
         {
@@ -147,30 +130,6 @@ public sealed class CharacterProfileUpdateToolAdapter
         if (Markdown.IsMatch(normalizedValue))
         {
             return Rejected("Markdown is not allowed.");
-        }
-
-        if (evidencePointers is null || evidencePointers.Count == 0)
-        {
-            return Rejected("Evidence pointers are required.");
-        }
-
-        var normalizedPointers = evidencePointers
-            .Where(pointer => !string.IsNullOrWhiteSpace(pointer))
-            .Select(pointer => pointer.Trim())
-            .Distinct(StringComparer.Ordinal)
-            .ToArray();
-        if (normalizedPointers.Length != evidencePointers.Count
-            || normalizedPointers.Any(pointer => !context.AllowedEvidencePointers.Contains(pointer)))
-        {
-            return Rejected("Evidence pointer is not available in the current patch context.");
-        }
-
-        if (normalizedValue.Length >= LongParagraphLength
-            && normalizedPointers.Any(pointer =>
-                context.EvidenceTextByPointer.TryGetValue(pointer, out var text)
-                && string.Equals(NormalizeWhitespace(text), normalizedValue, StringComparison.Ordinal)))
-        {
-            return Rejected("Value must not copy a long evidence paragraph.");
         }
 
         var currentValue = GetField(context.CurrentProfile, field);
@@ -222,12 +181,13 @@ public sealed class CharacterProfileUpdateToolAdapter
             Message = message
         };
 
-    private void Increment(ReplaceProfileFieldResultStatus status)
+    private void Increment(CharacterBibleProfileField field, ReplaceProfileFieldResultStatus status)
     {
         switch (status)
         {
             case ReplaceProfileFieldResultStatus.Applied:
                 statistics.Applied++;
+                statistics.AppliedFields.Add(field);
                 break;
             case ReplaceProfileFieldResultStatus.NoOp:
                 statistics.NoOp++;
