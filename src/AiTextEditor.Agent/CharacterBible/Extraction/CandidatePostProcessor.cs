@@ -65,6 +65,7 @@ internal sealed class CandidatePostProcessor
         var observedNameForms = string.Join(
             "|",
             CharacterBibleExtractionMapper.NormalizeObservedNameForms(character.ObservedNameForms)
+                .Select(CharacterNameFormComparer.NormalizeKey)
                 .Order(StringComparer.Ordinal));
         var pointers = string.Join(
             "|",

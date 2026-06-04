@@ -56,7 +56,7 @@ internal sealed record CharacterBibleCharacterCandidate(
     IReadOnlyList<CharacterBibleCandidateEvidence> Evidence)
 {
     public IReadOnlyDictionary<string, CharacterBibleCandidateEvidence> ObservedNameFormEvidence { get; init; }
-        = new Dictionary<string, CharacterBibleCandidateEvidence>(StringComparer.OrdinalIgnoreCase);
+        = new Dictionary<string, CharacterBibleCandidateEvidence>(CharacterNameFormComparer.Instance);
 }
 
 internal sealed record CharacterBibleCandidateEvidence(

@@ -22,11 +22,11 @@ internal static class CharacterBibleExtractionMapper
             .ToDictionary(
                 observedNameForm => observedNameForm,
                 observedNameForm => BuildObservedNameFormExample(observedNameForm, evidence),
-                StringComparer.OrdinalIgnoreCase);
+                CharacterNameFormComparer.Instance);
         var observedNameFormEvidence = observedNameFormExamples.Keys.ToDictionary(
             observedNameForm => observedNameForm,
             observedNameForm => FindEvidenceContaining(observedNameForm, evidence) ?? evidence[0],
-            StringComparer.OrdinalIgnoreCase);
+            CharacterNameFormComparer.Instance);
 
         return new CharacterBibleCharacterCandidate(
             character.Name?.Trim() ?? string.Empty,
@@ -43,8 +43,9 @@ internal static class CharacterBibleExtractionMapper
         return (observedNameForms ?? [])
             .Where(observedNameForm => !string.IsNullOrWhiteSpace(observedNameForm))
             .Select(observedNameForm => observedNameForm.Trim())
-            .Distinct(StringComparer.Ordinal)
-            .OrderBy(observedNameForm => observedNameForm, StringComparer.Ordinal)
+            .Distinct(CharacterNameFormComparer.Instance)
+            .OrderBy(CharacterNameFormComparer.NormalizeKey, StringComparer.Ordinal)
+            .ThenBy(observedNameForm => observedNameForm, StringComparer.Ordinal)
             .ToArray();
     }
 
