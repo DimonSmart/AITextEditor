@@ -267,12 +267,16 @@ public sealed class CharacterDossierService
 
     private static IReadOnlyList<CharacterEvidenceIndexEntry> NormalizeEvidenceIndex(IReadOnlyList<CharacterEvidenceIndexEntry>? entries)
         => (entries ?? [])
-            .Where(entry => !string.IsNullOrWhiteSpace(entry.Pointer) && !string.IsNullOrWhiteSpace(entry.Excerpt))
+            .Where(entry => entry.CharacterId is not null
+                && !string.IsNullOrWhiteSpace(entry.Pointer)
+                && !string.IsNullOrWhiteSpace(entry.Excerpt))
             .Select(entry => entry with
             {
                 Pointer = entry.Pointer.Trim(),
                 Excerpt = entry.Excerpt.Trim()
             })
+            .GroupBy(entry => (entry.CharacterId, entry.Pointer), entry => entry)
+            .Select(group => group.First())
             .ToList();
 
     private static void ValidateUniqueCharacterIds(IReadOnlyCollection<CharacterDossier> characters)

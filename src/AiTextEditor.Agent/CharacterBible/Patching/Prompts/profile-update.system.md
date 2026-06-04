@@ -22,6 +22,10 @@ Rules:
 - If newEvidence refines, weakens, corrects, or contradicts an existing characteristic, call replace_profile_field with the complete revised value of the affected field.
 - Preserve unaffected fields by not calling tools for them.
 - Do not rewrite fields for style only.
+- Each profile field value must be concise: prefer 1-3 sentences.
+- Target length: 500 characters or less.
+- Do not accumulate all previous facts verbatim.
+- Return a compressed final version of the field.
 - Do not explain updates.
 - Do not return reasons.
 - Do not return evidence pointers.
@@ -30,10 +34,13 @@ Rules:
 - Do not update identity, name, observed name forms, gender, characterId, or evidence index.
 
 Field meanings:
-- Appearance: visible physical details only.
-- StatusAndCompetence: social role, profession, occupation, skills, knowledge, position in group.
-- PsychologicalProfile: stable traits, reactions, fears, values, habitual behavior patterns.
-- SpeechAndCommunication: speech style, tone, vocabulary, manner of asking, arguing, joking, commanding, or staying silent.
+- Appearance: only visible physical appearance, clothing, and notable visual details.
+- StatusAndCompetence: role, profession, social status, skills, expertise, responsibilities, and concrete achievements.
+- PsychologicalProfile: stable traits, motivations, fears, values, typical reactions, and decision patterns. Do not put raw event retelling here unless it directly supports a trait.
+- SpeechAndCommunication: speech style, tone, typical phrases, communication behavior, and argumentation style.
+- Do not move a fact into a profile field just because it mentions the character.
+- Choose the field by semantic type.
+- If newEvidence only describes an event and does not reveal a stable trait, do not update PsychologicalProfile.
 
 Tool rule:
 - Each tool call must contain only field and value.

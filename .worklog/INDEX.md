@@ -49,6 +49,7 @@ If this index conflicts with a numbered document, trust the numbered document.
 | 0049 | spec | Observed name forms and canonical name normalization | Rename aliases to observed name forms and add a dedicated LLM stage for canonical display-name normalization. | 0021, 0032, 0033, 0034, 0035, 0037, 0045, 0048 |
 | 0050 | spec | Character dossier language | Add a program setting and profile update prompt contract field for generated dossier profile field language. | 0009, 0037, 0046, 0047 |
 | 0051 | spec | Embedding server selection | Allow LLM operations and Character Bible embedding/vector search operations to use different configured AI servers. | 0009, 0010, 0032, 0034 |
+| 0052 | spec | Character Bible contract cleanup | Clean up Character Bible profile-update contracts, resolved evidence indexing, and deferred/suspect run metrics. | 0029, 0035, 0040, 0046, 0047 |
 
 ## Archived documents
 

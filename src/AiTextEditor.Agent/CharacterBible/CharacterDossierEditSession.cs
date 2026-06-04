@@ -18,6 +18,8 @@ internal sealed class CharacterDossierEditSession
 
     public IReadOnlyList<CharacterBibleResolverDecision> Decisions => decisions;
 
+    public int SuspectArchiveEntriesAdded { get; private set; }
+
     public static CharacterDossierEditSession CreateFrom(CharacterDossiers dossiers)
     {
         ArgumentNullException.ThrowIfNull(dossiers);
@@ -167,19 +169,30 @@ internal sealed class CharacterDossierEditSession
         ArgumentNullException.ThrowIfNull(entries);
 
         var normalized = entries
-            .Where(entry => !string.IsNullOrWhiteSpace(entry.Pointer) && !string.IsNullOrWhiteSpace(entry.Excerpt))
+            .Where(entry => entry.CharacterId is not null
+                && !string.IsNullOrWhiteSpace(entry.Pointer)
+                && !string.IsNullOrWhiteSpace(entry.Excerpt))
             .Select(entry => entry with
             {
                 Pointer = entry.Pointer.Trim(),
                 Excerpt = entry.Excerpt.Trim()
             })
+            .GroupBy(entry => (entry.CharacterId, entry.Pointer), entry => entry)
+            .Select(group => group.First())
             .ToArray();
         if (normalized.Length == 0)
         {
             return;
         }
 
-        Current = Current with { EvidenceIndex = (Current.EvidenceIndex ?? []).Concat(normalized).ToArray() };
+        Current = Current with
+        {
+            EvidenceIndex = (Current.EvidenceIndex ?? [])
+                .Concat(normalized)
+                .GroupBy(entry => (entry.CharacterId, entry.Pointer), entry => entry)
+                .Select(group => group.First())
+                .ToArray()
+        };
         Changed = true;
     }
 
@@ -188,6 +201,7 @@ internal sealed class CharacterDossierEditSession
         ArgumentNullException.ThrowIfNull(entry);
 
         Current = Current with { SuspectArchive = (Current.SuspectArchive ?? []).Append(entry).ToArray() };
+        SuspectArchiveEntriesAdded++;
         Changed = true;
     }
 

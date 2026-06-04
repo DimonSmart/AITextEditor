@@ -113,7 +113,6 @@ internal sealed class CharacterBibleCandidateResolutionApplier
                 identityDecision.Reason);
             session.AddIdentityConflict(BuildIdentityConflict(candidate, resolverDecision));
             session.AddSuspectArchiveEntry(BuildSuspectArchiveEntry(candidate, resolverDecision.Reason));
-            session.AddEvidenceIndexEntries(BuildEvidenceIndexEntries(candidate, resolverDecision));
             session.AddDecision(resolverDecision);
             return;
         }
@@ -127,7 +126,6 @@ internal sealed class CharacterBibleCandidateResolutionApplier
                 identityDecision.CharacterIds,
                 identityDecision.Reason);
             session.AddSuspectArchiveEntry(BuildSuspectArchiveEntry(candidate, resolverDecision.Reason));
-            session.AddEvidenceIndexEntries(BuildEvidenceIndexEntries(candidate, resolverDecision));
             session.AddDecision(resolverDecision);
             return;
         }
@@ -145,7 +143,6 @@ internal sealed class CharacterBibleCandidateResolutionApplier
             };
             session.AddIdentityConflict(BuildIdentityConflict(candidate, resolverDecision));
             session.AddSuspectArchiveEntry(BuildSuspectArchiveEntry(candidate, resolverDecision.Reason));
-            session.AddEvidenceIndexEntries(BuildEvidenceIndexEntries(candidate, resolverDecision));
             session.AddDecision(resolverDecision);
             return;
         }

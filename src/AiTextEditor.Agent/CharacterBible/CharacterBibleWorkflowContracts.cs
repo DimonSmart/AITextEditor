@@ -15,6 +15,8 @@ public sealed record CharacterBibleWorkflowOutput(
     int CandidateCount,
     int DecisionCount,
     int AmbiguousDecisionCount,
+    int DeferredDecisionCount,
+    int SuspectCount,
     IReadOnlyList<CharacterBibleResolverDecision> Decisions,
     CharacterBibleModelResponseErrorStatistics? ModelResponseErrors = null,
     Exception? Failure = null);

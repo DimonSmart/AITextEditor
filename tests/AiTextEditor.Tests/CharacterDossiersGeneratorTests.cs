@@ -254,6 +254,8 @@ public sealed class CharacterDossiersGeneratorTests
         Assert.Contains("Do not return reasons", systemPrompt, StringComparison.Ordinal);
         Assert.Contains("Do not return evidence pointers", systemPrompt, StringComparison.Ordinal);
         Assert.Contains("Do not return status", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("Target length: 500 characters or less", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("Choose the field by semantic type", systemPrompt, StringComparison.Ordinal);
         Assert.Contains("outputLanguage", systemPrompt, StringComparison.Ordinal);
         Assert.Contains("profile field values", systemPrompt, StringComparison.Ordinal);
         Assert.DoesNotContain("completed", systemPrompt, StringComparison.Ordinal);
@@ -264,10 +266,12 @@ public sealed class CharacterDossiersGeneratorTests
         Assert.Equal(JsonValueKind.Null, json.RootElement.GetProperty("currentProfile").GetProperty("appearance").ValueKind);
         var evidence = json.RootElement.GetProperty("newEvidence").EnumerateArray().Single();
         Assert.Equal("p1", evidence.GetProperty("pointer").GetString());
-        var evidenceText = evidence.GetProperty("text").GetString();
-        Assert.Contains("Johnny entered.", evidenceText, StringComparison.Ordinal);
-        Assert.Contains("Johnny entered and answered briefly.", evidenceText, StringComparison.Ordinal);
-        Assert.Contains("Mary watched.", evidenceText, StringComparison.Ordinal);
+        Assert.Equal("Johnny entered and answered briefly.", evidence.GetProperty("focusedText").GetString());
+        Assert.Equal("Mary watched.", evidence.GetProperty("contextAfter").GetString());
+        Assert.False(evidence.TryGetProperty("text", out _));
+        Assert.DoesNotContain("Anchor excerpt", userPrompt, StringComparison.Ordinal);
+        Assert.DoesNotContain("Current paragraph", userPrompt, StringComparison.Ordinal);
+        Assert.DoesNotContain("Focused text", userPrompt, StringComparison.Ordinal);
         Assert.DoesNotContain("candidateId", userPrompt, StringComparison.Ordinal);
         Assert.DoesNotContain("characterId", userPrompt, StringComparison.Ordinal);
         Assert.DoesNotContain("identityDecision", userPrompt, StringComparison.Ordinal);
@@ -999,9 +1003,9 @@ public sealed class CharacterDossiersGeneratorTests
         using var json = JsonDocument.Parse(request.UserPrompt);
         var evidence = json.RootElement.GetProperty("newEvidence").EnumerateArray().Single();
         Assert.Equal("p1", evidence.GetProperty("pointer").GetString());
-        var evidenceText = evidence.GetProperty("text").GetString();
-        Assert.Contains("А Незнайка сказал:", evidenceText, StringComparison.Ordinal);
-        Assert.Contains("– Мы будем сегодня завтракать?", evidenceText, StringComparison.Ordinal);
+        Assert.Equal("А Незнайка сказал:", evidence.GetProperty("focusedText").GetString());
+        Assert.Equal("– Мы будем сегодня завтракать?", evidence.GetProperty("contextAfter").GetString());
+        Assert.False(evidence.TryGetProperty("text", out _));
     }
 
     [Fact]

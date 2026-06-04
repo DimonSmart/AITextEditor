@@ -281,6 +281,37 @@ public sealed class CharacterBibleLlmInputLoggerTests
         Assert.Equal("1.1.1.p3", evidence.Pointer);
         Assert.Equal("Пончика позвали.", evidence.Excerpt);
         Assert.Null(evidence.CharacterId);
+        Assert.Empty(session.Current.EvidenceIndex!);
+    }
+
+    [Fact]
+    public async Task ExistingDecision_DeduplicatesEvidenceIndexByCharacterAndPointer()
+    {
+        var applier = new CharacterBibleCandidateResolutionApplier(new CharacterBibleExtractionLimits());
+        var session = CharacterDossierEditSession.CreateFrom(new CharacterDossiers(
+            "test",
+            3,
+            [new CharacterDossier(6, "Пончик", [], new Dictionary<string, string>())],
+            7));
+        var candidate = new CharacterBibleCharacterCandidate(
+            "Пончик",
+            "unknown",
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
+            [
+                new CharacterBibleCandidateEvidence("1.1.1.p3", "Пончик вошёл."),
+                new CharacterBibleCandidateEvidence("1.1.1.p3", "Пончик вошёл ещё раз.")
+            ]);
+
+        await applier.ResolveAndUpdateCatalogAsync(
+            new CharacterBibleWorkflowInput(),
+            session,
+            1,
+            [candidate],
+            (_, _, _, _) => Task.FromResult(IdentityResolutionDecision.Existing(6, "Matched by name.")));
+
+        var evidence = Assert.Single(session.Current.EvidenceIndex!);
+        Assert.Equal("1.1.1.p3", evidence.Pointer);
+        Assert.Equal(6, evidence.CharacterId);
     }
 
     private sealed class CapturingCharacterBibleRunLogger : ICharacterBibleRunLogger

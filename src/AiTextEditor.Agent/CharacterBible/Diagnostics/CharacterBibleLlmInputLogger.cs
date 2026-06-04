@@ -43,7 +43,7 @@ internal static class CharacterBibleLlmInputLogger
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .ToArray();
         var emptyEvidenceTexts = input.NewEvidence
-            .Where(evidence => string.IsNullOrWhiteSpace(evidence.Text))
+            .Where(evidence => string.IsNullOrWhiteSpace(evidence.FocusedText))
             .Select(evidence => evidence.Pointer)
             .ToArray();
 

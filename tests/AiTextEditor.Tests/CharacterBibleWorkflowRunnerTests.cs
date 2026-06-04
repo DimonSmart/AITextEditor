@@ -216,6 +216,38 @@ public sealed class CharacterBibleWorkflowRunnerTests
     }
 
     [Fact]
+    public async Task RunAsync_DeferDecisionReportsDeferredAndSuspectCounts()
+    {
+        var runner = CreateRunner(
+            "Professor arrived.",
+            Response(Character(
+                "Professor",
+                NameForm("Professor", "Professor arrived."))),
+            out var dossierService,
+            out _,
+            identityModelClient: new DeferIdentityResolutionModelClient());
+        dossierService.UpsertDossier(new CharacterDossier(
+            CharacterId: 1,
+            Name: "Professor Star",
+            ObservedNameForms: ["Professor Star"],
+            ObservedNameFormExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["Professor Star"] = "Professor Star arrived."
+            },
+            Gender: "unknown"));
+
+        var result = await runner.RunAsync();
+
+        Assert.Equal(1, result.DecisionCount);
+        Assert.Equal(0, result.AmbiguousDecisionCount);
+        Assert.Equal(1, result.DeferredDecisionCount);
+        Assert.Equal(1, result.SuspectCount);
+        Assert.Empty(result.Dossiers.EvidenceIndex!);
+        var suspect = Assert.Single(result.Dossiers.SuspectArchive!);
+        Assert.Equal("Professor", suspect.CanonicalName);
+    }
+
+    [Fact]
     public async Task RunAsync_ReportsDetailedProgress()
     {
         var runner = CreateRunner(
@@ -276,7 +308,7 @@ public sealed class CharacterBibleWorkflowRunnerTests
         Assert.Equal("generated", result.Status);
         Assert.Equal(3, result.ParagraphCount);
         Assert.Equal(1, result.CandidateCount);
-        Assert.Equal(1, result.Dossiers.Characters.Count);
+        Assert.Single(result.Dossiers.Characters);
         Assert.NotNull(result.ModelResponseErrors);
         Assert.Equal(1, result.ModelResponseErrors.SkippedBatchCount);
         Assert.Equal(1, result.ModelResponseErrors.SkippedParagraphCount);
@@ -318,7 +350,8 @@ public sealed class CharacterBibleWorkflowRunnerTests
         CharacterExtractionResponse response,
         out CharacterDossierService dossierService,
         out ScriptedCharacterExtractionModelClient extractionModelClient,
-        ICharacterProfileUpdateModelClient? patchModelClient = null)
+        ICharacterProfileUpdateModelClient? patchModelClient = null,
+        ICharacterIdentityResolutionModelClient? identityModelClient = null)
     {
         var repository = new MarkdownDocumentRepository();
         var document = repository.LoadFromMarkdown(markdown);
@@ -336,7 +369,7 @@ public sealed class CharacterBibleWorkflowRunnerTests
             new CharacterExtractionPromptBuilder(),
             patchModelClient ?? NoopPatchClient(),
             new CharacterProfileUpdatePromptBuilder(),
-            NewIdentityResolverClient(),
+            identityModelClient ?? NewIdentityResolverClient(),
             NoopCanonicalNameNormalizationClient(),
             new CharacterCanonicalNameNormalizationPromptBuilder(),
             NewVectorSearchTool());
@@ -518,6 +551,18 @@ public sealed class CharacterBibleWorkflowRunnerTests
                     CharacterIds: searchResult.Hits.Select(hit => hit.CharacterId).ToArray(),
                     Reason: "Multiple test search hits.")
             };
+        }
+    }
+
+    private sealed class DeferIdentityResolutionModelClient : ICharacterIdentityResolutionModelClient
+    {
+        public Task<CharacterIdentityResolutionResponse> ResolveAsync(
+            CharacterIdentityResolutionModelRequest request,
+            CancellationToken cancellationToken = default)
+        {
+            return Task.FromResult(new CharacterIdentityResolutionResponse(
+                CharacterIdentityDecision.Defer,
+                Reason: "Title-only candidate needs local evidence."));
         }
     }
 

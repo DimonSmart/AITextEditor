@@ -72,7 +72,7 @@ internal sealed record CharacterProfileUpdateRejectedToolCall(
 
 public sealed class CharacterProfileUpdateToolAdapter
 {
-    private const int MaxProfileFieldLength = 500;
+    private const int MaxProfileFieldLength = 1000;
     private const string ReplaceProfileFieldToolName = "replace_profile_field";
 
     private sealed record CharacterProfileUpdateToolOperationResult(
@@ -110,7 +110,7 @@ public sealed class CharacterProfileUpdateToolAdapter
     [Description("Replaces one profile field for the current character.")]
     public ReplaceProfileFieldResult ReplaceProfileField(
         [Description("Profile field to replace: Appearance, StatusAndCompetence, PsychologicalProfile, or SpeechAndCommunication.")] CharacterBibleProfileField field,
-        [Description("Complete new value of the profile field. This is a replacement, not text to append. Do not use Markdown.")] string value)
+        [Description("Complete new value of the profile field. This is a replacement, not text to append. Prefer 1-3 concise sentences, target 500 characters or less, hard limit 1000 characters. Do not use Markdown.")] string value)
     {
         statistics.ToolCalls++;
 

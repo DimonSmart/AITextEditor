@@ -108,7 +108,7 @@ public sealed class CharacterBibleWorkflowRunner
 
                 runLogger.Info(
                     "workflow.finish",
-                    $"status={result.Status} dossiersCount={result.Dossiers.Characters.Count} version={result.Dossiers.Version} nextCharacterId={result.Dossiers.NextCharacterId} candidateCount={result.CandidateCount} decisionCount={result.DecisionCount} ambiguousCount={result.AmbiguousDecisionCount} durationMs={(DateTimeOffset.Now - runLogger.Context.StartedAt).TotalMilliseconds:0}");
+                    $"status={result.Status} dossiersCount={result.Dossiers.Characters.Count} version={result.Dossiers.Version} nextCharacterId={result.Dossiers.NextCharacterId} candidateCount={result.CandidateCount} decisionCount={result.DecisionCount} ambiguousCount={result.AmbiguousDecisionCount} deferredCount={result.DeferredDecisionCount} suspectCount={result.SuspectCount} durationMs={(DateTimeOffset.Now - runLogger.Context.StartedAt).TotalMilliseconds:0}");
                 return result;
             }
         }

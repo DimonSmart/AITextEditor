@@ -967,7 +967,7 @@ public sealed class WebCharacterBibleServiceTests
 
     private static CharacterBibleWorkflowOutput CreateOutput(string status, string name = "Alice")
     {
-        return new CharacterBibleWorkflowOutput(CreateDossiers(name), status, 0, 1, 0, 0, 0, []);
+        return new CharacterBibleWorkflowOutput(CreateDossiers(name), status, 0, 1, 0, 0, 0, 0, 0, []);
     }
 
     private static CharacterDossiers CreateDossiers(string name)

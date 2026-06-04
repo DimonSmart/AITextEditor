@@ -166,13 +166,16 @@ internal sealed class ResolveCharacterBibleCandidatesExecutor : Executor<Charact
             runState.Candidates.Count,
             runState.Catalog.Decisions.Count,
             runState.Catalog.Changed);
+        var ambiguousCount = CharacterBibleWorkflowCounts.CountDecisions(runState, CharacterBibleDecisionKind.Ambiguous, CharacterBibleDecisionKind.IdentityConflict);
+        var deferredCount = CharacterBibleWorkflowCounts.CountDecisions(runState, CharacterBibleDecisionKind.Defer);
+        var suspectCount = runState.Catalog.SuspectArchiveEntriesAdded;
         progress?.Report(new CharacterBibleWorkflowProgress(
             "resolve",
-            $"Resolved {runState.Catalog.Decisions.Count} decisions; ambiguous: {runState.Catalog.Decisions.Count(decision => decision.Kind == CharacterBibleDecisionKind.Ambiguous)}.",
+            $"Resolved {runState.Catalog.Decisions.Count} decisions; ambiguous: {ambiguousCount}; deferred: {deferredCount}; suspect: {suspectCount}.",
             DossiersSnapshot: runState.Catalog.Current));
         CharacterBibleRunLogScope.Current?.Info(
             "resolve.done",
-            $"candidateCount={runState.Candidates.Count} decisionCount={runState.Catalog.Decisions.Count} ambiguousCount={runState.Catalog.Decisions.Count(decision => decision.Kind == CharacterBibleDecisionKind.Ambiguous)}");
+            $"candidateCount={runState.Candidates.Count} decisionCount={runState.Catalog.Decisions.Count} ambiguousCount={ambiguousCount} deferredCount={deferredCount} suspectCount={suspectCount}");
 
         return runState;
     }
@@ -326,7 +329,9 @@ internal sealed class FinishCharacterBibleWorkflowExecutor : Executor<CharacterB
                 runState.ParagraphCount,
                 runState.Candidates.Count,
                 runState.Catalog.Decisions.Count,
-                runState.Catalog.Decisions.Count(decision => decision.Kind == CharacterBibleDecisionKind.Ambiguous),
+                CharacterBibleWorkflowCounts.CountDecisions(runState, CharacterBibleDecisionKind.Ambiguous, CharacterBibleDecisionKind.IdentityConflict),
+                CharacterBibleWorkflowCounts.CountDecisions(runState, CharacterBibleDecisionKind.Defer),
+                runState.Catalog.SuspectArchiveEntriesAdded,
                 runState.Catalog.Decisions,
                 runState.ModelResponseErrors,
                 runState.Failure));
@@ -363,7 +368,9 @@ internal sealed class FinishCharacterBibleWorkflowExecutor : Executor<CharacterB
             runState.ParagraphCount,
             runState.Candidates.Count,
             runState.Catalog.Decisions.Count,
-            runState.Catalog.Decisions.Count(decision => decision.Kind == CharacterBibleDecisionKind.Ambiguous),
+            CharacterBibleWorkflowCounts.CountDecisions(runState, CharacterBibleDecisionKind.Ambiguous, CharacterBibleDecisionKind.IdentityConflict),
+            CharacterBibleWorkflowCounts.CountDecisions(runState, CharacterBibleDecisionKind.Defer),
+            runState.Catalog.SuspectArchiveEntriesAdded,
             runState.Catalog.Decisions,
             runState.ModelResponseErrors));
     }
@@ -375,5 +382,17 @@ internal sealed class FinishCharacterBibleWorkflowExecutor : Executor<CharacterB
             .Select(pointer => pointer.Trim())
             .Distinct(StringComparer.Ordinal)
             .ToArray() ?? [];
+    }
+
+}
+
+internal static class CharacterBibleWorkflowCounts
+{
+    public static int CountDecisions(CharacterBibleRunState runState, params CharacterBibleDecisionKind[] kinds)
+    {
+        ArgumentNullException.ThrowIfNull(runState);
+
+        var kindSet = kinds.ToHashSet();
+        return runState.Catalog.Decisions.Count(decision => kindSet.Contains(decision.Kind));
     }
 }

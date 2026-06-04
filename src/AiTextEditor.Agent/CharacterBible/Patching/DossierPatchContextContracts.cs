@@ -20,7 +20,9 @@ internal sealed record CharacterProfileUpdateCurrentProfile(
 
 internal sealed record CharacterProfileUpdateEvidence(
     string Pointer,
-    string Text);
+    string FocusedText,
+    string? ContextBefore = null,
+    string? ContextAfter = null);
 
 internal sealed record CharacterBibleEvidenceContext(
     string Pointer,

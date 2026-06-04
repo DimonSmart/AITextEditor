@@ -75,6 +75,30 @@ public sealed class CharacterProfileUpdateToolAdapterTests
     }
 
     [Fact]
+    public void ReplaceProfileField_AcceptsNormalValueSlightlyAboveFiveHundredCharacters()
+    {
+        var (tools, session) = CreateTools();
+        var value = new string('а', 520);
+
+        var result = tools.ReplaceProfileField(CharacterBibleProfileField.StatusAndCompetence, value);
+
+        Assert.Equal(ReplaceProfileFieldResultStatus.Applied, result.Status);
+        Assert.Equal(value, session.GetRequired(1).Profile!.StatusAndCompetence);
+    }
+
+    [Fact]
+    public void ReplaceProfileField_RejectsClearlyOversizedValue()
+    {
+        var (tools, session) = CreateTools();
+
+        var result = tools.ReplaceProfileField(CharacterBibleProfileField.StatusAndCompetence, new string('а', 1001));
+
+        Assert.Equal(ReplaceProfileFieldResultStatus.Rejected, result.Status);
+        Assert.Equal("Value is too long.", result.Message);
+        Assert.Null(session.GetRequired(1).Profile!.StatusAndCompetence);
+    }
+
+    [Fact]
     public void ReplaceProfileField_DoesNotExposeCharacterIdParameter()
     {
         var parameterNames = typeof(CharacterProfileUpdateToolAdapter)
