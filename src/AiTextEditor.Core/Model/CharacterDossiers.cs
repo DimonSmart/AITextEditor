@@ -8,7 +8,6 @@ public sealed record CharacterDossiers(
     IReadOnlyList<CharacterDossier> Characters,
     int NextCharacterId = 1,
     IReadOnlyList<SuspectArchiveEntry>? SuspectArchive = null,
-    IReadOnlyList<CharacterEvidenceIndexEntry>? EvidenceIndex = null,
     IReadOnlyList<IdentityConflictRecord>? IdentityConflicts = null,
     IReadOnlyList<CharacterBibleAuditEntry>? AuditTrail = null);
 
@@ -16,13 +15,12 @@ public sealed record SuspectArchiveEntry(
     string CanonicalName,
     string Gender,
     IReadOnlyList<string> ObservedNameForms,
-    IReadOnlyList<CharacterEvidenceIndexEntry> Evidence,
+    IReadOnlyList<CharacterEvidenceReference> Evidence,
     string Reason);
 
-public sealed record CharacterEvidenceIndexEntry(
+public sealed record CharacterEvidenceReference(
     string Pointer,
-    string Excerpt,
-    int? CharacterId = null);
+    string Excerpt);
 
 public sealed record IdentityConflictRecord(
     string CanonicalName,

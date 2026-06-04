@@ -176,20 +176,7 @@ internal sealed class CharacterBibleCandidateResolutionApplier
             dossier.CharacterId,
             [],
             identityDecision.Reason);
-        session.AddEvidenceIndexEntries(BuildEvidenceIndexEntries(candidate, resolverDecision));
         session.AddDecision(resolverDecision);
-    }
-
-    private static IReadOnlyList<CharacterEvidenceIndexEntry> BuildEvidenceIndexEntries(
-        CharacterBibleCharacterCandidate candidate,
-        CharacterBibleResolverDecision decision)
-    {
-        return candidate.Evidence
-            .Select(evidence => new CharacterEvidenceIndexEntry(
-                evidence.Pointer,
-                evidence.Excerpt,
-                decision.CharacterId))
-            .ToArray();
     }
 
     private static SuspectArchiveEntry BuildSuspectArchiveEntry(
@@ -200,7 +187,7 @@ internal sealed class CharacterBibleCandidateResolutionApplier
             candidate.CanonicalName,
             candidate.Gender,
             candidate.ObservedNameFormExamples.Keys.ToArray(),
-            candidate.Evidence.Select(evidence => new CharacterEvidenceIndexEntry(
+            candidate.Evidence.Select(evidence => new CharacterEvidenceReference(
                 evidence.Pointer,
                 evidence.Excerpt)).ToArray(),
             reason);

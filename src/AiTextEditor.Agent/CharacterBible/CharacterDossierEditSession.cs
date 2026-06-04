@@ -164,38 +164,6 @@ internal sealed class CharacterDossierEditSession
         return ReplaceDossier(dossier with { Profile = normalizedProfile });
     }
 
-    public void AddEvidenceIndexEntries(IReadOnlyList<CharacterEvidenceIndexEntry> entries)
-    {
-        ArgumentNullException.ThrowIfNull(entries);
-
-        var normalized = entries
-            .Where(entry => entry.CharacterId is not null
-                && !string.IsNullOrWhiteSpace(entry.Pointer)
-                && !string.IsNullOrWhiteSpace(entry.Excerpt))
-            .Select(entry => entry with
-            {
-                Pointer = entry.Pointer.Trim(),
-                Excerpt = entry.Excerpt.Trim()
-            })
-            .GroupBy(entry => (entry.CharacterId, entry.Pointer), entry => entry)
-            .Select(group => group.First())
-            .ToArray();
-        if (normalized.Length == 0)
-        {
-            return;
-        }
-
-        Current = Current with
-        {
-            EvidenceIndex = (Current.EvidenceIndex ?? [])
-                .Concat(normalized)
-                .GroupBy(entry => (entry.CharacterId, entry.Pointer), entry => entry)
-                .Select(group => group.First())
-                .ToArray()
-        };
-        Changed = true;
-    }
-
     public void AddSuspectArchiveEntry(SuspectArchiveEntry entry)
     {
         ArgumentNullException.ThrowIfNull(entry);
@@ -287,7 +255,6 @@ internal sealed class CharacterDossierEditSession
         {
             Characters = dossiers.Characters.Select(CloneDossier).ToArray(),
             SuspectArchive = dossiers.SuspectArchive?.Select(CloneSuspect).ToArray() ?? [],
-            EvidenceIndex = dossiers.EvidenceIndex?.Select(CloneEvidence).ToArray() ?? [],
             IdentityConflicts = dossiers.IdentityConflicts?.Select(CloneConflict).ToArray() ?? [],
             AuditTrail = dossiers.AuditTrail?.ToArray() ?? []
         };
@@ -314,7 +281,7 @@ internal sealed class CharacterDossierEditSession
         };
     }
 
-    private static CharacterEvidenceIndexEntry CloneEvidence(CharacterEvidenceIndexEntry entry)
+    private static CharacterEvidenceReference CloneEvidence(CharacterEvidenceReference entry)
     {
         return entry with { };
     }

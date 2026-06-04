@@ -32,6 +32,9 @@ Rules:
 - Do not return status.
 - Do not invent motivation, intention, competence, fear, courage, or personality traits unless supported by newEvidence.
 - Do not update identity, name, observed name forms, gender, characterId, or evidence index.
+- Update the profile only using facts clearly attributed to the target character.
+- Do not transfer actions or traits from nearby characters in the same evidence block.
+- If focusedText does not mention the target character or one of their observed forms, treat the evidence as weak and avoid updating the profile.
 
 Field meanings:
 - Appearance: only visible physical appearance, clothing, and notable visual details.

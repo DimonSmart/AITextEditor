@@ -1,15 +1,6 @@
 using AiTextEditor.Tests.Infrastructure;
 using AiTextEditor.Agent;
-using AiTextEditor.Agent.CharacterBible;
-using AiTextEditor.Agent.CharacterBible.Extraction;
-using AiTextEditor.Core.Common;
-using AiTextEditor.Core.Services;
-using AiTextEditor.Core.Interfaces;
-using Microsoft.Extensions.Logging;
 using AiTextEditor.Core.Model;
-using DimonSmart.AiUtils;
-using System.Globalization;
-using System.Linq;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text;
@@ -142,102 +133,5 @@ public class McpFunctionalTests
         }
     }
 
-    private static bool TryExtractDossiersJson(string text, out string dossiersJson)
-    {
-        dossiersJson = string.Empty;
-        if (string.IsNullOrWhiteSpace(text))
-        {
-            return false;
-        }
-
-        foreach (var candidate in JsonExtractor.ExtractAllJsons(text))
-        {
-            if (IsDossiersJson(candidate))
-            {
-                dossiersJson = candidate;
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private static bool IsDossiersJson(string json)
-    {
-        try
-        {
-            using var doc = JsonDocument.Parse(json);
-            var root = doc.RootElement;
-            return root.ValueKind == JsonValueKind.Object &&
-                   root.TryGetProperty("characters", out var characters) &&
-                   characters.ValueKind == JsonValueKind.Array;
-        }
-        catch
-        {
-            return false;
-        }
-    }
-
-    private sealed class TokenizingCharacterExtractionModelClient : ICharacterExtractionModelClient
-    {
-        public Task<CharacterExtractionResponse> ExtractCharactersAsync(
-            CharacterExtractionModelRequest request,
-            CancellationToken cancellationToken = default)
-        {
-            return Task.FromResult(BuildCharacterResponse(request.UserPrompt));
-        }
-
-        private static CharacterExtractionResponse BuildCharacterResponse(string? prompt)
-        {
-            if (string.IsNullOrWhiteSpace(prompt))
-            {
-                return new CharacterExtractionResponse([]);
-            }
-
-            try
-            {
-                using var json = JsonDocument.Parse(prompt);
-                if (!json.RootElement.TryGetProperty("paragraphs", out var paragraphs) || paragraphs.ValueKind != JsonValueKind.Array)
-                {
-                    return new CharacterExtractionResponse([]);
-                }
-
-                var characters = new List<ExtractedLocalCharacter>();
-                foreach (var paragraph in paragraphs.EnumerateArray())
-                {
-                    if (!paragraph.TryGetProperty("text", out var textElement) || textElement.ValueKind != JsonValueKind.String)
-                    {
-                        continue;
-                    }
-
-                    var text = textElement.GetString() ?? string.Empty;
-                    var pointer = paragraph.TryGetProperty("pointer", out var pointerElement)
-                        ? pointerElement.GetString() ?? string.Empty
-                        : string.Empty;
-                    var tokens = text.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-                    foreach (var token in tokens)
-                    {
-                        var name = token.Trim(',', '.', ';', ':', '"', '\'');
-                        if (string.IsNullOrWhiteSpace(name))
-                        {
-                            continue;
-                        }
-
-                        characters.Add(new ExtractedLocalCharacter(
-                            name,
-                            "unknown",
-                            [],
-                            [pointer]));
-                    }
-                }
-
-                return new CharacterExtractionResponse(characters);
-            }
-            catch (JsonException)
-            {
-                return new CharacterExtractionResponse([]);
-            }
-        }
-    }
 }
 

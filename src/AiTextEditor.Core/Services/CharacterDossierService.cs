@@ -204,11 +204,14 @@ public sealed class CharacterDossierService
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(payload);
         using var document = JsonDocument.Parse(payload);
-        var hasNextCharacterId = document.RootElement.TryGetProperty("nextCharacterId", out _);
+        if (!document.RootElement.TryGetProperty("nextCharacterId", out _))
+        {
+            throw new InvalidOperationException("Character dossiers JSON must contain NextCharacterId.");
+        }
 
         var parsed = JsonSerializer.Deserialize<CharacterDossiers>(payload, DossierJsonOptions);
         var loaded = parsed ?? throw new InvalidOperationException("Failed to deserialize character dossiers from JSON.");
-        ApplyLoaded(hasNextCharacterId ? loaded : MigrateMissingNextCharacterId(loaded));
+        ApplyLoaded(loaded);
     }
 
     private void ApplyLoaded(CharacterDossiers loaded)
@@ -247,37 +250,10 @@ public sealed class CharacterDossierService
             NextCharacterId = Math.Max(source.NextCharacterId, characters.Select(character => character.CharacterId).DefaultIfEmpty().Max() + 1),
             Characters = characters,
             SuspectArchive = source.SuspectArchive ?? [],
-            EvidenceIndex = NormalizeEvidenceIndex(source.EvidenceIndex),
             IdentityConflicts = source.IdentityConflicts ?? [],
             AuditTrail = source.AuditTrail ?? []
         };
     }
-
-    private static CharacterDossiers MigrateMissingNextCharacterId(CharacterDossiers source)
-    {
-        var characters = source.Characters ?? [];
-        return source with
-        {
-            NextCharacterId = characters
-                .Select(character => character.CharacterId)
-                .DefaultIfEmpty()
-                .Max() + 1
-        };
-    }
-
-    private static IReadOnlyList<CharacterEvidenceIndexEntry> NormalizeEvidenceIndex(IReadOnlyList<CharacterEvidenceIndexEntry>? entries)
-        => (entries ?? [])
-            .Where(entry => entry.CharacterId is not null
-                && !string.IsNullOrWhiteSpace(entry.Pointer)
-                && !string.IsNullOrWhiteSpace(entry.Excerpt))
-            .Select(entry => entry with
-            {
-                Pointer = entry.Pointer.Trim(),
-                Excerpt = entry.Excerpt.Trim()
-            })
-            .GroupBy(entry => (entry.CharacterId, entry.Pointer), entry => entry)
-            .Select(group => group.First())
-            .ToList();
 
     private static void ValidateUniqueCharacterIds(IReadOnlyCollection<CharacterDossier> characters)
     {

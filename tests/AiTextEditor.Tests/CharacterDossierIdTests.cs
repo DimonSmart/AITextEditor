@@ -64,67 +64,20 @@ public sealed class CharacterDossierIdTests
     }
 
     [Fact]
-    public void LoadFromJson_RejectsLegacyStringIds()
+    public void LoadFromJson_RequiresNextCharacterId()
     {
         var service = new CharacterDossierService("empty");
 
-        Assert.ThrowsAny<Exception>(() => service.LoadFromJson(
-            """
-            {
-              "dossiersId": "d1",
-              "version": 2,
-              "nextCharacterId": 2,
-              "characters": [
-                {
-                  "characterId": "old-a",
-                  "name": "Alice",
-                  "observedNameForms": [],
-                  "observedNameFormExamples": {}
-                }
-              ]
-            }
-            """));
-    }
-
-    [Fact]
-    public void LoadFromJson_MissingNextCharacterId_MigratesFromMaxCharacterId()
-    {
-        var service = new CharacterDossierService("empty");
-
-        service.LoadFromJson(
-            """
-            {
-              "dossiersId": "d1",
-              "version": 4,
-              "characters": [
-                {
-                  "characterId": 5,
-                  "name": "Alice",
-                  "observedNameForms": [],
-                  "observedNameFormExamples": {}
-                }
-              ]
-            }
-            """);
-
-        Assert.Equal(6, service.GetDossiers().NextCharacterId);
-    }
-
-    [Fact]
-    public void LoadFromJson_MissingNextCharacterId_UsesOneForEmptyArchive()
-    {
-        var service = new CharacterDossierService("empty");
-
-        service.LoadFromJson(
+        var exception = Assert.Throws<InvalidOperationException>(() => service.LoadFromJson(
             """
             {
               "dossiersId": "d1",
               "version": 4,
               "characters": []
             }
-            """);
+            """));
 
-        Assert.Equal(1, service.GetDossiers().NextCharacterId);
+        Assert.Equal("Character dossiers JSON must contain NextCharacterId.", exception.Message);
     }
 
     [Fact]
@@ -144,6 +97,41 @@ public sealed class CharacterDossierIdTests
         Assert.Equal(6, character.CharacterId);
         Assert.Equal(7, source.GetDossiers().NextCharacterId);
         Assert.Equal(7, target.GetDossiers().NextCharacterId);
+    }
+
+    [Fact]
+    public void LoadFromJson_IgnoresLegacyEvidenceIndexAndDropsItOnSave()
+    {
+        var service = new CharacterDossierService("empty");
+
+        service.LoadFromJson(
+            """
+            {
+              "dossiersId": "d1",
+              "version": 4,
+              "nextCharacterId": 2,
+              "characters": [
+                {
+                  "characterId": 1,
+                  "name": "Alice",
+                  "observedNameForms": [],
+                  "observedNameFormExamples": {},
+                  "gender": "female"
+                }
+              ],
+              "evidenceIndex": [
+                {
+                  "pointer": "1.1.p1",
+                  "excerpt": "Alice arrived.",
+                  "characterId": 1
+                }
+              ]
+            }
+            """);
+
+        var dossier = Assert.Single(service.GetDossiers().Characters);
+        Assert.Equal("Alice", dossier.Name);
+        Assert.DoesNotContain("evidenceIndex", service.SaveToJson(), StringComparison.Ordinal);
     }
 
     [Fact]

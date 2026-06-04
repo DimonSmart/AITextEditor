@@ -242,9 +242,21 @@ public sealed class CharacterBibleWorkflowRunnerTests
         Assert.Equal(0, result.AmbiguousDecisionCount);
         Assert.Equal(1, result.DeferredDecisionCount);
         Assert.Equal(1, result.SuspectCount);
-        Assert.Empty(result.Dossiers.EvidenceIndex!);
         var suspect = Assert.Single(result.Dossiers.SuspectArchive!);
         Assert.Equal("Professor", suspect.CanonicalName);
+        var evidence = Assert.Single(suspect.Evidence);
+        Assert.Equal("p1", evidence.Pointer);
+        Assert.Equal("Professor arrived.", evidence.Excerpt);
+
+        var finalJsonService = new CharacterDossierService("empty");
+        finalJsonService.ReplaceDossiers(result.Dossiers);
+        var finalJson = finalJsonService.SaveToJson();
+        Assert.DoesNotContain("evidenceIndex", finalJson, StringComparison.Ordinal);
+        using var finalJsonDocument = JsonDocument.Parse(finalJson);
+        var savedEvidence = finalJsonDocument.RootElement
+            .GetProperty("suspectArchive")[0]
+            .GetProperty("evidence")[0];
+        Assert.False(savedEvidence.TryGetProperty("characterId", out _));
     }
 
     [Fact]

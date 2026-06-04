@@ -61,7 +61,8 @@ internal sealed class CharacterBibleProfileUpdater
                 continue;
             }
 
-            var evidence = CharacterProfileUpdatePromptBuilder.BuildEvidence(patchGroup.Candidates);
+            var promptInput = promptBuilder.BuildPromptInput(patchGroup.Candidates, dossier);
+            var evidence = promptInput.NewEvidence;
             if (evidence.Count == 0)
             {
                 continue;
@@ -87,7 +88,6 @@ internal sealed class CharacterBibleProfileUpdater
                 evidence.Select(item => item.Pointer).ToArray(),
                 runState.Catalog,
                 statistics);
-            var promptInput = promptBuilder.BuildPromptInput(patchGroup.Candidates, dossier);
 
             try
             {

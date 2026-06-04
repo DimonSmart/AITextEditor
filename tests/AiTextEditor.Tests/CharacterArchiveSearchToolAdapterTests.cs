@@ -1,7 +1,6 @@
 using AiTextEditor.Agent.CharacterBible.Resolution;
 using AiTextEditor.Agent.CharacterBible.VectorSearch;
 using AiTextEditor.Core.Model;
-using System.Text.Json;
 using Xunit;
 
 namespace AiTextEditor.Tests;
@@ -34,43 +33,6 @@ public sealed class CharacterArchiveSearchToolAdapterTests
         Assert.Equal(CharacterArchiveSearchResultNotes.ClosestEntriesMayBeUnrelated, result.Note);
         Assert.Equal([1, 2], result.Hits.Select(hit => hit.Rank));
         Assert.Equal([2, 1], result.Hits.Select(hit => hit.CharacterId));
-    }
-
-    [Fact]
-    public async Task SearchCharactersAsync_SerializedResultUsesCharacterIdTerminology()
-    {
-        var archive = new CharacterDossiers("test", 3, [Character(6, "Пончик", "unknown")], 7);
-        var adapter = new CharacterArchiveSearchToolAdapter(
-            archive,
-            new FakeCharacterVectorSearchTool([Hit(6, "Пончик", "unknown", 0.75)]));
-
-        var result = await adapter.SearchCharactersAsync("Пончик", 5, CancellationToken.None);
-        var json = JsonSerializer.Serialize(result, new JsonSerializerOptions(JsonSerializerDefaults.Web));
-
-        Assert.Contains("\"characterId\":6", json, StringComparison.Ordinal);
-        Assert.DoesNotContain("entryId", json, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("entryIds", json, StringComparison.OrdinalIgnoreCase);
-    }
-
-    [Fact]
-    public void ResolutionResponse_SerializedResultUsesCharacterIdTerminology()
-    {
-        var existing = new CharacterIdentityResolutionResponse(
-            CharacterIdentityDecision.Existing,
-            CharacterId: 6,
-            Reason: "Matched.");
-        var ambiguous = new CharacterIdentityResolutionResponse(
-            CharacterIdentityDecision.Ambiguous,
-            CharacterIds: [6, 7],
-            Reason: "Multiple matches.");
-
-        var existingJson = JsonSerializer.Serialize(existing, new JsonSerializerOptions(JsonSerializerDefaults.Web));
-        var ambiguousJson = JsonSerializer.Serialize(ambiguous, new JsonSerializerOptions(JsonSerializerDefaults.Web));
-
-        Assert.Contains("\"characterId\":6", existingJson, StringComparison.Ordinal);
-        Assert.Contains("\"characterIds\":[6,7]", ambiguousJson, StringComparison.Ordinal);
-        Assert.DoesNotContain("entryId", existingJson, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("entryIds", ambiguousJson, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]

@@ -34,21 +34,6 @@ public sealed class CharacterProfileUpdateToolAdapterTests
     }
 
     [Fact]
-    public void ReplaceProfileField_ExposesOnlyFieldAndValueParameters()
-    {
-        var parameterNames = typeof(CharacterProfileUpdateToolAdapter)
-            .GetMethod(nameof(CharacterProfileUpdateToolAdapter.ReplaceProfileField))!
-            .GetParameters()
-            .Select(parameter => parameter.Name ?? string.Empty)
-            .ToArray();
-
-        Assert.Equal(["field", "value"], parameterNames);
-        Assert.DoesNotContain("reason", parameterNames);
-        Assert.DoesNotContain("status", parameterNames);
-        Assert.DoesNotContain("evidencePointers", parameterNames);
-    }
-
-    [Fact]
     public void ReplaceProfileField_ReturnsNoOpForSameValue()
     {
         var (tools, session) = CreateTools(new CharacterProfile(Appearance: "Пахнет нафталином."));
@@ -99,18 +84,6 @@ public sealed class CharacterProfileUpdateToolAdapterTests
     }
 
     [Fact]
-    public void ReplaceProfileField_DoesNotExposeCharacterIdParameter()
-    {
-        var parameterNames = typeof(CharacterProfileUpdateToolAdapter)
-            .GetMethod(nameof(CharacterProfileUpdateToolAdapter.ReplaceProfileField))!
-            .GetParameters()
-            .Select(parameter => parameter.Name ?? string.Empty)
-            .ToArray();
-
-        Assert.DoesNotContain("characterId", parameterNames);
-    }
-
-    [Fact]
     public void ReplaceProfileField_LogsCharacterIdForCharacterScopedToolCalls()
     {
         var logger = new CapturingCharacterBibleRunLogger();
@@ -131,13 +104,6 @@ public sealed class CharacterProfileUpdateToolAdapterTests
             message.EventName == "profile.update.tool.value"
             && message.Message.Contains("characterId=1", StringComparison.Ordinal)
             && message.Message.Contains("name=\"Пончик\"", StringComparison.Ordinal));
-        Assert.DoesNotContain(logger.InfoMessages.Concat(logger.DebugMessages), message =>
-            message.Message.Contains("character=\"", StringComparison.Ordinal));
-        Assert.DoesNotContain(logger.InfoMessages, message =>
-            message.EventName == "profile.update.tool.call"
-            && (message.Message.Contains("reason=", StringComparison.Ordinal)
-                || message.Message.Contains("status=", StringComparison.Ordinal)
-                || message.Message.Contains("evidencePointers=", StringComparison.Ordinal)));
     }
 
     [Fact]

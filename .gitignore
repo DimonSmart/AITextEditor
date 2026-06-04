@@ -487,3 +487,6 @@ $RECYCLE.BIN/
 
 # Test HTTP cassettes
 tests/AiTextEditor.Tests/Cassettes/
+
+# Local UI operation captures
+operation-log-result.json

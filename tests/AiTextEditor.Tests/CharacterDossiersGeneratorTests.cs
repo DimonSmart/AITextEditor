@@ -1009,6 +1009,133 @@ public sealed class CharacterDossiersGeneratorTests
     }
 
     [Fact]
+    public async Task GenerateDossiers_PatchPromptFocusesEvidenceAroundTargetObservedForm()
+    {
+        var dossierService = new CharacterDossierService();
+        dossierService.UpsertDossier(new AiTextEditor.Core.Model.CharacterDossier(
+            CharacterId: 1,
+            Name: "Незнайка",
+            ObservedNameForms: ["Незнайка"],
+            ObservedNameFormExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["Незнайка"] = "Незнайка совершил путешествие."
+            },
+            Gender: "male"));
+        dossierService.UpsertDossier(new AiTextEditor.Core.Model.CharacterDossier(
+            CharacterId: 2,
+            Name: "Кнопочка",
+            ObservedNameForms: ["Кнопочка"],
+            ObservedNameFormExamples: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["Кнопочка"] = "Кнопочка путешествовала."
+            },
+            Gender: "female"));
+        var repository = new MarkdownDocumentRepository();
+        var document = repository.LoadFromMarkdown(
+            "С тех пор как Незнайка совершил путешествие, о нём говорили все. Наслушавшись рассказов Незнайки, Кнопочки и Пачкули Пёстренького, многие коротышки тоже совершили поездку в Солнечный город.");
+        var documentContext = new DocumentContext(document, dossierService);
+        var limits = new CharacterBibleExtractionLimits { MaxParagraphsPerBatch = 256, MaxBatchBytes = 1024 * 128 };
+        var extractionModelClient = new ScriptedCharacterExtractionModelClient(
+            Response(
+                new ExtractedLocalCharacter(
+                    "Незнайка",
+                    "male",
+                    ["Незнайка"],
+                    ["p1"]),
+                new ExtractedLocalCharacter(
+                    "Кнопочка",
+                    "female",
+                    ["Кнопочки"],
+                    ["p1"])));
+        var patchClient = new ScriptedCharacterProfileUpdateModelClient();
+        var logger = new CapturingCharacterBibleRunLogger();
+
+        var generator = new CharacterDossiersGenerator(
+            documentContext,
+            dossierService,
+            limits,
+            NullLogger<CharacterDossiersGenerator>.Instance,
+            extractionModelClient,
+            new CharacterExtractionPromptBuilder(),
+            patchClient,
+            new CharacterProfileUpdatePromptBuilder(),
+            NewIdentityResolverClient(),
+            NoopCanonicalNameNormalizationClient(),
+            new CharacterCanonicalNameNormalizationPromptBuilder(),
+            NewVectorSearchTool());
+
+        using (CharacterBibleRunLogScope.Push(logger))
+        {
+            await generator.GenerateAsync();
+        }
+
+        var request = patchClient.Requests.Single(request => request.UserPrompt.Contains("\"name\":\"Кнопочка\"", StringComparison.Ordinal));
+        using var json = JsonDocument.Parse(request.UserPrompt);
+        var focusedText = json.RootElement
+            .GetProperty("newEvidence")
+            .EnumerateArray()
+            .Single()
+            .GetProperty("focusedText")
+            .GetString();
+        Assert.Contains("Кнопочки", focusedText, StringComparison.Ordinal);
+        Assert.False(focusedText?.StartsWith("С тех пор как Незнайка", StringComparison.Ordinal));
+        Assert.Contains(logger.DebugMessages, message =>
+            message.EventName == "profile.evidence.focus"
+            && message.Message.Contains("name=\"Кнопочка\"", StringComparison.Ordinal)
+            && message.Message.Contains("containsObservedForm=true", StringComparison.Ordinal));
+        Assert.DoesNotContain(logger.WarningMessages, message =>
+            message.EventName == "profile.evidence.focus.fallback"
+            && message.Message.Contains("name=\"Кнопочка\"", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public async Task GenerateDossiers_PatchPromptLogsFallbackWhenObservedFormIsMissing()
+    {
+        var dossierService = new CharacterDossierService();
+        var repository = new MarkdownDocumentRepository();
+        var document = repository.LoadFromMarkdown("John entered the room.");
+        var documentContext = new DocumentContext(document, dossierService);
+        var limits = new CharacterBibleExtractionLimits { MaxParagraphsPerBatch = 256, MaxBatchBytes = 1024 * 128 };
+        var extractionModelClient = new ScriptedCharacterExtractionModelClient(
+            Response(new ExtractedLocalCharacter(
+                "Johnny",
+                "male",
+                ["Johnny"],
+                ["p1"])));
+        var patchClient = new ScriptedCharacterProfileUpdateModelClient();
+        var logger = new CapturingCharacterBibleRunLogger();
+
+        var generator = new CharacterDossiersGenerator(
+            documentContext,
+            dossierService,
+            limits,
+            NullLogger<CharacterDossiersGenerator>.Instance,
+            extractionModelClient,
+            new CharacterExtractionPromptBuilder(),
+            patchClient,
+            new CharacterProfileUpdatePromptBuilder(),
+            NewIdentityResolverClient(),
+            NoopCanonicalNameNormalizationClient(),
+            new CharacterCanonicalNameNormalizationPromptBuilder(),
+            NewVectorSearchTool());
+
+        using (CharacterBibleRunLogScope.Push(logger))
+        {
+            await generator.GenerateAsync();
+        }
+
+        var fallback = Assert.Single(logger.WarningMessages, message =>
+            message.EventName == "profile.evidence.focus.fallback");
+        Assert.Contains("name=\"Johnny\"", fallback.Message, StringComparison.Ordinal);
+        Assert.Contains("pointer=\"p1\"", fallback.Message, StringComparison.Ordinal);
+        Assert.Contains("observedForms=[\"Johnny\"]", fallback.Message, StringComparison.Ordinal);
+        Assert.Contains(logger.DebugMessages, message =>
+            message.EventName == "profile.evidence.focus"
+            && message.Message.Contains("found=false", StringComparison.Ordinal)
+            && message.Message.Contains("containsObservedForm=false", StringComparison.Ordinal));
+    }
+
+    [Fact]
     public async Task GenerateDossiers_PatchPromptGroupsResolvedCandidatesByDossier()
     {
         var dossierService = new CharacterDossierService();
@@ -1750,6 +1877,8 @@ public sealed class CharacterDossiersGeneratorTests
 
         public List<(string EventName, string Message)> WarningMessages { get; } = [];
 
+        public List<(string EventName, string Message)> DebugMessages { get; } = [];
+
         public List<(string EventName, string Message)> ErrorMessages { get; } = [];
 
         public void Info(string eventName, string message)
@@ -1758,6 +1887,7 @@ public sealed class CharacterDossiersGeneratorTests
 
         public void Debug(string eventName, string message)
         {
+            DebugMessages.Add((eventName, message));
         }
 
         public void DebugBlock(string eventName, string header, string block)

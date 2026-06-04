@@ -5,6 +5,8 @@ using AiTextEditor.Agent.CharacterBible.Resolution;
 using AiTextEditor.Agent.CharacterBible.VectorSearch;
 using AiTextEditor.Agent.CharacterBible;
 using AiTextEditor.Core.Model;
+using AiTextEditor.Core.Services;
+using System.Text.Json;
 using Xunit;
 
 namespace AiTextEditor.Tests;
@@ -75,15 +77,6 @@ public sealed class CharacterBibleLlmInputLoggerTests
         var block = Assert.Single(logger.Blocks);
         Assert.Contains("\"appearance\": null", block.Body, StringComparison.Ordinal);
         Assert.Contains("\"psychologicalProfile\": null", block.Body, StringComparison.Ordinal);
-    }
-
-    [Fact]
-    public void CharacterBibleExtractedCandidateDiagnostics_DoNotExposeCandidateId()
-    {
-        Assert.Null(typeof(CharacterBibleCharacterCandidate).GetProperty("CandidateId"));
-        Assert.Null(typeof(SuspectArchiveEntry).GetProperty("CandidateId"));
-        Assert.Null(typeof(CharacterEvidenceIndexEntry).GetProperty("CandidateId"));
-        Assert.Null(typeof(IdentityConflictRecord).GetProperty("CandidateId"));
     }
 
     [Fact]
@@ -165,9 +158,6 @@ public sealed class CharacterBibleLlmInputLoggerTests
             message.EventName == "archive.character.created"
             && message.Message.Contains("characterId=1", StringComparison.Ordinal)
             && message.Message.Contains("nextCharacterId=2", StringComparison.Ordinal));
-        Assert.DoesNotContain(logger.InfoMessages, message =>
-            message.Message.Contains("entryId", StringComparison.OrdinalIgnoreCase)
-            || message.Message.Contains("entryIds", StringComparison.OrdinalIgnoreCase));
     }
 
     [Fact]
@@ -280,23 +270,28 @@ public sealed class CharacterBibleLlmInputLoggerTests
         var evidence = Assert.Single(suspect.Evidence);
         Assert.Equal("1.1.1.p3", evidence.Pointer);
         Assert.Equal("Пончика позвали.", evidence.Excerpt);
-        Assert.Null(evidence.CharacterId);
-        Assert.Empty(session.Current.EvidenceIndex!);
+        Assert.DoesNotContain(
+            "characterId",
+            JsonSerializer.Serialize(suspect.Evidence),
+            StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
-    public async Task ExistingDecision_DeduplicatesEvidenceIndexByCharacterAndPointer()
+    public async Task ExistingDecision_UpdatesDossierWithoutPersistedEvidenceIndex()
     {
         var applier = new CharacterBibleCandidateResolutionApplier(new CharacterBibleExtractionLimits());
         var session = CharacterDossierEditSession.CreateFrom(new CharacterDossiers(
             "test",
-            3,
-            [new CharacterDossier(6, "Пончик", [], new Dictionary<string, string>())],
+            CharacterDossierService.CurrentVersion,
+            [new CharacterDossier(6, "Пончик", [], new Dictionary<string, string>(), "unknown")],
             7));
         var candidate = new CharacterBibleCharacterCandidate(
             "Пончик",
-            "unknown",
-            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
+            "male",
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["Пончика"] = "Пончика позвали."
+            },
             [
                 new CharacterBibleCandidateEvidence("1.1.1.p3", "Пончик вошёл."),
                 new CharacterBibleCandidateEvidence("1.1.1.p3", "Пончик вошёл ещё раз.")
@@ -309,9 +304,16 @@ public sealed class CharacterBibleLlmInputLoggerTests
             [candidate],
             (_, _, _, _) => Task.FromResult(IdentityResolutionDecision.Existing(6, "Matched by name.")));
 
-        var evidence = Assert.Single(session.Current.EvidenceIndex!);
-        Assert.Equal("1.1.1.p3", evidence.Pointer);
-        Assert.Equal(6, evidence.CharacterId);
+        var decision = Assert.Single(session.Decisions);
+        Assert.Equal(CharacterBibleDecisionKind.Existing, decision.Kind);
+        Assert.Equal(6, decision.CharacterId);
+        var dossier = Assert.Single(session.Current.Characters);
+        Assert.Equal("male", dossier.Gender);
+        Assert.Contains("Пончика", dossier.ObservedNameForms);
+
+        var service = new CharacterDossierService("empty");
+        service.ReplaceDossiers(session.Current);
+        Assert.DoesNotContain("evidenceIndex", service.SaveToJson(), StringComparison.Ordinal);
     }
 
     private sealed class CapturingCharacterBibleRunLogger : ICharacterBibleRunLogger

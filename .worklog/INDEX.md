@@ -50,6 +50,8 @@ If this index conflicts with a numbered document, trust the numbered document.
 | 0050 | spec | Character dossier language | Add a program setting and profile update prompt contract field for generated dossier profile field language. | 0009, 0037, 0046, 0047 |
 | 0051 | spec | Embedding server selection | Allow LLM operations and Character Bible embedding/vector search operations to use different configured AI servers. | 0009, 0010, 0032, 0034 |
 | 0052 | spec | Character Bible contract cleanup | Clean up Character Bible profile-update contracts, resolved evidence indexing, and deferred/suspect run metrics. | 0029, 0035, 0040, 0046, 0047 |
+| 0053 | spec | Character profile evidence focus | Build compact profile-update focused evidence around the target character mention in multi-character paragraphs. | 0029, 0040, 0052 |
+| 0054 | spec | Remove Character Bible evidence index | Remove the stale persisted resolved evidence index while keeping unresolved suspectArchive evidence. | 0029, 0034, 0052, 0053 |
 
 ## Archived documents
 
