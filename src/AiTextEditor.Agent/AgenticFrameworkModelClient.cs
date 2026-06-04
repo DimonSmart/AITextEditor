@@ -72,6 +72,8 @@ public sealed record AgenticModelValidationResult(bool IsValid, string Error)
 
 public sealed class AgenticFrameworkModelClient : IAgenticModelClient
 {
+    private const int DefaultRetryCount = 5;
+
     private readonly ChatClientAgent agent;
     private readonly AgenticModelRetryStrategy retryStrategy;
 
@@ -81,7 +83,7 @@ public sealed class AgenticFrameworkModelClient : IAgenticModelClient
     {
         this.agent = agent ?? throw new ArgumentNullException(nameof(agent));
         ArgumentNullException.ThrowIfNull(logger);
-        retryStrategy = new AgenticModelRetryStrategy(logger);
+        retryStrategy = new AgenticModelRetryStrategy(logger, DefaultRetryCount);
     }
 
     internal AgenticFrameworkModelClient(
@@ -98,13 +100,17 @@ public sealed class AgenticFrameworkModelClient : IAgenticModelClient
         Uri endpoint,
         string apiKey,
         ILoggerFactory loggerFactory,
-        int retryCount = 5)
+        int retryCount = DefaultRetryCount)
     {
         ArgumentNullException.ThrowIfNull(httpClient);
         ArgumentException.ThrowIfNullOrWhiteSpace(modelId);
         ArgumentNullException.ThrowIfNull(endpoint);
         ArgumentException.ThrowIfNullOrWhiteSpace(apiKey);
         ArgumentNullException.ThrowIfNull(loggerFactory);
+        if (retryCount <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(retryCount), retryCount, "Retry count must be greater than zero.");
+        }
 
         var trimmedModelId = modelId.Trim();
         var clientOptions = new OpenAIClientOptions
@@ -134,7 +140,7 @@ public sealed class AgenticFrameworkModelClient : IAgenticModelClient
         var agent = new ChatClientAgent(chatClient, agentOptions, loggerFactory);
         return new AgenticFrameworkModelClient(
             agent,
-            new AgenticModelRetryStrategy(loggerFactory.CreateLogger<AgenticModelRetryStrategy>()));
+            new AgenticModelRetryStrategy(loggerFactory.CreateLogger<AgenticModelRetryStrategy>(), retryCount));
     }
 
     public async Task<TResponse> RunAsync<TResponse>(

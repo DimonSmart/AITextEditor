@@ -6,14 +6,20 @@ namespace AiTextEditor.Agent;
 
 internal sealed class AgenticModelRetryStrategy
 {
-    private const int MaxStructuredResponseAttempts = 3;
     private const int MaxRawResponsePreviewLength = 4000;
 
     private readonly ILogger logger;
+    private readonly int maxAttempts;
 
-    public AgenticModelRetryStrategy(ILogger logger)
+    public AgenticModelRetryStrategy(ILogger logger, int maxAttempts)
     {
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        if (maxAttempts <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(maxAttempts), maxAttempts, "Retry attempts must be greater than zero.");
+        }
+
+        this.maxAttempts = maxAttempts;
     }
 
     public async Task<TResponse> RunAsync<TResponse>(
@@ -26,7 +32,7 @@ internal sealed class AgenticModelRetryStrategy
         ArgumentNullException.ThrowIfNull(runAgentAsync);
 
         var messages = request.Messages;
-        for (var attempt = 1; attempt <= MaxStructuredResponseAttempts; attempt++)
+        for (var attempt = 1; attempt <= maxAttempts; attempt++)
         {
             AgentResponse<TResponse> agentResponse;
             try
@@ -35,14 +41,14 @@ internal sealed class AgenticModelRetryStrategy
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
-                if (attempt >= MaxStructuredResponseAttempts)
+                if (attempt >= maxAttempts)
                 {
                     logger.LogError(
                         ex,
                         "Agent Framework typed model call failed for {ResponseType}. Attempt={Attempt}, MaxAttempts={MaxAttempts}.",
                         typeof(TResponse).Name,
                         attempt,
-                        MaxStructuredResponseAttempts);
+                        maxAttempts);
                     throw new InvalidOperationException(request.InvalidContractError, ex);
                 }
 
@@ -51,7 +57,7 @@ internal sealed class AgenticModelRetryStrategy
                     AgenticModelDiagnosticKind.MalformedResponse,
                     typeof(TResponse).Name,
                     attempt,
-                    MaxStructuredResponseAttempts,
+                    maxAttempts,
                     "Agent Framework model call failed before a typed response was produced.",
                     null,
                     Error: ex.Message));
@@ -59,8 +65,8 @@ internal sealed class AgenticModelRetryStrategy
                     AgenticModelDiagnosticKind.Retry,
                     typeof(TResponse).Name,
                     nextAttempt,
-                    MaxStructuredResponseAttempts,
-                    $"Retrying model call after Agent Framework error (attempt {nextAttempt}/{MaxStructuredResponseAttempts}).",
+                    maxAttempts,
+                    $"Retrying model call after Agent Framework error (attempt {nextAttempt}/{maxAttempts}).",
                     null,
                     Error: ex.Message));
                 logger.LogWarning(
@@ -68,7 +74,7 @@ internal sealed class AgenticModelRetryStrategy
                     "Agent Framework typed model call failed for {ResponseType}. Retrying attempt {Attempt}/{MaxAttempts}.",
                     typeof(TResponse).Name,
                     nextAttempt,
-                    MaxStructuredResponseAttempts);
+                    maxAttempts);
                 messages = BuildRetryMessages(request.Messages, typeof(TResponse).Name, ex.Message);
                 continue;
             }
@@ -86,7 +92,7 @@ internal sealed class AgenticModelRetryStrategy
                     AgenticModelDiagnosticKind.MalformedResponse,
                     typeof(TResponse).Name,
                     attempt,
-                    MaxStructuredResponseAttempts,
+                    maxAttempts,
                     "Agent Framework could not produce the typed response. Raw response is available for copying.",
                     null,
                     RawResponse: responseText,
@@ -96,11 +102,11 @@ internal sealed class AgenticModelRetryStrategy
                     "Agent Framework typed response conversion failed for {ResponseType}. Attempt={Attempt}, MaxAttempts={MaxAttempts}, RawLength={RawLength}, RawPreview={RawPreview}.",
                     typeof(TResponse).Name,
                     attempt,
-                    MaxStructuredResponseAttempts,
+                    maxAttempts,
                     responseText.Length,
                     Truncate(responseText, MaxRawResponsePreviewLength));
 
-                if (attempt >= MaxStructuredResponseAttempts)
+                if (attempt >= maxAttempts)
                 {
                     break;
                 }
@@ -110,15 +116,15 @@ internal sealed class AgenticModelRetryStrategy
                     AgenticModelDiagnosticKind.Retry,
                     typeof(TResponse).Name,
                     nextAttempt,
-                    MaxStructuredResponseAttempts,
-                    $"Retrying model call after typed response error (attempt {nextAttempt}/{MaxStructuredResponseAttempts}).",
+                    maxAttempts,
+                    $"Retrying model call after typed response error (attempt {nextAttempt}/{maxAttempts}).",
                     null,
                     Error: ex.Message));
                 logger.LogWarning(
                     "Agent Framework typed response conversion failed for {ResponseType}. Retrying attempt {Attempt}/{MaxAttempts}.",
                     typeof(TResponse).Name,
                     nextAttempt,
-                    MaxStructuredResponseAttempts);
+                    maxAttempts);
                 messages = BuildRetryMessages(request.Messages, typeof(TResponse).Name, ex.Message);
                 continue;
             }
@@ -131,7 +137,7 @@ internal sealed class AgenticModelRetryStrategy
                     AgenticModelDiagnosticKind.InvalidContract,
                     typeof(TResponse).Name,
                     attempt,
-                    MaxStructuredResponseAttempts,
+                    maxAttempts,
                     "Model response contract error. Raw response is available for copying.",
                     null,
                     RawResponse: responseText,
@@ -140,12 +146,12 @@ internal sealed class AgenticModelRetryStrategy
                     "Model response contract validation failed for {ResponseType}. Attempt={Attempt}, MaxAttempts={MaxAttempts}, RawLength={RawLength}, RawPreview={RawPreview}, ValidationError={ValidationError}.",
                     typeof(TResponse).Name,
                     attempt,
-                    MaxStructuredResponseAttempts,
+                    maxAttempts,
                     responseText.Length,
                     Truncate(responseText, MaxRawResponsePreviewLength),
                     validation.Error);
 
-                if (attempt >= MaxStructuredResponseAttempts)
+                if (attempt >= maxAttempts)
                 {
                     break;
                 }
@@ -155,15 +161,15 @@ internal sealed class AgenticModelRetryStrategy
                     AgenticModelDiagnosticKind.Retry,
                     typeof(TResponse).Name,
                     nextAttempt,
-                    MaxStructuredResponseAttempts,
-                    $"Retrying model call after contract error (attempt {nextAttempt}/{MaxStructuredResponseAttempts}).",
+                    maxAttempts,
+                    $"Retrying model call after contract error (attempt {nextAttempt}/{maxAttempts}).",
                     null,
                     Error: validation.Error));
                 logger.LogWarning(
                     "Model response contract validation failed for {ResponseType}. Retrying attempt {Attempt}/{MaxAttempts}. ValidationError={ValidationError}.",
                     typeof(TResponse).Name,
                     nextAttempt,
-                    MaxStructuredResponseAttempts,
+                    maxAttempts,
                     validation.Error);
                 messages = BuildRetryMessages(request.Messages, typeof(TResponse).Name, validation.Error);
                 continue;
@@ -175,8 +181,8 @@ internal sealed class AgenticModelRetryStrategy
                     AgenticModelDiagnosticKind.RetrySucceeded,
                     typeof(TResponse).Name,
                     attempt,
-                    MaxStructuredResponseAttempts,
-                    $"Model response retry succeeded on attempt {attempt}/{MaxStructuredResponseAttempts}.",
+                    maxAttempts,
+                    $"Model response retry succeeded on attempt {attempt}/{maxAttempts}.",
                     null));
             }
 
@@ -195,7 +201,7 @@ internal sealed class AgenticModelRetryStrategy
         ArgumentNullException.ThrowIfNull(runAgentAsync);
 
         var messages = request.Messages;
-        for (var attempt = 1; attempt <= MaxStructuredResponseAttempts; attempt++)
+        for (var attempt = 1; attempt <= maxAttempts; attempt++)
         {
             try
             {
@@ -206,8 +212,8 @@ internal sealed class AgenticModelRetryStrategy
                         AgenticModelDiagnosticKind.RetrySucceeded,
                         request.OperationName,
                         attempt,
-                        MaxStructuredResponseAttempts,
-                        $"Model call retry succeeded on attempt {attempt}/{MaxStructuredResponseAttempts}.",
+                        maxAttempts,
+                        $"Model call retry succeeded on attempt {attempt}/{maxAttempts}.",
                         null));
                 }
 
@@ -215,14 +221,14 @@ internal sealed class AgenticModelRetryStrategy
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
-                if (attempt >= MaxStructuredResponseAttempts)
+                if (attempt >= maxAttempts)
                 {
                     logger.LogError(
                         ex,
                         "Agent Framework tool-only model call failed for {OperationName}. Attempt={Attempt}, MaxAttempts={MaxAttempts}.",
                         request.OperationName,
                         attempt,
-                        MaxStructuredResponseAttempts);
+                        maxAttempts);
                     throw new InvalidOperationException(request.ModelCallError, ex);
                 }
 
@@ -231,7 +237,7 @@ internal sealed class AgenticModelRetryStrategy
                     AgenticModelDiagnosticKind.ModelCallFailed,
                     request.OperationName,
                     attempt,
-                    MaxStructuredResponseAttempts,
+                    maxAttempts,
                     "Agent Framework model call failed before completion.",
                     null,
                     Error: ex.Message));
@@ -239,8 +245,8 @@ internal sealed class AgenticModelRetryStrategy
                     AgenticModelDiagnosticKind.Retry,
                     request.OperationName,
                     nextAttempt,
-                    MaxStructuredResponseAttempts,
-                    $"Retrying model call after Agent Framework error (attempt {nextAttempt}/{MaxStructuredResponseAttempts}).",
+                    maxAttempts,
+                    $"Retrying model call after Agent Framework error (attempt {nextAttempt}/{maxAttempts}).",
                     null,
                     Error: ex.Message));
                 logger.LogWarning(
@@ -248,7 +254,7 @@ internal sealed class AgenticModelRetryStrategy
                     "Agent Framework tool-only model call failed for {OperationName}. Retrying attempt {Attempt}/{MaxAttempts}.",
                     request.OperationName,
                     nextAttempt,
-                    MaxStructuredResponseAttempts);
+                    maxAttempts);
                 messages = BuildToolOnlyRetryMessages(request.Messages, request.OperationName, ex.Message);
             }
         }

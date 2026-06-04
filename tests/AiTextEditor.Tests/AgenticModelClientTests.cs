@@ -314,6 +314,12 @@ public sealed class AgenticModelClientTests
             """,
             """
             { "characters": null }
+            """,
+            """
+            { "characters": null }
+            """,
+            """
+            { "characters": null }
             """);
         var agent = new ChatClientAgent(
             chatClient,
@@ -335,7 +341,52 @@ public sealed class AgenticModelClientTests
                     ValidateResponse: _ => AgenticModelValidationResult.Invalid("characters is required."))));
 
         Assert.Equal("invalid_contract", exception.Message);
-        Assert.Equal(3, chatClient.CallCount);
+        Assert.Equal(5, chatClient.CallCount);
+    }
+
+    [Fact]
+    public async Task AgenticFrameworkModelClient_UsesConfiguredRetryCount()
+    {
+        var chatClient = new CapturingChatClient(
+            """
+            { "characters": null }
+            """,
+            """
+            { "characters": null }
+            """,
+            """
+            { "characters": null }
+            """,
+            """
+            { "characters": null }
+            """,
+            """
+            { "characters": null }
+            """);
+        var agent = new ChatClientAgent(
+            chatClient,
+            new ChatClientAgentOptions
+            {
+                Name = "test_agent",
+                UseProvidedChatClientAsIs = true
+            },
+            NullLoggerFactory.Instance);
+        var client = new AgenticFrameworkModelClient(
+            agent,
+            new AgenticModelRetryStrategy(NullLogger<AgenticModelRetryStrategy>.Instance, maxAttempts: 5));
+        var diagnostics = new List<AgenticModelDiagnostic>();
+
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(
+            () => client.RunAsync<CharacterExtractionResponse>(
+                new AgenticModelRequest<CharacterExtractionResponse>(
+                    [new ChatMessage(ChatRole.User, "extract")],
+                    InvalidContractError: "invalid_contract",
+                    ValidateResponse: _ => AgenticModelValidationResult.Invalid("characters is required."),
+                    Diagnostics: new ListProgress<AgenticModelDiagnostic>(diagnostics))));
+
+        Assert.Equal("invalid_contract", exception.Message);
+        Assert.Equal(5, chatClient.CallCount);
+        Assert.All(diagnostics, diagnostic => Assert.Equal(5, diagnostic.MaxAttempts));
     }
 
     [Fact]
