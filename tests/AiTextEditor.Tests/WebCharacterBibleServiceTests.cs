@@ -3,6 +3,7 @@ using AiTextEditor.Agent.CharacterBible;
 using AiTextEditor.Core.Model;
 using AiTextEditor.Core.Services;
 using AiTextEditor.Web.Services;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
@@ -473,7 +474,9 @@ public sealed class WebCharacterBibleServiceTests
             ],
             LastBookPath = @"C:\Books\novel.md",
             SelectedAiServerName = "Local",
-            SelectedAiModelName = "qwen3:latest"
+            SelectedEmbeddingServerName = "Local",
+            SelectedAiModelName = "qwen3:latest",
+            SelectedEmbeddingModelName = "bge-m3:latest"
         };
         var store = new FileProgramSettingsStore(path, initialSettings);
 
@@ -486,7 +489,9 @@ public sealed class WebCharacterBibleServiceTests
         Assert.Equal(15, server.TimeoutMinutes);
         Assert.Equal(@"C:\Books\novel.md", settings.LastBookPath);
         Assert.Equal("Local", settings.SelectedAiServerName);
+        Assert.Equal("Local", settings.SelectedEmbeddingServerName);
         Assert.Equal("qwen3:latest", settings.SelectedAiModelName);
+        Assert.Equal("bge-m3:latest", settings.SelectedEmbeddingModelName);
     }
 
     [Fact]
@@ -503,16 +508,26 @@ public sealed class WebCharacterBibleServiceTests
                     Name = "Remote",
                     BaseUrl = "https://example.test",
                     ApiKey = "token",
+                    ApiKeySecretName = "azure-eastus2",
                     Username = "user",
                     Password = "password",
                     IgnoreSslErrors = true,
                     LogRequestBody = true,
                     TimeoutMinutes = 7
+                },
+                new AiServerSettings
+                {
+                    Name = "Embeddings",
+                    BaseUrl = "http://embedding.example.test",
+                    ApiKey = "embedding-token",
+                    TimeoutMinutes = 3
                 }
             ],
             LastBookPath = @"C:\Books\novel.md",
             SelectedAiServerName = "Remote",
+            SelectedEmbeddingServerName = "Embeddings",
             SelectedAiModelName = "model-a",
+            SelectedEmbeddingModelName = "embedding-model-a",
             CharacterBibleDossierLanguage = "Spanish",
             CharacterBibleExtraction = new CharacterBibleExtractionSettings
             {
@@ -527,10 +542,12 @@ public sealed class WebCharacterBibleServiceTests
         await store.SaveAsync(savedSettings, CancellationToken.None);
         var loadedSettings = await store.LoadAsync(CancellationToken.None);
 
-        var server = Assert.Single(loadedSettings.AiServers);
+        Assert.Equal(2, loadedSettings.AiServers.Count);
+        var server = loadedSettings.AiServers[0];
         Assert.Equal("Remote", server.Name);
         Assert.Equal("https://example.test", server.BaseUrl);
         Assert.Equal("token", server.ApiKey);
+        Assert.Equal("azure-eastus2", server.ApiKeySecretName);
         Assert.Equal("user", server.Username);
         Assert.Equal("password", server.Password);
         Assert.True(server.IgnoreSslErrors);
@@ -538,13 +555,105 @@ public sealed class WebCharacterBibleServiceTests
         Assert.Equal(7, server.TimeoutMinutes);
         Assert.Equal(@"C:\Books\novel.md", loadedSettings.LastBookPath);
         Assert.Equal("Remote", loadedSettings.SelectedAiServerName);
+        Assert.Equal("Embeddings", loadedSettings.SelectedEmbeddingServerName);
         Assert.Equal("model-a", loadedSettings.SelectedAiModelName);
+        Assert.Equal("embedding-model-a", loadedSettings.SelectedEmbeddingModelName);
         Assert.Equal("Spanish", loadedSettings.CharacterBibleDossierLanguage);
         Assert.Equal(12, loadedSettings.CharacterBibleExtraction.MaxParagraphsPerBatch);
         Assert.Equal(4096, loadedSettings.CharacterBibleExtraction.MaxBatchBytes);
         Assert.Equal(2, loadedSettings.CharacterBibleExtraction.OverlapParagraphs);
         Assert.Equal(2048, loadedSettings.CharacterBibleExtraction.OverlapMaxBytes);
         Assert.Equal(250, loadedSettings.CharacterBibleExtraction.FullScanMaxItems);
+    }
+
+    [Fact]
+    public void ProgramSettingsValidation_UsesSelectedEmbeddingServerForCharacterVectorSearch()
+    {
+        var settings = new ProgramSettings
+        {
+            AiServers =
+            [
+                new AiServerSettings
+                {
+                    Name = "LLM",
+                    BaseUrl = "https://llm.example.test/v1",
+                    ApiKey = "llm-token",
+                    TimeoutMinutes = 30
+                },
+                new AiServerSettings
+                {
+                    Name = "Embeddings",
+                    BaseUrl = "http://embedding.example.test/v1",
+                    ApiKey = "embedding-token",
+                    Username = "embedding-user",
+                    Password = "embedding-password",
+                    IgnoreSslErrors = true,
+                    LogRequestBody = true,
+                    TimeoutMinutes = 5
+                }
+            ],
+            SelectedAiServerName = "LLM",
+            SelectedEmbeddingServerName = "Embeddings",
+            SelectedAiModelName = "qwen3:latest",
+            SelectedEmbeddingModelName = "bge-m3:latest"
+        };
+
+        var validated = ProgramSettingsValidation.ValidateForCharacterVectorSearch(settings);
+
+        Assert.Equal(new Uri("http://embedding.example.test"), validated.Endpoint);
+        Assert.Equal("embedding-token", validated.ApiKey);
+        Assert.Equal("bge-m3:latest", validated.EmbeddingModelName);
+        Assert.Equal("embedding-user", validated.Username);
+        Assert.Equal("embedding-password", validated.Password);
+        Assert.True(validated.IgnoreSslErrors);
+        Assert.True(validated.LogRequestBody);
+        Assert.Equal(TimeSpan.FromMinutes(5), validated.Timeout);
+    }
+
+    [Fact]
+    public void ProgramSettingsValidation_ReportsMissingEmbeddingServerForCharacterVectorSearch()
+    {
+        var settings = new ProgramSettings
+        {
+            AiServers =
+            [
+                new AiServerSettings
+                {
+                    Name = "LLM",
+                    BaseUrl = "https://llm.example.test",
+                    ApiKey = "llm-token"
+                }
+            ],
+            SelectedAiServerName = "LLM",
+            SelectedAiModelName = "qwen3:latest"
+        };
+
+        var exception = Assert.Throws<InvalidOperationException>(
+            () => ProgramSettingsValidation.ValidateForCharacterVectorSearch(settings));
+
+        Assert.Equal("Missing AI configuration: selected embedding server.", exception.Message);
+    }
+
+    [Fact]
+    public void ProgramSettingsValidation_ReportsMissingSelectedEmbeddingServer()
+    {
+        var settings = new ProgramSettings
+        {
+            AiServers =
+            [
+                new AiServerSettings
+                {
+                    Name = "Local",
+                    BaseUrl = "http://localhost:11434",
+                    ApiKey = "ollama"
+                }
+            ],
+            SelectedEmbeddingServerName = "Remote"
+        };
+
+        var errors = ProgramSettingsValidation.ValidateForSave(settings);
+
+        Assert.Contains("Selected embedding server 'Remote' does not exist.", errors);
     }
 
     [Fact]
@@ -577,6 +686,61 @@ public sealed class WebCharacterBibleServiceTests
         Assert.Equal(1, validated.CharacterBibleLimits.OverlapParagraphs);
         Assert.Equal(0, validated.CharacterBibleLimits.OverlapMaxBytes);
         Assert.Equal(100, validated.CharacterBibleLimits.FullScanMaxItems);
+    }
+
+    [Fact]
+    public void ProgramSettingsValidation_ResolvesApiKeySecretName()
+    {
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["LlmServers:ApiKeys:azure-eastus2"] = "secret-token"
+            })
+            .Build();
+        var settings = new ProgramSettings
+        {
+            AiServers =
+            [
+                new AiServerSettings
+                {
+                    Name = "Azure East US 2",
+                    BaseUrl = "https://example-eastus2.openai.azure.com",
+                    ApiKeySecretName = "azure-eastus2",
+                    TimeoutMinutes = 30
+                }
+            ],
+            SelectedAiServerName = "Azure East US 2",
+            SelectedAiModelName = "gpt-5.4-mini"
+        };
+
+        var validated = ProgramSettingsValidation.ValidateForWorkflow(settings, configuration);
+
+        Assert.Equal("secret-token", validated.ApiKey);
+        Assert.Equal(new Uri("https://example-eastus2.openai.azure.com/openai/v1"), validated.Endpoint);
+    }
+
+    [Fact]
+    public void ProgramSettingsValidation_ReportsMissingApiKeySecret()
+    {
+        var settings = new ProgramSettings
+        {
+            AiServers =
+            [
+                new AiServerSettings
+                {
+                    Name = "Azure East US 2",
+                    BaseUrl = "https://example-eastus2.openai.azure.com",
+                    ApiKeySecretName = "azure-eastus2"
+                }
+            ],
+            SelectedAiServerName = "Azure East US 2",
+            SelectedAiModelName = "gpt-5.4-mini"
+        };
+
+        var exception = Assert.Throws<InvalidOperationException>(
+            () => ProgramSettingsValidation.ValidateForWorkflow(settings, new ConfigurationBuilder().Build()));
+
+        Assert.Equal("AI server 'Azure East US 2' API key secret 'azure-eastus2' is not configured.", exception.Message);
     }
 
     [Fact]

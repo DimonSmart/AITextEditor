@@ -16,6 +16,8 @@ public sealed class ProgramSettings
 
     public string SelectedAiServerName { get; set; } = string.Empty;
 
+    public string SelectedEmbeddingServerName { get; set; } = string.Empty;
+
     public string SelectedAiModelName { get; set; } = string.Empty;
 
     public string SelectedEmbeddingModelName { get; set; } = DefaultEmbeddingModelName;
@@ -33,6 +35,7 @@ public sealed class ProgramSettings
             AiServers = [.. AiServers.Select(server => server.Clone())],
             LastBookPath = LastBookPath ?? string.Empty,
             SelectedAiServerName = SelectedAiServerName,
+            SelectedEmbeddingServerName = SelectedEmbeddingServerName,
             SelectedAiModelName = SelectedAiModelName,
             SelectedEmbeddingModelName = string.IsNullOrWhiteSpace(SelectedEmbeddingModelName)
                 ? DefaultEmbeddingModelName
@@ -54,6 +57,7 @@ public sealed class ProgramSettings
             Name = "Default",
             BaseUrl = configuration["LLM_BASE_URL"] ?? string.Empty,
             ApiKey = configuration["LLM_API_KEY"] ?? string.Empty,
+            ApiKeySecretName = configuration["LLM_API_KEY_SECRET"] ?? string.Empty,
             Username = configuration["LLM_USERNAME"] ?? string.Empty,
             Password = configuration["LLM_PASSWORD"] ?? string.Empty,
             IgnoreSslErrors = IsTrue(configuration["LLM_IGNORE_SSL_ERRORS"]),
@@ -65,6 +69,7 @@ public sealed class ProgramSettings
         {
             AiServers = HasServerConfiguration(defaultServer) ? [defaultServer] : [],
             SelectedAiServerName = HasServerConfiguration(defaultServer) ? defaultServer.Name : string.Empty,
+            SelectedEmbeddingServerName = HasServerConfiguration(defaultServer) ? defaultServer.Name : string.Empty,
             SelectedAiModelName = configuration["LLM_MODEL"] ?? string.Empty,
             SelectedEmbeddingModelName = ResolveEmbeddingModelName(configuration["EMBEDDING_MODEL"]),
             CharacterBibleDossierLanguage = ResolveCharacterBibleDossierLanguage(configuration["CHARACTER_BIBLE_DOSSIER_LANGUAGE"])
@@ -75,6 +80,7 @@ public sealed class ProgramSettings
     {
         return !string.IsNullOrWhiteSpace(server.BaseUrl) ||
             !string.IsNullOrWhiteSpace(server.ApiKey) ||
+            !string.IsNullOrWhiteSpace(server.ApiKeySecretName) ||
             !string.IsNullOrWhiteSpace(server.Username) ||
             !string.IsNullOrWhiteSpace(server.Password);
     }
@@ -117,6 +123,8 @@ public sealed class AiServerSettings
 
     public string ApiKey { get; set; } = string.Empty;
 
+    public string ApiKeySecretName { get; set; } = string.Empty;
+
     public string Username { get; set; } = string.Empty;
 
     public string Password { get; set; } = string.Empty;
@@ -134,6 +142,7 @@ public sealed class AiServerSettings
             Name = Name,
             BaseUrl = BaseUrl,
             ApiKey = ApiKey,
+            ApiKeySecretName = ApiKeySecretName,
             Username = Username,
             Password = Password,
             IgnoreSslErrors = IgnoreSslErrors,
@@ -290,9 +299,10 @@ public static class ProgramSettingsValidation
                 errors.Add($"AI server '{DisplayServerName(server)}' Base URL must be an absolute URI.");
             }
 
-            if (string.IsNullOrWhiteSpace(server.ApiKey))
+            if (string.IsNullOrWhiteSpace(server.ApiKey) &&
+                string.IsNullOrWhiteSpace(server.ApiKeySecretName))
             {
-                errors.Add($"AI server '{DisplayServerName(server)}' API key is required.");
+                errors.Add($"AI server '{DisplayServerName(server)}' API key or API key secret name is required.");
             }
 
             if (server.TimeoutMinutes <= 0)
@@ -352,10 +362,21 @@ public static class ProgramSettingsValidation
             errors.Add($"Selected AI server '{settings.SelectedAiServerName.Trim()}' does not exist.");
         }
 
+        if (!string.IsNullOrWhiteSpace(settings.SelectedEmbeddingServerName) &&
+            !settings.AiServers.Any(server => string.Equals(
+                server.Name.Trim(),
+                settings.SelectedEmbeddingServerName.Trim(),
+                StringComparison.OrdinalIgnoreCase)))
+        {
+            errors.Add($"Selected embedding server '{settings.SelectedEmbeddingServerName.Trim()}' does not exist.");
+        }
+
         return errors;
     }
 
-    public static ValidatedAiConnectionSettings ValidateForWorkflow(ProgramSettings settings)
+    public static ValidatedAiConnectionSettings ValidateForWorkflow(
+        ProgramSettings settings,
+        IConfiguration? configuration = null)
     {
         ArgumentNullException.ThrowIfNull(settings);
 
@@ -390,9 +411,16 @@ public static class ProgramSettingsValidation
             throw new InvalidOperationException(string.Join(" ", saveErrors));
         }
 
+        var apiKey = ResolveApiKey(server, configuration);
+        if (string.IsNullOrWhiteSpace(apiKey))
+        {
+            throw new InvalidOperationException(
+                $"AI server '{DisplayServerName(server)}' API key secret '{server.ApiKeySecretName.Trim()}' is not configured.");
+        }
+
         return new ValidatedAiConnectionSettings(
             NormalizeOpenAiEndpoint(server.BaseUrl),
-            server.ApiKey.Trim(),
+            apiKey,
             settings.SelectedAiModelName.Trim(),
             server.Username.Trim(),
             server.Password,
@@ -404,22 +432,24 @@ public static class ProgramSettingsValidation
             settings.LlmRetryCount);
     }
 
-    public static ValidatedCharacterVectorEmbeddingSettings ValidateForCharacterVectorSearch(ProgramSettings settings)
+    public static ValidatedCharacterVectorEmbeddingSettings ValidateForCharacterVectorSearch(
+        ProgramSettings settings,
+        IConfiguration? configuration = null)
     {
         ArgumentNullException.ThrowIfNull(settings);
 
-        if (string.IsNullOrWhiteSpace(settings.SelectedAiServerName))
+        if (string.IsNullOrWhiteSpace(settings.SelectedEmbeddingServerName))
         {
-            throw new InvalidOperationException("Missing AI configuration: selected AI server.");
+            throw new InvalidOperationException("Missing AI configuration: selected embedding server.");
         }
 
         var server = settings.AiServers.FirstOrDefault(server => string.Equals(
             server.Name.Trim(),
-            settings.SelectedAiServerName.Trim(),
+            settings.SelectedEmbeddingServerName.Trim(),
             StringComparison.OrdinalIgnoreCase));
         if (server is null)
         {
-            throw new InvalidOperationException($"Selected AI server '{settings.SelectedAiServerName.Trim()}' does not exist.");
+            throw new InvalidOperationException($"Selected embedding server '{settings.SelectedEmbeddingServerName.Trim()}' does not exist.");
         }
 
         var saveErrors = ValidateForSave(settings);
@@ -428,9 +458,16 @@ public static class ProgramSettingsValidation
             throw new InvalidOperationException(string.Join(" ", saveErrors));
         }
 
+        var apiKey = ResolveApiKey(server, configuration);
+        if (string.IsNullOrWhiteSpace(apiKey))
+        {
+            throw new InvalidOperationException(
+                $"AI server '{DisplayServerName(server)}' API key secret '{server.ApiKeySecretName.Trim()}' is not configured.");
+        }
+
         return new ValidatedCharacterVectorEmbeddingSettings(
             NormalizeOllamaEndpoint(server.BaseUrl),
-            server.ApiKey.Trim(),
+            apiKey,
             string.IsNullOrWhiteSpace(settings.SelectedEmbeddingModelName)
                 ? ProgramSettings.DefaultEmbeddingModelName
                 : settings.SelectedEmbeddingModelName.Trim(),
@@ -446,15 +483,44 @@ public static class ProgramSettingsValidation
         return string.IsNullOrWhiteSpace(server.Name) ? "<unnamed>" : server.Name.Trim();
     }
 
+    private static string ResolveApiKey(AiServerSettings server, IConfiguration? configuration)
+    {
+        if (!string.IsNullOrWhiteSpace(server.ApiKey))
+        {
+            return server.ApiKey.Trim();
+        }
+
+        var secretName = server.ApiKeySecretName.Trim();
+        if (string.IsNullOrWhiteSpace(secretName) || configuration is null)
+        {
+            return string.Empty;
+        }
+
+        return configuration[$"LlmServers:ApiKeys:{secretName}"]?.Trim() ?? string.Empty;
+    }
+
     private static Uri NormalizeOpenAiEndpoint(string baseUrl)
     {
         var endpoint = baseUrl.Trim().TrimEnd('/');
+        if (Uri.TryCreate(endpoint, UriKind.Absolute, out var uri) &&
+            IsAzureOpenAiHost(uri.Host) &&
+            string.IsNullOrWhiteSpace(uri.AbsolutePath.Trim('/')))
+        {
+            return new Uri($"{uri.GetLeftPart(UriPartial.Authority)}/openai/v1", UriKind.Absolute);
+        }
+
         if (!endpoint.EndsWith("/v1", StringComparison.OrdinalIgnoreCase))
         {
             endpoint += "/v1";
         }
 
         return new Uri(endpoint, UriKind.Absolute);
+    }
+
+    private static bool IsAzureOpenAiHost(string host)
+    {
+        return host.EndsWith(".openai.azure.com", StringComparison.OrdinalIgnoreCase) ||
+            host.EndsWith(".services.ai.azure.com", StringComparison.OrdinalIgnoreCase);
     }
 
     private static Uri NormalizeOllamaEndpoint(string baseUrl)

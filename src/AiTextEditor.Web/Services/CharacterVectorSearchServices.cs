@@ -12,6 +12,7 @@ internal sealed class ConfiguredCharacterVectorSearchTool : ICharacterVectorSear
 {
     private readonly IProgramSettingsStore settingsStore;
     private readonly ILoggerFactory loggerFactory;
+    private readonly IConfiguration configuration;
     private readonly SemaphoreSlim configurationLock = new(1, 1);
     private readonly List<IDisposable> ownedEmbeddingClients = [];
     private CharacterVectorSearchTool? currentTool;
@@ -20,10 +21,12 @@ internal sealed class ConfiguredCharacterVectorSearchTool : ICharacterVectorSear
 
     public ConfiguredCharacterVectorSearchTool(
         IProgramSettingsStore settingsStore,
-        ILoggerFactory loggerFactory)
+        ILoggerFactory loggerFactory,
+        IConfiguration configuration)
     {
         this.settingsStore = settingsStore ?? throw new ArgumentNullException(nameof(settingsStore));
         this.loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+        this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
     }
 
     public async Task<IReadOnlyList<CharacterVectorSearchHit>> SearchAsync(
@@ -61,7 +64,7 @@ internal sealed class ConfiguredCharacterVectorSearchTool : ICharacterVectorSear
     private async Task<CharacterVectorSearchTool> GetCurrentToolAsync(CancellationToken cancellationToken)
     {
         var settings = await settingsStore.LoadAsync(cancellationToken).ConfigureAwait(false);
-        var embeddingSettings = ProgramSettingsValidation.ValidateForCharacterVectorSearch(settings);
+        var embeddingSettings = ProgramSettingsValidation.ValidateForCharacterVectorSearch(settings, configuration);
         var configurationKey = BuildConfigurationKey(embeddingSettings);
 
         if (currentTool is not null &&

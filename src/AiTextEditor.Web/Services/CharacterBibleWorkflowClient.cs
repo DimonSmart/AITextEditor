@@ -15,15 +15,18 @@ public sealed class CharacterBibleWorkflowClient : ICharacterBibleWorkflowClient
     private readonly ILoggerFactory loggerFactory;
     private readonly IProgramSettingsStore settingsStore;
     private readonly ICharacterVectorSearchTool characterVectorSearchTool;
+    private readonly IConfiguration configuration;
 
     public CharacterBibleWorkflowClient(
         IProgramSettingsStore settingsStore,
         ILoggerFactory loggerFactory,
-        ICharacterVectorSearchTool characterVectorSearchTool)
+        ICharacterVectorSearchTool characterVectorSearchTool,
+        IConfiguration configuration)
     {
         this.settingsStore = settingsStore ?? throw new ArgumentNullException(nameof(settingsStore));
         this.loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
         this.characterVectorSearchTool = characterVectorSearchTool ?? throw new ArgumentNullException(nameof(characterVectorSearchTool));
+        this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
     }
 
     public async Task<CharacterBibleWorkflowOutput> RunAsync(
@@ -36,7 +39,7 @@ public sealed class CharacterBibleWorkflowClient : ICharacterBibleWorkflowClient
         ArgumentNullException.ThrowIfNull(request);
 
         var settings = await settingsStore.LoadAsync(cancellationToken);
-        var modelSettings = ProgramSettingsValidation.ValidateForWorkflow(settings);
+        var modelSettings = ProgramSettingsValidation.ValidateForWorkflow(settings, configuration);
         using var httpClient = CreateHttpClient(modelSettings);
         var modelClient = AgenticFrameworkModelClient.CreateOpenAiCompatible(
             httpClient,

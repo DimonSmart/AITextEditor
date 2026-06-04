@@ -31,6 +31,17 @@ else
             </label>
 
             <label>
+                <span>Embedding server</span>
+                <select class="form-select" @bind="EditableSettings.SelectedEmbeddingServerName">
+                    <option value="">Select server</option>
+                    @foreach (var server in EditableSettings.AiServers)
+                    {
+                        <option value="@server.Name">@server.Name</option>
+                    }
+                </select>
+            </label>
+
+            <label>
                 <span>Embedding model</span>
                 <input class="form-control" @bind="EditableSettings.SelectedEmbeddingModelName" @bind:event="oninput" />
             </label>
@@ -149,6 +160,11 @@ else
                 </label>
 
                 <label>
+                    <span>API key secret name</span>
+                    <input class="form-control" @bind="EditingServer.ApiKeySecretName" @bind:event="oninput" autocomplete="off" />
+                </label>
+
+                <label>
                     <span>Username</span>
                     <input class="form-control" @bind="EditingServer.Username" @bind:event="oninput" autocomplete="off" />
                 </label>
@@ -256,6 +272,11 @@ else
             EditableSettings.SelectedAiServerName = string.Empty;
         }
 
+        if (IsSelectedEmbeddingServer(server))
+        {
+            EditableSettings.SelectedEmbeddingServerName = string.Empty;
+        }
+
         if (editingServerIndex == serverIndex)
         {
             CancelEdit();
@@ -285,6 +306,14 @@ else
             {
                 candidateSettings.SelectedAiServerName = server.Name;
             }
+
+            if (string.Equals(
+                candidateSettings.SelectedEmbeddingServerName,
+                oldName,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                candidateSettings.SelectedEmbeddingServerName = server.Name;
+            }
         }
         else
         {
@@ -292,6 +321,11 @@ else
             if (string.IsNullOrWhiteSpace(candidateSettings.SelectedAiServerName))
             {
                 candidateSettings.SelectedAiServerName = server.Name;
+            }
+
+            if (string.IsNullOrWhiteSpace(candidateSettings.SelectedEmbeddingServerName))
+            {
+                candidateSettings.SelectedEmbeddingServerName = server.Name;
             }
         }
 
@@ -344,12 +378,21 @@ else
             Name = server.Name.Trim(),
             BaseUrl = server.BaseUrl.Trim(),
             ApiKey = server.ApiKey.Trim(),
+            ApiKeySecretName = server.ApiKeySecretName.Trim(),
             Username = server.Username.Trim(),
             Password = server.Password,
             IgnoreSslErrors = server.IgnoreSslErrors,
             LogRequestBody = server.LogRequestBody,
             TimeoutMinutes = server.TimeoutMinutes
         };
+    }
+
+    private bool IsSelectedEmbeddingServer(AiServerSettings server)
+    {
+        return string.Equals(
+            server.Name,
+            EditableSettings.SelectedEmbeddingServerName,
+            StringComparison.OrdinalIgnoreCase);
     }
 
     private static string FormatFlags(AiServerSettings server)
