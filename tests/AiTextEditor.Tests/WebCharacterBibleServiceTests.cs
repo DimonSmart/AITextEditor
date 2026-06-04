@@ -513,6 +513,7 @@ public sealed class WebCharacterBibleServiceTests
             LastBookPath = @"C:\Books\novel.md",
             SelectedAiServerName = "Remote",
             SelectedAiModelName = "model-a",
+            CharacterBibleDossierLanguage = "Spanish",
             CharacterBibleExtraction = new CharacterBibleExtractionSettings
             {
                 MaxParagraphsPerBatch = 12,
@@ -538,6 +539,7 @@ public sealed class WebCharacterBibleServiceTests
         Assert.Equal(@"C:\Books\novel.md", loadedSettings.LastBookPath);
         Assert.Equal("Remote", loadedSettings.SelectedAiServerName);
         Assert.Equal("model-a", loadedSettings.SelectedAiModelName);
+        Assert.Equal("Spanish", loadedSettings.CharacterBibleDossierLanguage);
         Assert.Equal(12, loadedSettings.CharacterBibleExtraction.MaxParagraphsPerBatch);
         Assert.Equal(4096, loadedSettings.CharacterBibleExtraction.MaxBatchBytes);
         Assert.Equal(2, loadedSettings.CharacterBibleExtraction.OverlapParagraphs);
@@ -569,6 +571,7 @@ public sealed class WebCharacterBibleServiceTests
         Assert.Equal(new Uri("http://localhost:11434/v1"), validated.Endpoint);
         Assert.Equal("qwen3:latest", validated.ModelName);
         Assert.Equal(TimeSpan.FromMinutes(30), validated.Timeout);
+        Assert.Equal("Russian", validated.CharacterBibleDossierLanguage);
         Assert.Equal(20, validated.CharacterBibleLimits.MaxParagraphsPerBatch);
         Assert.Equal(8000, validated.CharacterBibleLimits.MaxBatchBytes);
         Assert.Equal(1, validated.CharacterBibleLimits.OverlapParagraphs);

@@ -6,6 +6,7 @@ internal sealed record CharacterBibleDossierPatchCandidate(
 
 internal sealed record CharacterProfileUpdatePromptInput(
     CharacterProfileUpdateTarget Target,
+    string OutputLanguage,
     CharacterProfileUpdateCurrentProfile CurrentProfile,
     IReadOnlyList<CharacterProfileUpdateEvidence> NewEvidence);
 

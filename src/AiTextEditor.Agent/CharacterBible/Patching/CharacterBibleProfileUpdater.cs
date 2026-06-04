@@ -87,13 +87,13 @@ internal sealed class CharacterBibleProfileUpdater
                 evidence.Select(item => item.Pointer).ToArray(),
                 runState.Catalog,
                 statistics);
-            var promptInput = CharacterProfileUpdatePromptBuilder.BuildPromptInput(patchGroup.Candidates, dossier);
+            var promptInput = promptBuilder.BuildPromptInput(patchGroup.Candidates, dossier);
 
             try
             {
                 CharacterBibleLlmInputLogger.DebugInput(
                     "profile.update.llm.input",
-                    $"characterId={dossier.CharacterId} modelKeys={LogValueFormatter.List(["target", "currentProfile", "newEvidence"])} modelType={nameof(CharacterProfileUpdatePromptInput)}",
+                    $"characterId={dossier.CharacterId} modelKeys={LogValueFormatter.List(["target", "outputLanguage", "currentProfile", "newEvidence"])} modelType={nameof(CharacterProfileUpdatePromptInput)}",
                     promptInput);
                 var appliedBefore = statistics.Applied;
                 var rejectedBefore = statistics.Rejected;

@@ -42,7 +42,16 @@ else
         </section>
 
         <section class="settings-section">
-            <h2>Character Bible Extraction</h2>
+            <h2>Character Bible</h2>
+
+            <label>
+                <span>Dossier language</span>
+                <select class="form-select" @bind="EditableSettings.CharacterBibleDossierLanguage">
+                    <option value="Russian">Russian</option>
+                    <option value="English">English</option>
+                    <option value="Spanish">Spanish</option>
+                </select>
+            </label>
 
             <label>
                 <span>Max paragraphs per batch</span>

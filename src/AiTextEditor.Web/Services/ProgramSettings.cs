@@ -8,6 +8,7 @@ namespace AiTextEditor.Web.Services;
 public sealed class ProgramSettings
 {
     public const string DefaultEmbeddingModelName = "bge-m3:latest";
+    public const string DefaultCharacterBibleDossierLanguage = "Russian";
 
     public List<AiServerSettings> AiServers { get; set; } = [];
 
@@ -20,6 +21,8 @@ public sealed class ProgramSettings
     public string SelectedEmbeddingModelName { get; set; } = DefaultEmbeddingModelName;
 
     public CharacterBibleExtractionSettings CharacterBibleExtraction { get; set; } = new();
+
+    public string CharacterBibleDossierLanguage { get; set; } = DefaultCharacterBibleDossierLanguage;
 
     public int LlmRetryCount { get; set; } = 5;
 
@@ -35,6 +38,9 @@ public sealed class ProgramSettings
                 ? DefaultEmbeddingModelName
                 : SelectedEmbeddingModelName,
             CharacterBibleExtraction = CharacterBibleExtraction.Clone(),
+            CharacterBibleDossierLanguage = string.IsNullOrWhiteSpace(CharacterBibleDossierLanguage)
+                ? DefaultCharacterBibleDossierLanguage
+                : CharacterBibleDossierLanguage.Trim(),
             LlmRetryCount = LlmRetryCount
         };
     }
@@ -60,7 +66,8 @@ public sealed class ProgramSettings
             AiServers = HasServerConfiguration(defaultServer) ? [defaultServer] : [],
             SelectedAiServerName = HasServerConfiguration(defaultServer) ? defaultServer.Name : string.Empty,
             SelectedAiModelName = configuration["LLM_MODEL"] ?? string.Empty,
-            SelectedEmbeddingModelName = ResolveEmbeddingModelName(configuration["EMBEDDING_MODEL"])
+            SelectedEmbeddingModelName = ResolveEmbeddingModelName(configuration["EMBEDDING_MODEL"]),
+            CharacterBibleDossierLanguage = ResolveCharacterBibleDossierLanguage(configuration["CHARACTER_BIBLE_DOSSIER_LANGUAGE"])
         };
     }
 
@@ -91,6 +98,13 @@ public sealed class ProgramSettings
     {
         return string.IsNullOrWhiteSpace(value)
             ? DefaultEmbeddingModelName
+            : value.Trim();
+    }
+
+    private static string ResolveCharacterBibleDossierLanguage(string? value)
+    {
+        return string.IsNullOrWhiteSpace(value)
+            ? DefaultCharacterBibleDossierLanguage
             : value.Trim();
     }
 }
@@ -243,6 +257,13 @@ public sealed class FileProgramSettingsStore : IProgramSettingsStore
 
 public static class ProgramSettingsValidation
 {
+    private static readonly string[] SupportedCharacterBibleDossierLanguages =
+    [
+        "Russian",
+        "English",
+        "Spanish"
+    ];
+
     public static IReadOnlyList<string> ValidateForSave(ProgramSettings settings)
     {
         ArgumentNullException.ThrowIfNull(settings);
@@ -304,6 +325,17 @@ public static class ProgramSettingsValidation
         if (extraction.FullScanMaxItems <= 0)
         {
             errors.Add("Character bible full-scan item limit must be greater than zero.");
+        }
+
+        if (string.IsNullOrWhiteSpace(settings.CharacterBibleDossierLanguage))
+        {
+            errors.Add("Character bible dossier language is required.");
+        }
+        else if (!SupportedCharacterBibleDossierLanguages.Contains(
+            settings.CharacterBibleDossierLanguage.Trim(),
+            StringComparer.OrdinalIgnoreCase))
+        {
+            errors.Add($"Character bible dossier language must be one of: {string.Join(", ", SupportedCharacterBibleDossierLanguages)}.");
         }
 
         if (settings.LlmRetryCount <= 0)
@@ -368,6 +400,7 @@ public static class ProgramSettingsValidation
             server.LogRequestBody,
             TimeSpan.FromMinutes(server.TimeoutMinutes),
             settings.CharacterBibleExtraction.ToCharacterBibleExtractionLimits(),
+            settings.CharacterBibleDossierLanguage.Trim(),
             settings.LlmRetryCount);
     }
 
@@ -446,6 +479,7 @@ public sealed record ValidatedAiConnectionSettings(
     bool LogRequestBody,
     TimeSpan Timeout,
     CharacterBibleExtractionLimits CharacterBibleLimits,
+    string CharacterBibleDossierLanguage,
     int LlmRetryCount);
 
 public sealed record ValidatedCharacterVectorEmbeddingSettings(

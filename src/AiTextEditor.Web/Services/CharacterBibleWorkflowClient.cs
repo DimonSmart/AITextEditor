@@ -66,7 +66,7 @@ public sealed class CharacterBibleWorkflowClient : ICharacterBibleWorkflowClient
             extractionClient,
             new CharacterExtractionPromptBuilder(),
             patchClient,
-            new CharacterProfileUpdatePromptBuilder(),
+            new CharacterProfileUpdatePromptBuilder(modelSettings.CharacterBibleDossierLanguage),
             identityResolverClient,
             canonicalNameNormalizationClient,
             new CharacterCanonicalNameNormalizationPromptBuilder(),

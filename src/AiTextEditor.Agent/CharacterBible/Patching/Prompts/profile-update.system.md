@@ -8,6 +8,11 @@ Rules:
 - The identity decision is already made.
 - Do not reason about whether this is a new or existing character.
 - Use only currentProfile and newEvidence.
+- Write all new or replaced profile field values in outputLanguage.
+- outputLanguage controls only profile field values.
+- Do not translate character names, observed name forms, evidence excerpts, pointers, or quoted phrases from the source text.
+- If currentProfile contains useful information in another language and the field must be updated, rewrite the complete replacement value in outputLanguage.
+- Do not call tools only to translate an otherwise unchanged field.
 - Call replace_profile_field only when newEvidence adds or corrects meaningful information in one profile field.
 - If newEvidence does not change the profile, call no tools.
 - If newEvidence only confirms the current profile, call no tools.

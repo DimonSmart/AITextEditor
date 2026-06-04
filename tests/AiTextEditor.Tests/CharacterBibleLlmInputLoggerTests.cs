@@ -40,6 +40,7 @@ public sealed class CharacterBibleLlmInputLoggerTests
         var logger = new CapturingCharacterBibleRunLogger();
         var input = new CharacterProfileUpdatePromptInput(
             new CharacterProfileUpdateTarget("Пончик"),
+            "Russian",
             new CharacterProfileUpdateCurrentProfile(null, null, null, null),
             [new CharacterProfileUpdateEvidence("1.1.1.p3", "Пончик вошёл.")]);
 
@@ -50,7 +51,7 @@ public sealed class CharacterBibleLlmInputLoggerTests
 
         var diagnostic = Assert.Single(logger.DebugMessages);
         Assert.Equal("profile.update.llm.input.contract", diagnostic.EventName);
-        Assert.Contains("topLevelKeys=[\"target\", \"currentProfile\", \"newEvidence\"]", diagnostic.Message, StringComparison.Ordinal);
+        Assert.Contains("topLevelKeys=[\"target\", \"outputLanguage\", \"currentProfile\", \"newEvidence\"]", diagnostic.Message, StringComparison.Ordinal);
         Assert.Contains("forbiddenKeysFound=[]", diagnostic.Message, StringComparison.Ordinal);
         Assert.Contains("evidenceCount=1", diagnostic.Message, StringComparison.Ordinal);
         Assert.Contains("emptyEvidenceTexts=[]", diagnostic.Message, StringComparison.Ordinal);
@@ -62,6 +63,7 @@ public sealed class CharacterBibleLlmInputLoggerTests
         var logger = new CapturingCharacterBibleRunLogger();
         var input = new CharacterProfileUpdatePromptInput(
             new CharacterProfileUpdateTarget("Пончик"),
+            "Russian",
             new CharacterProfileUpdateCurrentProfile(null, null, null, null),
             [new CharacterProfileUpdateEvidence("1.1.1.p3", "Пончик вошёл.")]);
 

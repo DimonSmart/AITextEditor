@@ -11,6 +11,7 @@ using AiTextEditor.Agent.CharacterBible.Normalization;
 using AiTextEditor.Agent.CharacterBible.Patching;
 using AiTextEditor.Agent.CharacterBible.Resolution;
 using AiTextEditor.Agent.CharacterBible.VectorSearch;
+using AiTextEditor.Web.Services;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
@@ -213,7 +214,7 @@ public sealed class CharacterDossiersGeneratorTests
     [Fact]
     public void CharacterProfileUpdatePromptBuilder_LoadsPromptAndBuildsUserPromptJson()
     {
-        var builder = new CharacterProfileUpdatePromptBuilder();
+        var builder = new CharacterProfileUpdatePromptBuilder("Russian");
         var candidate = new CharacterBibleCharacterCandidate(
             "John",
             "unknown",
@@ -253,10 +254,13 @@ public sealed class CharacterDossiersGeneratorTests
         Assert.Contains("Do not return reasons", systemPrompt, StringComparison.Ordinal);
         Assert.Contains("Do not return evidence pointers", systemPrompt, StringComparison.Ordinal);
         Assert.Contains("Do not return status", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("outputLanguage", systemPrompt, StringComparison.Ordinal);
+        Assert.Contains("profile field values", systemPrompt, StringComparison.Ordinal);
         Assert.DoesNotContain("completed", systemPrompt, StringComparison.Ordinal);
 
         using var json = JsonDocument.Parse(userPrompt);
         Assert.Equal("John", json.RootElement.GetProperty("target").GetProperty("name").GetString());
+        Assert.Equal("Russian", json.RootElement.GetProperty("outputLanguage").GetString());
         Assert.Equal(JsonValueKind.Null, json.RootElement.GetProperty("currentProfile").GetProperty("appearance").ValueKind);
         var evidence = json.RootElement.GetProperty("newEvidence").EnumerateArray().Single();
         Assert.Equal("p1", evidence.GetProperty("pointer").GetString());
@@ -272,6 +276,67 @@ public sealed class CharacterDossiersGeneratorTests
         Assert.DoesNotContain("observedNameForms", userPrompt, StringComparison.Ordinal);
         Assert.DoesNotContain("additions", userPrompt, StringComparison.Ordinal);
         Assert.False(json.RootElement.TryGetProperty("proposal", out _));
+    }
+
+    [Fact]
+    public void CharacterProfileUpdatePromptBuilder_DefaultLanguageIsRussian()
+    {
+        var builder = new CharacterProfileUpdatePromptBuilder();
+        var candidate = new CharacterBibleCharacterCandidate(
+            "John",
+            "unknown",
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
+            [new CharacterBibleCandidateEvidence("p1", "John entered.")]);
+        var dossier = new AiTextEditor.Core.Model.CharacterDossier(
+            1,
+            "John",
+            ["John"],
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["John"] = "John entered."
+            },
+            "unknown");
+        var patchCandidate = new CharacterBibleDossierPatchCandidate(
+            candidate,
+            [
+                new CharacterBibleEvidenceContext(
+                    "p1",
+                    "John entered.",
+                    "John entered.",
+                    "John entered.",
+                    [])
+            ]);
+
+        var userPrompt = builder.BuildUserPrompt([patchCandidate], dossier);
+
+        using var json = JsonDocument.Parse(userPrompt);
+        Assert.Equal("Russian", json.RootElement.GetProperty("outputLanguage").GetString());
+    }
+
+    [Fact]
+    public void ProgramSettingsClone_PreservesCharacterBibleDossierLanguage()
+    {
+        var settings = new ProgramSettings
+        {
+            CharacterBibleDossierLanguage = "English"
+        };
+
+        var clone = settings.Clone();
+
+        Assert.Equal("English", clone.CharacterBibleDossierLanguage);
+    }
+
+    [Fact]
+    public void ProgramSettingsValidation_RejectsEmptyCharacterBibleDossierLanguage()
+    {
+        var settings = new ProgramSettings
+        {
+            CharacterBibleDossierLanguage = string.Empty
+        };
+
+        var errors = ProgramSettingsValidation.ValidateForSave(settings);
+
+        Assert.Contains(errors, error => error.Contains("dossier language", StringComparison.OrdinalIgnoreCase));
     }
 
     [Fact]

@@ -11,6 +11,7 @@ public sealed class CharacterProfileUpdatePromptBuilder
     private const string SystemPromptResourceName = "AiTextEditor.Agent.CharacterBible.Patching.Prompts.profile-update.system.md";
 
     private static readonly Lazy<string> SystemPrompt = new(LoadSystemPrompt);
+    private readonly string outputLanguage;
 
     private static readonly JsonSerializerOptions UserPromptJsonOptions = new()
     {
@@ -19,6 +20,13 @@ public sealed class CharacterProfileUpdatePromptBuilder
         Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
         WriteIndented = false
     };
+
+    public CharacterProfileUpdatePromptBuilder(string? outputLanguage = null)
+    {
+        this.outputLanguage = string.IsNullOrWhiteSpace(outputLanguage)
+            ? "Russian"
+            : outputLanguage.Trim();
+    }
 
     public string BuildSystemPrompt() => SystemPrompt.Value;
 
@@ -39,9 +47,15 @@ public sealed class CharacterProfileUpdatePromptBuilder
         return JsonSerializer.Serialize(input, UserPromptJsonOptions);
     }
 
-    internal static CharacterProfileUpdatePromptInput BuildPromptInput(
+    internal CharacterProfileUpdatePromptInput BuildPromptInput(
         IReadOnlyList<CharacterBibleDossierPatchCandidate> candidates,
         CharacterDossier dossier)
+        => BuildPromptInput(candidates, dossier, outputLanguage);
+
+    internal static CharacterProfileUpdatePromptInput BuildPromptInput(
+        IReadOnlyList<CharacterBibleDossierPatchCandidate> candidates,
+        CharacterDossier dossier,
+        string outputLanguage)
     {
         ArgumentNullException.ThrowIfNull(candidates);
         ArgumentNullException.ThrowIfNull(dossier);
@@ -49,6 +63,7 @@ public sealed class CharacterProfileUpdatePromptBuilder
         var profile = CharacterProfile.Normalize(dossier.Profile);
         return new CharacterProfileUpdatePromptInput(
             new CharacterProfileUpdateTarget(dossier.Name),
+            string.IsNullOrWhiteSpace(outputLanguage) ? "Russian" : outputLanguage.Trim(),
             new CharacterProfileUpdateCurrentProfile(
                 NullIfWhiteSpace(profile.Appearance),
                 NullIfWhiteSpace(profile.StatusAndCompetence),
